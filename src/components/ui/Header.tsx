@@ -12,8 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -56,7 +61,6 @@ export default function Header() {
                     <>
                       <div className="flex items-center gap-2 mb-4">
                         <Avatar className="h-8 w-8">
-                          
                           <AvatarFallback>US</AvatarFallback>
                         </Avatar>
                         <div className="text-sm font-medium">Usuario</div>
@@ -142,10 +146,12 @@ export default function Header() {
                 <LogIn className="mr-2 h-4 w-4" />
                 Iniciar sesión
               </Button>
-              <Button variant="default">
-                <UserPlus className="mr-2 h-4 w-4" />
-                Registrarse
-              </Button>
+              <Link href="/registro">
+                <Button variant="default">
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Registrarse
+                </Button>
+              </Link>
             </>
           )}
         </div>
