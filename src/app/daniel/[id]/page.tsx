@@ -1,5 +1,5 @@
 export default async function Producto({ params }: { params: { id: string } }) {
-  const { id } = await params;
+  const { id } =  params;
   const productosMock = [
     { id: "1", nombre: "Producto A", precio: 100, descripcion: "Descripción del Producto A" },
     { id: "2", nombre: "Producto B", precio: 200, descripcion: "Descripción del Producto B" },
