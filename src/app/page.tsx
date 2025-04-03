@@ -9,6 +9,7 @@ export default function Home() {
         <p className="mt-4 text-lg">
           Tu tienda en línea para rentar autos.
         </p>
+        
         </main>
     </div>
   );
