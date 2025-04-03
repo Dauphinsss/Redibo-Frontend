@@ -2,7 +2,7 @@
 "use client";
 import React from 'react';
 
-const Greeting: React.FC = () => {
+const HostGreeting: React.FC = () => {
   return (
     <header className="border-b">
     <div className=" flex h-16 items-center justify-between px-4 md:px-6">
@@ -14,4 +14,4 @@ const Greeting: React.FC = () => {
   );
 };
 
-export default Greeting;
+export default HostGreeting;
