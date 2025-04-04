@@ -51,6 +51,9 @@ export default function Header() {
                 <Link href="/contacto" className="text-sm font-medium">
                   Contacto
                 </Link>
+                <Link href="/Sprinteros" className="text-sm font-medium text-blue-500">
+                  Host
+                </Link>
                 <div className="mt-4 border-t pt-4">
                   {isLoggedIn ? (
                     <>
@@ -108,6 +111,9 @@ export default function Header() {
           </Link>
           <Link href="/contacto" className="text-sm font-medium">
             Contacto
+          </Link>
+          <Link href="/sprinteros" className="text-sm font-medium">
+            Host
           </Link>
         </nav>
 
