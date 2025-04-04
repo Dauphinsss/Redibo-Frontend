@@ -30,20 +30,23 @@ export default function CargarImagenPage() {
     <div className="p-6 space-y-6">
       <h2 className="text-xl font-bold">Cargar Imágenes de tu auto:</h2>
 
-      <div className="space-y-4">
-        <div className="space-y-2">
+      <div className="flex space-x-4">
+        {/* Imagen grande a la izquierda */}
+        <div className="flex-[0.6] space-y-2">
           <Input type="file" id="file1" onChange={mostrarImagen} />
           <div
             id="imagen-vista"
-            className="w-full h-40 bg-gray-200 bg-cover bg-center"
+            className="w-full h-80 bg-gray-200 bg-cover bg-center"
           ></div>
         </div>
-        <div className="flex space-x-4">
+
+        {/* Imágenes pequeñas a la derecha */}
+        <div className="flex flex-col flex-[0.4] space-y-4">
           <div className="space-y-2">
             <Input type="file" id="file2" onChange={mostrarImagen} />
             <div
               id="imagen-vista-2"
-              className="w-32 h-32 bg-gray-200 bg-cover bg-center"
+              className="w-full h-40 bg-gray-200 bg-cover bg-center"
             ></div>
           </div>
           <div className="space-y-2">
@@ -51,7 +54,7 @@ export default function CargarImagenPage() {
             <Label htmlFor="file3">Elige una foto a subir</Label>
             <div
               id="imagen-vista-3"
-              className="w-32 h-32 bg-gray-200 bg-cover bg-center"
+              className="w-full h-40 bg-gray-200 bg-cover bg-center"
             ></div>
           </div>
         </div>
