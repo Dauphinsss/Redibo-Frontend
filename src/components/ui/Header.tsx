@@ -51,7 +51,7 @@ export default function Header() {
                 <Link href="/contacto" className="text-sm font-medium">
                   Contacto
                 </Link>
-                <Link href="/Sprinteros" className="text-sm font-medium text-blue-500">
+                <Link href="/host" className="text-sm font-medium text-blue-500">
                   Host
                 </Link>
                 <div className="mt-4 border-t pt-4">
@@ -112,7 +112,7 @@ export default function Header() {
           <Link href="/contacto" className="text-sm font-medium">
             Contacto
           </Link>
-          <Link href="/sprinteros" className="text-sm font-medium">
+          <Link href="/host" className="text-sm font-medium">
             Host
           </Link>
         </nav>

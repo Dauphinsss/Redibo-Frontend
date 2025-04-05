@@ -3,12 +3,12 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function SprinterosRedirect() {
+export default function hostRedirect() {
     const router = useRouter();
 
     useEffect(() => {
         // Aquí puedes agregar la lógica de redirección
-        router.push('/sprinteros/pages');
+        router.push('/host/pages');
     }, [router]);
 
     return null;
