@@ -112,7 +112,7 @@ export default function Header() {
           <Link href="/contacto" className="text-sm font-medium">
             Contacto
           </Link>
-          <Link href="/sprinteros" className="text-sm font-medium">
+          <Link href="/Sprinteros" className="text-sm font-medium">
             Host
           </Link>
         </nav>

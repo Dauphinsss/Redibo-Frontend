@@ -57,6 +57,11 @@ export default function ViewCarsPage() {
 
   return (
     <div className="p-6 flex flex-col items-center min-h-screen bg-gray-100">
+           <header className="border-b w-full">
+    <div className="flex h-12 items-center justify-start pl-2 md:pl-2 mt-[-10px]">
+      <div className="font-bold text-xl mt-[-20px]">REDIBO</div>
+    </div>
+  </header>
       <div className="w-full max-w-5xl">
         <h1 className="text-4xl font-bold text-center my-8">Mis Carros</h1>
 

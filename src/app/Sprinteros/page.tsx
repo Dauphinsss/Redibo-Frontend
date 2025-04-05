@@ -8,7 +8,7 @@ export default function SprinterosRedirect() {
 
     useEffect(() => {
         // Aquí puedes agregar la lógica de redirección
-        router.push('/sprinteros/pages');
+        router.push('/Sprinteros/pages');
     }, [router]);
 
     return null;
