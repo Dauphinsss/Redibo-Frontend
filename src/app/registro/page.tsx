@@ -171,7 +171,7 @@ export default function TermsForm() {
   // Render the Google first login form
   if (isGoogleFirstLogin && googleUserInfo) {
     return (
-      <div className="flex items-center justify-center p-8">
+      <div className="flex items-center justify-center h-screen p-8">
         <Card className="w-full max-w-md mx-auto">
           <CardHeader>
             <CardTitle>Complete su perfil</CardTitle>
@@ -310,7 +310,7 @@ export default function TermsForm() {
   // Renderizar la selección de tipo de usuario
   if (!userType) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center p-8">
         <Card className="w-full max-w-md mx-auto">
           <CardHeader>
             <CardTitle className="text-xl">¿Cómo te quieres registrar?</CardTitle>
