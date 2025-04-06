@@ -171,137 +171,139 @@ export default function TermsForm() {
   // Render the Google first login form
   if (isGoogleFirstLogin && googleUserInfo) {
     return (
-      <Card className="w-full max-w-md mx-auto">
-        <CardHeader>
-          <CardTitle>Complete su perfil</CardTitle>
-          <CardDescription>
-            Necesitamos un poco más de información para completar su registro
-            con Google
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleCompleteGoogleProfile}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Nombre</Label>
-              <div className="p-2 border rounded-md bg-muted">
-                {googleUserInfo.name}
+      <div className="flex items-center justify-center p-8">
+        <Card className="w-full max-w-md mx-auto">
+          <CardHeader>
+            <CardTitle>Complete su perfil</CardTitle>
+            <CardDescription>
+              Necesitamos un poco más de información para completar su registro
+              con Google
+            </CardDescription>
+          </CardHeader>
+          <form onSubmit={handleCompleteGoogleProfile}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Nombre</Label>
+                <div className="p-2 border rounded-md bg-muted">
+                  {googleUserInfo.name}
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label>Correo electrónico</Label>
-              <div className="p-2 border rounded-md bg-muted">
-                {googleUserInfo.email}
+              <div className="space-y-2">
+                <Label>Correo electrónico</Label>
+                <div className="p-2 border rounded-md bg-muted">
+                  {googleUserInfo.email}
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="phone">Teléfono</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="Ingrese su número de teléfono"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Teléfono</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="Ingrese su número de teléfono"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="birthdate">Fecha de nacimiento</Label>
-              <Input
-                id="birthdate"
-                type="date"
-                value={birthdate}
-                onChange={(e) => setBirthdate(e.target.value)}
-                required
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="birthdate">Fecha de nacimiento</Label>
+                <Input
+                  id="birthdate"
+                  type="date"
+                  value={birthdate}
+                  onChange={(e) => setBirthdate(e.target.value)}
+                  required
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="gender">Género</Label>
-              <RadioGroup
-                id="gender"
-                className="flex space-x-4"
-                value={gender}
-                onValueChange={setGender}
+              <div className="space-y-2">
+                <Label htmlFor="gender">Género</Label>
+                <RadioGroup
+                  id="gender"
+                  className="flex space-x-4"
+                  value={gender}
+                  onValueChange={setGender}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="masculino" id="masculino" />
+                    <Label htmlFor="masculino">Masculino</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="femenino" id="femenino" />
+                    <Label htmlFor="femenino">Femenino</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="otro" id="otro" />
+                    <Label htmlFor="otro">Otro</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="city">Ciudad</Label>
+                <select
+                  id="city"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  required
+                >
+                  <option value="" disabled>
+                    Seleccione una ciudad
+                  </option>
+                  <option value="bogota">Bogotá</option>
+                  <option value="medellin">Medellín</option>
+                  <option value="cali">Cali</option>
+                  <option value="barranquilla">Barranquilla</option>
+                  <option value="cartagena">Cartagena</option>
+                  <option value="bucaramanga">Bucaramanga</option>
+                  <option value="pereira">Pereira</option>
+                  <option value="manizales">Manizales</option>
+                  <option value="otra">Otra</option>
+                </select>
+              </div>
+
+              <div className="flex items-center space-x-2 pb-6">
+                <Checkbox
+                  id="terms"
+                  checked={acceptTerms}
+                  onCheckedChange={(checked) =>
+                    setAcceptTerms(checked as boolean)
+                  }
+                  required
+                />
+                <Label htmlFor="terms" className="text-sm">
+                  He leído y acepto los términos y condiciones
+                </Label>
+              </div>
+            </CardContent>
+
+            <CardFooter className="flex justify-between">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsGoogleFirstLogin(false);
+                  setGoogleUserInfo(null);
+                }}
               >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="masculino" id="masculino" />
-                  <Label htmlFor="masculino">Masculino</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="femenino" id="femenino" />
-                  <Label htmlFor="femenino">Femenino</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="otro" id="otro" />
-                  <Label htmlFor="otro">Otro</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="city">Ciudad</Label>
-              <select
-                id="city"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                required
-              >
-                <option value="" disabled>
-                  Seleccione una ciudad
-                </option>
-                <option value="bogota">Bogotá</option>
-                <option value="medellin">Medellín</option>
-                <option value="cali">Cali</option>
-                <option value="barranquilla">Barranquilla</option>
-                <option value="cartagena">Cartagena</option>
-                <option value="bucaramanga">Bucaramanga</option>
-                <option value="pereira">Pereira</option>
-                <option value="manizales">Manizales</option>
-                <option value="otra">Otra</option>
-              </select>
-            </div>
-
-            <div className="flex items-center space-x-2 pb-6">
-              <Checkbox
-                id="terms"
-                checked={acceptTerms}
-                onCheckedChange={(checked) =>
-                  setAcceptTerms(checked as boolean)
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                disabled={
+                  !acceptTerms || !birthdate || !city || !gender || !phone
                 }
-                required
-              />
-              <Label htmlFor="terms" className="text-sm">
-                He leído y acepto los términos y condiciones
-              </Label>
-            </div>
-          </CardContent>
-
-          <CardFooter className="flex justify-between">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setIsGoogleFirstLogin(false);
-                setGoogleUserInfo(null);
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              disabled={
-                !acceptTerms || !birthdate || !city || !gender || !phone
-              }
-            >
-              Completar registro
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
+              >
+                Completar registro
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
+      </div>
     );
   }
 
@@ -311,7 +313,7 @@ export default function TermsForm() {
       <div className="flex items-center justify-center h-screen">
         <Card className="w-full max-w-md mx-auto">
           <CardHeader>
-            <CardTitle>¿Cómo te quieres registrar?</CardTitle>
+            <CardTitle className="text-xl">¿Cómo te quieres registrar?</CardTitle>
             <CardDescription>
               Selecciona el tipo de usuario que deseas registrar
             </CardDescription>
