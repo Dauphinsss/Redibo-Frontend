@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2 } from "lucide-react";
+import Link from "next/link";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -59,16 +60,20 @@ export default function ViewCarsPage() {
     <div className="p-6 flex flex-col items-center min-h-screen bg-gray-100">
            <header className="border-b w-full">
     <div className="flex h-12 items-center justify-start pl-2 md:pl-2 mt-[-10px]">
-      <div className="font-bold text-xl mt-[-20px]">REDIBO</div>
+      <div className="font-bold text-xl mt-[-20px]">
+      <Link href="/">REDIBO</Link>
+      </div>
     </div>
   </header>
       <div className="w-full max-w-5xl">
         <h1 className="text-4xl font-bold text-center my-8">Mis Carros</h1>
 
         <div className="flex items-center justify-between mb-4">
-          <Button className="bg-black text-white px-6 py-3 rounded-lg flex items-center gap-2">
+        <Link href="/host/home/add" className="flex items-center gap-2">
+          <Button className="bg-black text-white px-6 py-3 rounded-lg flex items-center gap-2 cursor-pointer">
             <Plus size={20} /> Añadir Carro
           </Button>
+          </Link>
           <span className="text-lg font-medium">Lista de carros</span>
         </div>
 
