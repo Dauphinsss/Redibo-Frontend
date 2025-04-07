@@ -4,8 +4,10 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   AlertDialog,
@@ -18,6 +20,12 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface Car {
   id: number;
@@ -55,26 +63,32 @@ export default function ViewCarsPage() {
   const handleDelete = (carId: number) => {
     setCars(prev => prev.filter(c => c.id !== carId));
   };
-
+  const router = useRouter();
   return (
     <div className="p-6 flex flex-col items-center min-h-screen bg-gray-100">
            <header className="border-b w-full">
-    <div className="flex h-12 items-center justify-start pl-2 md:pl-2 mt-[-10px]">
-      <div className="font-bold text-xl mt-[-20px]">
-      <Link href="/">REDIBO</Link>
-      </div>
-    </div>
-  </header>
+            <div className="flex h-12 items-center justify-between pl-2 md:pl-2 mt-[-10px]">
+              <div className="font-bold text-xl mt-[-20px]">
+                <Link href="/">REDIBO</Link>
+              </div>
+              <div className="mr-2 pointer-events-none">
+                <Avatar>
+                  <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              </div>
+            </div>
+          </header>
+
       <div className="w-full max-w-5xl">
         <h1 className="text-4xl font-bold text-center my-8">Mis Carros</h1>
-
-        <div className="flex items-center justify-between mb-4">
-        <Link href="/host/home/add" className="flex items-center gap-2">
-          <Button className="bg-black text-white px-6 py-3 rounded-lg flex items-center gap-2 cursor-pointer">
-            <Plus size={20} /> Añadir Carro
+        <div className="flex items-center justify-between w-full">
+          <span className="text-lg font-medium order-1">Lista de carros</span>
+          <Button className="bg-black text-white px-6 py-3 rounded-lg flex items-center gap-2 order-2"
+          onClick={() => router.push("/host/home/add")}
+          >
+            <Plus size={20} /> Añadir
           </Button>
-          </Link>
-          <span className="text-lg font-medium">Lista de carros</span>
         </div>
 
         <Separator className="my-4" />
@@ -113,9 +127,31 @@ export default function ViewCarsPage() {
                 <p className="text-lg font-semibold">${car.price}/día</p>
 
                 <div className="flex flex-col gap-2">
-                  <Button variant="outline" className="w-full">
-                    Editar
-                  </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full">
+                      Editar
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-full">
+                    <DropdownMenuItem onClick={() => router.push(`/host/home/editar/direccion/${car.id}`)}>
+                      Dirección
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push(`/host/home/editar/datos-principales/${car.id}`)}>
+                      Datos principales
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push(`/host/home/editar/caracteristicas/${car.id}`)}>
+                      Características del coche
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push(`/host/home/editar/adicionales/${car.id}`)}>
+                      Características adicionales
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push(`/host/home/editar/imagenes/${car.id}`)}>
+                      Imágenes del coche
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
                   
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
