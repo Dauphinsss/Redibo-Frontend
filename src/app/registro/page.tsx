@@ -29,6 +29,7 @@ import { UserIcon, HomeIcon, CarIcon } from "lucide-react";
 type UserType = "propietario" | "arrendatario" | "conductor" | null;
 
 export default function TermsForm() {
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [userType, setUserType] = useState<UserType>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -39,6 +40,7 @@ export default function TermsForm() {
   const [birthdate, setBirthdate] = useState("");
   const [gender, setGender] = useState("");
   const [city, setCity] = useState("");
+ 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -259,15 +261,15 @@ export default function TermsForm() {
                 <option value="" disabled>
                   Seleccione una ciudad
                 </option>
-                <option value="Pando">Bogotá</option>
-                <option value="Beni">Medellín</option>
-                <option value="La paz">Cali</option>
-                <option value="Santa Cruz">Barranquilla</option>
-                <option value="Chuquisaca">Cartagena</option>
-                <option value="Tarija">Bucaramanga</option>
-                <option value="Cochabamba">Pereira</option>
-                <option value="Oruro">Manizales</option>
-                <option value="Potosi">Otra</option>
+                <option value="Pando">Pando</option>
+                <option value="Beni">Beni</option>
+                <option value="La paz">La paz</option>
+                <option value="Santa Cruz">Santa Cruz</option>
+                <option value="Chuquisaca">Chuquisaca</option>
+                <option value="Tarija">Tarija</option>
+                <option value="Cochabamba">Cochabamba</option>
+                <option value="Oruro">Oruro</option>
+                <option value="Potosi">Potosi</option>
               </select>
             </div>
 
@@ -365,6 +367,22 @@ export default function TermsForm() {
             </Button>
           </CardFooter>
         </form>
+        {isCancelModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white p-6 rounded-md shadow-md">
+              <h2 className="text-lg font-semibold mb-4">¿Estás seguro de cancelar el registro?</h2>
+              <p className="mb-4">Si cancelas, perderás toda la información ingresada.</p>
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="secondary" onClick={handleCloseModal}>
+                  No, continuar
+                </Button>
+                <Button type="button" variant="destructive" onClick={handleConfirmCancel}>
+                  Sí, cancelar
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </Card>
     </div>
   );
