@@ -259,15 +259,15 @@ export default function TermsForm() {
                 <option value="" disabled>
                   Seleccione una ciudad
                 </option>
-                <option value="bogota">Bogotá</option>
-                <option value="medellin">Medellín</option>
-                <option value="cali">Cali</option>
-                <option value="barranquilla">Barranquilla</option>
-                <option value="cartagena">Cartagena</option>
-                <option value="bucaramanga">Bucaramanga</option>
-                <option value="pereira">Pereira</option>
-                <option value="manizales">Manizales</option>
-                <option value="otra">Otra</option>
+                <option value="Pando">Bogotá</option>
+                <option value="Beni">Medellín</option>
+                <option value="La paz">Cali</option>
+                <option value="Santa Cruz">Barranquilla</option>
+                <option value="Chuquisaca">Cartagena</option>
+                <option value="Tarija">Bucaramanga</option>
+                <option value="Cochabamba">Pereira</option>
+                <option value="Oruro">Manizales</option>
+                <option value="Potosi">Otra</option>
               </select>
             </div>
 
