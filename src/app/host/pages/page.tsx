@@ -35,13 +35,46 @@ interface Car {
   price: number;
   status: string;
   image: string;
+  vin: string;
+  plate: string;
 }
 
 const mockCars: Car[] = [
-  { id: 1, brand: "Toyota", model: "Supra", year: 2023, price: 150, status: "Disponible", image: "/cars/supra.png" },
-  { id: 2, brand: "Mazda", model: "CX-5", year: 2024, price: 80, status: "Rentado", image: "/cars/mazda.png" },
-  { id: 3, brand: "Mercedes-Benz", model: "Clase C", year: 2024, price: 120, status: "Disponible", image: "/cars/mercedez.png" },
+  {
+    id: 1,
+    brand: "Toyota",
+    model: "Supra",
+    year: 2023,
+    price: 150,
+    status: "Disponible",
+    image: "/cars/supra.png",
+    vin: "JH4KA8260MC000001",
+    plate: "1234-ABC"
+  },
+  {
+    id: 2,
+    brand: "Mazda",
+    model: "CX-5",
+    year: 2024,
+    price: 80,
+    status: "Rentado",
+    image: "/cars/mazda.png",
+    vin: "JM3KFBDM0M0100002",
+    plate: "5678-XYZ"
+  },
+  {
+    id: 3,
+    brand: "Mercedes-Benz",
+    model: "Clase C",
+    year: 2024,
+    price: 120,
+    status: "Disponible",
+    image: "/cars/mercedez.png",
+    vin: "WDDWF4JB1KR000003",
+    plate: "9101-MNO"
+  }
 ];
+
 
 export default function ViewCarsPage() {
   const [cars, setCars] = useState<Car[]>(mockCars.slice(0, 2));
@@ -115,44 +148,49 @@ export default function ViewCarsPage() {
               </CardHeader>
 
               <CardContent className="md:w-2/3 p-4 space-y-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-lg font-semibold">{car.brand} {car.model}</h3>
-                    <p className="text-sm text-muted-foreground">Año: {car.year}</p>
+              <div className="flex justify-between items-start">
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-lg font-semibold">{car.brand} {car.model}</h3>
+                  <div className="text-sm text-muted-foreground flex flex-col gap-1">
+                    <p>Año: {car.year}</p>
+                    <p className="break-all">VIN: {car.vin}</p>
+                    <p>Placa: {car.plate}</p>
                   </div>
-                  <Badge variant={car.status === "Disponible" ? "default" : "destructive"}>
-                    {car.status}
-                  </Badge>
                 </div>
-                <p className="text-lg font-semibold">${car.price}/día</p>
+
+                <Badge variant={car.status === "Disponible" ? "default" : "destructive"}>
+                  {car.status}
+                </Badge>
+              </div>
+
+                <p className="text-lg font-semibold">BS {car.price}/día</p>
 
                 <div className="flex flex-col gap-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-full">
-                      Editar
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-full">
-                    <DropdownMenuItem onClick={() => router.push(`/host/home/editar/direccion/${car.id}`)}>
-                      Dirección
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push(`/host/home/editar/datos-principales/${car.id}`)}>
-                      Datos principales
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push(`/host/home/editar/caracteristicas/${car.id}`)}>
-                      Características del coche
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push(`/host/home/editar/adicionales/${car.id}`)}>
-                      Características adicionales
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push(`/host/home/editar/imagenes/${car.id}`)}>
-                      Imágenes del coche
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="w-full">
+                        Editar
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-full">
+                      <DropdownMenuItem onClick={() => router.push(`/host/home/editar/direccion/${car.id}`)}>
+                        Dirección
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push(`/host/home/editar/datos-principales/${car.id}`)}>
+                        Datos principales
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push(`/host/home/editar/caracteristicas/${car.id}`)}>
+                        Características del coche
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push(`/host/home/editar/adicionales/${car.id}`)}>
+                        Características adicionales
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push(`/host/home/editar/imagenes/${car.id}`)}>
+                        Imágenes del coche
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
 
-                  
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="destructive" className="w-full gap-2">
@@ -176,6 +214,7 @@ export default function ViewCarsPage() {
                   </AlertDialog>
                 </div>
               </CardContent>
+
             </Card>
           ))}
         </InfiniteScroll>
