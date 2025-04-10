@@ -21,9 +21,7 @@ const years = [
     },
 ];
 
-const marcs = [
-    { label: "MAZDA", value: "MAZDA" },
-];
+
 
 const models = [
     { label: "CX-5", value: "CX-5" },
@@ -36,7 +34,7 @@ const SprinterosPage: React.FC = () => {
                 <h2 style={{ fontSize: '40px', marginBottom: '20px', fontFamily: 'Inter, sans-serif' }}>Datos principales</h2>                
 
                 <label style={{fontFamily: 'Inter, sans-serif'}}>Numero de Vim</label>
-                <input type="text" placeholder="Insertar Numero Vim" style={{ border:'2px solid #000000',borderRadius: '8px',  width: '100%', padding: '8px', marginBottom: '10px' }} />
+                <input type="text" placeholder="Introducir Numero Vim"  style={{ border:'2px solid #000000',borderRadius: '8px',  width: '100%', padding: '8px', marginBottom: '10px' }} />
 
                 
 
@@ -48,23 +46,15 @@ const SprinterosPage: React.FC = () => {
                 </select>
 
                 <label style={{fontFamily: 'Inter, sans-serif'}}>Marca</label>
-                <select style={{ border:'2px solid #000000',borderRadius: '8px ',width: '100%', padding: '8px', marginBottom: '10px' }}>
-                    {marcs.map((mar) => (
-                        <option key={mar.value} value={mar.value}>{mar.label}</option>
-                    ))}
-                </select>
+                <input type="text" placeholder="Introducir marca" style={{ border:'2px solid #000000',borderRadius: '8px',  width: '100%', padding: '8px', marginBottom: '10px' }} />
 
                 <label style={{fontFamily: 'Inter, sans-serif'}}>Modelo</label>
-                <select style={{ border:'2px solid #000000',borderRadius: '8px', width: '100%', padding: '8px', marginBottom: '10px' }}>
-                    {models.map((model) => (
-                        <option key={model.value} value={model.value}>{model.label}</option>
-                    ))}
-                </select>
+                <input type="text" placeholder="Introducir modelo" style={{ border:'2px solid #000000',borderRadius: '8px',  width: '100%', padding: '8px', marginBottom: '10px' }} />
 
                 
 
                 <label style={{fontFamily: 'Inter, sans-serif'}}>Placa</label>
-                <input type="text" placeholder="SDADASD" style={{border:'2px solid #000000',borderRadius: '8px', width: '100%', padding: '8px', marginBottom: '20px' }} />
+                <input type="text" placeholder="Introducir placa" style={{border:'2px solid #000000',borderRadius: '8px', width: '100%', padding: '8px', marginBottom: '20px' }} />
 
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Button variant="outline">CANCELAR</Button>
