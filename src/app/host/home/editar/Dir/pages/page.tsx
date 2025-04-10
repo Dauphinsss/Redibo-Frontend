@@ -1,76 +1,170 @@
-import React from 'react';
+"use client";
+
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+} from "@/components/ui/select";
+
 import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandItem,
-    CommandList,
-} from "@/components/ui/command";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
-const countries = [
-    { label: "Bolivia", value: "Bolivia" },
-];
+export default function AddDireccion() {
+  const router = useRouter();
 
-const departments = [
-    { label: "Cochabamba", value: "Cochabamba" },
-];
+  return (
+    <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
+      {/* Botón Volver */}
 
-const provinces = [
-    { label: "Chapare", value: "Chapare" },
-];
 
-const SprinterosPage: React.FC = () => {
-    return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f5f5f5' }}>
-            <div style={{ textAlign: 'left', padding: '20px', borderRadius: '8px' }}>
-                <h2 style={{ fontSize: '40px', marginBottom: '10px', fontFamily:'Inter,sans-serif' }}>Dirección</h2>
-                <h3 style={{ fontSize: '33px', color: 'black', marginBottom: '20px',fontFamily:'Inter,sans-serif' }}>Ingrese una ubicación específica</h3>
+      {/* Título */}
+      <div className="w-full max-w-5xl flex justify-start">
+        <h1 className="text-4xl font-bold my-5 pl-7">Dirección</h1>
+      </div>
 
-                <label style={{fontFamily: 'Inter, sans-serif'}}>País</label>
-                <select style={{ width: '100%', padding: '8px', marginBottom: '10px',border:'2px solid #000000',borderRadius: '8px' }}>
-                    {countries.map((country) => (
-                        <option key={country.value} value={country.value}>{country.label}</option>
-                    ))}
-                </select>
+      <span className="text-lg font-medium pl-9">Ingrese una ubicación específica</span>
 
-                <label style={{fontFamily: 'Inter, sans-serif'}}>Departamento</label>
-                <select style={{ width: '100%', padding: '8px', marginBottom: '10px',border:'2px solid #000000',borderRadius: '8px'  }}>
-                    {departments.map((department) => (
-                        <option key={department.value} value={department.value}>{department.label}</option>
-                    ))}
-                </select>
+      {/* Campo: País */}
+      <div className="w-full max-w-5xl flex flex-col mt-4 pl-13">
+        <label className="text-lg font-semibold mb-1">País</label>
+        <Select>
+          <SelectTrigger className="w-[600px] mt-2">
+            <SelectValue placeholder="Seleccione un país (Bolivia)" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Paises</SelectLabel>
+              <SelectItem value="Brasil">Brasil</SelectItem>
+              <SelectItem value="Peru">Perú</SelectItem>
+              <SelectItem value="Argentina">Argentina</SelectItem>
+              <SelectItem value="Colombia">Colombia</SelectItem>
+              <SelectItem value="Chile">Chile</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
 
-                <label style={{fontFamily: 'Inter, sans-serif'}}>Provincia</label>
-                <select style={{ width: '100%', padding: '8px', marginBottom: '10px',border:'2px solid #000000',borderRadius: '8px' }}>
-                    {provinces.map((province) => (
-                        <option key={province.value} value={province.value}>{province.label}</option>
-                    ))}
-                </select>
+      {/* Campo: Departamento */}
+      <div className="w-full max-w-5xl flex flex-col mt-4 pl-13">
+        <label className="text-lg font-semibold mb-1">Departamento</label>
+        <Select>
+          <SelectTrigger className="w-[600px] mt-2">
+            <SelectValue placeholder="Seleccione un departamento (Cochabamba)" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Departamentos</SelectLabel>
+              <SelectItem value="Pando">Pando</SelectItem>
+              <SelectItem value="Beni">Beni</SelectItem>
+              <SelectItem value="Oruro">Oruro</SelectItem>
+              <SelectItem value="Potosi">Potosí</SelectItem>
+              <SelectItem value="Tarija">Tarija</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
 
-                <label style={{fontFamily: 'Inter, sans-serif'}}>Dirección de la calle</label>
-                <input type="text" placeholder="ZONA AROCAGUA, KM4" style={{ width: '100%', padding: '8px', marginBottom: '10px', border:'2px solid #000000',borderRadius: '8px'}} />
+      {/* Campo: Provincia */}
+      <div className="w-full max-w-5xl flex flex-col mt-4 pl-13">
+        <label className="text-lg font-semibold mb-1">Provincia</label>
+        <Select>
+          <SelectTrigger className="w-[600px] mt-2">
+            <SelectValue placeholder="Seleccione una provincia (Cercado)" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Provincias</SelectLabel>
+              <SelectItem value="Quillacollo">Quillacollo</SelectItem>
+              <SelectItem value="Chapare">Chapare</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
 
-                <label>N° Casa</label>
-                <input type="text" placeholder="504" style={{ width: '100%', padding: '8px', marginBottom: '20px',border:'2px solid #000000',borderRadius: '8px' }} />
+      {/* Campo: Dirección de la calle */}
+      <div className="w-full max-w-5xl flex flex-col mt-6 pl-13">
+        <label className="text-lg font-semibold mb-1">Dirección de la calle</label>
+        <Input
+          type="text"
+          placeholder="Ej. Av. América entre Ayacucho y Bolívar"
+          className="w-[600px] mt-2"
+        />
+      </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Button variant="outline">CANCELAR</Button>
-                    <Button variant="outline">FINALIZA EDICIÓN Y GUARDAR</Button>
-                </div>
-            </div>
+      {/* Campo: N° Casa */}
+      <div className="w-full max-w-5xl flex flex-col mt-6 pl-13">
+        <label className="text-lg font-semibold mb-1">N° Casa</label>
+        <Input
+          type="text"
+          placeholder="Ingrese el número de casa"
+          className="w-[600px] mt-2"
+        />
+      </div>
+
+      {/* Sección de Botones con AlertDialog para Cancelar */}
+      <AlertDialog>
+        <div className="w-full max-w-5xl flex justify-between items-center mt-10 px-10">
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="secondary"
+            className="w-[160px] h-12 text-lg font-semibold transition-all duration-200 hover:bg-gray-100 hover:brightness-90"
+          >
+            CANCELAR
+          </Button>
+        </AlertDialogTrigger>
+
+
+        <Button
+  variant="default"
+  className="h-12 text-lg font-semibold text-white px-6"
+  onClick={() => router.push("/host/home/add/datosprincipales")}
+>
+  FINALIZAR EDICIÓN Y GUARDAR
+</Button>
         </div>
-    );
-};
-
-export default SprinterosPage;
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              ¿Está seguro que desea salir del proceso de añadir un carro?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Toda la información no guardada se perderá si abandona esta sección.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => router.push("/host/pages")}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              Confirmar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
 
 
 
