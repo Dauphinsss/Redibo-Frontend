@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -8,141 +7,142 @@ const trans = [{ label: "MECÁNICA", value: "MECÁNICA" }];
 const drs = [{ label: "5", value: "5" }];
 
 const items = [
-{
+  {
     id: "gasoline",
     label: "Gasolina",
-},
-{
+  },
+  {
     id: "gvn",
     label: "GVN",
-},
-{
+  },
+  {
     id: "electric",
     label: "Eléctrico",
-},
-{
+  },
+  {
     id: "diesel",
     label: "Diesel",
-},
+  },
 ] as const;
 
 const SprinterosPage: React.FC = () => {
-return (
+  return (
     <div
-    style={{
+      style={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
         backgroundColor: "#f5f5f5",
         overflow: "hidden", // Evita el scroll
-    }}
+      }}
     >
-    <div
+      <div
         style={{
-        textAlign: "left",
-        padding: "20px",
-        borderRadius: "8px",
+          textAlign: "left",
+          padding: "20px",
+          borderRadius: "8px",
         }}
-    >
+      >
         <h2
-        style={{
+          style={{
             fontSize: "40px",
             marginBottom: "20px",
             fontFamily: "Inter, sans-serif",
-        }}
+          }}
         >
-        Características del coche
+          Características del coche
         </h2>
 
         <label style={{ fontFamily: "Inter, sans-serif" }}>
-        Tipo de combustible
+          Tipo de combustible
         </label>
         <div style={{ marginBottom: "10px" }}>
-        {items.map((item, index) => (
+          {items.map((item, index) => (
             <div key={item.id} style={{ marginBottom: "5px" }}>
-            <Checkbox id={item.id} />
-            <label
+              <Checkbox id={item.id} />
+              <label
                 htmlFor={item.id}
                 style={{
-                marginLeft: "8px",
-                fontFamily: "Inter, sans-serif",
+                  marginLeft: "8px",
+                  fontFamily: "Inter, sans-serif",
                 }}
-            >
-            {item.label}
-            </label>
+              >
+                {item.label}
+              </label>
             </div>
-        ))}
+          ))}
         </div>
 
         <label style={{ fontFamily: "Inter, sans-serif" }}>Asientos</label>
         <select
-        style={{
+          style={{
             border: "2px solid #000000",
             borderRadius: "8px",
             width: "100%",
             padding: "8px",
             marginBottom: "10px",
-        }}
+          }}
         >
-        {seats.map((seat) => (
+          {seats.map((seat) => (
             <option key={seat.value} value={seat.value}>
-            {seat.label}
+              {seat.label}
             </option>
-        ))}
+          ))}
         </select>
 
         <label style={{ fontFamily: "Inter, sans-serif" }}>Puertas</label>
         <select
-        style={{
+          style={{
             border: "2px solid #000000",
             borderRadius: "8px",
             width: "100%",
             padding: "8px",
             marginBottom: "10px",
-        }}
+          }}
         >
-        {drs.map((dr) => (
+          {drs.map((dr) => (
             <option key={dr.value} value={dr.value}>
-            {dr.label}
+              {dr.label}
             </option>
-        ))}
+          ))}
         </select>
 
         <label style={{ fontFamily: "Inter, sans-serif" }}>Transmisión</label>
         <select
-        style={{
+          style={{
             border: "2px solid #000000",
             borderRadius: "8px",
             width: "100%",
             padding: "8px",
             marginBottom: "10px",
-        }}
+          }}
         >
-        {trans.map((tran) => (
+          {trans.map((tran) => (
             <option key={tran.value} value={tran.value}>
-            {tran.label}
+              {tran.label}
             </option>
-        ))}
+          ))}
         </select>
 
         <label style={{ fontFamily: "Inter, sans-serif" }}>Seguro</label>
         <div style={{ marginBottom: "20px" }}>
-        <Checkbox id="soat" />
-        <label
+          <Checkbox id="soat" />
+          <label
             htmlFor="soat"
             style={{ marginLeft: "8px", fontFamily: "Inter, sans-serif" }}
-        >
+          >
             SOAT
-        </label>
+          </label>
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <Button variant="outline">CANCELAR</Button>
-        <Button variant="outline">FINALIZA EDICIÓN Y GUARDAR</Button>
+          <Button variant="outline">CANCELAR</Button>
+          <Button variant="outline">FINALIZA EDICIÓN Y GUARDAR</Button>
         </div>
+      </div>
     </div>
-    </div>
-);
+  );
 };
 
+export default SprinterosPage;
