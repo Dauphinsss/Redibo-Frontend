@@ -1,8 +1,7 @@
 "use client";
 
 import type React from "react";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,16 +38,39 @@ export default function TermsForm() {
   const [birthdate, setBirthdate] = useState("");
   const [gender, setGender] = useState("");
   const [city, setCity] = useState("");
+  const [isFormDirty, setIsFormDirty] = useState(false);
+
+  // Manejar la advertencia al intentar salir
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isFormDirty) {
+        const message = "¿Estás seguro que deseas salir? Los cambios no guardados se perderán.";
+        e.preventDefault();
+        e.returnValue = message;
+        return message;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isFormDirty]);
+
+  // Función para marcar el formulario como modificado
+  const handleFormChange = () => {
+    if (!isFormDirty) {
+      setIsFormDirty(true);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validar que las contraseñas coincidan
     if (password !== confirmPassword) {
       setPasswordError(true);
-      toast.error(
-        "Las contraseñas no coinciden. Por favor, inténtelo de nuevo."
-      );
+      toast.error("Las contraseñas no coinciden. Por favor, inténtelo de nuevo.");
       return;
     }
 
@@ -62,9 +84,8 @@ export default function TermsForm() {
       return;
     }
 
-    // Aquí iría la lógica para enviar el formulario
     toast.success(`Gracias por registrarse como ${userType}.`);
-
+    
     // Resetear el formulario
     setName("");
     setEmail("");
@@ -73,15 +94,14 @@ export default function TermsForm() {
     setAcceptTerms(false);
     setPasswordError(false);
     setUserType(null);
+    setIsFormDirty(false);
   };
 
-  // Validar contraseñas al escribir
-  const handleConfirmPasswordChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setConfirmPassword(value);
     setPasswordError(password !== value && value !== "");
+    handleFormChange();
   };
 
   const getUserTypeTitle = () => {
@@ -110,7 +130,6 @@ export default function TermsForm() {
     }
   };
 
-  // Renderizar la selección de tipo de usuario
   if (!userType) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -180,7 +199,6 @@ export default function TermsForm() {
     );
   }
 
-  // Renderizar el formulario de registro
   return (
     <div className="flex items-center justify-center min-h-screen p-8">
       <Card className="w-full max-w-md">
@@ -196,8 +214,10 @@ export default function TermsForm() {
                 id="name"
                 placeholder="Ingrese su nombre"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
-               
+                onChange={(e) => {
+                  setName(e.target.value);
+                  handleFormChange();
+                }}
               />
             </div>
 
@@ -208,8 +228,10 @@ export default function TermsForm() {
                 type="email"
                 placeholder="correo@ejemplo.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  handleFormChange();
+                }}
               />
             </div>
 
@@ -219,8 +241,10 @@ export default function TermsForm() {
                 id="birthdate"
                 type="date"
                 value={birthdate}
-                onChange={(e) => setBirthdate(e.target.value)}
-                
+                onChange={(e) => {
+                  setBirthdate(e.target.value);
+                  handleFormChange();
+                }}
               />
             </div>
 
@@ -230,7 +254,10 @@ export default function TermsForm() {
                 id="gender"
                 className="flex space-x-4"
                 value={gender}
-                onValueChange={setGender}
+                onValueChange={(value) => {
+                  setGender(value);
+                  handleFormChange();
+                }}
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="masculino" id="masculino" />
@@ -253,8 +280,10 @@ export default function TermsForm() {
                 id="city"
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
                 value={city}
-                onChange={(e) => setCity(e.target.value)}
-                
+                onChange={(e) => {
+                  setCity(e.target.value);
+                  handleFormChange();
+                }}
               >
                 <option value="" disabled>
                   Seleccione una ciudad
@@ -283,8 +312,8 @@ export default function TermsForm() {
                   if (confirmPassword) {
                     setPasswordError(e.target.value !== confirmPassword);
                   }
+                  handleFormChange();
                 }}
-                
               />
             </div>
 
@@ -297,7 +326,6 @@ export default function TermsForm() {
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
                 className={passwordError ? "border-red-500" : ""}
-                
               />
               {passwordError && (
                 <p className="text-sm text-red-500">
@@ -316,22 +344,22 @@ export default function TermsForm() {
                       className="min-h-[150px] resize-none"
                       readOnly
                       value="1. ACEPTACIÓN DE TÉRMINOS
-  Al acceder y utilizar este servicio, usted acepta estar sujeto a estos términos y condiciones.
+Al acceder y utilizar este servicio, usted acepta estar sujeto a estos términos y condiciones.
 
-  2. USO DEL SERVICIO
-  Usted se compromete a utilizar el servicio de manera responsable y de acuerdo con todas las leyes aplicables.
+2. USO DEL SERVICIO
+Usted se compromete a utilizar el servicio de manera responsable y de acuerdo con todas las leyes aplicables.
 
-  3. PRIVACIDAD
-  Recopilamos y procesamos su información personal de acuerdo con nuestra política de privacidad.
+3. PRIVACIDAD
+Recopilamos y procesamos su información personal de acuerdo con nuestra política de privacidad.
 
-  4. PROPIEDAD INTELECTUAL
-  Todo el contenido proporcionado a través del servicio está protegido por derechos de autor y otras leyes de propiedad intelectual.
+4. PROPIEDAD INTELECTUAL
+Todo el contenido proporcionado a través del servicio está protegido por derechos de autor y otras leyes de propiedad intelectual.
 
-  5. LIMITACIÓN DE RESPONSABILIDAD
-  No seremos responsables por daños indirectos, incidentales o consecuentes que surjan del uso del servicio.
+5. LIMITACIÓN DE RESPONSABILIDAD
+No seremos responsables por daños indirectos, incidentales o consecuentes que surjan del uso del servicio.
 
-  6. MODIFICACIONES
-  Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor inmediatamente después de su publicación."
+6. MODIFICACIONES
+Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor inmediatamente después de su publicación."
                     />
                   </AccordionContent>
                 </AccordionItem>
@@ -342,9 +370,10 @@ export default function TermsForm() {
               <Checkbox
                 id="terms"
                 checked={acceptTerms}
-                onCheckedChange={(checked) =>
-                  setAcceptTerms(checked as boolean)
-                }
+                onCheckedChange={(checked) => {
+                  setAcceptTerms(checked as boolean);
+                  handleFormChange();
+                }}
               />
               <Label htmlFor="terms" className="text-sm">
                 He leído y acepto los términos y condiciones
@@ -356,7 +385,27 @@ export default function TermsForm() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setUserType(null)}
+              onClick={() => {
+                if (isFormDirty) {
+                  const confirmed = window.confirm("¿Está seguro que desea cancelar el registro?");
+                  if (confirmed) {
+                    setUserType(null);
+                    setIsFormDirty(false);
+                    // Reset all form fields
+                    setName("");
+                    setEmail("");
+                    setPassword("");
+                    setConfirmPassword("");
+                    setAcceptTerms(false);
+                    setPasswordError(false);
+                    setBirthdate("");
+                    setGender("");
+                    setCity("");
+                  }
+                } else {
+                  setUserType(null);
+                }
+              }}
             >
               Volver
             </Button>
