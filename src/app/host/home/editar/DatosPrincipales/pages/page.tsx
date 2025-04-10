@@ -1,68 +1,145 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+Select,
+SelectTrigger,
+SelectValue,
+SelectContent,
+SelectGroup,
+SelectItem,
+} from "@/components/ui/select";
+import {
+Popover,
+PopoverContent,
+PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandItem,
-    CommandList,
+Command,
+CommandEmpty,
+CommandGroup,
+CommandItem,
+CommandList,
 } from "@/components/ui/command";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const years = [
-    { label: "2025", value: "2025" ,
-    
-    },
+{ label: "2025", value: "2025" },
 ];
-
-
+const cars = [
+    { label: "Susuki", value: "Susuki" },
+    ];
 
 const models = [
-    { label: "CX-5", value: "CX-5" },
+{ label: "CX-5", value: "CX-5" },
 ];
 
 const SprinterosPage: React.FC = () => {
-    return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f5f5f5' }}>
-            <div style={{ textAlign: 'left', padding: '20px', borderRadius: '8px' }}>
-                <h2 style={{ fontSize: '40px', marginBottom: '20px', fontFamily: 'Inter, sans-serif' }}>Datos principales</h2>                
-
-                <label style={{fontFamily: 'Inter, sans-serif'}}>Numero de Vim</label>
-                <input type="text" placeholder="Introducir Numero Vim"  style={{ border:'2px solid #000000',borderRadius: '8px',  width: '100%', padding: '8px', marginBottom: '10px' }} />
-
-                
-
-                <label style={{fontFamily: 'Inter, sans-serif'}}>Año del coche</label>
-                <select style={{ border:'2px solid #000000',borderRadius: '8px',width: '100%', padding: '8px', marginBottom: '10px' }}>
-                    {years.map((year) => (
-                        <option key={year.value} value={year.value}>{year.label}</option>
-                    ))}
-                </select>
-
-                <label style={{fontFamily: 'Inter, sans-serif'}}>Marca</label>
-                <input type="text" placeholder="Introducir marca" style={{ border:'2px solid #000000',borderRadius: '8px',  width: '100%', padding: '8px', marginBottom: '10px' }} />
-
-                <label style={{fontFamily: 'Inter, sans-serif'}}>Modelo</label>
-                <input type="text" placeholder="Introducir modelo" style={{ border:'2px solid #000000',borderRadius: '8px',  width: '100%', padding: '8px', marginBottom: '10px' }} />
-
-                
-
-                <label style={{fontFamily: 'Inter, sans-serif'}}>Placa</label>
-                <input type="text" placeholder="Introducir placa" style={{border:'2px solid #000000',borderRadius: '8px', width: '100%', padding: '8px', marginBottom: '20px' }} />
-
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Button variant="outline">CANCELAR</Button>
-                    <Button variant="outline">FINALIZA EDICIÓN Y GUARDAR</Button>
-                </div>
-            </div>
+return (
+    <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
+      {/* Título */}
+    <div className="w-full max-w-5xl flex justify-start">
+        <h1 className="text-4xl font-bold my-5 pl-7">Datos principales</h1>
+    </div>
+      {/* Formulario */}
+    <div className="w-full max-w-5xl pl-13">
+        {/* Número de VIM */}
+        <div className="w-full flex flex-col mt-4">
+        <label className="text-lg font-semibold mb-1">Número de VIM</label>
+        <Input
+            type="text"
+            placeholder="Introducir Número VIM"
+            className="w-[600px] mt-2 border-2 rounded-md"
+        />
         </div>
-    );
+
+        {/* Año del coche */}
+        <div className="w-full flex flex-col mt-6">
+        <label className="text-lg font-semibold mb-1">Año del coche</label>
+        <Select>
+            <SelectTrigger className="w-[600px] mt-2 border-2 rounded-md">
+            <SelectValue placeholder="Seleccione el año" />
+            </SelectTrigger>
+            <SelectContent>
+            <SelectGroup>
+                {years.map((year) => (
+                <SelectItem key={year.value} value={year.value}>
+                    {year.label}
+                </SelectItem>
+                ))}
+            </SelectGroup>
+            </SelectContent>
+        </Select>
+        </div>
+
+        {/* Marca */}
+        <div className="w-full flex flex-col mt-6">
+        <label className="text-lg font-semibold mb-1">Marca</label>
+        <Select>
+            <SelectTrigger className="w-[600px] mt-2 border-2 rounded-md">
+            <SelectValue placeholder="Seleccione la marca" />
+            </SelectTrigger>
+            <SelectContent>
+            <SelectGroup>
+                {cars.map((cars) => (
+                <SelectItem key={cars.value} value={cars.value}>
+                    {cars.label}
+                </SelectItem>
+                ))}
+            </SelectGroup>
+            </SelectContent>
+        </Select>
+        </div>
+
+        {/* Modelo */}
+        <div className="w-full flex flex-col mt-6">
+        <label className="text-lg font-semibold mb-1">Modelo</label>
+        <Select>
+            <SelectTrigger className="w-[600px] mt-2 border-2 rounded-md">
+            <SelectValue placeholder="Seleccione el modelo" />
+            </SelectTrigger>
+            <SelectContent>
+            <SelectGroup>
+                {models.map((models) => (
+                <SelectItem key={models.value} value={models.value}>
+                    {models.label}
+                </SelectItem>
+                ))}
+            </SelectGroup>
+            </SelectContent>
+        </Select>
+        </div>
+
+        {/* Placa */}
+        <div className="w-full flex flex-col mt-6">
+        <label className="text-lg font-semibold mb-1">Placa</label>
+        <Input
+            type="text"
+            placeholder="Introducir placa"
+            className="w-[600px] mt-2 border-2 rounded-md"
+        />
+        </div>
+    </div>
+
+      {/* Sección de Botones */}
+    <div className="w-full max-w-5xl flex justify-between items-center mt-10 px-10">
+        <Button 
+        variant="secondary"
+        className="w-[160px] h-12 text-lg font-semibold transition-all duration-200 hover:bg-gray-100 hover:brightness-90"
+        >
+        CANCELAR
+        </Button>
+        
+        <Button 
+        variant="default"
+        className="h-12 text-lg font-semibold text-white px-6"
+        >
+        FINALIZAR EDICIÓN Y GUARDAR
+        </Button>
+    </div>
+    </div>
+);
 };
 
 export default SprinterosPage;

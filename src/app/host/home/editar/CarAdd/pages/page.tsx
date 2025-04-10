@@ -21,19 +21,12 @@ const items = [
 
 const CheckboxList: React.FC = () => {
 return (
-    <div
-    style={{
-        display: "grid",
-        gridTemplateColumns: "5fr 5fr",
-        gap: "10px",
-        marginBottom: "20px",
-    }}
-    >
+    <div className="grid grid-cols-2 gap-4 mb-6 w-full max-w-5xl mx-auto">
     {items.map((item) => (
-        <div key={item.id} style={{ display: "flex", alignItems: "center" }}>
+        <div key={item.id} className="flex items-center">
         <Checkbox id={item.id} />
-        <label htmlFor={item.id} style={{ marginLeft: "8px" }}>
-        {item.label}
+        <label htmlFor={item.id} className="ml-2 text-base">
+            {item.label}
         </label>
         </div>
     ))}
@@ -43,32 +36,32 @@ return (
 
 const SprinterosPage: React.FC = () => {
 return (
-    <div
-    style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        backgroundColor: "#f5f5f5",
-    }}
-    >
-    <div style={{ textAlign: "left", padding: "20px", borderRadius: "8px" }}>
-        <h2
-        style={{
-            fontSize: "40px",
-            marginBottom: "20px",
-            fontFamily: "Inter, sans-serif",
-        }}
-        >
-        Características Adicionales
-        </h2>
+    <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
+      {/* Título */}
+    <div className="w-full max-w-5xl flex justify-start">
+        <h1 className="text-4xl font-bold my-5 pl-7">Características Adicionales</h1>
+    </div>
 
+      {/* Lista de Checkbox - Centrada */}
+    <div className="w-full h-120 flex items-center justify-center">
         <CheckboxList />
+    </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <Button variant="outline">CANCELAR</Button>
-        <Button variant="outline">FINALIZA EDICIÓN Y GUARDAR</Button>
-        </div>
+      {/* Sección de Botones */}
+    <div className="w-full max-w-5xl flex justify-between items-center mt-10 px-10">
+        <Button 
+        variant="secondary"
+        className="w-[160px] h-12 text-lg font-semibold transition-all duration-200 hover:bg-gray-100 hover:brightness-90"
+        >
+        CANCELAR
+        </Button>
+        
+        <Button 
+        variant="default"
+        className="h-12 text-lg font-semibold text-white px-6"
+        >
+        FINALIZAR EDICIÓN Y GUARDAR
+        </Button>
     </div>
     </div>
 );

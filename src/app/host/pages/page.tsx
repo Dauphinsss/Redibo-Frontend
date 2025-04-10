@@ -99,7 +99,7 @@ export default function ViewCarsPage() {
   const router = useRouter();
   return (
     <div className="p-6 flex flex-col items-center min-h-screen bg-gray-100">
-           <header className="border-b w-full">
+          <header className="border-b w-full">
             <div className="flex h-12 items-center justify-between pl-2 md:pl-2 mt-[-10px]">
               <div className="font-bold text-xl mt-[-20px]">
                 <Link href="/">REDIBO</Link>
@@ -173,16 +173,16 @@ export default function ViewCarsPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-full">
-                      <DropdownMenuItem onClick={() => router.push(`/host/home/editar/direccion/${car.id}`)}>
+                      <DropdownMenuItem onClick={() => router.push(`/host/home/editar/Dir/pages`)}>
                         Dirección
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => router.push(`/host/home/editar/datos-principales/${car.id}`)}>
+                      <DropdownMenuItem onClick={() => router.push(`host/home/editar/DatosPrincipales/pages`)}>
                         Datos principales
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => router.push(`/host/home/editar/caracteristicas/${car.id}`)}>
+                      <DropdownMenuItem onClick={() => router.push(`/host/home/editar/Caraccocheedit/pages`)}>
                         Características del coche
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => router.push(`/host/home/editar/adicionales/${car.id}`)}>
+                      <DropdownMenuItem onClick={() => router.push(`/host/home/editar/CarAdd/pages`)}>
                         Características adicionales
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => router.push(`/host/home/editar/imagenes/${car.id}`)}>
