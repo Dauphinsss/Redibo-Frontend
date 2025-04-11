@@ -1,13 +1,7 @@
 "use client"
-import React, { useEffect } from 'react'
+import React, { useEffect} from 'react'
 import Autoplay from "embla-carousel-autoplay"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselNext,
-  CarouselPrevious,
-  type CarouselApi
-} from "@/components/ui/carousel"
+import {Carousel,CarouselContent,CarouselNext,CarouselPrevious,type CarouselApi} from "@/components/ui/carousel"
 import CarsCarouselItem from "@/components/custom/CarsCarouselItem"
 
 function CarsCarousel() {
@@ -15,22 +9,8 @@ function CarsCarousel() {
   const [current, setCurrent] = React.useState(0)
   const [count, setCount] = React.useState(0)
   const plugin = React.useRef(
-    Autoplay({ delay: 1900, stopOnInteraction: false, stopOnMouseEnter: true })
+    Autoplay({ delay: 2500, stopOnInteraction: true, stopOnMouseEnter: true })
   )
-
-  /*
-  useEffect(() => {
-    fetch('http://localhost:4000/api/cars')
-      .then((response) => console.log(response.json()))
-      .then((data) => {
-        console.log('coches:', console.log(data))
-      })
-      .catch((error) => {
-        console.error('error al encontrar los coches:', error)
-      })
-  }, [])
-  */
-
   useEffect(() => {
     if (!api) return
     setCount(api.scrollSnapList().length)
@@ -39,7 +19,6 @@ function CarsCarousel() {
       setCurrent(api.selectedScrollSnap() + 1)
     })
   }, [api])
-
   return (
     <div className="flex flex-col items-center justify-center from-muted/40">
       <div className="w-[100%] max-w-sm md:w-70%] md:max-w-3xl">
