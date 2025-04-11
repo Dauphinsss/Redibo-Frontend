@@ -1,19 +1,10 @@
 import React, { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { CarouselItem } from '@/components/ui/carousel'
-import { Button } from "@/components/ui/button"
-import { Loader2 } from "lucide-react"
-import { ChevronRight } from "lucide-react"
+import ReservationConfirmedMessage from './ReservationConfirmation/ReservationConfirmedMessage'
 
 function CarsCarouselItem({ car }: { car: { name: string; image: string; rented: number; price: number} }) {
-  const [loading, setLoading] = useState(false)
 
-  const handleClick = () => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 3000)
-  }
   return (
     <CarouselItem className="pl-5 md:basis-1/3 basis-full">
       <Card className="relative rounded-3x shadow-xl overflow-hidden transition-shadow duration-300 hover:shadow-2xl p-0 gap-0">
@@ -36,19 +27,8 @@ function CarsCarouselItem({ car }: { car: { name: string; image: string; rented:
               {car.rented} veces
             </span>
           </div>
-          <Button
-              variant="outline"
-              size="sm"
-              onClick={handleClick}
-              disabled={loading}
-              className="flex justify-end"
-            >
-              {loading ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                "Reservar"
-              )}
-          </Button>
+          
+          <ReservationConfirmedMessage />
         </CardContent>
       </Card>
     </CarouselItem>
