@@ -28,19 +28,23 @@ import { UserIcon, HomeIcon, CarIcon } from "lucide-react";
 type UserType = "propietario" | "arrendatario" | "conductor" | null;
 
 export default function TermsForm() {
+  const [phone, setPhone] = useState("");
   const [userType, setUserType] = useState<UserType>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [birthdate, setBirthdate] = useState("");
+  const [gender, setGender] = useState("");
+  const [city, setCity] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const [birthdate, setBirthdate] = useState("");
-  const [gender, setGender] = useState("");
-  const [city, setCity] = useState("");
   const [isFormDirty, setIsFormDirty] = useState(false);
 
-  // Manejar la advertencia al intentar salir
+  // Evitar la selección de fechas futuras
+  const today = new Date().toISOString().split('T')[0];
+
+  // Manejar el botón de retroceso del navegador
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isFormDirty) {
@@ -51,14 +55,28 @@ export default function TermsForm() {
       }
     };
 
+    const handlePopState = () => {
+      if (isFormDirty) {
+        if (window.confirm("¿Estás seguro que deseas salir? Los cambios no guardados se perderán.")) {
+          window.history.back();
+        } else {
+          window.history.pushState(null, '', window.location.href);
+        }
+      }
+    };
+
     window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('popstate', handlePopState);
+    
+    // Add state to browser history when component mounts
+    window.history.pushState(null, '', window.location.href);
 
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
     };
   }, [isFormDirty]);
 
-  // Función para marcar el formulario como modificado
   const handleFormChange = () => {
     if (!isFormDirty) {
       setIsFormDirty(true);
@@ -79,16 +97,20 @@ export default function TermsForm() {
       return;
     }
 
-    if (!birthdate || !gender || !city) {
+    if (!birthdate || !gender || !city || !phone) {
       toast.error("Por favor, complete todos los campos requeridos.");
       return;
     }
 
     toast.success(`Gracias por registrarse como ${userType}.`);
     
-    // Resetear el formulario
+    // Restablecer formulario
     setName("");
     setEmail("");
+    setBirthdate("");
+    setGender("");
+    setPhone("");
+    setCity("");
     setPassword("");
     setConfirmPassword("");
     setAcceptTerms(false);
@@ -132,8 +154,8 @@ export default function TermsForm() {
 
   if (!userType) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="w-full max-w-md">
+      <div className="flex items-center justify-center p-8">
+        <Card className="w-full max-w-md mx-auto">
           <CardHeader>
             <CardTitle className="text-xl">¿Cómo te quieres registrar?</CardTitle>
             <CardDescription>
@@ -142,7 +164,7 @@ export default function TermsForm() {
           </CardHeader>
           <CardContent>
             <RadioGroup
-              className="space-y-4"
+              className="space-y-2.5"
               onValueChange={(value) => setUserType(value as UserType)}
             >
               <div className="flex items-center space-x-2 rounded-md border p-4 cursor-pointer hover:bg-muted">
@@ -200,10 +222,10 @@ export default function TermsForm() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-8">
+    <div className="flex items-center justify-center p-8">
       <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl">{getUserTypeTitle()}</CardTitle>
+        <CardHeader className="text-xl">
+          <CardTitle>{getUserTypeTitle()}</CardTitle>
           <CardDescription>{getUserTypeDescription()}</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -218,6 +240,7 @@ export default function TermsForm() {
                   setName(e.target.value);
                   handleFormChange();
                 }}
+                required
               />
             </div>
 
@@ -232,6 +255,22 @@ export default function TermsForm() {
                   setEmail(e.target.value);
                   handleFormChange();
                 }}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone">Teléfono</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="Ingrese su número de teléfono"
+                value={phone}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  handleFormChange();
+                }}
+                required
               />
             </div>
 
@@ -241,10 +280,12 @@ export default function TermsForm() {
                 id="birthdate"
                 type="date"
                 value={birthdate}
+                max={today}
                 onChange={(e) => {
                   setBirthdate(e.target.value);
                   handleFormChange();
                 }}
+                required
               />
             </div>
 
@@ -284,19 +325,20 @@ export default function TermsForm() {
                   setCity(e.target.value);
                   handleFormChange();
                 }}
+                required
               >
                 <option value="" disabled>
                   Seleccione una ciudad
                 </option>
                 <option value="Beni">Beni</option>
                 <option value="Pando">Pando</option>
-                <option value="Santa Cruz">Santa Cruz</option>
-                <option value="Cochabamba">Cochabamba</option>
-                <option value="oruro">Oruro</option>
                 <option value="La paz">La paz</option>
-                <option value="Potosi">Potosi</option>
-                <option value="Tarija">Tarija</option>
+                <option value="Santa Cruz">Santa Cruz</option>
                 <option value="Chuquisaca">Chuquisaca</option>
+                <option value="Tarija">Tarija</option>
+                <option value="Cochabamba">Cochabamba</option>
+                <option value="Oruro">Oruro</option>
+                <option value="Potosi">Potosi</option>
               </select>
             </div>
 
@@ -314,6 +356,7 @@ export default function TermsForm() {
                   }
                   handleFormChange();
                 }}
+                required
               />
             </div>
 
@@ -326,6 +369,7 @@ export default function TermsForm() {
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
                 className={passwordError ? "border-red-500" : ""}
+                required
               />
               {passwordError && (
                 <p className="text-sm text-red-500">
@@ -333,17 +377,17 @@ export default function TermsForm() {
                 </p>
               )}
             </div>
-            <div className="-mb-4">
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="terms">
-                  <AccordionTrigger className="text-base">
-                    Términos y Condiciones
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <Textarea
-                      className="min-h-[150px] resize-none"
-                      readOnly
-                      value="1. ACEPTACIÓN DE TÉRMINOS
+
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="terms">
+                <AccordionTrigger className="text-base">
+                  Términos y Condiciones
+                </AccordionTrigger>
+                <AccordionContent>
+                  <Textarea
+                    className="min-h-[150px] resize-none"
+                    readOnly
+                    value="1. ACEPTACIÓN DE TÉRMINOS
 Al acceder y utilizar este servicio, usted acepta estar sujeto a estos términos y condiciones.
 
 2. USO DEL SERVICIO
@@ -360,13 +404,12 @@ No seremos responsables por daños indirectos, incidentales o consecuentes que s
 
 6. MODIFICACIONES
 Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor inmediatamente después de su publicación."
-                    />
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
-            <hr className="my-4 border-gray-300" />
-            <div className="flex items-center space-x-2">
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
+            <div className="flex items-center space-x-2 pb-6">
               <Checkbox
                 id="terms"
                 checked={acceptTerms}
@@ -381,37 +424,28 @@ Nos reservamos el derecho de modificar estos términos en cualquier momento. Las
             </div>
           </CardContent>
 
-          <CardFooter className="flex justify-between pt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                if (isFormDirty) {
-                  const confirmed = window.confirm("¿Está seguro que desea cancelar el registro?");
-                  if (confirmed) {
+          <CardFooter className="flex flex-col gap-4">
+            <div className="flex w-full justify-between">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  if (isFormDirty) {
+                    if (window.confirm("¿Estás seguro que deseas cancelar el registro? Los cambios no guardados se perderán.")) {
+                      setUserType(null);
+                      setIsFormDirty(false);
+                    }
+                  } else {
                     setUserType(null);
-                    setIsFormDirty(false);
-                    // Reset all form fields
-                    setName("");
-                    setEmail("");
-                    setPassword("");
-                    setConfirmPassword("");
-                    setAcceptTerms(false);
-                    setPasswordError(false);
-                    setBirthdate("");
-                    setGender("");
-                    setCity("");
                   }
-                } else {
-                  setUserType(null);
-                }
-              }}
-            >
-              Volver
-            </Button>
-            <Button type="submit" disabled={!acceptTerms || passwordError}>
-              Crear cuenta
-            </Button>
+                }}
+              >
+                Volver
+              </Button>
+              <Button type="submit" disabled={!acceptTerms || passwordError}>
+                Crear cuenta
+              </Button>
+            </div>
           </CardFooter>
         </form>
       </Card>
