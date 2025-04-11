@@ -42,7 +42,7 @@ interface Car {
 const mockCars: Car[] = [
   {
     id: 1,
-    brand: "Toyota",
+    brand: "Toyotooo",
     model: "Supra",
     year: 2023,
     price: 150,
@@ -176,7 +176,7 @@ export default function ViewCarsPage() {
                       <DropdownMenuItem onClick={() => router.push(`/host/home/editar/Dir/pages`)}>
                         Dirección
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => router.push(`host/home/editar/DatosPrincipales/pages`)}>
+                      <DropdownMenuItem onClick={() => router.push(`home/editar/DatosPrincipales/pages`)}>
                         Datos principales
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => router.push(`/host/home/editar/Caraccocheedit/pages`)}>

@@ -76,39 +76,21 @@ return (
         {/* Marca */}
         <div className="w-full flex flex-col mt-6">
         <label className="text-lg font-semibold mb-1">Marca</label>
-        <Select>
-            <SelectTrigger className="w-[600px] mt-2 border-2 rounded-md">
-            <SelectValue placeholder="Seleccione la marca" />
-            </SelectTrigger>
-            <SelectContent>
-            <SelectGroup>
-                {cars.map((cars) => (
-                <SelectItem key={cars.value} value={cars.value}>
-                    {cars.label}
-                </SelectItem>
-                ))}
-            </SelectGroup>
-            </SelectContent>
-        </Select>
+        <Input
+            type="text"
+            placeholder="Ingrese la marca"
+            className="w-[600px] mt-2 border-2 rounded-md"
+        />
         </div>
 
         {/* Modelo */}
         <div className="w-full flex flex-col mt-6">
         <label className="text-lg font-semibold mb-1">Modelo</label>
-        <Select>
-            <SelectTrigger className="w-[600px] mt-2 border-2 rounded-md">
-            <SelectValue placeholder="Seleccione el modelo" />
-            </SelectTrigger>
-            <SelectContent>
-            <SelectGroup>
-                {models.map((models) => (
-                <SelectItem key={models.value} value={models.value}>
-                    {models.label}
-                </SelectItem>
-                ))}
-            </SelectGroup>
-            </SelectContent>
-        </Select>
+        <Input
+            type="text"
+            placeholder="Ingrese la marca"
+            className="w-[600px] mt-2 border-2 rounded-md"
+        />
         </div>
 
         {/* Placa */}
