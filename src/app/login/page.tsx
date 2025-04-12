@@ -5,5 +5,4 @@ return (
     </div>
 );
 };
-
 export default WelcomeComponent;
