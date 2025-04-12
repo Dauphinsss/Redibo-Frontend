@@ -1,5 +1,4 @@
 import Header from "@/components/ui/Header";
-import CarCard from "@/components/uiHome/CarCard";
 
 export default function Home() {
   return (
@@ -10,7 +9,6 @@ export default function Home() {
           <p className="mt-4 text-lg">
             Tu tienda en línea para rentar autos.
           </p>
-          <CarCard name="hola" price="99.9$" rating={9.9}/>
         </main>
     </div>
   );

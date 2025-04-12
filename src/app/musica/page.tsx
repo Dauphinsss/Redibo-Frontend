@@ -7,7 +7,22 @@ export default function Home() {
       <Header />  
         <main className="flex min-h-screen flex-col items-center justify-center gap-10 p-8 md:p-24">
           <h1 className="text-4xl font-bold text-center mb-6">Bienvenido a REDIBO</h1>
-          <CarCard name="hola" price="99.9$" rating={9.9}/>
+          <CarCard
+            nombre="Toyota Corolla"
+            marca="Toyota"
+            asientos={5}
+            puertas={4}
+            transmision="Automática"
+            combustible="Gasolina"
+            estado="Disponible"
+            nombreHost="Carlos"
+            calificacion={9.8}
+            ubicacion="Cochabamba"
+            precioOficial="99,99$"
+            precioDescuento="99,99$"
+            precioPorDia="100$"
+          />
+
         </main>
     </div>
   );
