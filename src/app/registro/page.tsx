@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,15 +30,60 @@ import { UserIcon, HomeIcon, CarIcon } from "lucide-react";
 type UserType = "propietario" | "arrendatario" | "conductor" | null;
 
 export default function TermsForm() {
+  const [phone, setPhone] = useState("");
   const [userType, setUserType] = useState<UserType>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [acceptTerms, setAcceptTerms] = useState(false);
   const [birthdate, setBirthdate] = useState("");
   const [gender, setGender] = useState("");
   const [city, setCity] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  //const [passwordError, setPasswordError] = useState(false);
+  const [isFormDirty, setIsFormDirty] = useState(false);
+
+  // Evitar la selección de fechas futuras
+  const today = new Date().toISOString().split('T')[0];
+
+  // Manejar el botón de retroceso del navegador
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isFormDirty) {
+        const message = "¿Estás seguro que deseas salir? Los cambios no guardados se perderán.";
+        e.preventDefault();
+        e.returnValue = message;
+        return message;
+      }
+    };
+
+    const handlePopState = () => {
+      if (isFormDirty) {
+        if (window.confirm("¿Estás seguro que deseas salir? Los cambios no guardados se perderán.")) {
+          window.history.back();
+        } else {
+          window.history.pushState(null, '', window.location.href);
+        }
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('popstate', handlePopState);
+    
+    // Add state to browser history when component mounts
+    window.history.pushState(null, '', window.location.href);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [isFormDirty]);
+
+  const handleFormChange = () => {
+    if (!isFormDirty) {
+      setIsFormDirty(true);
+    }
+  };
 
   const [nameTouched, setNameTouched] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
@@ -64,20 +109,26 @@ export default function TermsForm() {
       return;
     }
 
-    if (!birthdate || !gender || !city) {
-      toast.error("Por favor completa todos los campos.");
+    if (!birthdate || !gender || !city || !phone) {
+      toast.error("Por favor, complete todos los campos requeridos.");
       return;
     }
 
-    toast.success(`Gracias por registrarte como ${userType}.`);
-
+    toast.success(`Gracias por registrarse como ${userType}.`);
+    
+    // Restablecer formulario
     setName("");
     setEmail("");
+    setBirthdate("");
+    setGender("");
+    setPhone("");
+    setCity("");
     setPassword("");
     setConfirmPassword("");
     setAcceptTerms(false);
     setPasswordError(false);
     setUserType(null);
+    setIsFormDirty(false);
   };
 
   const handleConfirmPasswordChange = (
@@ -86,6 +137,7 @@ export default function TermsForm() {
     const value = e.target.value;
     setConfirmPassword(value);
     setPasswordError(password !== value && value !== "");
+    handleFormChange();
   };
 
   const getUserTypeTitle = () => {
@@ -105,10 +157,11 @@ export default function TermsForm() {
       default: return "Seleccione el tipo de usuario para continuar con el registro.";
     }
   };
+
   if (!userType) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="w-full max-w-md">
+      <div className="flex items-center justify-center p-8">
+        <Card className="w-full max-w-md mx-auto">
           <CardHeader>
             <CardTitle className="text-xl">¿Cómo te quieres registrar?</CardTitle>
             <CardDescription>
@@ -117,7 +170,7 @@ export default function TermsForm() {
           </CardHeader>
           <CardContent>
             <RadioGroup
-              className="space-y-4"
+              className="space-y-2.5"
               onValueChange={(value) => setUserType(value as UserType)}
             >
               <div className="flex items-center space-x-2 rounded-md border p-4 cursor-pointer hover:bg-muted">
@@ -158,6 +211,15 @@ export default function TermsForm() {
               </div>
             </RadioGroup>
           </CardContent>
+          <CardFooter>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => window.location.href = '/'}
+            >
+              Regresar al inicio
+            </Button>
+          </CardFooter>
         </Card>
       </div>
     );
@@ -240,6 +302,32 @@ export default function TermsForm() {
                   </>
                 )}
               </div>
+              <Input
+                id="email"
+                type="email"
+                placeholder="correo@ejemplo.com"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  handleFormChange();
+                }}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone">Teléfono</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="Ingrese su número de teléfono"
+                value={phone}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  handleFormChange();
+                }}
+                required
+              />
             </div>
 
 
@@ -259,6 +347,18 @@ export default function TermsForm() {
                     <InputErrorIcon message="Debes seleccionar tu fecha de nacimiento." />
                   )}
                 </div>
+              <Label htmlFor="birthdate">Fecha de nacimiento</Label>
+              <Input
+                id="birthdate"
+                type="date"
+                value={birthdate}
+                max={today}
+                onChange={(e) => {
+                  setBirthdate(e.target.value);
+                  handleFormChange();
+                }}
+                required
+              />
             </div>
 
 
@@ -369,42 +469,53 @@ export default function TermsForm() {
                   )}
                 </div>
               </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Contraseña</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Ingrese su contraseña"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (confirmPassword) {
+                    setPasswordError(e.target.value !== confirmPassword);
+                  }
+                  handleFormChange();
+                }}
+                required
+              />
+            </div>
 
-
-
-
-              {/* Confirmar contraseña */}
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password">Repetir contraseña</Label>
-                <div className="relative flex items-center">
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    value={confirmPassword}
-                    maxLength={20}
-                    onChange={handleConfirmPasswordChange}
-                    onBlur={() => setConfirmTouched(true)}
-                    placeholder="Repita su contraseña"
-                    className={passwordError ? "border-red-500 pr-10" : ""}
-                  />
-                  {passwordError && (
-                    <InputErrorIcon message="Las contraseñas no coinciden." />
-                  )}
-                </div>
-              </div>
-
-              {/* Términos */}
-              <Accordion type="single" collapsible className="w-full -mb-4">
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Repetir contraseña</Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                placeholder="Repita su contraseña"
+                value={confirmPassword}
+                onChange={handleConfirmPasswordChange}
+                className={passwordError ? "border-red-500" : ""}
+                
+              />
+              {passwordError && (
+                <p className="text-sm text-red-500">
+                  Las contraseñas no coinciden
+                </p>
+              )}
+            </div>
+            <div className="-mb-4">
+              <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="terms">
                   <AccordionTrigger className="text-base">
                     Términos y Condiciones
                   </AccordionTrigger>
                   <AccordionContent>
-                  <Textarea
-                  className="min-h-[200px] resize-none whitespace-pre-wrap"
-                  readOnly
-                  value={`1. ACEPTACIÓN DE TÉRMINOS
-Al acceder y utilizar este servicio, usted acepta estar sujeto a estos términos y condiciones.
+                    <Textarea
+                      className="min-h-[150px] resize-none"
+                      readOnly
+                      value="1. ACEPTACIÓN DE TÉRMINOS
+  Al acceder y utilizar este servicio, usted acepta estar sujeto a estos términos y condiciones.
 
 2. USO DEL SERVICIO
 Usted se compromete a utilizar el servicio de manera responsable y de acuerdo con todas las leyes aplicables.
@@ -418,28 +529,27 @@ Todo el contenido proporcionado a través del servicio está protegido por derec
 5. LIMITACIÓN DE RESPONSABILIDAD
 No seremos responsables por daños indirectos, incidentales o consecuentes que surjan del uso del servicio.
 
-6. MODIFICACIONES
-Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor inmediatamente después de su publicación.`}
+  6. MODIFICACIONES
+  Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor inmediatamente después de su publicación."
                     />
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
-
-              <hr className="my-4 border-gray-300" />
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="terms"
-                  checked={acceptTerms}
-                  onCheckedChange={(checked) =>
-                    setAcceptTerms(checked as boolean)
-                  }
-                />
-                <Label htmlFor="terms" className="text-sm">
-                  He leído y acepto los términos y condiciones
-                </Label>
-              </div>
-            </CardContent>
+            </div>
+            <hr className="my-4 border-gray-300" />
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="terms"
+                checked={acceptTerms}
+                onCheckedChange={(checked) =>
+                  setAcceptTerms(checked as boolean)
+                }
+              />
+              <Label htmlFor="terms" className="text-sm">
+                He leído y acepto los términos y condiciones
+              </Label>
+            </div>
+          </CardContent>
 
             <CardFooter className="flex justify-between pt-6">
               <Button
