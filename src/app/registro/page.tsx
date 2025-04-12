@@ -40,6 +40,8 @@ export default function TermsForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [phoneTouched, setPhoneTouched] = useState(false);
+
   //const [passwordError, setPasswordError] = useState(false);
   const [isFormDirty, setIsFormDirty] = useState(false);
 
@@ -84,7 +86,7 @@ export default function TermsForm() {
       setIsFormDirty(true);
     }
   };
-
+  
   const [nameTouched, setNameTouched] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
   const [birthdateTouched, setBirthdateTouched] = useState(false);
@@ -103,6 +105,7 @@ export default function TermsForm() {
     setCityTouched(true);
     setPasswordTouched(true);
     setConfirmTouched(true);
+    setPhoneTouched(true)
 
     if (!acceptTerms) {
       toast.error("Debes aceptar los términos y condiciones.");
@@ -302,33 +305,38 @@ export default function TermsForm() {
                   </>
                 )}
               </div>
-              <Input
-                id="email"
-                type="email"
-                placeholder="correo@ejemplo.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  handleFormChange();
-                }}
-                required
-              />
             </div>
 
+            {/* Teléfono */}
             <div className="space-y-2">
               <Label htmlFor="phone">Teléfono</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="Ingrese su número de teléfono"
-                value={phone}
-                onChange={(e) => {
-                  setPhone(e.target.value);
-                  handleFormChange();
-                }}
-                required
-              />
+              <div className="relative flex items-center">
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="Ingrese su número de teléfono"
+                  value={phone}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*$/.test(value)) {
+                      setPhone(value);
+                      handleFormChange();
+                    }
+                  }}
+                  onBlur={() => setPhoneTouched(true)}
+                  maxLength={8}
+                  className={
+                    phoneTouched && phone.length !== 8 
+                      ? "border-red-500 pr-10"
+                      : ""
+                  }
+                />
+                {phoneTouched && phone.length !== 8 &&(
+                  <InputErrorIcon message="El teléfono debe tener exactamente 8 números." />
+                )}
+              </div>
             </div>
+
 
 
             {/* Fecha */}
@@ -339,6 +347,7 @@ export default function TermsForm() {
                     id="birthdate"
                     type="date"
                     value={birthdate}
+                    max={today}
                     onChange={(e) => setBirthdate(e.target.value)}
                     onBlur={() => setBirthdateTouched(true)}
                     className={!birthdate && birthdateTouched ? "border-red-500 pr-10" : ""}
@@ -347,18 +356,6 @@ export default function TermsForm() {
                     <InputErrorIcon message="Debes seleccionar tu fecha de nacimiento." />
                   )}
                 </div>
-              <Label htmlFor="birthdate">Fecha de nacimiento</Label>
-              <Input
-                id="birthdate"
-                type="date"
-                value={birthdate}
-                max={today}
-                onChange={(e) => {
-                  setBirthdate(e.target.value);
-                  handleFormChange();
-                }}
-                required
-              />
             </div>
 
 
@@ -447,6 +444,7 @@ export default function TermsForm() {
                           setPasswordError(newPassword !== confirmPassword);
                         }
                       }
+                      //handleFormChange();
                     }}
                     onBlur={() => setPasswordTouched(true)}
                     placeholder="Ingrese su contraseña"
@@ -469,23 +467,9 @@ export default function TermsForm() {
                   )}
                 </div>
               </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Ingrese su contraseña"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (confirmPassword) {
-                    setPasswordError(e.target.value !== confirmPassword);
-                  }
-                  handleFormChange();
-                }}
-                required
-              />
-            </div>
+            
+
+
 
             <div className="space-y-2">
               <Label htmlFor="confirm-password">Repetir contraseña</Label>
@@ -511,11 +495,11 @@ export default function TermsForm() {
                     Términos y Condiciones
                   </AccordionTrigger>
                   <AccordionContent>
-                    <Textarea
-                      className="min-h-[150px] resize-none"
-                      readOnly
-                      value="1. ACEPTACIÓN DE TÉRMINOS
-  Al acceder y utilizar este servicio, usted acepta estar sujeto a estos términos y condiciones.
+                  <Textarea
+                    className="min-h-[200px] resize-none whitespace-pre-wrap"
+                    readOnly
+                    value={`1. ACEPTACIÓN DE TÉRMINOS
+Al acceder y utilizar este servicio, usted acepta estar sujeto a estos términos y condiciones.
 
 2. USO DEL SERVICIO
 Usted se compromete a utilizar el servicio de manera responsable y de acuerdo con todas las leyes aplicables.
@@ -529,9 +513,10 @@ Todo el contenido proporcionado a través del servicio está protegido por derec
 5. LIMITACIÓN DE RESPONSABILIDAD
 No seremos responsables por daños indirectos, incidentales o consecuentes que surjan del uso del servicio.
 
-  6. MODIFICACIONES
-  Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor inmediatamente después de su publicación."
-                    />
+6. MODIFICACIONES
+Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor inmediatamente después de su publicación.`}
+                  />
+
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
