@@ -1,6 +1,6 @@
 "use client";
 
-import { FaChair, FaDoorOpen, FaCogs, FaGasPump, FaUser, FaStar, FaMapMarkerAlt, FaShareAlt, FaHeart} from "react-icons/fa";
+import { FaChair, FaDoorOpen, FaCogs, FaGasPump, FaUser, FaStar, FaMapMarkerAlt} from "react-icons/fa";
 
 interface CarCardProps {
   nombre: string,
