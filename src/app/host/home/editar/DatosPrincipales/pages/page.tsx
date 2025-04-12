@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +36,7 @@ const models = [
 { label: "CX-5", value: "CX-5" },
 ];
 
-const SprinterosPage: React.FC = () => {
+export default function DatosPrincipales() {
 return (
     <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
       {/* Título */}
@@ -123,5 +124,3 @@ return (
     </div>
 );
 };
-
-export default SprinterosPage;
