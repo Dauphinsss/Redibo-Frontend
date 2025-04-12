@@ -400,10 +400,26 @@ export default function TermsForm() {
                     Términos y Condiciones
                   </AccordionTrigger>
                   <AccordionContent>
-                    <Textarea
-                      className="min-h-[150px] resize-none"
-                      readOnly
-                      value="1. ACEPTACIÓN DE TÉRMINOS..."
+                  <Textarea
+                  className="min-h-[200px] resize-none whitespace-pre-wrap"
+                  readOnly
+                  value={`1. ACEPTACIÓN DE TÉRMINOS
+Al acceder y utilizar este servicio, usted acepta estar sujeto a estos términos y condiciones.
+
+2. USO DEL SERVICIO
+Usted se compromete a utilizar el servicio de manera responsable y de acuerdo con todas las leyes aplicables.
+
+3. PRIVACIDAD
+Recopilamos y procesamos su información personal de acuerdo con nuestra política de privacidad.
+
+4. PROPIEDAD INTELECTUAL
+Todo el contenido proporcionado a través del servicio está protegido por derechos de autor y otras leyes de propiedad intelectual.
+
+5. LIMITACIÓN DE RESPONSABILIDAD
+No seremos responsables por daños indirectos, incidentales o consecuentes que surjan del uso del servicio.
+
+6. MODIFICACIONES
+Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor inmediatamente después de su publicación.`}
                     />
                   </AccordionContent>
                 </AccordionItem>
