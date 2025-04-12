@@ -4,6 +4,9 @@ import type React from "react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { isUnderage } from "../../lib/utils";
+
+
 import {
   Card,
   CardContent,
@@ -341,21 +344,32 @@ export default function TermsForm() {
 
             {/* Fecha */}
             <div className="space-y-2">
-                <Label htmlFor="birthdate">Fecha de nacimiento</Label>
-                <div className="relative flex items-center">
-                  <Input
-                    id="birthdate"
-                    type="date"
-                    value={birthdate}
-                    max={today}
-                    onChange={(e) => setBirthdate(e.target.value)}
-                    onBlur={() => setBirthdateTouched(true)}
-                    className={!birthdate && birthdateTouched ? "border-red-500 pr-10" : ""}
-                  />
-                  {!birthdate && birthdateTouched && (
-                    <InputErrorIcon message="Debes seleccionar tu fecha de nacimiento." />
-                  )}
-                </div>
+              <Label htmlFor="birthdate">Fecha de nacimiento</Label>
+              <div className="relative flex items-center">
+                <Input
+                  id="birthdate"
+                  type="date"
+                  value={birthdate}
+                  max={today} // sigue respetando el máximo como hoy
+                  onChange={(e) => setBirthdate(e.target.value)}
+                  onBlur={() => setBirthdateTouched(true)}
+                  className={
+                    !birthdate && birthdateTouched
+                      ? "border-red-500 pr-10"
+                      : isUnderage(birthdate)
+                      ? "border-red-500 pr-10"
+                      : ""
+                  }
+                />
+                {/* Si no hay fecha */}
+                {!birthdate && birthdateTouched && (
+                  <InputErrorIcon message="Debes seleccionar tu fecha de nacimiento." />
+                )}
+                {/* Si hay fecha y es menor de edad */}
+                {birthdate && isUnderage(birthdate) && (
+                  <InputErrorIcon message="Debes tener al menos 18 años para continuar." />
+                )}
+              </div>
             </div>
 
 
