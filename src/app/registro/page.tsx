@@ -47,6 +47,7 @@ export default function TermsForm() {
 
   //const [passwordError, setPasswordError] = useState(false);
   const [isFormDirty, setIsFormDirty] = useState(false);
+  const [showExitWarning, setShowExitWarning] = useState(false);
 
   // Evitar la selección de fechas futuras
   const today = new Date().toISOString().split('T')[0];
@@ -96,7 +97,6 @@ export default function TermsForm() {
   const [genderTouched, setGenderTouched] = useState(false);
   const [cityTouched, setCityTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
-  const [confirmTouched, setConfirmTouched] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,7 +107,6 @@ export default function TermsForm() {
     setGenderTouched(true);
     setCityTouched(true);
     setPasswordTouched(true);
-    setConfirmTouched(true);
     setPhoneTouched(true)
 
     if (!acceptTerms) {
@@ -248,7 +247,35 @@ export default function TermsForm() {
           </CardHeader>
 
           <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 relative">
+              {/* Warning Dialog */}
+              {showExitWarning && (
+                <div className="fixed inset-0 flex items-center justify-center z-[9999]">
+                  <div className="absolute inset-0 bg-black/50" />
+                  <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full mx-4 relative z-50">
+                    <h3 className="text-lg font-semibold mb-4">¿Estás seguro que deseas salir?</h3>
+                    <p className="text-gray-600 mb-6">Los cambios no guardados se perderán.</p>
+                    <div className="flex justify-end space-x-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowExitWarning(false)}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          setShowExitWarning(false);
+                          setUserType(null);
+                        }}
+                      >
+                        Salir
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
             {/* Nombre */}
             <div className="space-y-2">
               <Label htmlFor="name">Nombre completo</Label>
@@ -554,7 +581,7 @@ Nos reservamos el derecho de modificar estos términos en cualquier momento. Las
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setUserType(null)}
+                onClick={() => setShowExitWarning(true)}
               >
                 Volver
               </Button>
