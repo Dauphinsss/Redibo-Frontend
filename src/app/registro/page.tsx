@@ -216,6 +216,15 @@ export default function TermsForm() {
               </div>
             </RadioGroup>
           </CardContent>
+          <CardFooter>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => window.location.href = '/'}
+            >
+              Regresar al inicio
+            </Button>
+          </CardFooter>
         </Card>
       </div>
     );
