@@ -7,7 +7,6 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { isUnderage } from "../../lib/utils";
 
-
 import {
   Card,
   CardContent,
@@ -54,13 +53,14 @@ export default function Form() {
   const [showExitWarning, setShowExitWarning] = useState(false);
 
   // Evitar la selección de fechas futuras
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
 
   // Manejar el botón de retroceso del navegador
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isFormDirty) {
-        const message = "¿Estás seguro que deseas salir? Los cambios no guardados se perderán.";
+        const message =
+          "¿Estás seguro que deseas salir? Los cambios no guardados se perderán.";
         e.preventDefault();
         e.returnValue = message;
         return message;
@@ -69,35 +69,38 @@ export default function Form() {
 
     const fechData = async () => {
       try {
-        const {data} = await axios.get<Ciudad[]>(`${API_URL}/api/ciudades`);
-        setCiudades(data)
+        const { data } = await axios.get<Ciudad[]>(`${API_URL}/api/ciudades`);
+        setCiudades(data);
         console.log(data);
-        
       } catch (error) {
         console.error("Error fetching cities:", error);
       }
-    }
+    };
     fechData();
 
     const handlePopState = () => {
       if (isFormDirty) {
-        if (window.confirm("¿Estás seguro que deseas salir? Los cambios no guardados se perderán.")) {
+        if (
+          window.confirm(
+            "¿Estás seguro que deseas salir? Los cambios no guardados se perderán."
+          )
+        ) {
           window.history.back();
         } else {
-          window.history.pushState(null, '', window.location.href);
+          window.history.pushState(null, "", window.location.href);
         }
       }
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    window.addEventListener('popstate', handlePopState);
-    
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("popstate", handlePopState);
+
     // Add state to browser history when component mounts
-    window.history.pushState(null, '', window.location.href);
+    window.history.pushState(null, "", window.location.href);
 
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("popstate", handlePopState);
     };
   }, [isFormDirty]);
 
@@ -106,7 +109,7 @@ export default function Form() {
       setIsFormDirty(true);
     }
   };
-  
+
   const [nameTouched, setNameTouched] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
   const [birthdateTouched, setBirthdateTouched] = useState(false);
@@ -114,7 +117,7 @@ export default function Form() {
   const [cityTouched, setCityTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setNameTouched(true);
@@ -123,7 +126,7 @@ export default function Form() {
     setGenderTouched(true);
     setCityTouched(true);
     setPasswordTouched(true);
-    setPhoneTouched(true)
+    setPhoneTouched(true);
 
     if (!acceptTerms) {
       toast.error("Debes aceptar los términos y condiciones.");
@@ -135,33 +138,41 @@ export default function Form() {
       return;
     }
 
-    toast.success(`Gracias por registrarse como ${userType}.`);
-    
     const usuario = {
       nombre: name,
       correo: email,
-      fecha_nacimiento: birthdate,
+      fechaNacimiento: birthdate,
       genero: gender,
       ciudad: city,
       contraseña: password,
       telefono: phone,
       rol: userType,
-    }
-    
+    };
+
     console.log(usuario);
 
-    setName("");
-    setEmail("");
-    setBirthdate("");
-    setGender("");
-    setPhone("");
-    setCity(0);
-    setPassword("");
-    setConfirmPassword("");
-    setAcceptTerms(false);
-    setPasswordError(false);
-    setUserType(null);
-    setIsFormDirty(false);
+    try {
+      const response = await axios.post(`${API_URL}/api/registro`, usuario);
+      console.log(response.data);
+      toast.success(`Gracias por registrarse como ${userType}.`);
+      setName("");
+      setEmail("");
+      setBirthdate("");
+      setGender("");
+      setPhone("");
+      setCity(0);
+      setPassword("");
+      setConfirmPassword("");
+      setAcceptTerms(false);
+      setPasswordError(false);
+      setUserType(null);
+      setIsFormDirty(false);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(` ${error.response?.data.error}`);
+      }
+      console.error("Error al registrar el usuario:", error);
+    }
   };
 
   const handleConfirmPasswordChange = (
@@ -175,19 +186,27 @@ export default function Form() {
 
   const getUserTypeTitle = () => {
     switch (userType) {
-      case "HOST": return "Registrar Propietario";
-      case "RENTER": return "Registrar Arrendatario";
-      case "DRIVER": return "Registrar Conductor";
-      default: return "Registro";
+      case "HOST":
+        return "Registrar Propietario";
+      case "RENTER":
+        return "Registrar Arrendatario";
+      case "DRIVER":
+        return "Registrar Conductor";
+      default:
+        return "Registro";
     }
   };
 
   const getUserTypeDescription = () => {
     switch (userType) {
-      case "HOST": return "Complete sus datos como propietario de vehículos para renta y acepte nuestros términos y condiciones.";
-      case "RENTER": return "Complete sus datos como persona que se renta vehículos y acepte nuestros términos y condiciones.";
-      case "DRIVER": return "Complete sus datos como conductor y acepte nuestros términos y condiciones.";
-      default: return "Seleccione el tipo de usuario para continuar con el registro.";
+      case "HOST":
+        return "Complete sus datos como propietario de vehículos para renta y acepte nuestros términos y condiciones.";
+      case "RENTER":
+        return "Complete sus datos como persona que se renta vehículos y acepte nuestros términos y condiciones.";
+      case "DRIVER":
+        return "Complete sus datos como conductor y acepte nuestros términos y condiciones.";
+      default:
+        return "Seleccione el tipo de usuario para continuar con el registro.";
     }
   };
 
@@ -196,7 +215,9 @@ export default function Form() {
       <div className="flex items-center justify-center p-8 mt-auto">
         <Card className="w-full max-w-md mx-auto">
           <CardHeader>
-            <CardTitle className="text-xl">¿Cómo te quieres registrar?</CardTitle>
+            <CardTitle className="text-xl">
+              ¿Cómo te quieres registrar?
+            </CardTitle>
             <CardDescription>
               Selecciona el tipo de usuario que deseas registrar
             </CardDescription>
@@ -248,7 +269,7 @@ export default function Form() {
             <Button
               variant="outline"
               className="w-full"
-              onClick={() => window.location.href = '/'}
+              onClick={() => (window.location.href = "/")}
             >
               Regresar al inicio
             </Button>
@@ -264,7 +285,7 @@ export default function Form() {
     const hasSpecial = /[^A-Za-z0-9]/.test(pw);
     return pw.length >= 8 && hasUpperCase && hasNumber && hasSpecial;
   }
-  
+
   return (
     <TooltipProvider>
       <div className="flex items-center justify-center min-h-screen p-8">
