@@ -10,7 +10,7 @@ interface Props {
     onLoadMore: () => void
 }
 
-export default function RecodeCarList({ carCards, total, visibles, lote, onLoadMore }: Props) {
+export default function RecodeCarList({ carCards, total, lote, onLoadMore }: Props) {
     return (
         <div className="flex flex-col gap-6">
         {carCards.map((car, index) => (
