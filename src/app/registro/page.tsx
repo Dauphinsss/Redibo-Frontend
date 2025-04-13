@@ -8,6 +8,7 @@ const RegistroPage: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
+      <h2 className="text-2xl font-bold text-center mt-5">Registro</h2>
       <Form />
       <Footer />
       <Toaster />
