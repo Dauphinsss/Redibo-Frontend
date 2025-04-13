@@ -18,7 +18,7 @@ export interface RecodeCarCardProps {
   asientos: number
   puertas: number
   transmision: string
-  combustibles: string[] // ← array dinámico
+  combustibles: string[]
   estado: string
   nombreHost: string
   calificacion: number
@@ -47,24 +47,17 @@ export default function RecodeCarCard({
 
   return (
     <div className="w-full max-w-[750px] md:h-[320px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-4 mx-auto">
-      
-      {/* 1. COLUMNA IZQUIERDA */}
-      <div className="w-full md:w-[250px] flex flex-col justify-between gap-4">
-        <div className="flex justify-between">{/* Botones opcionales */}</div>
 
-        {/* Imagen */}
+      {/* Colum IZQ: Imagen */}
+      <div className="w-full md:w-[250px] flex flex-col justify-between gap-4">
         <div className="flex-1 flex items-center justify-center">
           <div className="w-[230px] h-[150px] bg-gray-200 rounded-[10px] flex items-center justify-center text-5xl hover:text-6xl transition">
             🚗
           </div>
         </div>
-
-        <div className="text-sm text-gray-700 text-center">
-          {/* Aquí podés agregar texto adicional si querés */}
-        </div>
       </div>
 
-      {/* 2. COLUMNA CENTRAL */}
+      {/* Colum CENTRAL: Información */}
       <div className="flex-1 flex flex-col justify-between">
         <div>
           <h2 className="text-xl font-bold">{nombre}</h2>
@@ -76,7 +69,7 @@ export default function RecodeCarCard({
             <span className="flex items-center gap-1"><FaCogs /> {transmision}</span>
           </div>
 
-          {/* 🔽 Combustible dinámico con hover */}
+          {/* Combustible con dropdown dinamico */}
           <div className="flex items-center gap-2 mt-2 text-sm">
             <FaGasPump />
             <span className="font-semibold">Tipos de combustibles:</span>
@@ -111,7 +104,7 @@ export default function RecodeCarCard({
         </div>
       </div>
 
-      {/* 3. COLUMNA DERECHA */}
+      {/* Colum DER: Precio + boton */}
       <div className="w-full md:w-[130px] flex flex-col justify-between items-end">
         <div className="text-right w-full md:w-auto">
           <p className="text-2xl font-bold">{precioOficial}</p>
