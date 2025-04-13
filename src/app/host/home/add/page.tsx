@@ -141,16 +141,13 @@ export default function AddDireccion() {
           </Button>
         </AlertDialogTrigger>
 
-        <Link href="/host/home/editar/DatosPrincipales/pages"> 
           <Button
             variant="default"
             className="w-[180px] h-12 text-lg font-semibold text-white cursor-pointer "
-            // onClick={() => router.push("/host/home/add/datosprincipales")}
-            
+            onClick={() => router.push("/host/home/add/datosprincipales")}
           >
            SIGUIENTE
           </Button>
-          </Link>
         </div>
         <AlertDialogContent>
           <AlertDialogHeader>

@@ -45,7 +45,7 @@ export default function DatosPrincipales() {
       <div className="w-full max-w-5xl pl-9 space-y-6">
         {/* Numero de VIM */}
         <div className="flex flex-col">
-          <label className="text-base font-medium mb-1">Numero de VIM:</label>
+          <label className="text-base font-medium mb-1">Numero de VIN:</label>
           <Input
             type="text"
             placeholder="17 Caracteres"
@@ -92,13 +92,13 @@ export default function DatosPrincipales() {
       </div>
 
       {/* Botones de Cancelar y Siguiente */}
-      <div className="w-full max-w-5xl flex justify-between items-center mt-10 px-10">
+      <div className="w-full max-w-5xl flex justify-between mt-10 px-10">
         {/* Botón Cancelar */}
         <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>
           <AlertDialogTrigger asChild>
             <Button
               variant="secondary"
-              className="w-[160px] h-12 text-lg font-semibold transition-all duration-200 hover:bg-gray-100 hover:brightness-90"
+              className="w-[160px] h-12 text-lg font-semibold"
             >
               CANCELAR
             </Button>

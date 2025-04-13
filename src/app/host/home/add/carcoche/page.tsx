@@ -90,7 +90,7 @@ export default function CaracteristicasCoche() {
           <label className="text-base font-medium mb-1">Puertas</label>
           <Select>
             <SelectTrigger className="w-full max-w-md">
-              <SelectValue placeholder="CombiDus" />
+              <SelectValue placeholder="Seleccione" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="2">2</SelectItem>
@@ -105,7 +105,7 @@ export default function CaracteristicasCoche() {
           <label className="text-base font-medium mb-1">Transmisión</label>
           <Select>
             <SelectTrigger className="w-full max-w-md">
-              <SelectValue placeholder="CombiDus" />
+              <SelectValue placeholder="Seleccione" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="manual">Manual</SelectItem>
@@ -126,13 +126,13 @@ export default function CaracteristicasCoche() {
       </div>
 
       {/* Botones de Cancelar y Siguiente */}
-      <div className="w-full max-w-5xl flex justify-between items-center mt-10 px-10">
+      <div className="w-full max-w-5xl flex justify-between mt-10 px-10">
         {/* Botón Cancelar */}
         <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>
           <AlertDialogTrigger asChild>
             <Button
               variant="secondary"
-              className="w-[160px] h-12 text-lg font-semibold transition-all duration-200 hover:bg-gray-100 hover:brightness-90"
+              className="w-[160px] h-12 text-lg font-semibold"
             >
               CANCELAR
             </Button>
