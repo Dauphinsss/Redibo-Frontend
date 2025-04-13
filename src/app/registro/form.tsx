@@ -28,9 +28,10 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import InputErrorIcon from "@/components/ui/inputErrorIcon";
-import { UserIcon, HomeIcon, CarIcon } from "lucide-react";
+import { UserIcon, HomeIcon, CarIcon, ArrowRight } from "lucide-react";
 import { API_URL } from "@/utils/bakend";
 import { Ciudad } from "@/utils/types";
+import Link from "next/link";
 
 type UserType = "HOST" | "RENTER" | "DRIVER" | null;
 
@@ -334,7 +335,7 @@ export default function Form() {
               )}
               {/* Nombre */}
               <div className="space-y-2">
-                <Label htmlFor="name">Nombre completo</Label>
+                <Label htmlFor="name">Nombre completo *</Label>
                 <div className="relative flex items-center">
                   <Input
                     id="name"
@@ -367,7 +368,7 @@ export default function Form() {
 
               {/* Correo electrónico */}
               <div className="space-y-2">
-                <Label htmlFor="email">Correo electrónico</Label>
+                <Label htmlFor="email">Correo electrónico *</Label>
                 <div className="relative flex items-center">
                   <Input
                     id="email"
@@ -401,7 +402,7 @@ export default function Form() {
 
               {/* Teléfono */}
               <div className="space-y-2">
-                <Label htmlFor="phone">Teléfono</Label>
+                <Label htmlFor="phone">Teléfono *</Label>
                 <div className="relative flex items-center">
                   <Input
                     id="phone"
@@ -431,7 +432,7 @@ export default function Form() {
 
               {/* Fecha */}
               <div className="space-y-2">
-                <Label htmlFor="birthdate">Fecha de nacimiento</Label>
+                <Label htmlFor="birthdate">Fecha de nacimiento *</Label>
                 <div className="relative flex items-center">
                   <Input
                     id="birthdate"
@@ -461,7 +462,7 @@ export default function Form() {
 
               {/* Género */}
               <div className="space-y-2">
-                <Label htmlFor="gender">Género</Label>
+                <Label htmlFor="gender">Género *</Label>
                 <div className="relative w-full h-10">
                   <div
                     className={`w-full h-full flex items-center rounded-md px-3 ${
@@ -501,7 +502,7 @@ export default function Form() {
 
               {/* Ciudad */}
               <div className="space-y-2">
-                <Label htmlFor="city">Ciudad</Label>
+                <Label htmlFor="city">Ciudad *</Label>
                 <div className="relative flex items-center">
                   <select
                     id="city"
@@ -512,7 +513,7 @@ export default function Form() {
                       cityTouched && !city ? "border-red-500 pr-10" : ""
                     }`}
                   >
-                    <option value="" disabled>
+                    <option value={0} disabled>
                       Seleccione una ciudad
                     </option>
                     {ciudades.map((ciudad) => (
@@ -529,7 +530,7 @@ export default function Form() {
 
               {/* Contraseña */}
               <div className="space-y-2">
-                <Label htmlFor="password">Contraseña</Label>
+                <Label htmlFor="password">Contraseña *</Label>
                 <div className="relative flex items-center">
                   <Input
                     id="password"
@@ -569,7 +570,7 @@ export default function Form() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirm-password">Repetir contraseña</Label>
+                <Label htmlFor="confirm-password">Repetir contraseña *</Label>
                 <Input
                   id="confirm-password"
                   type="password"
@@ -584,39 +585,14 @@ export default function Form() {
                   </p>
                 )}
               </div>
-              <div className="-mb-4">
-                <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="terms">
-                    <AccordionTrigger className="text-base">
-                      Términos y Condiciones
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <Textarea
-                        className="min-h-[200px] resize-none whitespace-pre-wrap"
-                        readOnly
-                        value={`1. ACEPTACIÓN DE TÉRMINOS
-Al acceder y utilizar este servicio, usted acepta estar sujeto a estos términos y condiciones.
-
-2. USO DEL SERVICIO
-Usted se compromete a utilizar el servicio de manera responsable y de acuerdo con todas las leyes aplicables.
-
-3. PRIVACIDAD
-Recopilamos y procesamos su información personal de acuerdo con nuestra política de privacidad.
-
-4. PROPIEDAD INTELECTUAL
-Todo el contenido proporcionado a través del servicio está protegido por derechos de autor y otras leyes de propiedad intelectual.
-
-5. LIMITACIÓN DE RESPONSABILIDAD
-No seremos responsables por daños indirectos, incidentales o consecuentes que surjan del uso del servicio.
-
-6. MODIFICACIONES
-Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor inmediatamente después de su publicación.`}
-                      />
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+              <div>
+               <Link href="/terminos-y-condiciones" >
+                  <Button variant="link" className="font-normal -ml-2" >
+                    Leer términos y condiciones <ArrowRight />
+                  </Button>
+              </Link>
               </div>
-              <hr className="my-4 border-gray-300" />
+              
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="terms"
