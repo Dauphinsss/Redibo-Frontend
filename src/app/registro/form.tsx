@@ -3,6 +3,7 @@
 import type React from "react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { isUnderage } from "../../lib/utils";
 
@@ -29,8 +30,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import InputErrorIcon from "@/components/ui/inputErrorIcon";
 import { UserIcon, HomeIcon, CarIcon } from "lucide-react";
+import { API_URL } from "@/utils/bakend";
+import { Ciudad } from "@/utils/types";
 
-type UserType = "propietario" | "arrendatario" | "conductor" | null;
+type UserType = "HOST" | "RENTER" | "DRIVER" | null;
 
 export default function Form() {
   const [phone, setPhone] = useState("");
@@ -39,11 +42,12 @@ export default function Form() {
   const [email, setEmail] = useState("");
   const [birthdate, setBirthdate] = useState("");
   const [gender, setGender] = useState("");
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState<number>(0);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [phoneTouched, setPhoneTouched] = useState(false);
+  const [ciudades, setCiudades] = useState<Ciudad[]>([]);
 
   //const [passwordError, setPasswordError] = useState(false);
   const [isFormDirty, setIsFormDirty] = useState(false);
@@ -62,6 +66,18 @@ export default function Form() {
         return message;
       }
     };
+
+    const fechData = async () => {
+      try {
+        const {data} = await axios.get<Ciudad[]>(`${API_URL}/api/ciudades`);
+        setCiudades(data)
+        console.log(data);
+        
+      } catch (error) {
+        console.error("Error fetching cities:", error);
+      }
+    }
+    fechData();
 
     const handlePopState = () => {
       if (isFormDirty) {
@@ -121,13 +137,25 @@ export default function Form() {
 
     toast.success(`Gracias por registrarse como ${userType}.`);
     
-    // Restablecer formulario
+    const usuario = {
+      nombre: name,
+      correo: email,
+      fecha_nacimiento: birthdate,
+      genero: gender,
+      ciudad: city,
+      contraseña: password,
+      telefono: phone,
+      rol: userType,
+    }
+    
+    console.log(usuario);
+
     setName("");
     setEmail("");
     setBirthdate("");
     setGender("");
     setPhone("");
-    setCity("");
+    setCity(0);
     setPassword("");
     setConfirmPassword("");
     setAcceptTerms(false);
@@ -147,18 +175,18 @@ export default function Form() {
 
   const getUserTypeTitle = () => {
     switch (userType) {
-      case "propietario": return "Registrar Propietario";
-      case "arrendatario": return "Registrar Arrendatario";
-      case "conductor": return "Registrar Conductor";
+      case "HOST": return "Registrar Propietario";
+      case "RENTER": return "Registrar Arrendatario";
+      case "DRIVER": return "Registrar Conductor";
       default: return "Registro";
     }
   };
 
   const getUserTypeDescription = () => {
     switch (userType) {
-      case "propietario": return "Complete sus datos como propietario de vehículos para renta y acepte nuestros términos y condiciones.";
-      case "arrendatario": return "Complete sus datos como persona que se renta vehículos y acepte nuestros términos y condiciones.";
-      case "conductor": return "Complete sus datos como conductor y acepte nuestros términos y condiciones.";
+      case "HOST": return "Complete sus datos como propietario de vehículos para renta y acepte nuestros términos y condiciones.";
+      case "RENTER": return "Complete sus datos como persona que se renta vehículos y acepte nuestros términos y condiciones.";
+      case "DRIVER": return "Complete sus datos como conductor y acepte nuestros términos y condiciones.";
       default: return "Seleccione el tipo de usuario para continuar con el registro.";
     }
   };
@@ -179,7 +207,7 @@ export default function Form() {
               onValueChange={(value) => setUserType(value as UserType)}
             >
               <div className="flex items-center space-x-2 rounded-md border p-4 cursor-pointer hover:bg-muted">
-                <RadioGroupItem value="propietario" id="propietario" />
+                <RadioGroupItem value="HOST" id="propietario" />
                 <Label htmlFor="propietario" className="flex items-center">
                   <HomeIcon className="mr-2 h-5 w-5" />
                   <div>
@@ -191,7 +219,7 @@ export default function Form() {
                 </Label>
               </div>
               <div className="flex items-center space-x-2 rounded-md border p-4 cursor-pointer hover:bg-muted">
-                <RadioGroupItem value="arrendatario" id="arrendatario" />
+                <RadioGroupItem value="RENTER" id="arrendatario" />
                 <Label htmlFor="arrendatario" className="flex items-center">
                   <UserIcon className="mr-2 h-5 w-5" />
                   <div>
@@ -203,7 +231,7 @@ export default function Form() {
                 </Label>
               </div>
               <div className="flex items-center space-x-2 rounded-md border p-4 cursor-pointer hover:bg-muted">
-                <RadioGroupItem value="conductor" id="conductor" />
+                <RadioGroupItem value="DRIVER" id="conductor" />
                 <Label htmlFor="conductor" className="flex items-center">
                   <CarIcon className="mr-2 h-5 w-5" />
                   <div>
@@ -251,154 +279,164 @@ export default function Form() {
               {/* Warning Dialog */}
               {showExitWarning && (
                 <div className="fixed inset-0 flex items-center justify-center z-[9999]">
-                  <div className="absolute inset-0 bg-black/50" style={{ height: "100vh", width: "100vw" }} />
+                  <div
+                    className="absolute inset-0 bg-black/50"
+                    style={{ height: "100vh", width: "100vw" }}
+                  />
                   <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full mx-4 relative z-50">
-                  <h3 className="text-lg font-semibold mb-4">¿Estás seguro que deseas salir?</h3>
-                  <p className="text-gray-600 mb-6">Los cambios no guardados se perderán.</p>
-                  <div className="flex justify-end space-x-4">
-                    <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowExitWarning(false)}
-                    >
-                    Cancelar
-                    </Button>
-                    <Button
-                    type="button"
-                    onClick={() => {
-                      setShowExitWarning(false);
-                      setUserType(null);
-                    }}
-                    >
-                    Salir
-                    </Button>
-                  </div>
+                    <h3 className="text-lg font-semibold mb-4">
+                      ¿Estás seguro que deseas salir?
+                    </h3>
+                    <p className="text-gray-600 mb-6">
+                      Los cambios no guardados se perderán.
+                    </p>
+                    <div className="flex justify-end space-x-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowExitWarning(false)}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          setShowExitWarning(false);
+                          setUserType(null);
+                        }}
+                      >
+                        Salir
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}
-            {/* Nombre */}
-            <div className="space-y-2">
-              <Label htmlFor="name">Nombre completo</Label>
-              <div className="relative flex items-center">
-                <Input
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  onBlur={() => setNameTouched(true)}
-                  placeholder="Ingrese su nombre"
-                  className={
-                    nameTouched && (name.length < 3 || name.length > 30 || !/^[a-zA-Z\s]+$/.test(name))
-                      ? "border-red-500 pr-10"
-                      : ""
-                  }
-                />
-                {nameTouched && (
-                  <>
-                    { name.length < 3
-                      ? <InputErrorIcon message="Debe tener al menos 3 caracteres" />
-                      : name.length > 30
-                      ? <InputErrorIcon message="Debe tener menos de 30 caracteres" />
-                      : !/^[a-zA-Z\s]+$/.test(name)
-                      ? <InputErrorIcon message="No debe contener caracteres especiales"/>
-                      :null} 
-                  </>
-                )}
-              </div>
-            </div>
-            
-            {/* Correo electrónico */}
-            <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico</Label>
-              <div className="relative flex items-center">
-                <Input
-                  id="email"
-                  type="text"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onBlur={() => setEmailTouched(true)}
-                  placeholder="correo@ejemplo.com"
-                  className={
-                    emailTouched &&
-                    (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))
-                      ? "border-red-500 pr-10"
-                      : ""
-                  }
-                />
-                {emailTouched && (
-                  <>
-                    {email.length === 0 && (
-                      <InputErrorIcon message="El correo es obligatorio." />
-                    )}
-                    {email.length > 0 && !/^[^\s@]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email) && (
-                      <InputErrorIcon message="Ingrese un correo válido." />
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Teléfono */}
-            <div className="space-y-2">
-              <Label htmlFor="phone">Teléfono</Label>
-              <div className="relative flex items-center">
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="Ingrese su número de teléfono"
-                  value={phone}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (/^\d*$/.test(value)) {
-                      setPhone(value);
-                      handleFormChange();
+              {/* Nombre */}
+              <div className="space-y-2">
+                <Label htmlFor="name">Nombre completo</Label>
+                <div className="relative flex items-center">
+                  <Input
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    onBlur={() => setNameTouched(true)}
+                    placeholder="Ingrese su nombre"
+                    className={
+                      nameTouched &&
+                      (name.length < 3 ||
+                        name.length > 30 ||
+                        !/^[a-zA-Z\s]+$/.test(name))
+                        ? "border-red-500 pr-10"
+                        : ""
                     }
-                  }}
-                  onBlur={() => setPhoneTouched(true)}
-                  maxLength={8}
-                  className={
-                    phoneTouched && phone.length !== 8 
-                      ? "border-red-500 pr-10"
-                      : ""
-                  }
-                />
-                {phoneTouched && phone.length !== 8 &&(
-                  <InputErrorIcon message="El teléfono debe tener exactamente 8 números." />
-                )}
+                  />
+                  {nameTouched && (
+                    <>
+                      {name.length < 3 ? (
+                        <InputErrorIcon message="Debe tener al menos 3 caracteres" />
+                      ) : name.length > 30 ? (
+                        <InputErrorIcon message="Debe tener menos de 30 caracteres" />
+                      ) : !/^[a-zA-Z\s]+$/.test(name) ? (
+                        <InputErrorIcon message="No debe contener caracteres especiales" />
+                      ) : null}
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
 
-
-
-            {/* Fecha */}
-            <div className="space-y-2">
-              <Label htmlFor="birthdate">Fecha de nacimiento</Label>
-              <div className="relative flex items-center">
-                <Input
-                  id="birthdate"
-                  type="date"
-                  value={birthdate}
-                  max={today} // sigue respetando el máximo como hoy
-                  onChange={(e) => setBirthdate(e.target.value)}
-                  onBlur={() => setBirthdateTouched(true)}
-                  className={
-                    !birthdate && birthdateTouched
-                      ? "border-red-500 pr-10"
-                      : isUnderage(birthdate)
-                      ? "border-red-500 pr-10"
-                      : ""
-                  }
-                />
-                {/* Si no hay fecha */}
-                {!birthdate && birthdateTouched && (
-                  <InputErrorIcon message="Debes seleccionar tu fecha de nacimiento." />
-                )}
-                {/* Si hay fecha y es menor de edad */}
-                {birthdate && isUnderage(birthdate) && (
-                  <InputErrorIcon message="Debes tener al menos 18 años para continuar." />
-                )}
+              {/* Correo electrónico */}
+              <div className="space-y-2">
+                <Label htmlFor="email">Correo electrónico</Label>
+                <div className="relative flex items-center">
+                  <Input
+                    id="email"
+                    type="text"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onBlur={() => setEmailTouched(true)}
+                    placeholder="correo@ejemplo.com"
+                    className={
+                      emailTouched &&
+                      (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))
+                        ? "border-red-500 pr-10"
+                        : ""
+                    }
+                  />
+                  {emailTouched && (
+                    <>
+                      {email.length === 0 && (
+                        <InputErrorIcon message="El correo es obligatorio." />
+                      )}
+                      {email.length > 0 &&
+                        !/^[^\s@]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+                          email
+                        ) && (
+                          <InputErrorIcon message="Ingrese un correo válido." />
+                        )}
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
 
+              {/* Teléfono */}
+              <div className="space-y-2">
+                <Label htmlFor="phone">Teléfono</Label>
+                <div className="relative flex items-center">
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="Ingrese su número de teléfono"
+                    value={phone}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d*$/.test(value)) {
+                        setPhone(value);
+                        handleFormChange();
+                      }
+                    }}
+                    onBlur={() => setPhoneTouched(true)}
+                    maxLength={8}
+                    className={
+                      phoneTouched && phone.length !== 8
+                        ? "border-red-500 pr-10"
+                        : ""
+                    }
+                  />
+                  {phoneTouched && phone.length !== 8 && (
+                    <InputErrorIcon message="El teléfono debe tener exactamente 8 números." />
+                  )}
+                </div>
+              </div>
+
+              {/* Fecha */}
+              <div className="space-y-2">
+                <Label htmlFor="birthdate">Fecha de nacimiento</Label>
+                <div className="relative flex items-center">
+                  <Input
+                    id="birthdate"
+                    type="date"
+                    value={birthdate}
+                    max={today} // sigue respetando el máximo como hoy
+                    onChange={(e) => setBirthdate(e.target.value)}
+                    onBlur={() => setBirthdateTouched(true)}
+                    className={
+                      !birthdate && birthdateTouched
+                        ? "border-red-500 pr-10"
+                        : isUnderage(birthdate)
+                        ? "border-red-500 pr-10"
+                        : ""
+                    }
+                  />
+                  {/* Si no hay fecha */}
+                  {!birthdate && birthdateTouched && (
+                    <InputErrorIcon message="Debes seleccionar tu fecha de nacimiento." />
+                  )}
+                  {/* Si hay fecha y es menor de edad */}
+                  {birthdate && isUnderage(birthdate) && (
+                    <InputErrorIcon message="Debes tener al menos 18 años para continuar." />
+                  )}
+                </div>
+              </div>
 
               {/* Género */}
               <div className="space-y-2">
@@ -406,7 +444,9 @@ export default function Form() {
                 <div className="relative w-full h-10">
                   <div
                     className={`w-full h-full flex items-center rounded-md px-3 ${
-                      genderTouched && !gender ? "border border-red-500 pr-10" : "border"
+                      genderTouched && !gender
+                        ? "border border-red-500 pr-10"
+                        : "border"
                     }`}
                   >
                     <RadioGroup
@@ -417,15 +457,15 @@ export default function Form() {
                       onBlur={() => setGenderTouched(true)}
                     >
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="masculino" id="masculino" />
+                        <RadioGroupItem value="MASCULINO" id="masculino" />
                         <Label htmlFor="masculino">Masculino</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="femenino" id="femenino" />
+                        <RadioGroupItem value="FEMENINO" id="femenino" />
                         <Label htmlFor="femenino">Femenino</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="otro" id="otro" />
+                        <RadioGroupItem value="OTRO" id="otro" />
                         <Label htmlFor="otro">Otro</Label>
                       </div>
                     </RadioGroup>
@@ -438,7 +478,6 @@ export default function Form() {
                 </div>
               </div>
 
-
               {/* Ciudad */}
               <div className="space-y-2">
                 <Label htmlFor="city">Ciudad</Label>
@@ -446,27 +485,26 @@ export default function Form() {
                   <select
                     id="city"
                     value={city}
-                    onChange={(e) => setCity(e.target.value)}
+                    onChange={(e) => setCity(Number(e.target.value))}
                     onBlur={() => setCityTouched(true)}
-                    className={`w-full border rounded-md h-10 px-3 text-sm ${cityTouched && !city ? "border-red-500 pr-10" : ""}`}
+                    className={`w-full border rounded-md h-10 px-3 text-sm ${
+                      cityTouched && !city ? "border-red-500 pr-10" : ""
+                    }`}
                   >
-                    <option value="" disabled>Seleccione una ciudad</option>
-                    <option value="beni">Beni</option>
-                    <option value="cochabamba">Cochabamba</option>
-                    <option value="santa cruz">Santa Cruz</option>
-                    <option value="sucre">Sucre</option>
-                    <option value="la paz">La Paz</option>
-                    <option value="tarija">Tarija</option>
-                    <option value="pando">Pando</option>
-                    <option value="potosi">Potosí</option>
-                    <option value="oruro">Oruro</option>
+                    <option value="" disabled>
+                      Seleccione una ciudad
+                    </option>
+                    {ciudades.map((ciudad) => (
+                      <option key={ciudad.id} value={ciudad.id}>
+                        {ciudad.nombre}
+                      </option>
+                    ))}
                   </select>
                   {!city && cityTouched && (
                     <InputErrorIcon message="Debes seleccionar una ciudad." />
                   )}
                 </div>
               </div>
-
 
               {/* Contraseña */}
               <div className="space-y-2">
@@ -508,38 +546,34 @@ export default function Form() {
                   )}
                 </div>
               </div>
-            
 
-
-
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password">Repetir contraseña</Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                placeholder="Repita su contraseña"
-                value={confirmPassword}
-                onChange={handleConfirmPasswordChange}
-                className={passwordError ? "border-red-500" : ""}
-                
-              />
-              {passwordError && (
-                <p className="text-sm text-red-500">
-                  Las contraseñas no coinciden
-                </p>
-              )}
-            </div>
-            <div className="-mb-4">
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="terms">
-                  <AccordionTrigger className="text-base">
-                    Términos y Condiciones
-                  </AccordionTrigger>
-                  <AccordionContent>
-                  <Textarea
-                    className="min-h-[200px] resize-none whitespace-pre-wrap"
-                    readOnly
-                    value={`1. ACEPTACIÓN DE TÉRMINOS
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Repetir contraseña</Label>
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  placeholder="Repita su contraseña"
+                  value={confirmPassword}
+                  onChange={handleConfirmPasswordChange}
+                  className={passwordError ? "border-red-500" : ""}
+                />
+                {passwordError && (
+                  <p className="text-sm text-red-500">
+                    Las contraseñas no coinciden
+                  </p>
+                )}
+              </div>
+              <div className="-mb-4">
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="terms">
+                    <AccordionTrigger className="text-base">
+                      Términos y Condiciones
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <Textarea
+                        className="min-h-[200px] resize-none whitespace-pre-wrap"
+                        readOnly
+                        value={`1. ACEPTACIÓN DE TÉRMINOS
 Al acceder y utilizar este servicio, usted acepta estar sujeto a estos términos y condiciones.
 
 2. USO DEL SERVICIO
@@ -556,26 +590,25 @@ No seremos responsables por daños indirectos, incidentales o consecuentes que s
 
 6. MODIFICACIONES
 Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor inmediatamente después de su publicación.`}
-                  />
-
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
-            <hr className="my-4 border-gray-300" />
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="terms"
-                checked={acceptTerms}
-                onCheckedChange={(checked) =>
-                  setAcceptTerms(checked as boolean)
-                }
-              />
-              <Label htmlFor="terms" className="text-sm">
-                He leído y acepto los términos y condiciones
-              </Label>
-            </div>
-          </CardContent>
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
+              <hr className="my-4 border-gray-300" />
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="terms"
+                  checked={acceptTerms}
+                  onCheckedChange={(checked) =>
+                    setAcceptTerms(checked as boolean)
+                  }
+                />
+                <Label htmlFor="terms" className="text-sm">
+                  He leído y acepto los términos y condiciones
+                </Label>
+              </div>
+            </CardContent>
 
             <CardFooter className="flex justify-between pt-6">
               <Button
