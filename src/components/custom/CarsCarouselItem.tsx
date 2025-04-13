@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { CarouselItem } from '@/components/ui/carousel'
 import ReservationConfirmedMessage from './ReservationConfirmation/ReservationConfirmedMessage'
 
-function CarsCarouselItem({ car }: { car: { name: string; image: string; rented: number; price: number} }) {
+function CarsCarouselItem({ car }: { car: { marca: string; modelo: string; anio: string ; price: number ; image: string; vecesAlquilado: number} }) {
 
   return (
     <CarouselItem className="pl-5 md:basis-1/3 basis-full">
@@ -15,19 +15,20 @@ function CarsCarouselItem({ car }: { car: { name: string; image: string; rented:
         </div>
 
         <div className="h-55 md:h-40 overflow-hidden bg-gray-200 rounded-3x">
-          <img src={car.image} alt={car.name} className="w-full h-full object-cover transition-transform duration-300 ease-in-out transform hover:scale-105" />
+          <img src={car.image} alt={car.modelo} className="w-full h-full object-cover transition-transform duration-300 ease-in-out transform hover:scale-105" />
         </div>
 
         <CardContent className="p-4 bg-white">
-          <h3 className="text-lg font-semibold text-gray-800 mb-1 uppercase">{car.name}</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-1 uppercase">{car.modelo}</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-1 uppercase">{car.marca}</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-1 uppercase">{car.anio}</h3>
 
           <div className="flex items-center">
             <span className="text-sm text-gray-500">Alquilado:</span>
             <span className="ml-2 bg-blue-200 text-blue-700 text-xs font-semibold rounded-full px-3 py-1">
-              {car.rented} veces
+              {car.vecesAlquilado} veces
             </span>
           </div>
-          
           <ReservationConfirmedMessage />
         </CardContent>
       </Card>
