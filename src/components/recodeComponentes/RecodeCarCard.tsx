@@ -1,5 +1,6 @@
-"use client"
+'use client'
 
+import { useState } from "react"
 import {
   FaChair,
   FaDoorOpen,
@@ -17,7 +18,7 @@ export interface RecodeCarCardProps {
   asientos: number
   puertas: number
   transmision: string
-  combustible: string
+  combustibles: string[] // ← array dinámico
   estado: string
   nombreHost: string
   calificacion: number
@@ -33,7 +34,7 @@ export default function RecodeCarCard({
   asientos,
   puertas,
   transmision,
-  combustible,
+  combustibles,
   estado,
   nombreHost,
   calificacion,
@@ -42,26 +43,24 @@ export default function RecodeCarCard({
   precioDescuento,
   precioPorDia,
 }: RecodeCarCardProps) {
+  const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(combustibles[0])
+
   return (
     <div className="w-full max-w-[750px] md:h-[320px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-4 mx-auto">
       
       {/* 1. COLUMNA IZQUIERDA */}
       <div className="w-full md:w-[250px] flex flex-col justify-between gap-4">
+        <div className="flex justify-between">{/* Botones opcionales */}</div>
 
-        {/* 🔹 Fila 1: Botones (comentados por ahora) */}
-        <div className="flex justify-between">
-          {/* Botones opcionales */}
-        </div>
-
-        {/* 🔹 Fila 2: Imagen */}
+        {/* Imagen */}
         <div className="flex-1 flex items-center justify-center">
           <div className="w-[230px] h-[150px] bg-gray-200 rounded-[10px] flex items-center justify-center text-5xl hover:text-6xl transition">
             🚗
           </div>
         </div>
 
-        {/* 🔹 Fila 3: Texto auxiliar */}
         <div className="text-sm text-gray-700 text-center">
+          {/* Aquí podés agregar texto adicional si querés */}
         </div>
       </div>
 
@@ -77,14 +76,38 @@ export default function RecodeCarCard({
             <span className="flex items-center gap-1"><FaCogs /> {transmision}</span>
           </div>
 
+          {/* 🔽 Combustible dinámico con hover */}
           <div className="flex items-center gap-2 mt-2 text-sm">
-            <FaGasPump /> Tipo de combustible: {combustible}
+            <FaGasPump />
+            <span className="font-semibold">Tipos de combustibles:</span>
+            <select
+              className="border border-black rounded px-3 py-1 hover:bg-gray-200 transition-colors duration-200"
+              value={combustibleSeleccionado}
+              onChange={(e) => setCombustibleSeleccionado(e.target.value)}
+            >
+              {combustibles.map((tipo, index) => (
+                <option key={index} value={tipo}>
+                  {tipo}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <p className="text-sm mt-1"><strong>Estado:</strong> {estado}</p>
-          <div className="flex items-center gap-2 text-sm mt-1"><FaUser /> {nombreHost}</div>
-          <div className="flex items-center gap-1 text-lg font-bold text-yellow-500 mt-1"><FaStar /> {calificacion}</div>
-          <div className="flex items-center gap-1 text-sm"><FaMapMarkerAlt /> {ubicacion}</div>
+          <p className="text-sm mt-1">
+            <strong>Estado:</strong> {estado}
+          </p>
+
+          <div className="flex items-center gap-2 text-sm mt-1">
+            <FaUser /> {nombreHost}
+          </div>
+
+          <div className="flex items-center gap-1 text-lg font-bold text-yellow-500 mt-1">
+            <FaStar /> {calificacion}
+          </div>
+
+          <div className="flex items-center gap-1 text-sm">
+            <FaMapMarkerAlt /> {ubicacion}
+          </div>
         </div>
       </div>
 
