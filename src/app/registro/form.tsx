@@ -251,28 +251,28 @@ export default function Form() {
               {/* Warning Dialog */}
               {showExitWarning && (
                 <div className="fixed inset-0 flex items-center justify-center z-[9999]">
-                  <div className="absolute inset-0 bg-black/50" />
+                  <div className="absolute inset-0 bg-black/50" style={{ height: "100vh", width: "100vw" }} />
                   <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full mx-4 relative z-50">
-                    <h3 className="text-lg font-semibold mb-4">¿Estás seguro que deseas salir?</h3>
-                    <p className="text-gray-600 mb-6">Los cambios no guardados se perderán.</p>
-                    <div className="flex justify-end space-x-4">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setShowExitWarning(false)}
-                      >
-                        Cancelar
-                      </Button>
-                      <Button
-                        type="button"
-                        onClick={() => {
-                          setShowExitWarning(false);
-                          setUserType(null);
-                        }}
-                      >
-                        Salir
-                      </Button>
-                    </div>
+                  <h3 className="text-lg font-semibold mb-4">¿Estás seguro que deseas salir?</h3>
+                  <p className="text-gray-600 mb-6">Los cambios no guardados se perderán.</p>
+                  <div className="flex justify-end space-x-4">
+                    <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowExitWarning(false)}
+                    >
+                    Cancelar
+                    </Button>
+                    <Button
+                    type="button"
+                    onClick={() => {
+                      setShowExitWarning(false);
+                      setUserType(null);
+                    }}
+                    >
+                    Salir
+                    </Button>
+                  </div>
                   </div>
                 </div>
               )}
