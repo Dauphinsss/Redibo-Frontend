@@ -1,5 +1,5 @@
 import Header from "@/components/ui/Header";
-import CarCard from "@/components/uiHome/CarCard";
+import CarCard from "@/components/recodeComponentes/RecodeCarCard";
 
 export default function Home() {
   return (
