@@ -3,15 +3,24 @@
 import './../../styles/searchbar.css'; 
 import React, { useRef, useEffect, useState } from "react";
 import { FaSearch } from 'react-icons/fa';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+
 var canClose = true;
 
 const SearchBar = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [savedSearches, setSavedSearches] = useState<string[]>([]);
     const [isClicked, setIsClicked] = useState(false);
+    const router = useRouter();
 
     const searchBarRef = useRef<HTMLDivElement>(null);
     const savedSearchesRef = useRef<HTMLDivElement>(null);
+
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const query = searchParams.get('query');
+    const isSearchPage = pathname === "/searchMock";
+    const hasSetQuery = useRef(false);
 
     useEffect(() => {
         // Uso de mock objects
@@ -30,21 +39,34 @@ const SearchBar = () => {
             canClose = true;
         }
 
+        if(isSearchPage && query && !hasSetQuery.current) {
+            setSearchTerm(query);
+            hasSetQuery.current = true;
+        }
+
+        const stored = localStorage.getItem("savedSearches");
+        if (stored) {
+            setSavedSearches(JSON.parse(stored));
+        }
+
         document.addEventListener('click', handleClickOutside);
         return () => {
             document.removeEventListener('click', handleClickOutside);
         }
 
-    }, []);
+    }, [isSearchPage, query]);
 
     const handleButtonClick = () => {
         if (searchTerm && !savedSearches.includes(searchTerm)) {
             const updatedSearches = [searchTerm, ...savedSearches.slice(0, 9)];
             setSavedSearches(updatedSearches);
+            
+            localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
+            router.push(`/searchMock?query=${encodeURIComponent(searchTerm)}`);
+            setIsClicked(false);
         } else if (searchTerm) {
             handleSearchItemClick(searchTerm);
         }
-        setIsClicked(false);
     }
 
     const handleClick = () => {
@@ -56,6 +78,7 @@ const SearchBar = () => {
         canClose = false;
         const updatedSearches = savedSearches.filter((_, i) => i !== index);
         setSavedSearches(updatedSearches);
+        localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
     }
 
     const handleSearchItemClick = (search: string) => {
@@ -64,6 +87,8 @@ const SearchBar = () => {
 
         const updatedSearches = [search, ...savedSearches.filter(item => item !== search)]
         setSavedSearches(updatedSearches);
+        localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
+        router.push(`/searchMock?query=${encodeURIComponent(search)}`);
     }
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
