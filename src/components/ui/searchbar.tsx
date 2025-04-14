@@ -11,7 +11,10 @@ const SearchBar = () => {
 
     useEffect(() => {
         // Uso de mock objects
-        const mockSavedSearches = ["1", "2", "3"];
+        const mockSavedSearches = ["busqueda uno", "toyota dos", "persona tres", "busqueda cuatro",
+            "busqueda cinco", "busqueda seis", "busqueda siete", "busqueda ocho", "busqueda nueve",
+            "busqueda diez", "busqueda once", "busqueda doce"
+        ];
         setSavedSearches(mockSavedSearches);
 
         const handleClickOutside = (event: MouseEvent) => {
@@ -35,6 +38,11 @@ const SearchBar = () => {
         setIsClicked(true);
     }
 
+    const removeSearch = (index: number) => {
+        const updatedSearches = savedSearches.filter((_, i) => i !== index);
+        setSavedSearches(updatedSearches);
+    }
+
     return (
         <div className="search-bar">
             <input
@@ -49,13 +57,19 @@ const SearchBar = () => {
             {isClicked && (
                 <div className="saved-searches">
                     {savedSearches.length > 0 ? (
-                        savedSearches.map((search, index) => (
+                        savedSearches.slice(0, 10).map((search, index) => (
                             <div key={index} className="saved-search-item">
                                 <span>{search}</span>
+                                <button
+                                    className="remove-button"
+                                    onClick={() => removeSearch(index)}
+                                >
+                                    X
+                                </button>
                             </div>
                         ))
                     ) : (
-                        <p>No hay busquedas guardadas.</p>
+                        <p>No hay búsquedas guardadas.</p>
                     )}
                 </div>
             )}
