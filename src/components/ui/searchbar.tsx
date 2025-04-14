@@ -23,13 +23,6 @@ const SearchBar = () => {
     const hasSetQuery = useRef(false);
 
     useEffect(() => {
-        // Uso de mock objects
-        const mockSavedSearches = ["busqueda uno", "toyota dos", "persona tres", "busqueda cuatro",
-            "busqueda cinco", "busqueda seis", "busqueda siete", "busqueda ocho", "busqueda nueve",
-            "busqueda diez", "busqueda once", "busqueda doce"
-        ];
-        setSavedSearches(mockSavedSearches);
-
         const handleClickOutside = (event: MouseEvent) => {
             if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node) && 
                 savedSearchesRef.current && !savedSearchesRef.current.contains(event.target as Node) &&
@@ -49,6 +42,12 @@ const SearchBar = () => {
             setSavedSearches(JSON.parse(stored));
         }
 
+        const restored = localStorage.getItem("restoreSearch");
+        if (restored && searchTerm === "") {
+            setSearchTerm(restored);
+            localStorage.removeItem("restoreSearch");
+        }
+
         document.addEventListener('click', handleClickOutside);
         return () => {
             document.removeEventListener('click', handleClickOutside);
@@ -58,9 +57,10 @@ const SearchBar = () => {
 
     const handleButtonClick = () => {
         if (searchTerm && !savedSearches.includes(searchTerm)) {
-            const updatedSearches = [searchTerm, ...savedSearches.slice(0, 9)];
+            const updatedSearches = [searchTerm, ...savedSearches.filter(s => s !== searchTerm)];
             setSavedSearches(updatedSearches);
             
+            localStorage.setItem("lastSearchTerm", searchTerm);
             localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
             router.push(`/searchMock?query=${encodeURIComponent(searchTerm)}`);
             setIsClicked(false);
@@ -87,6 +87,7 @@ const SearchBar = () => {
 
         const updatedSearches = [search, ...savedSearches.filter(item => item !== search)]
         setSavedSearches(updatedSearches);
+        localStorage.setItem("lastSearchTerm", search);
         localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
         router.push(`/searchMock?query=${encodeURIComponent(search)}`);
     }
