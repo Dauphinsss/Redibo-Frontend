@@ -1,7 +1,7 @@
 "use client";
 
 import './../../styles/searchbar.css'
-import React, { use, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { FaSearch } from 'react-icons/fa';
 
 var canEliminate = true;
@@ -10,6 +10,9 @@ const SearchBar = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [savedSearches, setSavedSearches] = useState<string[]>([]);
     const [isClicked, setIsClicked] = useState(false);
+
+    const searchBarRef = useRef<HTMLDivElement>(null);
+    const savedSearchesRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         // Uso de mock objects
@@ -20,10 +23,10 @@ const SearchBar = () => {
         setSavedSearches(mockSavedSearches);
 
         const handleClickOutside = (event: MouseEvent) => {
-            const searchBar = document.querySelector('.search-bar');
-
-            if (searchBar && !searchBar.contains(event.target as Node) && canEliminate) {
-                setIsClicked(false);
+            if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node) && 
+                savedSearchesRef.current && !savedSearchesRef.current.contains(event.target as Node) &&
+                canEliminate) {
+                setIsClicked(false);  // Cierra la ventana
             }
             canEliminate = true;
         }
@@ -38,6 +41,10 @@ const SearchBar = () => {
         setSearchTerm(event.target.value);
     };
 
+    const handleSearchClick = () => {
+        setIsClicked(false);
+    }
+
     const handleClick = () => {
         setIsClicked(true);
     }
@@ -49,7 +56,7 @@ const SearchBar = () => {
     }
 
     return (
-        <div className="search-bar">
+        <div className="search-bar" ref={searchBarRef}>
             <input
                 type="text"
                 value={searchTerm}
@@ -60,7 +67,7 @@ const SearchBar = () => {
             />
 
             {isClicked && (
-                <div className="saved-searches">
+                <div className="saved-searches" ref={savedSearchesRef}>
                     {savedSearches.length > 0 ? (
                         savedSearches.slice(0, 10).map((search, index) => (
                             <div key={index} className="saved-search-item">
@@ -80,7 +87,7 @@ const SearchBar = () => {
             )}
 
             <FaSearch className='icon' />
-            <button className='search-button'>
+            <button className='search-button' onClick={handleSearchClick}>
                 <FaSearch className='search-icon' />
             </button>
         </div>
