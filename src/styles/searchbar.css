@@ -69,6 +69,13 @@
     border-radius: 5px;
 }
 
+.saved-search-item:hover {
+    background-color: #efefef;
+    cursor: pointer;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
 .remove-button {
     color: lightgray;
     border: none;
