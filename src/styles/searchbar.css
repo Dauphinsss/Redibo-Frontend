@@ -28,3 +28,19 @@
     color: #aaa;
     font-size: 18px;
 }
+
+.search-button{
+    position: absolute;
+    right: 0px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 40%;
+    padding: 15px;
+    cursor: pointer;
+    width: 50px;
+}
+
+.search-button .search-icon {
+    font-size: 15px;
+}

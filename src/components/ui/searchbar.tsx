@@ -21,6 +21,10 @@ const SearchBar = () => {
                 className="input"
             />
             <FaSearch className='icon' />
+            <button className='search-button'>
+                <FaSearch className='search-icon' />
+            </button>
+            
         </div>
     );
 };
