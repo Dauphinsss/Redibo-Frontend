@@ -1,6 +1,6 @@
 "use client";
 
-import './../../styles/searchbar.css'
+import './../../styles/searchbar.css'; 
 import React, { useRef, useEffect, useState } from "react";
 import { FaSearch } from 'react-icons/fa';
 
@@ -29,15 +29,6 @@ const SearchBar = () => {
                 setIsClicked(false);
             }
             canClose = true;
-        }
-
-        const handleKeyboard = (event: KeyboardEvent) => {
-            if (event.key === "Escape") {
-                setIsClicked(false);
-            }
-            if (event.key === "Enter") {
-                handleButtonClick();
-            }
         }
 
         document.addEventListener('click', handleClickOutside);
@@ -83,6 +74,9 @@ const SearchBar = () => {
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
             handleButtonClick();
+        }
+        if (event.key === "Escape") {
+            setIsClicked(false);
         }
     }
 
