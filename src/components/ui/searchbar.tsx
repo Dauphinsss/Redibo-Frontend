@@ -1,8 +1,10 @@
 "use client";
 
 import './../../styles/searchbar.css'
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { FaSearch } from 'react-icons/fa';
+
+var canEliminate = true;
 
 const SearchBar = () => {
     const [searchTerm, setSearchTerm] = useState("");
@@ -19,9 +21,11 @@ const SearchBar = () => {
 
         const handleClickOutside = (event: MouseEvent) => {
             const searchBar = document.querySelector('.search-bar');
-            if (searchBar && !searchBar.contains(event.target as Node)) {
+
+            if (searchBar && !searchBar.contains(event.target as Node) && canEliminate) {
                 setIsClicked(false);
             }
+            canEliminate = true;
         }
         document.addEventListener('click', handleClickOutside);
         return () => {
@@ -39,6 +43,7 @@ const SearchBar = () => {
     }
 
     const removeSearch = (index: number) => {
+        canEliminate = false;
         const updatedSearches = savedSearches.filter((_, i) => i !== index);
         setSavedSearches(updatedSearches);
     }
