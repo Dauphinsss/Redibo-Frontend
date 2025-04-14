@@ -31,7 +31,7 @@
 
 .search-button{
     position: absolute;
-    right: 0px;
+    right: 2px;
     background-color: black;
     color: white;
     border: none;
@@ -43,4 +43,23 @@
 
 .search-button .search-icon {
     font-size: 15px;
+}
+
+.saved-searches {
+    position: absolute;
+    top: 85%;
+    left: 0;
+    width: 90%;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 5px;
+    z-index: 10;
+}
+
+.saved-search-item{
+    margin-bottom: 5px;
 }

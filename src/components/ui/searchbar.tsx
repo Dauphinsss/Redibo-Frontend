@@ -1,14 +1,38 @@
 "use client";
 
 import './../../styles/searchbar.css'
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaSearch } from 'react-icons/fa';
 
 const SearchBar = () => {
     const [searchTerm, setSearchTerm] = useState("");
+    const [savedSearches, setSavedSearches] = useState<string[]>([]);
+    const [isClicked, setIsClicked] = useState(false);
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log("Searching for: ", searchTerm);
+    useEffect(() => {
+        // Uso de mock objects
+        const mockSavedSearches = ["1", "2", "3"];
+        setSavedSearches(mockSavedSearches);
+
+        const handleClickOutside = (event: MouseEvent) => {
+            const searchBar = document.querySelector('.search-bar');
+            if (searchBar && !searchBar.contains(event.target as Node)) {
+                setIsClicked(false);
+            }
+        }
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        }
+
+    }, []);
+
+    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const handleClick = () => {
+        setIsClicked(true);
     }
 
     return (
@@ -16,15 +40,30 @@ const SearchBar = () => {
             <input
                 type="text"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search..."
+                onChange={handleSearch}
+                onClick={handleClick}
+                placeholder="Buscar..."
                 className="input"
             />
+
+            {isClicked && (
+                <div className="saved-searches">
+                    {savedSearches.length > 0 ? (
+                        savedSearches.map((search, index) => (
+                            <div key={index} className="saved-search-item">
+                                <span>{search}</span>
+                            </div>
+                        ))
+                    ) : (
+                        <p>No hay busquedas guardadas.</p>
+                    )}
+                </div>
+            )}
+
             <FaSearch className='icon' />
             <button className='search-button'>
                 <FaSearch className='search-icon' />
             </button>
-            
         </div>
     );
 };
