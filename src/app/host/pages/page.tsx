@@ -86,7 +86,7 @@ export default function ViewCarsPage() {
         <h1 className="text-4xl font-bold text-center my-8">Mis Carros</h1>
         <div className="flex items-center justify-between w-full">
           <span className="text-lg font-medium order-1">Lista de carros</span>
-          <Button className="bg-black text-white px-6 py-3 rounded-lg flex items-center gap-2 order-2" onClick={() => router.push("/host/home/add")}>
+          <Button className="bg-black text-white px-6 py-3 rounded-lg flex items-center gap-2 order-2 cursor-pointer" onClick={() => router.push("/host/home/add")}>
             <Plus size={20} /> Añadir
           </Button>
         </div>

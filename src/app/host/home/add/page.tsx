@@ -4,7 +4,8 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-
+import { getCountries, Country, getCities, City } from '@/app/host/services/direcService';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -31,6 +32,49 @@ import {
 
 export default function AddDireccion() {
   const router = useRouter();
+  const [countries, setCountries] = useState<Country[]>([]); // Estado para almacenar la lista de países
+  const [selectedCountry, setSelectedCountry] = useState<string | undefined>(undefined); // Estado para el país seleccionado
+  const [cities, setCities] = useState<City[]>([]); // Estado para almacenar la lista de ciudades
+  const [selectedCity, setSelectedCity] = useState<string | undefined>(undefined); // Estado para la ciudad seleccionada
+
+  useEffect(() => {
+    // Carga los países al montar el componente (solo una vez)
+    async function loadCountries() {
+      try {
+        const fetchedCountries = await getCountries();
+        setCountries(fetchedCountries);
+      } catch (error: any) {
+        console.error("Error loading countries:", error.message);
+        // Maneja el error (por ejemplo, muestra un mensaje al usuario)
+      }
+    }
+
+    loadCountries();
+  }, []); // El array vacío [] asegura que este efecto se ejecute solo una vez
+
+  const handleCountryChange = (value: string) => {
+    setSelectedCountry(value);
+    console.log("País seleccionado:", value); // Aquí puedes hacer algo con el valor seleccionado
+  };
+
+  useEffect(() => {
+    async function loadCities() {
+
+      try {
+        const fetchedCities = await getCities();
+        setCities(fetchedCities);
+      } catch (error: any) {
+        console.error("Error loading cities:", error.message);
+      }
+    }
+
+    loadCities();
+  }, []);
+
+  const handleCityChange = (value: string) => {
+    setSelectedCity(value);
+    console.log("Departamento seleccionado:", value); // Aquí puedes hacer algo con el valor seleccionado
+  };
 
   return (
     <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
@@ -62,11 +106,11 @@ export default function AddDireccion() {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Paises</SelectLabel>
-              <SelectItem value="Brasil">Brasil</SelectItem>
-              <SelectItem value="Peru">Perú</SelectItem>
-              <SelectItem value="Argentina">Argentina</SelectItem>
-              <SelectItem value="Colombia">Colombia</SelectItem>
-              <SelectItem value="Chile">Chile</SelectItem>
+              {countries.map((country) => (
+            <SelectItem key={country.id} value={country.name}>
+              {country.name}
+            </SelectItem>
+          ))}
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -82,11 +126,11 @@ export default function AddDireccion() {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Departamentos</SelectLabel>
-              <SelectItem value="Pando">Pando</SelectItem>
-              <SelectItem value="Beni">Beni</SelectItem>
-              <SelectItem value="Oruro">Oruro</SelectItem>
-              <SelectItem value="Potosi">Potosí</SelectItem>
-              <SelectItem value="Tarija">Tarija</SelectItem>
+              {cities.map((city) => (
+            <SelectItem key={city.id} value={city.name}>
+              {city.name}
+            </SelectItem>
+          ))}
             </SelectGroup>
           </SelectContent>
         </Select>
