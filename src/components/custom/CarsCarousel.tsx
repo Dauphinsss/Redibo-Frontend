@@ -7,11 +7,16 @@ import CarsCarouselItem from "@/components/custom/CarsCarouselItem"
 function CarsCarousel() {
   const [content, setcontent] = useState([])
   useEffect(() => {
-    fetch('http://localhost:3000/api/cars/most-rented') 
+    const fetchData = () => {
+      fetch('http://localhost:3000/api/cars/most-rented') 
       .then(response => response.json())
       .then(data => setcontent(data))
       .catch(error => console.error('Error al obtener usuarios:', error));
-  }, []);
+    };
+    fetchData();
+    const interval = setInterval(fetchData, 7000);
+    return () => clearInterval(interval);
+  }, [])
 
   const plugin = React.useRef(Autoplay({ delay: 2500, stopOnInteraction: false, stopOnMouseEnter: true }))
   
