@@ -3,7 +3,6 @@
 import './../../styles/searchbar.css'; 
 import React, { useRef, useEffect, useState } from "react";
 import { FaSearch } from 'react-icons/fa';
-
 var canClose = true;
 
 const SearchBar = () => {
@@ -37,10 +36,6 @@ const SearchBar = () => {
         }
 
     }, []);
-
-    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(event.target.value);
-    };
 
     const handleButtonClick = () => {
         if (searchTerm && !savedSearches.includes(searchTerm)) {
@@ -85,7 +80,7 @@ const SearchBar = () => {
             <input
                 type="text"
                 value={searchTerm}
-                onChange={handleSearch}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 onClick={handleClick}
                 onKeyDown={handleKeyDown}
                 placeholder="Buscar..."
