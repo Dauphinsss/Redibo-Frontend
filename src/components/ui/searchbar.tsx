@@ -34,16 +34,15 @@ const SearchBar = () => {
         const handleKeyboard = (event: KeyboardEvent) => {
             if (event.key === "Escape") {
                 setIsClicked(false);
-            } else if (event.key === "Enter") {
+            }
+            if (event.key === "Enter") {
                 handleButtonClick();
             }
         }
 
         document.addEventListener('click', handleClickOutside);
-        document.addEventListener('keydown', handleKeyboard);
         return () => {
             document.removeEventListener('click', handleClickOutside);
-            document.removeEventListener('keydown', handleKeyboard);
         }
 
     }, []);
@@ -56,6 +55,8 @@ const SearchBar = () => {
         if (searchTerm && !savedSearches.includes(searchTerm)) {
             const updatedSearches = [searchTerm, ...savedSearches.slice(0, 9)];
             setSavedSearches(updatedSearches);
+        } else if (searchTerm) {
+            handleSearchItemClick(searchTerm);
         }
         setIsClicked(false);
     }
@@ -79,6 +80,12 @@ const SearchBar = () => {
         setSavedSearches(updatedSearches);
     }
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            handleButtonClick();
+        }
+    }
+
     return (
         <div className="search-bar" ref={searchBarRef}>
             <input
@@ -86,6 +93,7 @@ const SearchBar = () => {
                 value={searchTerm}
                 onChange={handleSearch}
                 onClick={handleClick}
+                onKeyDown={handleKeyDown}
                 placeholder="Buscar..."
                 className="input"
             />
@@ -111,7 +119,7 @@ const SearchBar = () => {
             )}
 
             <FaSearch className='icon' />
-            <button className='search-button' onClick={handleButtonClick}>
+            <button className='search-button' onClick={() => handleButtonClick()}>
                 <FaSearch className='search-icon' />
             </button>
         </div>
