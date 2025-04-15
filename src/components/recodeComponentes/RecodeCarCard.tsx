@@ -48,7 +48,7 @@ export default function RecodeCarCard({
   return (
     <div className="w-full max-w-[750px] md:h-[320px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-4 mx-auto">
 
-      {/* Colum IZQ: Imagen */}
+      {/* Columna IZQUIERDA: Imagen */}
       <div className="w-full md:w-[250px] flex flex-col justify-between gap-4">
         <div className="flex-1 flex items-center justify-center">
           <div className="w-[230px] h-[150px] bg-gray-200 rounded-[10px] flex items-center justify-center text-5xl hover:text-6xl transition">
@@ -57,20 +57,20 @@ export default function RecodeCarCard({
         </div>
       </div>
 
-      {/* Colum CENTRAL: Información */}
+      {/* Columna CENTRAL: Información */}
       <div className="flex-1 flex flex-col justify-between">
         <div>
-          <h2 className="text-xl font-bold">{nombre}</h2>
+          <h2 className="text-xl md:text-2xl font-bold">{nombre}</h2>
           <p className="text-sm text-gray-500">{marca}</p>
 
           <div className="flex flex-wrap gap-4 mt-2 text-sm">
-            <span className="flex items-center gap-1"><FaChair /> {asientos} asientos</span>
-            <span className="flex items-center gap-1"><FaDoorOpen /> {puertas} puertas</span>
-            <span className="flex items-center gap-1"><FaCogs /> {transmision}</span>
+            <span className="flex items-center gap-1 text-sm md:text-base"><FaChair /> {asientos} asientos</span>
+            <span className="flex items-center gap-1 text-sm md:text-base"><FaDoorOpen /> {puertas} puertas</span>
+            <span className="flex items-center gap-1 text-sm md:text-base"><FaCogs /> {transmision}</span>
           </div>
 
-          {/* Combustible con dropdown dinamico */}
-          <div className="flex items-center gap-2 mt-2 text-sm">
+          {/* Combustible con dropdown dinámico */}
+          <div className="flex items-center gap-2 mt-2 text-sm md:text-base">
             <FaGasPump />
             <span className="font-semibold">Tipos de combustibles:</span>
             <select
@@ -104,14 +104,14 @@ export default function RecodeCarCard({
         </div>
       </div>
 
-      {/* Colum DER: Precio + boton */}
+      {/* Columna DERECHA: Precio + botón */}
       <div className="w-full md:w-[130px] flex flex-col justify-between items-end">
         <div className="text-right w-full md:w-auto">
           <p className="text-2xl font-bold">{precioOficial}</p>
           <p className="text-gray-400 font-bold">{precioDescuento}</p>
           <p className="text-sm text-gray-500">Por día: {precioPorDia}</p>
         </div>
-        <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 mt-4 md:mt-0">
+        <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 mt-4 md:mt-0 text-sm md:text-base">
           Reservar
         </button>
       </div>
