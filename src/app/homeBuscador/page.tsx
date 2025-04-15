@@ -3,10 +3,18 @@
 import { useState } from "react"
 import RecodeCarList from "@/components/recodeComponentes/RecodeCarList"
 import { cars as allCars } from "@/Datos de prueba/cars"
+import SearchBar from "@/components/recodeComponentes/SearchBar"
+import Filter from "@/components/recodeComponentes/Filter"
 
 export default function Home() {
+
+  const ciudades = ["Cochabamba","Santa Cruz","La Paz"]
+  const marcas = ["Toyota", "Susuki"]
   const CANTIDAD_POR_LOTE = 8
   const [autosVisibles, setAutosVisibles] = useState(CANTIDAD_POR_LOTE)
+
+
+  
 
   const mostrarMasAutos = () => {
     setAutosVisibles(prev => prev + CANTIDAD_POR_LOTE)
@@ -18,13 +26,19 @@ export default function Home() {
     <main className="p-4 max-w-[1440px] mx-auto">
 
       {/* Buscador */}
-      <div className="mb-6">{/* Poner aqui el buscador */}</div>
+      <div className="mb-6">
+        <SearchBar name="Buscar precio, marca y ubicacion"></SearchBar>
+      </div>
 
       {/* Carrusel */}
       <div className="mb-6">{/* Poner aqui el carusel de filtros */}</div>
 
       {/* Filtros */}
-      <div className="mb-6">{/* Poner aqui los filtros especificos */}</div>
+      <div className="mb-6">
+        <Filter lista={ciudades} nombre="Ciudades"/>
+        <Filter lista={marcas} nombre="Marcas"/>
+
+      </div>
 
       {/* Resultados + ordenamiento */}
       <div className="mb-4 px-4">
