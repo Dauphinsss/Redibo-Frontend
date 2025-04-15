@@ -46,7 +46,7 @@ export default function RecodeCarCard({
   const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(combustibles[0])
 
   return (
-    <div className="w-full max-w-[750px] md:h-[320px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-4 mx-auto">
+    <div className="w-full max-w-[750px] md:h-[320px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-4 mx-0"> {/* Removed mx-auto */}
 
       {/* Columna IZQUIERDA: Imagen */}
       <div className="w-full md:w-[250px] flex flex-col justify-between gap-4">

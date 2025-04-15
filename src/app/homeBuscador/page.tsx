@@ -14,56 +14,72 @@ export default function Home() {
     setAutosVisibles(prev => prev + CANTIDAD_POR_LOTE)
   }
 
-  const ciudades = ["Cochabamba","Santa Cruz","La Paz"]
-  const marcas = ["Toyota","Nissan","Susuki"]
+  const ordenados = ["Recomendación", "Precio bajo a alto", "Precio alto a bajo"]
+  const ciudades = ["Cochabamba", "Santa Cruz", "La Paz"]
+  const marcas = ["Toyota", "Nissan", "Susuki"]
+  const combustibles = ["Gasolina", "Diésel", "Eléctrico", "Híbrido"]
 
   const autosActuales = allCars.slice(0, autosVisibles)
 
   return (
     <main className="p-4 max-w-[1440px] mx-auto">
-
-      {/* Buscador */}
-      <div className="mb-6">
+      {/* Fila 1: Buscador y Carrusel */}
+      <div className="mb-6 flex flex-col items-center justify-center">
         <SearchBar name="Buscar por nombre, marca "/>
-      </div>
-
-      {/*Carrusel */}
-      <div className="mb-6">{/* RecodeCarousel */}</div>
-
-      {/*Filtros */}
-      <div className="mb-6">
-      <Filter lista={ciudades} nombre="Ciudades"/>
-      <Filter lista={marcas} nombre="Marcas"/>
-      </div>
-
-      {/* Resultados + ordenamiento */}
-      <div className="mb-4 px-4">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <p className="text-gray-600">
-            Mostrando <span className="font-semibold">{autosActuales.length}</span> de <span className="font-semibold">{allCars.length}</span> resultados
-          </p>
-          {/* Aquí podés poner el selector de ordenamiento si tenés uno */}
+        {/* Carrusel (puedes agregar aquí un carrusel de imágenes o elementos) */}
+        <div className="mb-6">
+          {/* RecodeCarousel */}
         </div>
       </div>
 
-      {/* Resultados + Mapa */}
+      {/* Fila 2: Contenido Principal */}
       <div className="flex flex-col md:flex-row gap-6">
 
-        {/* Lista de autos */}
+        {/* Columna 1: Filtros y Lista de Autos */}
         <div className="flex-1">
-          <RecodeCarList
-            carCards={autosActuales}
-            total={allCars.length}
-            visibles={autosVisibles}
-            onLoadMore={mostrarMasAutos}
-            lote={CANTIDAD_POR_LOTE}
-          />
+
+          {/* Fila 1: Filtros */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6">Filtrar por:
+            <Filter lista={ciudades} nombre="Ciudades" />
+            <Filter lista={marcas} nombre="Marcas" />
+            <Filter lista={combustibles} nombre="Combustibles" />
+          </div>
+
+          {/* Fila 2: Resultados + Ordenamiento */}
+          <div className="w-[750px] flex justify-between items-center mb-6"> {/* Agregado el ancho de 750px */}
+            <p className="text-gray-600">
+              Mostrando <span className="font-semibold">{autosActuales.length}</span> de <span className="font-semibold">{allCars.length}</span> resultados
+            </p>
+            <div className="w-[300px]"> {/* Ajustado el ancho para que el dropdown no se desborde */}
+              <Filter lista={ordenados} nombre="Ordenados por" />
+            </div>
+          </div>
+
+          {/* Fila 3: Lista de Autos */}
+          <div className="flex-1">
+            <RecodeCarList
+              carCards={autosActuales}
+            />
+          </div>
+
+          {/* Fila 4: Botón "Ver más resultados" */}
+          {autosVisibles < allCars.length && (
+            <div className="mt-6 flex justify-center">
+              <button 
+                className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+                onClick={mostrarMasAutos}
+              >
+                Ver más resultados
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Mapa */}
-        <div className="w-full md:w-[40%] lg:w-[35%]">
+        {/* Columna 2: Mapa */}
+        <div >
           {/* RecodeMapView */}
         </div>
+
       </div>
     </main>
   )
