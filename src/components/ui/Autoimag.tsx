@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function Autoimag(){
   return(
       <section className="max-w-3xl">
