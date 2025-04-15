@@ -117,7 +117,7 @@ export default function RecodeCarCard({
         <Link
           /*href={`/infoAuto/${id}`}*/
           href= {'/infoAuto/'}
-          className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 mt-4 md:mt-0 text-sm md:text-base">
+          className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 mt-4 md:mt-0 text-sm md:text-base" target="_blank">
           Reservar {id}
         </Link>
       </div>
