@@ -79,6 +79,8 @@ export default function CaracteristicasCoche() {
         setAsientosError("El número de asientos es obligatorio");
       } else if (parseInt(value) <= 0) {
         setAsientosError("El número de asientos debe ser mayor a 0");
+      } else if (parseInt(value) >= 240) {
+        setAsientosError("El número de asientos debe ser menor a 240");
       } else {
         setAsientosError("");
       }

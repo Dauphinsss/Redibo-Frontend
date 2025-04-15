@@ -49,7 +49,7 @@ export default function DatosPrincipales() {
       return false;
     }
     if (!vinRegex.test(vinValue)) {
-      setVinError("El VIN debe tener exactamente 17 caracteres válidos.");
+      setVinError("El VIN debe tener exactamente 17 caracteres alfanuméricos.");
       return false;
     }
     setVinError("");
@@ -66,8 +66,8 @@ export default function DatosPrincipales() {
       
       // Validar que el año esté en el rango permitido
       const yearValue = parseInt(value, 10);
-      if (value !== "" && (yearValue < 1900 || yearValue > currentYear)) {
-        setAnioError(`El año debe estar entre 1900 y ${currentYear}.`);
+      if (value !== "" && (yearValue < 1980 || yearValue > currentYear)) {
+        setAnioError(`El año debe estar entre 1980 y ${currentYear}.`);
       } else {
         setAnioError("");
       }
@@ -220,7 +220,7 @@ export default function DatosPrincipales() {
             type="text"
             value={anio}
             onChange={handleAnioChange}
-            placeholder={`Entre 1900 y ${currentYear}`}
+            placeholder={`Entre 1980 y ${currentYear}`}
             className="w-full max-w-md"
             maxLength={4}
           />
