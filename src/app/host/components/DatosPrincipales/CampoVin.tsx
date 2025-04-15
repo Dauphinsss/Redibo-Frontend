@@ -25,7 +25,7 @@ export default function CampoVin({ vin, setVin, vinError, setVinError }: CampoVi
 
   return (
     <div className="flex flex-col">
-      <label className="text-base font-medium mb-1">Número de VIN:</label>
+      <label className="text-base font-medium mb-1">Número de VIN: <span className="text-red-600"> *</span></label>
       <Input type="text" value={vin} onChange={handleChange} maxLength={17} className="max-w-md" />
       {vinError && <p className="text-sm text-red-600 mt-1">{vinError}</p>}
     </div>
