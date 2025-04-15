@@ -2,7 +2,7 @@ import React from "react";
 import Header from "@/components/ui/Header"; 
 import { FaStar, FaUserCircle } from "react-icons/fa";
 import coche2 from "@/assets/coche2.jpg";
-import Comment from "@/components/recodeComponentes/coment"; 
+import Comment from "@/components/recodeComponentes/RecodeComment"; 
 
 const MobileView = () => (
   <div className="p-4 pb-32">
