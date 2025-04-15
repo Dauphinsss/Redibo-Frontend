@@ -30,6 +30,7 @@ export interface RecodeCarCardProps {
 }
 
 export default function RecodeCarCard({
+  id,
   nombre,
   marca,
   asientos,
@@ -48,12 +49,12 @@ export default function RecodeCarCard({
   const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(combustibles[0])
 
   return (
-    <div className="w-full max-w-[750px] md:h-[320px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-4 mx-0"> {/* Removed mx-auto */}
+    <div className="w-full max-w-[750px] md:h-[320px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-4 mx-0">
 
       {/* Columna IZQUIERDA: Imagen */}
       <div className="w-full md:w-[250px] flex flex-col justify-between gap-4">
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-[230px] h-[150px] bg-gray-200 rounded-[10px] flex items-center justify-center text-5xl hover:text-6xl transition">
+          <div className="w-[230px] h-[150px] bg-gray-200 rounded-[10px] flex items-center justify-center text-5xl hover:text-6xl transition" title={`Imagen de ${nombre}`} aria-label={`Imagen representativa del vehículo ${nombre}`}>
             🚗
           </div>
         </div>
@@ -114,9 +115,10 @@ export default function RecodeCarCard({
           <p className="text-sm text-gray-500">Por día: {precioPorDia}</p>
         </div>
         <Link
-          href= {'/infoAuto/'} 
+          /*href={`/infoAuto/${id}`}*/
+          href= {'/infoAuto/'}
           className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 mt-4 md:mt-0 text-sm md:text-base">
-          Reservar
+          Reservar {id}
         </Link>
       </div>
     </div>
