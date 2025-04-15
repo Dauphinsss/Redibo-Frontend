@@ -65,7 +65,12 @@ const SearchBar = () => {
             router.push(`/searchMock?query=${encodeURIComponent(searchTerm)}`);
             setIsClicked(false);
         } else if (searchTerm) {
-            handleSearchItemClick(searchTerm);
+            const updatedSearches = [searchTerm, ...savedSearches.filter(item => item !== searchTerm)]
+            setSavedSearches(updatedSearches);
+            localStorage.setItem("lastSearchTerm", searchTerm);
+            localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
+            router.push(`/searchMock?query=${encodeURIComponent(searchTerm)}`);
+            setIsClicked(false);
         }
     }
 
@@ -84,7 +89,7 @@ const SearchBar = () => {
     const handleSearchItemClick = (search: string) => {
         setSearchTerm(search);
         setIsClicked(false);
-
+        
         const updatedSearches = [search, ...savedSearches.filter(item => item !== search)]
         setSavedSearches(updatedSearches);
         localStorage.setItem("lastSearchTerm", search);
