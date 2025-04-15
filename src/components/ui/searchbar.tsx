@@ -6,10 +6,11 @@ import { FaSearch } from 'react-icons/fa';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 var canClose = true;
+const userId = 22;
 
 const SearchBar = () => {
     const [searchTerm, setSearchTerm] = useState("");
-    const [savedSearches, setSavedSearches] = useState<string[]>([]);
+    const [savedSearches, setSavedSearches] = useState<{ id: number, criterio: string }[]>([]);
     const [isClicked, setIsClicked] = useState(false);
     const router = useRouter();
 
@@ -37,10 +38,10 @@ const SearchBar = () => {
             hasSetQuery.current = true;
         }
 
-        const stored = localStorage.getItem("savedSearches");
-        if (stored) {
-            setSavedSearches(JSON.parse(stored));
-        }
+        fetch(`http://localhost:4000/api/search-history/id/${userId}`)
+            .then(res => res.json())
+            .then(data => setSavedSearches(data))
+            .catch(err => console.error("Error al cargar búsquedas:" , err))
 
         const restored = localStorage.getItem("restoreSearch");
         if (restored && searchTerm === "") {
@@ -56,41 +57,63 @@ const SearchBar = () => {
     }, [isSearchPage, query]);
 
     const handleButtonClick = () => {
-        if (searchTerm && !savedSearches.includes(searchTerm)) {
-            const updatedSearches = [searchTerm, ...savedSearches.filter(s => s !== searchTerm)];
-            setSavedSearches(updatedSearches);
-            
+        const normalized = searchTerm.trim().toLowerCase();
+        const alreadyExists = savedSearches.map(s => s.criterio.trim().toLowerCase()).includes(normalized);
+
+        if (searchTerm && !alreadyExists) {
             localStorage.setItem("lastSearchTerm", searchTerm);
-            localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
+            fetch("http://localhost:4000/api/search-history/save", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  criterio: searchTerm,
+                  id_usuario: userId
+                })
+              })
+              .then(res => res.json())
+              .then(data => {
+                const updatedSearches = [data, ...savedSearches];
+                setSavedSearches(updatedSearches);
+              })
+              .catch(err => console.error("Error al guardar búsqueda: ", err));
+
             router.push(`/searchMock?query=${encodeURIComponent(searchTerm)}`);
             setIsClicked(false);
         } else if (searchTerm) {
             handleSearchItemClick(searchTerm);
         }
-    }
+    };
 
     const handleClick = () => {
         setIsClicked(true);
-    }
+    };
 
-    const removeSearch = (index: number, event: React.MouseEvent) => {
+    const removeSearch = (id: number, index: number, event: React.MouseEvent) => {
         event.stopPropagation();
         canClose = false;
         const updatedSearches = savedSearches.filter((_, i) => i !== index);
         setSavedSearches(updatedSearches);
-        localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
-    }
+
+        fetch(`http://localhost:4000/api/search-history/delete/${id}`, {
+            method: "DELETE"
+        });
+    };
 
     const handleSearchItemClick = (search: string) => {
+        const normalizedSearch = search.trim().toLowerCase();
+        const updatedSearches = [
+            { id: Date.now(), criterio: search },
+            ...savedSearches.filter(item => item.criterio.trim().toLowerCase() !== normalizedSearch)
+          ];
         setSearchTerm(search);
-        setIsClicked(false);
-
-        const updatedSearches = [search, ...savedSearches.filter(item => item !== search)]
         setSavedSearches(updatedSearches);
+        setIsClicked(false);
+    
         localStorage.setItem("lastSearchTerm", search);
-        localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
         router.push(`/searchMock?query=${encodeURIComponent(search)}`);
-    }
+    };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
@@ -99,7 +122,7 @@ const SearchBar = () => {
         if (event.key === "Escape") {
             setIsClicked(false);
         }
-    }
+    };
 
     return (
         <div className="search-bar" ref={searchBarRef}>
@@ -117,11 +140,11 @@ const SearchBar = () => {
                 <div className="saved-searches" ref={savedSearchesRef}>
                     {savedSearches.length > 0 ? (
                         savedSearches.slice(0, 10).map((search, index) => (
-                            <div key={index} className="saved-search-item" onClick={() => handleSearchItemClick(search)}>
-                                <span>{search}</span>
+                            <div key={index} className="saved-search-item" onClick={() => handleSearchItemClick(search.criterio)}>
+                                <span>{search.criterio}</span>
                                 <button
                                     className="remove-button"
-                                    onClick={(e) => removeSearch(index, e)}
+                                    onClick={(e) => removeSearch(search.id, index, e)}
                                 >
                                     X
                                 </button>
