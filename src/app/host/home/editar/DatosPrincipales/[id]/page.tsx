@@ -13,20 +13,8 @@ SelectItem,
 } from "@/components/ui/select";
 import axios from 'axios';
 
-// API URL para operaciones con coches individuales
-const API_URL = "http://localhost:4000";
-
-// Interfaz para la transformación de datos de backend a frontend
-interface BackendCar {
-id: number;
-marca: string;
-modelo: string;
-año: number;
-precio_por_dia: number;
-estado: string;
-vim: string;
-placa: string;
-}
+// URL base de la API
+const API_URL = "http://localhost:4000/api";
 
 // Interfaz para el formulario
 interface CarFormData {
@@ -46,6 +34,7 @@ return { label: year.toString(), value: year.toString() };
 export default function DatosPrincipales() {
 const router = useRouter();
 const params = useParams();
+  // Extraemos el ID del carro de los parámetros de la URL
 const carId = params?.id ? parseInt(params.id as string) : null;
 
 const [formData, setFormData] = useState<CarFormData>({
@@ -64,29 +53,58 @@ useEffect(() => {
     const fetchCarData = async () => {
     if (!carId) {
         setIsLoading(false);
+        setError("ID del vehículo no encontrado");
         return;
     }
 
     try {
-        const response = await axios.get(`${API_URL}/${carId}`);
+        // Intentamos con el endpoint de vehículo completo
+        const response = await axios.get(`${API_URL}/vehiculo/${carId}`);
         
-        if (response.data.success) {
-        const backendCar: BackendCar = response.data.data;
+        if (response.data) {
+          // Intentamos acceder a los datos del vehículo dependiendo de la estructura
+        let vehiculoData = response.data;
         
-          // Transformar datos del backend al formato del formulario
+          // Si los datos están dentro de una propiedad 'data'
+        if (response.data.data) {
+            vehiculoData = response.data.data;
+        }
+        
+          // Actualizar formulario con los datos recibidos
         setFormData({
-            brand: backendCar.marca,
-            model: backendCar.modelo,
-            year: backendCar.año.toString(),
-            vin: backendCar.vim,
-            plate: backendCar.placa
+            brand: vehiculoData.marca || "",
+            model: vehiculoData.modelo || "",
+            year: vehiculoData.año?.toString() || "",
+            vin: vehiculoData.vim || "",
+            plate: vehiculoData.placa || ""
         });
         } else {
         setError("No se pudo cargar la información del vehículo");
         }
     } catch (err) {
-        console.error("Error al cargar los datos:", err);
+        // Intentar con endpoints individuales si el completo falla
+        try {
+          // Intentamos cargar cada dato individualmente
+        const [marcaResp, modeloResp, anioResp, vimResp, placaResp] = await Promise.all([
+            axios.get(`${API_URL}/vehiculo/${carId}/marca`).catch(e => ({ data: "" })),
+            axios.get(`${API_URL}/vehiculo/${carId}/modelo`).catch(e => ({ data: "" })),
+            axios.get(`${API_URL}/vehiculo/${carId}/anio`).catch(e => ({ data: "" })),
+            axios.get(`${API_URL}/vehiculo/${carId}/vim`).catch(e => ({ data: "" })),
+            axios.get(`${API_URL}/vehiculo/${carId}/placa`).catch(e => ({ data: "" }))
+        ]);
+        
+          // Actualizar formulario con los datos individuales
+        setFormData({
+            brand: typeof marcaResp.data === 'object' ? marcaResp.data.marca || "" : marcaResp.data || "",
+            model: typeof modeloResp.data === 'object' ? modeloResp.data.modelo || "" : modeloResp.data || "",
+            year: typeof anioResp.data === 'object' ? anioResp.data.año?.toString() || "" : anioResp.data?.toString() || "",
+            vin: typeof vimResp.data === 'object' ? vimResp.data.vim || "" : vimResp.data || "",
+            plate: typeof placaResp.data === 'object' ? placaResp.data.placa || "" : placaResp.data || ""
+        });
+        
+        } catch (err2) {
         setError("Error al cargar los datos del vehículo");
+        }
     } finally {
         setIsLoading(false);
     }
@@ -105,13 +123,16 @@ const handleChange = (field: string, value: string) => {
 const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!carId) return;
+    if (!carId) {
+    setError("ID del vehículo no encontrado");
+    return;
+    }
     
     try {
     setIsLoading(true);
     
       // Transformar datos del formulario al formato del backend
-const backendData = {
+    const backendData = {
         marca: formData.brand,
         modelo: formData.model,
         año: parseInt(formData.year),
@@ -119,17 +140,16 @@ const backendData = {
         placa: formData.plate
     };
     
-         // Actualizar datos en el backend
-    const response = await axios.put(`${API_URL}/${carId}`, backendData);
+      // Actualizar datos en el backend
+    const response = await axios.put(`${API_URL}/vehiculo/${carId}`, backendData);
     
-    if (response.data.success) {
+    if (response.status === 200 || response.data?.success) {
         // Redireccionar a la página de detalles o lista
         router.push("/host/cars");
     } else {
         setError("No se pudieron guardar los cambios");
     }
     } catch (err) {
-    console.error("Error al actualizar:", err);
     setError("Error al guardar los cambios");
     } finally {
     setIsLoading(false);
@@ -148,17 +168,6 @@ if (isLoading) {
     );
 }
 
-if (error) {
-    return (
-    <div className="p-6 flex flex-col items-center justify-center min-h-screen">
-        <p className="text-lg text-red-500 mb-4">{error}</p>
-        <Button onClick={() => router.push("/host/cars")}>
-        Volver a la lista
-        </Button>
-    </div>
-    );
-}
-
 return (
     <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
       {/* Título */}
@@ -167,6 +176,13 @@ return (
     </div>
 
     <span className="text-lg font-medium pl-9 mb-6">Actualice los datos principales del vehículo</span>
+
+      {/* Mensaje de error si existe */}
+    {error && (
+        <div className="w-full max-w-5xl mb-6 pl-9">
+        <p className="text-red-500">{error}</p>
+        </div>
+    )}
 
       {/* Formulario */}
     <form onSubmit={handleSubmit} className="w-full max-w-5xl pl-13">
