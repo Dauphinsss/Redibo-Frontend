@@ -3,6 +3,8 @@
 import { useState } from "react"
 import RecodeCarList from "@/components/recodeComponentes/RecodeCarList"
 import { cars as allCars } from "@/Datos de prueba/cars"
+import SearchBar from "@/components/recodeComponentes/RecodeSearchBar"
+import Filter from "@/components/recodeComponentes/RecodeFilter"
 
 export default function Home() {
   const CANTIDAD_POR_LOTE = 8
@@ -12,21 +14,29 @@ export default function Home() {
     setAutosVisibles(prev => prev + CANTIDAD_POR_LOTE)
   }
 
+  const ciudades = ["Cochabamba","Santa Cruz","La Paz"]
+  const marcas = ["Toyota","Nissan","Susuki"]
+
   const autosActuales = allCars.slice(0, autosVisibles)
 
   return (
     <main className="p-4 max-w-[1440px] mx-auto">
 
-      {/* 🔍 Buscador */}
-      <div className="mb-6">{/* RecodeSearchBar */}</div>
+      {/* Buscador */}
+      <div className="mb-6">
+        <SearchBar name="Buscar por nombre, marca "/>
+      </div>
 
-      {/* 🎞 Carrusel */}
+      {/*Carrusel */}
       <div className="mb-6">{/* RecodeCarousel */}</div>
 
-      {/* 🎛 Filtros */}
-      <div className="mb-6">{/* RecodeFilterBar */}</div>
+      {/*Filtros */}
+      <div className="mb-6">
+      <Filter lista={ciudades} nombre="Ciudades"/>
+      <Filter lista={marcas} nombre="Marcas"/>
+      </div>
 
-      {/* 📊 Resultados + ordenamiento */}
+      {/* Resultados + ordenamiento */}
       <div className="mb-4 px-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <p className="text-gray-600">
@@ -36,10 +46,10 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 🔄 Resultados + Mapa */}
+      {/* Resultados + Mapa */}
       <div className="flex flex-col md:flex-row gap-6">
 
-        {/* 🚗 Lista de autos */}
+        {/* Lista de autos */}
         <div className="flex-1">
           <RecodeCarList
             carCards={autosActuales}
@@ -50,7 +60,7 @@ export default function Home() {
           />
         </div>
 
-        {/* 🗺 Mapa */}
+        {/* Mapa */}
         <div className="w-full md:w-[40%] lg:w-[35%]">
           {/* RecodeMapView */}
         </div>
