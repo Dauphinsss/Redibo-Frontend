@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = "http://localhost:4000/api/v2/direc";
+const API_URL = "http://localhost:4000";
 
 interface BackendCountry {
     id: number;
