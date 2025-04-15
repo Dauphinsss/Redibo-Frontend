@@ -16,6 +16,7 @@
     "@radix-ui/react-slot": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "force": "^0.0.3",
     "lucide-react": "^0.485.0",
     "next": "^15.3.0",
     "react": "^19.1.0",
@@ -35,5 +36,19 @@
     "eslint-config-next": "15.2.4",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dauphinsss/Redibo-Frontend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Dauphinsss/Redibo-Frontend/issues"
+  },
+  "homepage": "https://github.com/Dauphinsss/Redibo-Frontend#readme"
 }

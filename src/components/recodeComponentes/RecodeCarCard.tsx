@@ -10,6 +10,7 @@ import {
   FaStar,
   FaMapMarkerAlt,
 } from "react-icons/fa"
+import Link from 'next/link'
 
 export interface RecodeCarCardProps {
   id: string
@@ -43,6 +44,7 @@ export default function RecodeCarCard({
   precioDescuento,
   precioPorDia,
 }: RecodeCarCardProps) {
+  
   const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(combustibles[0])
 
   return (
@@ -111,9 +113,11 @@ export default function RecodeCarCard({
           <p className="text-gray-400 font-bold">{precioDescuento}</p>
           <p className="text-sm text-gray-500">Por día: {precioPorDia}</p>
         </div>
-        <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 mt-4 md:mt-0 text-sm md:text-base">
+        <Link
+          href= {'/infoAuto/'} 
+          className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 mt-4 md:mt-0 text-sm md:text-base">
           Reservar
-        </button>
+        </Link>
       </div>
     </div>
   )

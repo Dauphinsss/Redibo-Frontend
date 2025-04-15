@@ -1,4 +1,4 @@
-import Header from '@/components/ui/Header'
+import RecodeHeader from '@/components/recodeComponentes/RecodeHeader'
 import Autoimag from '@/components/recodeComponentes/RecodeAutoimag'
 import InfoPrincipal from '@/components/recodeComponentes/RecodeInfoPrincipal'
 import InfoDestacable from '@/components/recodeComponentes/RecodeInfoDestacable'
@@ -11,7 +11,7 @@ import ParamIniciales from '@/components/recodeComponentes/RecodeParamIniciales'
 export default function Page(){
     return(
         <>
-            <Header />
+            <RecodeHeader />
             <main className="w-full flex flex-col items-center px-4 sm:px-6 lg:px-8">
                 <div className="w-full max-w-6xl border-b-gray-300 py-4">
                     <ParamIniciales />
