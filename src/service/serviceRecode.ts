@@ -20,7 +20,6 @@ export const getCarById = async (id: string) => {
   }
 };
 
-// Filtrar autos por modelo descendente
 export const getCarsByModelDesc = async () => {
   try {
     const response = await api.get("/filterCar", {
