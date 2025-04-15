@@ -92,7 +92,7 @@ export default function InputImagen() {
 
       {/* Título */}
       <div className="w-full max-w-5xl flex justify-start">
-        <h1 className="text-4xl font-bold my-5 pl-7">Cargar Imágenes de tu auto:</h1>
+        <h1 className="text-4xl font-bold my-5 pl-7">Cargar Imágenes de tu vehículo:</h1>
       </div>
 
       {/* Formulario de carga de imágenes */}
@@ -100,7 +100,7 @@ export default function InputImagen() {
         {/* Área de carga de imágenes */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Imagen principal - Más grande */}
-          <div className="col-span-1 md:col-span-2">
+          <div className="col-span-1">
             <div 
               className="border rounded-md bg-gray-50 h-64 flex flex-col items-center justify-center p-4 relative"
               style={{
@@ -186,27 +186,27 @@ export default function InputImagen() {
         
         {/* Número de mantenimientos */}
         <div className="flex flex-col mt-6">
-          <label className="text-base font-medium mb-2">Nro de mantenimientos</label>
+          <label className="text-base font-medium mb-2">Número de mantenimientos:</label>
           <Input
             type="number"
-            placeholder="3"
+            placeholder="0"
             className="w-full max-w-md"
           />
         </div>
 
         {/* Precio de alquiler por día */}
         <div className="flex flex-col mt-6">
-          <label className="text-base font-medium mb-2">Precio de alquiler por día</label>
+          <label className="text-base font-medium mb-2">Precio de alquiler por día:</label>
           <Input
             type="number"
-            placeholder="150"
+            placeholder="0"
             className="w-full max-w-md"
           />
         </div>
 
         {/* Descripción */}
         <div className="flex flex-col mt-6">
-          <label className="text-base font-medium mb-2">Descripción</label>
+          <label className="text-base font-medium mb-2">Descripción:</label>
           <Textarea
             placeholder="Describa las características de su vehículo..."
             className="w-full resize-none h-24"
