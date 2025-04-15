@@ -8,12 +8,12 @@ import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 
-import CampoVin from "../../../components/CampoVin";
-import CampoAnio from "../../../components/CampoAnio";
-import CampoMarca from "../../../components/CampoMarca";
-import CampoModelo from "../../../components/CampoModelo";
-import CampoPlaca from "../../../components/CampoPlaca";
-import BotonesFormulario from "../../../components/BotonesFormulario";
+import CampoVin from "../../../components/DatosPrincipales/CampoVin";
+import CampoAnio from "../../../components/DatosPrincipales/CampoAnio";
+import CampoMarca from "../../../components/DatosPrincipales/CampoMarca";
+import CampoModelo from "../../../components/DatosPrincipales/CampoModelo";
+import CampoPlaca from "../../../components/DatosPrincipales/CampoPlaca";
+import BotonesFormulario from "../../../components/DatosPrincipales/BotonesFormulario";
 
 
 export default function DatosPrincipales() {
@@ -76,8 +76,6 @@ export default function DatosPrincipales() {
       </div>
 
       <div className="w-full max-w-5xl flex justify-between mt-10 px-10">
-        
-
         <BotonesFormulario isFormValid={isFormValid} />
       </div>
     </div>
