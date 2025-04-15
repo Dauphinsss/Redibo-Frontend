@@ -8,7 +8,7 @@ function CarsCarousel() {
   const [content, setcontent] = useState([])
   useEffect(() => {
     const fetchData = () => {
-      fetch('http://localhost:4000/api/cars/most-rented') 
+      fetch('http://localhost:3000/api/cars/most-rented') 
       .then(response => response.json())
       .then(data => setcontent(data))
       .catch(error => console.error('Error al obtener usuarios:', error));

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, User, LogIn, UserPlus, LogOut, ChevronDown } from "lucide-react";
 
@@ -22,7 +22,21 @@ export default function Header() {
     <header className="border-b">
       <div className=" flex h-16 items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-2">
-          <Link href="/" className="font-bold text-xl">
+          <Link href="/" className="font-bold text-xl"
+            onClick={() => {
+              const current = document.querySelector('input.input') as HTMLInputElement;
+              const value = current?.value.trim();
+
+              if (value) {
+                localStorage.setItem("restoreSearch", value);
+                localStorage.setItem("lastSearchTerm", value);
+              } else {
+                localStorage.removeItem("restoreSearch");
+                localStorage.removeItem("lastSearchTerm");
+              }
+            }
+          }
+          >
             REDIBO
           </Link>
         </div>
