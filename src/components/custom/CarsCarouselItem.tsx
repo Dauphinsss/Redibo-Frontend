@@ -29,7 +29,7 @@ function CarsCarouselItem({ car }: { car: { marca: string; modelo: string; anio:
               {car.veces_alquilado} veces
             </span>
           </div>
-          <ReservationConfirmedMessage />
+          {/*<ReservationConfirmedMessage />*/}
         </CardContent>
       </Card>
     </CarouselItem>
