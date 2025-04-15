@@ -13,14 +13,18 @@ export default function Home() {
   const [autosVisibles, setAutosVisibles] = useState(CANTIDAD_POR_LOTE);
   const [cargando, setCargando] = useState(true);
 
+  const [filtroCiudad, setFiltroCiudad] = useState("");
+  const [filtroMarca, setFiltroMarca] = useState("");
+  const [filtroCombustible, setFiltroCombustible] = useState("");
+
   const mostrarMasAutos = () => {
     setAutosVisibles((prev) => prev + CANTIDAD_POR_LOTE);
   };
 
-  const ordenados = ["Recomendación", "Precio bajo a alto", "Precio alto a bajo"];
+  const ordenados = ["Recomendacion", "Precio bajo a alto", "Precio alto a bajo"];
   const ciudades = ["Cochabamba", "Santa Cruz", "La Paz"];
   const marcas = ["Toyota", "Nissan", "Susuki"];
-  const combustibles = ["Gasolina", "Diésel", "Eléctrico", "Híbrido"];
+  const combustibles = ["Gasolina", "Diesel", "Electrico", "Hibrido"];
 
   useEffect(() => {
     const fetchAutos = async () => {
@@ -38,6 +42,23 @@ export default function Home() {
 
     fetchAutos();
   }, []);
+
+  useEffect(() => {
+    let filtrados = autos;
+
+    if (filtroCiudad) {
+      filtrados = filtrados.filter(auto => auto.ubicacion === filtroCiudad);
+    }
+    if (filtroMarca) {
+      filtrados = filtrados.filter(auto => auto.marca === filtroMarca);
+    }
+    if (filtroCombustible) {
+      filtrados = filtrados.filter(auto => auto.combustibles.includes(filtroCombustible));
+    }
+
+    setAutosFiltrados(filtrados);
+    setAutosVisibles(CANTIDAD_POR_LOTE);
+  }, [filtroCiudad, filtroMarca, filtroCombustible, autos]);
 
   const autosActuales = autosFiltrados.slice(0, autosVisibles);
 
@@ -59,9 +80,9 @@ export default function Home() {
           {/* Filtros */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <span className="font-semibold">Filtrar por:</span>
-            <Filter lista={ciudades} nombre="Ciudades" />
-            <Filter lista={marcas} nombre="Marcas" />
-            <Filter lista={combustibles} nombre="Combustibles" />
+            <Filter lista={ciudades} nombre="Ciudades" onChange={setFiltroCiudad} />
+            <Filter lista={marcas} nombre="Marcas" onChange={setFiltroMarca} />
+            <Filter lista={combustibles} nombre="Combustibles" onChange={setFiltroCombustible} />
           </div>
 
           {/* Resultados + Ordenamiento */}
@@ -70,7 +91,7 @@ export default function Home() {
               Mostrando <span className="font-semibold">{autosActuales.length}</span> de <span className="font-semibold">{autosFiltrados.length}</span> resultados
             </p>
             <div className="w-full sm:w-[300px] mt-2 sm:mt-0">
-              <Filter lista={ordenados} nombre="Ordenados por" />
+              <Filter lista={ordenados} nombre="Ordenados por" onChange={() => {}} />
             </div>
           </div>
 
