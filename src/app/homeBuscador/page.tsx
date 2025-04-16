@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import RecodeCarList from "@/components/recodeComponentes/RecodeCarList";
 import SearchBar from "@/components/recodeComponentes/RecodeSearchBar";
 import Filter from "@/components/recodeComponentes/RecodeFilter";
-import { RecodeAuto } from "@/components/recodeComponentes/RecodeAuto";
+import { RecodeAuto as Auto} from "@/components/recodeComponentes/RecodeAuto";
 
 export default function Home() {
   const CANTIDAD_POR_LOTE = 8;
-  const [autos, setAutos] = useState<RecodeAuto[]>([]);
-  const [autosFiltrados, setAutosFiltrados] = useState<RecodeAuto[]>([]);
+  const [autos, setAutos] = useState<Auto[]>([]);
+  const [autosFiltrados, setAutosFiltrados] = useState<Auto[]>([]);
   const [autosVisibles, setAutosVisibles] = useState(CANTIDAD_POR_LOTE);
   const [cargando, setCargando] = useState(true);
 
@@ -21,17 +21,62 @@ export default function Home() {
     setAutosVisibles((prev) => prev + CANTIDAD_POR_LOTE);
   };
 
-  const ordenados = ["Recomendacion", "Precio bajo a alto", "Precio alto a bajo"];
+  const ordenados = ["Recomendación", "Precio bajo a alto", "Precio alto a bajo"];
   const ciudades = ["Cochabamba", "Santa Cruz", "La Paz"];
   const marcas = ["Toyota", "Nissan", "Susuki"];
-  const combustibles = ["Gasolina", "Diesel", "Electrico", "Hibrido"];
+  const combustibles = ["Gasolina", "Diésel", "Eléctrico", "Híbrido"];
 
   useEffect(() => {
     const fetchAutos = async () => {
       setCargando(true);
       try {
-        const res = await fetch("/data/autos.json");
-        const data = await res.json();
+        const res = await fetch("https://search-car-backend.vercel.app/searchCar/autos");
+        const rawData = await res.json();
+
+        interface RawAuto {
+          id: number;
+          modelo: string;
+          marca: string;
+          asientos: number;
+          puertas: number;
+          transmision: string;
+          precio_por_dia: string;
+          combustiblecarro: { tipo_de_combustible: string }[];
+          estado: string;
+          usuario_rol?: {
+            usuario?: {
+              nombre?: string;
+            };
+          };
+          direccion?: {
+            calle?: string;
+            zona?: string;
+          };
+          imagen?: {
+            data?: string;
+          }[];
+        }
+
+        const data: Auto[] = (rawData as RawAuto[]).map((item) => ({
+          id: String(item.id),
+          nombre: item.modelo || "",
+          marca: item.marca || "",
+          asientos: item.asientos || 0,
+          puertas: item.puertas || 0,
+          transmision: item.transmision || "",
+          combustibles: item.combustiblecarro.map((c) => c.tipo_de_combustible),
+          estado: item.estado || "",
+          nombreHost: item.usuario_rol?.usuario?.nombre || "",
+          calificacion: 4.5,
+          ubicacion: item.direccion?.zona || "",
+          calle: item.direccion?.calle || "",
+          zona: item.direccion?.zona || "",
+          precioOficial: "Bs. " + item.precio_por_dia,
+          precioDescuento: "Bs. " + item.precio_por_dia,
+          precioPorDia: "Bs. " + item.precio_por_dia,
+          imagenUrl: item.imagen?.[0]?.data || ""
+        }));
+
         setAutos(data);
         setAutosFiltrados(data);
       } catch (error) {
@@ -64,7 +109,6 @@ export default function Home() {
 
   return (
     <main className="p-4 max-w-[1440px] mx-auto">
-      {/* Fila 1: Buscador y Carrusel */}
       <div className="mb-6 flex flex-col items-center justify-center">
         <SearchBar
           placeholder="Buscar por nombre, marca"
@@ -74,10 +118,8 @@ export default function Home() {
         <div className="mb-6">{/* RecodeCarousel */}</div>
       </div>
 
-      {/* Fila 2: Contenido Principal */}
       <div className="flex flex-col md:flex-row gap-6">
         <div className="flex-1">
-          {/* Filtros */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <span className="font-semibold">Filtrar por:</span>
             <Filter lista={ciudades} nombre="Ciudades" onChange={setFiltroCiudad} />
@@ -85,7 +127,6 @@ export default function Home() {
             <Filter lista={combustibles} nombre="Combustibles" onChange={setFiltroCombustible} />
           </div>
 
-          {/* Resultados + Ordenamiento */}
           <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
             <p className="text-gray-600">
               Mostrando <span className="font-semibold">{autosActuales.length}</span> de <span className="font-semibold">{autosFiltrados.length}</span> resultados
@@ -95,7 +136,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Lista de Autos o Loader */}
           <div>
             {cargando ? (
               <p className="text-center text-gray-500">Cargando autos...</p>
@@ -104,7 +144,6 @@ export default function Home() {
             )}
           </div>
 
-          {/* Botón "Ver más resultados" */}
           {!cargando && autosVisibles < autosFiltrados.length && (
             <div className="mt-6 flex justify-center">
               <button
@@ -117,7 +156,6 @@ export default function Home() {
           )}
         </div>
 
-        {/* Columna 2: Mapa */}
         <div className="md:w-1/3 bg-gray-100 h-[300px] rounded shadow-inner flex items-center justify-center text-gray-500">
           RecodeMapView próximamente
         </div>

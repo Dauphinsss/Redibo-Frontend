@@ -10,7 +10,10 @@ export interface RecodeAuto {
     nombreHost: string;
     calificacion: number;
     ubicacion: string;
+    calle: string
+    zona: string
     precioOficial: string;
     precioDescuento: string;
     precioPorDia: string;
+    imagenUrl: string
 }
