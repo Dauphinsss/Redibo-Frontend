@@ -22,7 +22,7 @@ export default function Home() {
     setAutosVisibles((prev) => prev + CANTIDAD_POR_LOTE);
   };
 
-  const ordenados = ["Recomendación", "Precio bajo a alto", "Precio alto a bajo", "Modelo Ascendente", "Modelo Descendente"];
+  const ordenados = [ "Precio bajo a alto", "Precio alto a bajo", "Modelo Ascendente", "Modelo Descendente"];
   const ciudades = ["Cochabamba", "Santa Cruz", "La Paz"];
   const marcas = ["Toyota", "Nissan", "Susuki"];
   const combustibles = ["Gasolina", "Diésel", "Eléctrico", "Híbrido"];
