@@ -42,7 +42,7 @@ export default function Home() {
           puertas: number;
           transmision: string;
           precio_por_dia: string;
-          combustiblecarro: { tipo_de_combustible: string }[];
+          combustiblecarro: { tipocombustible?: { tipo_de_combustible: string } }[];
           estado: string;
           usuario_rol?: {
             usuario?: { nombre?: string };
@@ -61,7 +61,9 @@ export default function Home() {
           asientos: item.asientos || 0,
           puertas: item.puertas || 0,
           transmision: item.transmision || "",
-          combustibles: item.combustiblecarro.map((c) => c.tipo_de_combustible),
+          combustibles: Array.isArray(item.combustiblecarro)
+          ? item.combustiblecarro.map((c) => c.tipocombustible?.tipo_de_combustible)
+          : [],
           estado: item.estado || "",
           nombreHost: item.usuario_rol?.usuario?.nombre || "",
           calificacion: 4.5,
