@@ -1,4 +1,5 @@
 import api from "@/api/api";
+import api2 from '@/api/api2';
 
 export const getAllCars = async () => {
   try {
@@ -10,9 +11,15 @@ export const getAllCars = async () => {
   }
 };
 
+/*export async function getCarById(id: string) {
+  const res = await fetch(`https://search-car-backend.vercel.app/detailCar/${id}`);
+  if (!res.ok) throw new Error('No se pudo obtener el auto');
+  return await res.json();
+}*/
+
 export const getCarById = async (id: string) => {
   try {
-    const response = await api.get(`/detailCar/${id}`);
+    const response = await api2.get(`/detailCar/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error al obtener el auto con ID ${id}:`, error);

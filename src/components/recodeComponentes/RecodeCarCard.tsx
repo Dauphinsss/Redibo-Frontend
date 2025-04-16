@@ -109,7 +109,7 @@ export default function RecodeCarCard(props: RecodeAuto) {
       <div className="w-full md:w-[130px] flex flex-col justify-between items-end">
         <div className="text-right w-full md:w-auto">
           <p className="text-2xl font-bold">{precioOficial}</p>
-          <p className="text-gray-400 font-bold">{precioDescuento}</p>
+          <p className="text-gray-400 line-through font-bold">{precioDescuento}</p>
           <p className="text-sm text-gray-500">Por día: {precioPorDia}</p>
         </div>
         <Link
