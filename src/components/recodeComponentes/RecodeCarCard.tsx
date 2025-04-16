@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState } from "react"
 import {
@@ -51,7 +51,7 @@ export default function RecodeCarCard({
   precioPorDia,
   imagenUrl,
 }: RecodeCarCardProps) {
-  
+
   const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(combustibles[0])
 
   return (
@@ -60,11 +60,19 @@ export default function RecodeCarCard({
       {/* Columna IZQUIERDA: Imagen */}
       <div className="w-full md:w-[250px] flex flex-col justify-between gap-4">
         <div className="flex-1 flex items-center justify-center">
-        <img
-          src={imagenUrl}
-          alt=""
-          className="w-full h-full object-cover"
-        />
+          <div className="w-[230px] h-[150px] bg-gray-200 rounded-[10px] overflow-hidden">
+            {imagenUrl ? (
+              <img
+                src={imagenUrl}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500 text-sm rounded">
+                Sin imagen
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -123,9 +131,9 @@ export default function RecodeCarCard({
           <p className="text-sm text-gray-500">Por día: {precioPorDia}</p>
         </div>
         <Link
-          href= {`/infoAuto/${id}`}
+          href={`/infoAuto/${id}`}
           className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 mt-4 md:mt-0 text-sm md:text-base" target="_blank">
-          Reservar {id}
+          Reservar
         </Link>
       </div>
     </div>
