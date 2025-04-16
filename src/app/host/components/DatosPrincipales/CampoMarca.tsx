@@ -24,8 +24,8 @@ export default function CampoMarca({ marca, setMarca, marcaError, setMarcaError 
 
   return (
     <div className="flex flex-col">
-      <label className="text-base font-medium mb-1">Marca:</label>
-      <Input type="text" value={marca} onChange={handleChange} className="max-w-md" />
+      <label className="text-base font-medium mb-1">Marca: <span className="text-red-600"> *</span></label>
+      <Input type="text" value={marca} onChange={handleChange}  className="max-w-md" />
       {marcaError && <p className="text-sm text-red-600 mt-1">{marcaError}</p>}
     </div>
   );

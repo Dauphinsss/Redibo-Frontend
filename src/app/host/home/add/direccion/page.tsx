@@ -4,10 +4,11 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { getCountries, Country, getCities, City } from '@/app/host/services/direcService';
+import { getCountries, Country, getCities, City, getProvinces, Province } from '@/app/host/services/direcService';
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 import {
   Select,
   SelectTrigger,
@@ -36,6 +37,9 @@ export default function AddDireccion() {
   const [selectedCountry, setSelectedCountry] = useState<string | undefined>(undefined); // Estado para el país seleccionado
   const [cities, setCities] = useState<City[]>([]); // Estado para almacenar la lista de ciudades
   const [selectedCity, setSelectedCity] = useState<string | undefined>(undefined); // Estado para la ciudad seleccionada
+  const [provinces, setProvinces] = useState<Province[]>([]);
+  const [selectedProvinceId, setSelectedProvinceId] = useState<string | undefined>(undefined);
+  
 
   useEffect(() => {
     // Carga los países al montar el componente (solo una vez)
@@ -75,6 +79,31 @@ export default function AddDireccion() {
     setSelectedCity(value);
     console.log("Departamento seleccionado:", value); // Aquí puedes hacer algo con el valor seleccionado
   };
+  useEffect(() => {
+    async function loadProvinces() {
+      console.log("useEffect loadProvinces ejecutándose");
+      if (selectedCity) {
+        console.log("selectedCity:", selectedCity);
+        try {
+          const fetchedProvinces = await getProvinces(selectedCity);
+          console.log("fetchedProvinces:", fetchedProvinces);
+          setProvinces(fetchedProvinces);
+        } catch (error) {
+          console.error("Error al cargar las provincias:", error);
+        }
+      } else {
+        setProvinces([]);
+      }
+    }
+    loadProvinces();
+  }, [selectedCity]);
+  
+  // Función para manejar el cambio en la selección de la provincia
+  const handleProvinceChange = (value: string) => {
+    setSelectedProvinceId(value);
+    console.log("Provincia seleccionada:", value);
+    // Aquí puedes hacer algo con el ID de la provincia seleccionada
+  };
 
   return (
     <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
@@ -95,6 +124,8 @@ export default function AddDireccion() {
       </div>
 
       <span className="text-lg font-medium pl-9">Ingrese una ubicación específica</span>
+
+
 
       {/* Campo: País */}
       <div className="w-full max-w-5xl flex flex-col mt-4 pl-13">
@@ -146,8 +177,11 @@ export default function AddDireccion() {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Provincias</SelectLabel>
-              <SelectItem value="Quillacollo">Quillacollo</SelectItem>
-              <SelectItem value="Chapare">Chapare</SelectItem>
+              {provinces.map((province) => (
+          <SelectItem key={province.id} value={province.id.toString()}>
+            {province.name}
+          </SelectItem>
+           ))}
             </SelectGroup>
           </SelectContent>
         </Select>
