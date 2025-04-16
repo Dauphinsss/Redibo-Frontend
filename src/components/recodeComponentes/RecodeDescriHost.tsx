@@ -30,7 +30,7 @@ export default function DescriHost({
             </div>
           </div>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition">
+        <button className="flex items-center gap-2 px-4 py-2 bg-gray-300 text-white rounded-lg hover:bg-gray-800 transition">
           <FaWhatsapp /> Contáctalo
         </button>
       </div>
