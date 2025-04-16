@@ -61,7 +61,7 @@ export default function InputImagen() {
   return (
     <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
       {/* Botón Volver */}
-      <Link href="/host/home/add/carcoche">
+      <Link href="/host/home/add/caradicional" passHref>
         <Button
           variant="secondary"
           className="flex items-center gap-1 self-start justify-start cursor-pointer w-32 h-10 text-base font-medium transition-all duration-200 hover:bg-gray-100 hover:brightness-90"

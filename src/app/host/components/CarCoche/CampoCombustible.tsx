@@ -22,22 +22,21 @@ export default function CampoCombustible({
   const handleCheckboxChange = (checked: boolean, tipo: string) => {
     if (checked) {
       if (combustibles.length >= 2) {
-        setError("Solo se pueden seleccionar hasta 2 tipos de combustible.");
-        return;
+        return; // No permite seleccionar más de 2 opciones
       }
       const nuevos = [...combustibles, tipo];
       setCombustibles(nuevos);
-      if (nuevos.length <= 2) setError("");
     } else {
       const nuevos = combustibles.filter((item) => item !== tipo);
       setCombustibles(nuevos);
-      if (nuevos.length <= 2) setError("");
     }
   };
 
   return (
     <div className="space-y-4">
-      <Label className="text-lg font-medium text-gray-700">Combustible<span className="text-red-600">*</span></Label>
+      <Label className="text-lg font-medium text-gray-700">
+        Combustible<span className="text-red-600">*</span>
+      </Label>
       <div className="space-y-3">
         {opcionesCombustible.map((tipo) => (
           <div key={tipo} className="flex items-center space-x-2">
@@ -45,6 +44,7 @@ export default function CampoCombustible({
               id={tipo}
               checked={combustibles.includes(tipo)}
               onCheckedChange={(checked) => handleCheckboxChange(!!checked, tipo)}
+              disabled={combustibles.length >= 2 && !combustibles.includes(tipo)} // Deshabilita si ya hay 2 seleccionados
             />
             <Label htmlFor={tipo} className="text-gray-800">
               {tipo}

@@ -23,12 +23,12 @@ const BotonesFormulario: React.FC<BotonesFormularioProps> = ({ isFormValid }) =>
   const [cancelOpen, setCancelOpen] = useState(false);
 
   return (
-    <div className="w-full max-w-5xl flex justify-between items-center mt-10 px-200">
+    <div className="flex justify-between w-full max-w-5xl mt-10 px-110">
       
       {/* Botón Finalizar */}
       <Button
         variant="default"
-        className="w-[180px] h-12 text-lg font-semibold text-white bg-gray-800"
+        className="w-50 h-12 text-lg font-semibold text-white bg-gray-800"
         onClick={() => setConfirmOpen(true)}
         disabled={!isFormValid}
       >
