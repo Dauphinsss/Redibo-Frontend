@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import RecodeCarList from "@/components/recodeComponentes/RecodeCarList";
 import SearchBar from "@/components/recodeComponentes/RecodeSearchBar";
 import Filter from "@/components/recodeComponentes/RecodeFilter";
-import { RecodeAuto as Auto} from "@/components/recodeComponentes/RecodeAuto";
+import { RecodeAuto as Auto } from "@/components/recodeComponentes/RecodeAuto";
 
 export default function Home() {
   const CANTIDAD_POR_LOTE = 8;
@@ -16,12 +16,13 @@ export default function Home() {
   const [filtroCiudad, setFiltroCiudad] = useState("");
   const [filtroMarca, setFiltroMarca] = useState("");
   const [filtroCombustible, setFiltroCombustible] = useState("");
+  const [ordenSeleccionado, setOrdenSeleccionado] = useState<string>("Recomendación");
 
   const mostrarMasAutos = () => {
     setAutosVisibles((prev) => prev + CANTIDAD_POR_LOTE);
   };
 
-  const ordenados = ["Recomendación", "Precio bajo a alto", "Precio alto a bajo"];
+  const ordenados = ["Recomendación", "Precio bajo a alto", "Precio alto a bajo", "Modelo Ascendente", "Modelo Descendente"];
   const ciudades = ["Cochabamba", "Santa Cruz", "La Paz"];
   const marcas = ["Toyota", "Nissan", "Susuki"];
   const combustibles = ["Gasolina", "Diésel", "Eléctrico", "Híbrido"];
@@ -44,17 +45,13 @@ export default function Home() {
           combustiblecarro: { tipo_de_combustible: string }[];
           estado: string;
           usuario_rol?: {
-            usuario?: {
-              nombre?: string;
-            };
+            usuario?: { nombre?: string };
           };
           direccion?: {
             calle?: string;
             zona?: string;
           };
-          imagen?: {
-            data?: string;
-          }[];
+          imagen?: { data?: string }[];
         }
 
         const data: Auto[] = (rawData as RawAuto[]).map((item) => ({
@@ -74,7 +71,7 @@ export default function Home() {
           precioOficial: "Bs. " + item.precio_por_dia,
           precioDescuento: "Bs. " + item.precio_por_dia,
           precioPorDia: "Bs. " + item.precio_por_dia,
-          imagenUrl: item.imagen?.[0]?.data || ""
+          imagenUrl: item.imagen?.[0]?.data || "",
         }));
 
         setAutos(data);
@@ -88,22 +85,51 @@ export default function Home() {
     fetchAutos();
   }, []);
 
+  // #### Filtrado por ciudad, marca, combustible
   useEffect(() => {
     let filtrados = autos;
 
     if (filtroCiudad) {
-      filtrados = filtrados.filter(auto => auto.ubicacion === filtroCiudad);
+      filtrados = filtrados.filter((auto) => auto.ubicacion === filtroCiudad);
     }
     if (filtroMarca) {
-      filtrados = filtrados.filter(auto => auto.marca === filtroMarca);
+      filtrados = filtrados.filter((auto) => auto.marca === filtroMarca);
     }
     if (filtroCombustible) {
-      filtrados = filtrados.filter(auto => auto.combustibles.includes(filtroCombustible));
+      filtrados = filtrados.filter((auto) => auto.combustibles.includes(filtroCombustible));
     }
 
     setAutosFiltrados(filtrados);
     setAutosVisibles(CANTIDAD_POR_LOTE);
   }, [filtroCiudad, filtroMarca, filtroCombustible, autos]);
+
+  // #### Lógica de ordenamiento
+  const ordenarAutos = (criterio: string) => {
+    let autosOrdenados = [...autosFiltrados];
+
+    if (criterio === "Modelo Ascendente") {
+      autosOrdenados.sort((a, b) => a.nombre.localeCompare(b.nombre)); // Orden alfabético A-Z
+    } else if (criterio === "Modelo Descendente") {
+      autosOrdenados.sort((a, b) => b.nombre.localeCompare(a.nombre)); // Orden alfabético Z-A
+    } else if (criterio === "Precio bajo a alto") {
+      autosOrdenados.sort(
+        (a, b) => parseFloat(a.precioPorDia.replace("Bs. ", "")) - parseFloat(b.precioPorDia.replace("Bs. ", ""))
+      );
+    } else if (criterio === "Precio alto a bajo") {
+      autosOrdenados.sort(
+        (a, b) => parseFloat(b.precioPorDia.replace("Bs. ", "")) - parseFloat(a.precioPorDia.replace("Bs. ", ""))
+      );
+    }
+
+    setAutosFiltrados(autosOrdenados);
+  };
+
+  // #### Detectar cambio en el criterio de orden
+  useEffect(() => {
+    if (ordenSeleccionado !== "Recomendación") {
+      ordenarAutos(ordenSeleccionado);
+    }
+  }, [ordenSeleccionado]);
 
   const autosActuales = autosFiltrados.slice(0, autosVisibles);
 
@@ -132,7 +158,7 @@ export default function Home() {
               Mostrando <span className="font-semibold">{autosActuales.length}</span> de <span className="font-semibold">{autosFiltrados.length}</span> resultados
             </p>
             <div className="w-full sm:w-[300px] mt-2 sm:mt-0">
-              <Filter lista={ordenados} nombre="Ordenados por" onChange={() => {}} />
+              <Filter lista={ordenados} nombre="Ordenados por" onChange={setOrdenSeleccionado} />
             </div>
           </div>
 
