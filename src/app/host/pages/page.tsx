@@ -229,6 +229,7 @@ export default function ViewCarsPage() {
                         onClick={() =>
                           router.push(`/host/home/editar/imagenes/${car.id}`)
                         }
+                        disabled // Agrega esta propiedad para bloquear el botón
                       >
                         Imágenes del coche
                       </DropdownMenuItem>

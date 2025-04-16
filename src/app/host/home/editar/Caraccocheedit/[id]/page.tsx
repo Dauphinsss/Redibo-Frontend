@@ -192,7 +192,7 @@ const CaracteristicasPage: React.FC = () => {
 
   const handleCancel = () => {
     if (window.confirm("¿Está seguro que desea cancelar? Los cambios no guardados se perderán.")) {
-      router.push("/host/cars"); // Si confirma, vuelve a la lista de autos
+      router.push("/host"); // Si confirma, vuelve a la lista de autos
     }
     // No hace nada si el usuario cancela el diálogo, simplemente permanece en la página actual
   };

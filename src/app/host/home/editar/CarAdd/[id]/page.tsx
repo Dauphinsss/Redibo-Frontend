@@ -133,7 +133,7 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    router.push("/host/cars");
+    router.push("/host");
   };
 
   if (isLoading) {
