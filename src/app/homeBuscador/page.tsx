@@ -62,8 +62,10 @@ export default function Home() {
           puertas: item.puertas || 0,
           transmision: item.transmision || "",
           combustibles: Array.isArray(item.combustiblecarro)
-          ? item.combustiblecarro.map((c) => c.tipocombustible?.tipo_de_combustible)
-          : [],
+            ? item.combustiblecarro
+                .map((c) => c.tipocombustible?.tipo_de_combustible)
+                .filter((c): c is string => typeof c === 'string')
+            : [],
           estado: item.estado || "",
           nombreHost: item.usuario_rol?.usuario?.nombre || "",
           calificacion: 4.5,
@@ -107,7 +109,7 @@ export default function Home() {
 
   // #### Lógica de ordenamiento
   const ordenarAutos = (criterio: string) => {
-    let autosOrdenados = [...autosFiltrados];
+    const autosOrdenados = [...autosFiltrados];
 
     if (criterio === "Modelo Ascendente") {
       autosOrdenados.sort((a, b) => a.nombre.localeCompare(b.nombre)); // Orden alfabético A-Z
