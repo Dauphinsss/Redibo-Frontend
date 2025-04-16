@@ -24,9 +24,12 @@ export interface RecodeCarCardProps {
   nombreHost: string
   calificacion: number
   ubicacion: string
+  calle: string
+  zona: string
   precioOficial: string
   precioDescuento: string
   precioPorDia: string
+  imagenUrl: string
 }
 
 export default function RecodeCarCard({
@@ -41,9 +44,12 @@ export default function RecodeCarCard({
   nombreHost,
   calificacion,
   ubicacion,
+  calle,
+  zona,
   precioOficial,
   precioDescuento,
   precioPorDia,
+  imagenUrl,
 }: RecodeCarCardProps) {
   
   const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(combustibles[0])
@@ -54,9 +60,11 @@ export default function RecodeCarCard({
       {/* Columna IZQUIERDA: Imagen */}
       <div className="w-full md:w-[250px] flex flex-col justify-between gap-4">
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-[230px] h-[150px] bg-gray-200 rounded-[10px] flex items-center justify-center text-5xl hover:text-6xl transition" title={`Imagen de ${nombre}`} aria-label={`Imagen representativa del vehículo ${nombre}`}>
-            🚗
-          </div>
+        <img
+          src={imagenUrl}
+          alt=""
+          className="w-full h-full object-cover"
+        />
         </div>
       </div>
 
@@ -102,7 +110,7 @@ export default function RecodeCarCard({
           </div>
 
           <div className="flex items-center gap-1 text-sm">
-            <FaMapMarkerAlt /> {ubicacion}
+            <FaMapMarkerAlt /> {ubicacion}, {zona}, {calle}
           </div>
         </div>
       </div>
