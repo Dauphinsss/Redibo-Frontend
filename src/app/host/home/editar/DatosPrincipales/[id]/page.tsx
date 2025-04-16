@@ -12,6 +12,7 @@ SelectGroup,
 SelectItem,
 } from "@/components/ui/select";
 import axios from 'axios';
+import { toast } from "react-hot-toast"; // Añade esta librería para notificaciones
 
 // URL base de la API
 const API_URL = "http://localhost:4000/api";
@@ -46,6 +47,7 @@ const [formData, setFormData] = useState<CarFormData>({
 });
 
 const [isLoading, setIsLoading] = useState(true);
+const [isSaving, setIsSaving] = useState(false);
 const [error, setError] = useState<string | null>(null);
 
   // Cargar datos del vehículo
@@ -68,6 +70,11 @@ useEffect(() => {
           // Si los datos están dentro de una propiedad 'data'
         if (response.data.data) {
             vehiculoData = response.data.data;
+        }
+        
+          // Si los datos están dentro de una propiedad 'vehiculo'
+        if (response.data.vehiculo) {
+            vehiculoData = response.data.vehiculo;
         }
         
           // Actualizar formulario con los datos recibidos
@@ -104,6 +111,7 @@ useEffect(() => {
         
         } catch (err2) {
         setError("Error al cargar los datos del vehículo");
+        console.error("Error al cargar datos individuales:", err2);
         }
     } finally {
         setIsLoading(false);
@@ -118,46 +126,100 @@ const handleChange = (field: string, value: string) => {
     ...prev,
     [field]: value
     }));
+    // Limpiar errores al hacer cambios
+    setError(null);
+};
+
+  // Validar formulario antes de enviar
+const validateForm = (): boolean => {
+    // Validar que los campos obligatorios no estén vacíos
+    if (!formData.brand.trim()) {
+    setError("La marca del vehículo es obligatoria");
+    return false;
+    }
+    if (!formData.model.trim()) {
+    setError("El modelo del vehículo es obligatorio");
+    return false;
+    }
+    if (!formData.year) {
+    setError("El año del vehículo es obligatorio");
+    return false;
+    }
+    if (!formData.plate.trim()) {
+    setError("La placa del vehículo es obligatoria");
+    return false;
+    }
+    if (!formData.vin.trim()) {
+    setError("El número VIN del vehículo es obligatorio");
+    return false;
+    }
+    
+    return true;
 };
 
 const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!carId) {
     setError("ID del vehículo no encontrado");
     return;
     }
-    
+    // Validar formulario
+    if (!validateForm()) {
+    return;
+    }
     try {
-    setIsLoading(true);
-    
+    setIsSaving(true);
+    setError(null);
       // Transformar datos del formulario al formato del backend
     const backendData = {
+        vim: formData.vin,       // Cambio de "vin" a "vim" para coincidir con el backend
+        año: parseInt(formData.year),  // Usando "año" en español como espera el backend
         marca: formData.brand,
         modelo: formData.model,
-        año: parseInt(formData.year),
-        vim: formData.vin,
         placa: formData.plate
     };
     
-      // Actualizar datos en el backend
+      // URL actualizada según la captura de Postman
     const response = await axios.put(`${API_URL}/vehiculo/${carId}`, backendData);
     
-    if (response.status === 200 || response.data?.success) {
-        // Redireccionar a la página de detalles o lista
-        router.push("/host/cars");
+      if (response.status === 200 || response.data?.mensaje) {  // Verificando "mensaje" en lugar de "success"
+        // Mostrar notificación de éxito
+        if (typeof toast !== 'undefined') {
+        toast.success(response.data.mensaje || "¡Datos guardados correctamente!");
+        } else {
+        alert(response.data.mensaje || "¡Datos guardados correctamente!");
+        }
+        
+        // Redireccionar a la página de detalles o lista después de un breve retraso
+        setTimeout(() => {
+        router.push("/host/pages");
+        }, 1000);
     } else {
-        setError("No se pudieron guardar los cambios");
+        setError("No se pudieron guardar los cambios. Por favor, inténtelo de nuevo.");
     }
-    } catch (err) {
-    setError("Error al guardar los cambios");
+    } catch (err: any) {
+    console.error("Error al guardar cambios:", err);
+    setError(err.response?.data?.mensaje || "Error al guardar los cambios. Verifique la conexión con el servidor.");
     } finally {
-    setIsLoading(false);
+    setIsSaving(false);
     }
 };
 
 const handleCancel = () => {
+    // Preguntar si hay cambios sin guardar
+    if (
+    formData.brand !== "" ||
+    formData.model !== "" ||
+    formData.year !== "" ||
+    formData.vin !== "" ||
+    formData.plate !== ""
+    ) {
+    if (window.confirm("¿Está seguro que desea cancelar? Los cambios no guardados se perderán.")) {
+        router.push("/host/pages");
+    }
+    } else {
     router.push("/host/cars");
+    }
 };
 
 if (isLoading) {
@@ -194,7 +256,8 @@ return (
             value={formData.vin}
             onChange={(e) => handleChange("vin", e.target.value)}
             placeholder="Introducir Número VIN"
-            className="w-[600px] mt-2 border-2 border-black rounded-md"
+            className={`w-[600px] mt-2 border-2 ${error && !formData.vin ? 'border-red-500' : 'border-black'} rounded-md`}
+            required
         />
         </div>
 
@@ -205,7 +268,7 @@ return (
             value={formData.year}
             onValueChange={(value) => handleChange("year", value)}
         >
-            <SelectTrigger className="w-[600px] mt-2 border-2 border-black rounded-md">
+            <SelectTrigger className={`w-[600px] mt-2 border-2 ${error && !formData.year ? 'border-red-500' : 'border-black'} rounded-md`}>
             <SelectValue placeholder="Seleccione el año" />
             </SelectTrigger>
             <SelectContent>
@@ -228,7 +291,8 @@ return (
             value={formData.brand}
             onChange={(e) => handleChange("brand", e.target.value)}
             placeholder="Introducir marca"
-            className="w-[600px] mt-2 border-2 border-black rounded-md"
+            className={`w-[600px] mt-2 border-2 ${error && !formData.brand ? 'border-red-500' : 'border-black'} rounded-md`}
+            required
         />
         </div>
 
@@ -240,7 +304,8 @@ return (
             value={formData.model}
             onChange={(e) => handleChange("model", e.target.value)}
             placeholder="Introducir modelo"
-            className="w-[600px] mt-2 border-2 border-black rounded-md"
+            className={`w-[600px] mt-2 border-2 ${error && !formData.model ? 'border-red-500' : 'border-black'} rounded-md`}
+            required
         />
         </div>
 
@@ -252,7 +317,8 @@ return (
             value={formData.plate}
             onChange={(e) => handleChange("plate", e.target.value)}
             placeholder="Introducir placa"
-            className="w-[600px] mt-2 border-2 border-black rounded-md"
+            className={`w-[600px] mt-2 border-2 ${error && !formData.plate ? 'border-red-500' : 'border-black'} rounded-md`}
+            required
         />
         </div>
 
@@ -263,7 +329,7 @@ return (
             onClick={handleCancel}
             variant="secondary"
             className="w-[160px] h-12 text-lg font-semibold transition-all duration-200 hover:bg-gray-100 hover:brightness-90"
-            disabled={isLoading}
+            disabled={isLoading || isSaving}
         >
             CANCELAR
         </Button>
@@ -272,9 +338,9 @@ return (
             type="submit"
             variant="default"
             className="h-12 text-lg font-semibold text-white px-6"
-            disabled={isLoading}
+            disabled={isLoading || isSaving}
         >
-            {isLoading ? "GUARDANDO..." : "FINALIZAR EDICIÓN Y GUARDAR"}
+            {isSaving ? "GUARDANDO..." : "FINALIZAR EDICIÓN Y GUARDAR"}
         </Button>
         </div>
     </form>
