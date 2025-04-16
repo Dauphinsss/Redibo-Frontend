@@ -29,7 +29,7 @@ const CARACTERISTICAS_OPTIONS = [
 const CaracteristicasAdicionalesPage: React.FC = () => {
   const router = useRouter();
   const params = useParams();
-  const vehiculoId = params?.id ? params.id.toString() : "1"; // Default a "1" si no hay ID
+  const vehiculoId = params?.id ? params.id.toString() : "1";
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,14 +43,13 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
       setError(null);
 
       try {
-        console.log(`Intentando obtener: ${API_URL}/vehiculo/${vehiculoId}/caracteristicas-adicionales`);
+        console.log(`Fetching: ${API_URL}/vehiculo/${vehiculoId}/caracteristicas-adicionales`);
         const response = await axios.get(`${API_URL}/vehiculo/${vehiculoId}/caracteristicas-adicionales`);
-        console.log("Respuesta del servidor:", response.data);
+        console.log("Response data:", response.data);
         
-        if (response.data && response.data.caracteristicasAdicionales) {
+        if (response.data?.caracteristicasAdicionales) {
           const caracteristicasActivas = response.data.caracteristicasAdicionales;
           
-          // Mapear los nombres a IDs
           const itemsSeleccionados = CARACTERISTICAS_OPTIONS
             .filter(item => caracteristicasActivas.includes(item.label))
             .map(item => item.id);
@@ -58,8 +57,8 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
           setSelectedItems(itemsSeleccionados);
         }
       } catch (err: any) {
-        console.error("Error al cargar características:", err);
-        setError(`No se pudieron cargar las características: ${err.message || "Error desconocido"}`);
+        console.error("Error loading features:", err);
+        setError(`Error al cargar: ${err.response?.data?.message || err.message || "Error desconocido"}`);
       } finally {
         setIsLoading(false);
       }
@@ -84,42 +83,50 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
     setSuccessMessage(null);
     
     try {
-      // Convertir los IDs seleccionados a nombres para enviar
+      // Convertir los IDs seleccionados a los nombres exactos para el backend
       const caracteristicasParaEnviar = selectedItems
         .map(id => {
           const caracteristica = CARACTERISTICAS_OPTIONS.find(item => item.id === id);
           return caracteristica ? caracteristica.label : null;
         })
-        .filter(Boolean); // Filtrar null/undefined
+        .filter(Boolean) as string[];
 
-      console.log("Nombres de características a enviar:", caracteristicasParaEnviar);
+      console.log("Array de características para enviar:", caracteristicasParaEnviar);
       
       // Verificar que haya al menos una característica seleccionada
       if (caracteristicasParaEnviar.length === 0) {
-        setError("Error al guardar: Debe seleccionar al menos una característica adicional");
+        setError("Debe seleccionar al menos una característica adicional");
         setIsSaving(false);
         return;
       }
-      
-      // Enviar el array de características seleccionadas dentro de un objeto
+
+      // Enviar directamente el array de nombres al backend
       const response = await axios.post(
         `${API_URL}/vehiculo/${vehiculoId}/caracteristicas-adicionales`, 
-        { caracteristicasAdicionales: caracteristicasParaEnviar }  // Enviar como objeto con la propiedad caracteristicasAdicionales
+        caracteristicasParaEnviar, // Enviar el array directamente como el cuerpo de la solicitud
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
       );
 
-      console.log("Respuesta exitosa:", response.data);
-      setSuccessMessage("Características guardadas con éxito");
+      console.log("Respuesta del servidor:", response.data);
+      setSuccessMessage(response.data.mensaje || "¡Características guardadas exitosamente!");
       
       // Redirigir después de un breve retraso
-      setTimeout(() => {
-        router.push("/host/cars");
-      }, 1500);
+      setTimeout(() => router.push("/host/cars"), 1500);
     } catch (err: any) {
       console.error("Error completo:", err);
       
-      // Si hay un error en la respuesta, intentamos extraer el mensaje detallado
-      const errorMessage = err.response?.data?.mensaje || err.response?.data?.error || err.message;
-      setError(`Error al guardar: ${errorMessage}`);
+      // Extraer mensaje de error detallado si está disponible
+      const errorMessage = 
+        err.response?.data?.mensaje || 
+        err.response?.data?.error || 
+        err.message || 
+        "Error al guardar los cambios";
+      
+      setError(errorMessage);
     } finally {
       setIsSaving(false);
     }
@@ -133,19 +140,17 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
     return (
       <div className="p-6 flex flex-col items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-blue-500 mb-4" />
-        <p className="text-lg">Cargando características adicionales...</p>
+        <p className="text-lg">Cargando características...</p>
       </div>
     );
   }
 
   return (
     <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
-      {/* Título */}
       <div className="w-full max-w-5xl">
         <h1 className="text-4xl font-bold my-5 pl-7">Características Adicionales</h1>
       </div>
 
-      {/* Mensajes de error o éxito */}
       {error && (
         <div className="w-full max-w-5xl mb-4 pl-7">
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -162,7 +167,6 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
         </div>
       )}
 
-      {/* Lista de Checkbox */}
       <div className="w-full h-120 flex items-center justify-center">
         <form onSubmit={handleSubmit} className="w-full max-w-5xl">
           <div className="grid grid-cols-2 gap-4 mb-6">
@@ -181,10 +185,9 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
                   {item.label}
                 </label>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          {/* Sección de Botones */}
           <div className="w-full flex justify-between items-center mt-10">
             <Button 
               type="button"
@@ -200,7 +203,7 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
               type="submit"
               variant="default"
               className="h-12 text-lg font-semibold text-white px-6"
-              disabled={isSaving}
+              disabled={isSaving || selectedItems.length === 0}
             >
               {isSaving ? (
                 <>

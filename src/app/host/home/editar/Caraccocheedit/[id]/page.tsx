@@ -86,16 +86,16 @@ const CaracteristicasPage: React.FC = () => {
           combustiblesList = carData.tipoDeCombustible;
         } else if (typeof carData.tipoDeCombustible === 'string') {
           // Si viene como string separado por comas, lo convertimos a array
-          combustiblesList = carData.tipoDeCombustible.split(", ").filter(item => item);
+            combustiblesList = carData.tipoDeCombustible.split(", ").filter((item: string) => item);
         }
         
         // Mapear nombres de combustibles a IDs
-        const combustiblesIds = combustiblesList.map(nombre => {
+        const combustiblesIds = combustiblesList.map((nombre: string) => {
           const combustible = COMBUSTIBLE_OPTIONS.find(
             opt => opt.label.toLowerCase() === nombre.toLowerCase()
           );
           return combustible ? combustible.id : null;
-        }).filter(id => id !== null);
+        }).filter((id: string | null): id is string => id !== null);
   
         setFormData({
           combustibles: combustiblesIds,
@@ -334,7 +334,7 @@ const CaracteristicasPage: React.FC = () => {
             className="w-64 h-12"
             disabled={isSaving}
           >
-            {isSaving ? "Guardando..." : "Guardar cambios"}
+            {isSaving ? "Guardando..." : "FINALIZAR EDICIÓN Y GUARDAR"}
           </Button>
         </div>
       </form>
