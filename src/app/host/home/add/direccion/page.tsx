@@ -1,14 +1,10 @@
 "use client";
 
-import * as React from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
-import { getCountries, Country, getCities, City, getProvinces, Province } from '@/app/host/services/direcService';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import {
   Select,
   SelectTrigger,
@@ -18,7 +14,6 @@ import {
   SelectItem,
   SelectLabel,
 } from "@/components/ui/select";
-
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -30,201 +25,240 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+// URL base para la API (modificar según corresponda)
+const API_URL = "http://localhost:4000/api";
+
+interface Country {
+  id: number;
+  nombre: string;
+}
+
+interface Department {
+  id: number;
+  nombre: string;
+}
+
+interface Province {
+  id: number;
+  nombre: string;
+}
 
 export default function AddDireccion() {
   const router = useRouter();
-  const [countries, setCountries] = useState<Country[]>([]); // Estado para almacenar la lista de países
-  const [selectedCountry, setSelectedCountry] = useState<string | undefined>(undefined); // Estado para el país seleccionado
-  const [cities, setCities] = useState<City[]>([]); // Estado para almacenar la lista de ciudades
-  const [selectedCity, setSelectedCity] = useState<string | undefined>(undefined); // Estado para la ciudad seleccionada
+
+  // Estados para los datos de la dirección
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [provinces, setProvinces] = useState<Province[]>([]);
-  const [selectedProvinceId, setSelectedProvinceId] = useState<string | undefined>(undefined);
-  
 
+  const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
+  const [selectedDepartment, setSelectedDepartment] = useState<number | null>(null);
+  const [selectedProvince, setSelectedProvince] = useState<number | null>(null);
+
+  const [calle, setCalle] = useState<string>("");
+  const [numCasa, setNumCasa] = useState<string>("");
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Cargar países al inicio
   useEffect(() => {
-    // Carga los países al montar el componente (solo una vez)
-    async function loadCountries() {
+    async function fetchCountries() {
       try {
-        const fetchedCountries = await getCountries();
-        setCountries(fetchedCountries);
-      } catch (error: any) {
-        console.error("Error loading countries:", error.message);
-        // Maneja el error (por ejemplo, muestra un mensaje al usuario)
+        const response = await axios.get(`${API_URL}/paises`);
+        setCountries(response.data);
+      } catch (err) {
+        console.error("Error al cargar países:", err);
+        setError("Error al cargar la lista de países.");
       }
     }
-
-    loadCountries();
-  }, []); // El array vacío [] asegura que este efecto se ejecute solo una vez
-
-  const handleCountryChange = (value: string) => {
-    setSelectedCountry(value);
-    console.log("País seleccionado:", value); // Aquí puedes hacer algo con el valor seleccionado
-  };
-
-  useEffect(() => {
-    async function loadCities() {
-
-      try {
-        const fetchedCities = await getCities();
-        setCities(fetchedCities);
-      } catch (error: any) {
-        console.error("Error loading cities:", error.message);
-      }
-    }
-
-    loadCities();
+    fetchCountries();
   }, []);
 
-  const handleCityChange = (value: string) => {
-    setSelectedCity(value);
-    console.log("Departamento seleccionado:", value); // Aquí puedes hacer algo con el valor seleccionado
-  };
+  // Cargar departamentos (ciudades) cuando cambia el país seleccionado
   useEffect(() => {
-    async function loadProvinces() {
-      console.log("useEffect loadProvinces ejecutándose");
-      if (selectedCity) {
-        console.log("selectedCity:", selectedCity);
+    if (selectedCountry) {
+      async function fetchDepartments() {
         try {
-          const fetchedProvinces = await getProvinces(selectedCity);
-          console.log("fetchedProvinces:", fetchedProvinces);
-          setProvinces(fetchedProvinces);
-        } catch (error) {
-          console.error("Error al cargar las provincias:", error);
+          const response = await axios.get(`${API_URL}/ciudades/${selectedCountry}`);
+          setDepartments(response.data);
+          // Reiniciar departamentos dependientes
+          setSelectedDepartment(null);
+          setProvinces([]);
+          setSelectedProvince(null);
+        } catch (err) {
+          console.error("Error al cargar departamentos:", err);
+          setError("Error al cargar la lista de departamentos.");
         }
-      } else {
-        setProvinces([]);
       }
+      fetchDepartments();
+    } else {
+      setDepartments([]);
+      setSelectedDepartment(null);
+      setProvinces([]);
+      setSelectedProvince(null);
     }
-    loadProvinces();
-  }, [selectedCity]);
-  
-  // Función para manejar el cambio en la selección de la provincia
-  const handleProvinceChange = (value: string) => {
-    setSelectedProvinceId(value);
-    console.log("Provincia seleccionada:", value);
-    // Aquí puedes hacer algo con el ID de la provincia seleccionada
+  }, [selectedCountry]);
+
+  // Cargar provincias cuando cambia el departamento seleccionado
+  useEffect(() => {
+    if (selectedDepartment) {
+      async function fetchProvinces() {
+        try {
+          const response = await axios.get(`${API_URL}/provincias/${selectedDepartment}`);
+          setProvinces(response.data);
+          setSelectedProvince(null);
+        } catch (err) {
+          console.error("Error al cargar provincias:", err);
+          setError("Error al cargar la lista de provincias.");
+        }
+      }
+      fetchProvinces();
+    } else {
+      setProvinces([]);
+      setSelectedProvince(null);
+    }
+  }, [selectedDepartment]);
+
+  // Función para guardar la dirección
+  const handleGuardar = async () => {
+    // Validar que se hayan seleccionado todos los campos necesarios
+    if (!selectedCountry || !selectedDepartment || !selectedProvince || !calle || !numCasa) {
+      alert("Por favor, complete todos los campos de la dirección.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      await axios.post(`${API_URL}/direccion`, {
+        paisId: selectedCountry,
+        ciudadId: selectedDepartment,
+        provinciaId: selectedProvince,
+        calle,
+        num_casa: numCasa,
+      });
+      alert("Dirección agregada correctamente");
+      router.push("/host/home"); // Redirige a la página deseada
+    } catch (err) {
+      console.error("Error al guardar la dirección:", err);
+      setError("Error al guardar la dirección");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
-      {/* Botón Volver */}
-      <Link href="/host/pages">
-        <Button
-          variant="secondary"
-          className="flex items-center gap-1 self-start w-full justify-start cursor-pointer w-[120px] h-10 text-base font-medium transition-all duration-200 hover:bg-gray-100 hover:brightness-90"
-        >
-          <ChevronLeft className="h-3 w-3" />
-          Volver
-        </Button>
-      </Link>
+      <h1 className="text-4xl font-bold my-5">Añadir Dirección</h1>
 
-      {/* Título */}
-      <div className="w-full max-w-5xl flex justify-start">
-        <h1 className="text-4xl font-bold my-5 pl-7">Dirección</h1>
-      </div>
-
-      <span className="text-lg font-medium pl-9">Ingrese una ubicación específica</span>
-
-
+      {error && <p className="text-red-500 mb-4">{error}</p>}
 
       {/* Campo: País */}
-      <div className="w-full max-w-5xl flex flex-col mt-4 pl-13">
+      <div className="w-full max-w-5xl flex flex-col mt-4">
         <label className="text-lg font-semibold mb-1">País</label>
-        <Select>
+        <Select value={selectedCountry?.toString() || ""}
+                onValueChange={(value) => setSelectedCountry(Number(value))}>
           <SelectTrigger className="w-[600px] mt-2">
-            <SelectValue placeholder="Seleccione un país (Bolivia)" />
+            <SelectValue placeholder="Seleccione un país" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Paises</SelectLabel>
-              {countries.map((country) => (
-            <SelectItem key={country.id} value={country.name}>
-              {country.name}
-            </SelectItem>
-          ))}
+              <SelectLabel>Países</SelectLabel>
+              {countries.map((pais) => (
+                <SelectItem key={pais.id} value={pais.id.toString()}>
+                  {pais.nombre}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
 
-      {/* Campo: Departamento */}
-      <div className="w-full max-w-5xl flex flex-col mt-4 pl-13">
+      {/* Campo: Departamento (Ciudad) */}
+      <div className="w-full max-w-5xl flex flex-col mt-4">
         <label className="text-lg font-semibold mb-1">Departamento</label>
-        <Select>
+        <Select value={selectedDepartment?.toString() || ""}
+                onValueChange={(value) => setSelectedDepartment(Number(value))}>
           <SelectTrigger className="w-[600px] mt-2">
-            <SelectValue placeholder="Seleccione un departamento (Cochabamba)" />
+            <SelectValue placeholder="Seleccione un departamento" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Departamentos</SelectLabel>
-              {cities.map((city) => (
-            <SelectItem key={city.id} value={city.name}>
-              {city.name}
-            </SelectItem>
-          ))}
+              {departments.map((dept) => (
+                <SelectItem key={dept.id} value={dept.id.toString()}>
+                  {dept.nombre}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
 
       {/* Campo: Provincia */}
-      <div className="w-full max-w-5xl flex flex-col mt-4 pl-13">
+      <div className="w-full max-w-5xl flex flex-col mt-4">
         <label className="text-lg font-semibold mb-1">Provincia</label>
-        <Select>
+        <Select value={selectedProvince?.toString() || ""}
+                onValueChange={(value) => setSelectedProvince(Number(value))}>
           <SelectTrigger className="w-[600px] mt-2">
-            <SelectValue placeholder="Seleccione una provincia (Cercado)" />
+            <SelectValue placeholder="Seleccione una provincia" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Provincias</SelectLabel>
-              {provinces.map((province) => (
-          <SelectItem key={province.id} value={province.id.toString()}>
-            {province.name}
-          </SelectItem>
-           ))}
+              {provinces.map((prov) => (
+                <SelectItem key={prov.id} value={prov.id.toString()}>
+                  {prov.nombre}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
 
       {/* Campo: Dirección de la calle */}
-      <div className="w-full max-w-5xl flex flex-col mt-6 pl-13">
+      <div className="w-full max-w-5xl flex flex-col mt-6">
         <label className="text-lg font-semibold mb-1">Dirección de la calle</label>
         <Input
           type="text"
           placeholder="Ej. Av. América entre Ayacucho y Bolívar"
+          value={calle}
+          onChange={(e) => setCalle(e.target.value)}
           className="w-[600px] mt-2"
         />
       </div>
 
-      {/* Campo: N° Casa */}
-      <div className="w-full max-w-5xl flex flex-col mt-6 pl-13">
-        <label className="text-lg font-semibold mb-1">N° Casa</label>
+      {/* Campo: Número de casa */}
+      <div className="w-full max-w-5xl flex flex-col mt-6">
+        <label className="text-lg font-semibold mb-1">Número de casa</label>
         <Input
           type="text"
           placeholder="Ingrese el número de casa"
+          value={numCasa}
+          onChange={(e) => setNumCasa(e.target.value)}
           className="w-[600px] mt-2"
         />
       </div>
+      
 
       {/* Sección de Botones con AlertDialog para Cancelar */}
       <AlertDialog>
         <div className="w-full max-w-5xl flex justify-between items-center mt-10 px-10">
-        <AlertDialogTrigger asChild>
-          <Button
-            variant="secondary"
-            className="w-[160px] h-12 text-lg font-semibold transition-all duration-200 hover:bg-gray-100 hover:brightness-90"
-          >
-            CANCELAR
-          </Button>
-        </AlertDialogTrigger>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="secondary"
+              className="w-[180px] h-12 text-lg font-semibold transition-all duration-200 hover:bg-gray-100 hover:brightness-100"
+            >
+              CANCELAR
+            </Button>
+          </AlertDialogTrigger>
 
           <Button
             variant="default"
-            className="w-[180px] h-12 text-lg font-semibold text-white cursor-pointer "
+            className="w-[180px] h-12 text-lg font-semibold text-white cursor-pointer"
             onClick={() => router.push("/host/home/add/datosprincipales")}
           >
-           SIGUIENTE
+            SIGUIENTE
           </Button>
         </div>
         <AlertDialogContent>
