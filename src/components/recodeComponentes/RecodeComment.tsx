@@ -20,7 +20,7 @@ const Comment: React.FC<CommentProps> = ({ username, date, content, rating }) =>
 
     {/* Contenido del comentario */}
     <section className="mb-2">
-      <p className="text-sm font-medium">"{content}"</p>
+      <p className="text-sm font-medium">{content}</p>
     </section>
 
     {/* Calificación */}

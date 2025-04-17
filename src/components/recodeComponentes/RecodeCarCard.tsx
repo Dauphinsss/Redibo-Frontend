@@ -12,7 +12,7 @@ import {
 } from "react-icons/fa";
 import Link from 'next/link';
 import { RecodeAuto } from "@/components/recodeComponentes/RecodeAuto";
-
+export type RecodeCarCardProps = RecodeAuto;
 export default function RecodeCarCard(props: RecodeAuto) {
   const {
     id,

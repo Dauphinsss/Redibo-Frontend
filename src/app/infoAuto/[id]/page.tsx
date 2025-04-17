@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import RecodeHeader from '@/components/recodeComponentes/RecodeHeader'
 import Autoimag from '@/components/recodeComponentes/RecodeAutoimag'
 import InfoPrincipal from '@/components/recodeComponentes/RecodeInfoPrincipal'
@@ -7,27 +6,28 @@ import DescriHost from '@/components/recodeComponentes/RecodeDescriHost'
 import DescripcionAuto from '@/components/recodeComponentes/RecodeDescripcionAuto'
 import Reserva from '@/components/recodeComponentes/RecodeReserva'
 import Ubicacion from '@/components/recodeComponentes/RecodeUbicacion'
-import ParamIniciales from '@/components/recodeComponentes/RecodeParamIniciales'
 import { getCarById } from '@/service/serviceRecode'
 
-export default async function Page({ params }: { params: { id: string } }) {
-    const autoData = await getCarById(params.id);
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params; 
+  const autoData = await getCarById(resolvedParams.id);
   
-    const auto = {
-      nombre: `${autoData.marca} ${autoData.modelo}`,
-      imagenes: autoData.imagen.map((img: { id: number, data: string  }) => ({
-        id: img.id,
-        data: img.data
-      })),
-      descripcion: `Auto ${autoData.marca} ${autoData.modelo} en excelente estado`,
+  const auto = {
+      nombre: `${autoData.marca || "Marca desconocida"} ${autoData.modelo || "Modelo desconocido"}`,
+      imagenes: autoData.imagen?.map((img: { id: number, data: string }) => ({
+          id: img.id,
+          data: img.data,
+      })) || [],
+      descripcion: `Auto ${autoData.marca || "desconocido"} ${autoData.modelo || "desconocido"} en excelente estado`,
       host: {
-        nombre: "Anfitrión Ejemplo", 
-        calificacion: 4.8,
-        autosCount: 3
+          nombre: "Anfitrión Ejemplo",
+          calificacion: 4.8,
+          autosCount: 3,
       },
-      ubicacion: `${autoData.direccion.calle}, ${autoData.direccion.zona}`,
-      precio: autoData.precio_por_dia
-    };
+      ubicacion: `${autoData.direccion?.calle || "Calle desconocida"}, ${autoData.direccion?.zona || "Zona desconocida"}`,
+      precio: autoData.precio_por_dia || "Precio no disponible",
+  };
+      console.log("el data es: ",autoData.combustiblecarro);
   
     return (
       <>
@@ -40,13 +40,17 @@ export default async function Page({ params }: { params: { id: string } }) {
                 nombre={auto.nombre} 
               />
               
-              <InfoPrincipal 
-                asientos={5}
-                puertas={4}
-                transmision="Automática"
-                combustible={autoData.combustiblecarro}
-                calificacion={4.5}
-                direccion={auto.ubicacion}
+              <InfoPrincipal
+                  asientos={5}
+                  puertas={4}
+                  transmision="Automática"
+                  combustible={
+                      Array.isArray(autoData.combustiblecarro) && autoData.combustiblecarro.length > 0
+                          ? autoData.combustiblecarro[0]?.tipocombustible?.tipo_de_combustible || "No especificado"
+                          : "No especificado"
+                  }
+                  calificacion={4.5}
+                  direccion={auto.ubicacion}
               />
               
               <DescripcionAuto 
@@ -77,9 +81,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           </div>
           
           <div className="w-full max-w-6xl border-t border-gray-300 lg:hidden py-4">
-            <Ubicacion 
-              direccion={auto.ubicacion} 
-            />
+            <Ubicacion direccion={auto.ubicacion} />
           </div>
         </main>
       </>

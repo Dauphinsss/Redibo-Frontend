@@ -62,10 +62,10 @@ export default function Home() {
           puertas: item.puertas || 0,
           transmision: item.transmision || "",
           combustibles: Array.isArray(item.combustiblecarro)
-            ? item.combustiblecarro
-                .map((c) => c.tipocombustible?.tipo_de_combustible)
-                .filter((c): c is string => typeof c === 'string')
-            : [],
+              ? item.combustiblecarro
+                    .map((c) => c?.tipocombustible?.tipo_de_combustible)
+                    .filter((c): c is string => typeof c === "string")
+              : [],
           estado: item.estado || "",
           nombreHost: item.usuario_rol?.usuario?.nombre || "",
           calificacion: 4.5,
@@ -76,7 +76,7 @@ export default function Home() {
           precioDescuento: "Bs. " + item.precio_por_dia,
           precioPorDia: "Bs. " + item.precio_por_dia,
           imagenUrl: item.imagen?.[0]?.data || "",
-        }));
+      }));
 
         setAutos(data);
         setAutosFiltrados(data);
