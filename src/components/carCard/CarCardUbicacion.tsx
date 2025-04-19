@@ -1,5 +1,3 @@
-// src/components/carCard/CarCardUbicacion.tsx
-
 import { FaMapMarkerAlt } from "react-icons/fa";
 
 interface Props {

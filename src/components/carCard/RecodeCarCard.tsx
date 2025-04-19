@@ -35,6 +35,7 @@ export default function RecodeCarCard(props: Auto) {
 
   return (
     <div className="w-full max-w-[750px] md:h-[320px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-4">
+      
       <CarCardImage imagenUrl={imagenURL} />
 
       <div className="flex-1 flex flex-col justify-between">
