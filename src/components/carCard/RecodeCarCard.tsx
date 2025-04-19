@@ -1,8 +1,7 @@
-// src/components/carCard/RecodeCarCard.tsx
 "use client";
 
 import { useState } from "react";
-import { AutoCard_Interfaces_Recode as Auto } from "@/interface/AutoCard_Interfaces_Recode";
+import { AutoCard_Interfaces_Recode as Auto } from "@/interface/AutoCard_Interface_Recode";
 import CarCardImage from "./CarCardImg";
 import CarCardHeader from "./CarCardHeader";
 import CarCardSpecs from "./CarCardSpecs";

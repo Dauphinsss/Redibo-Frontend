@@ -1,13 +1,23 @@
+import Image from "next/image";
+
 interface Props {
     imagenUrl: string;
 }
+
 export default function CarCardImg({ imagenUrl }: Props) {
     return (
-        <div className="w-[140px] h-[140px] min-w-[140px] bg-gray-200 rounded-xl shadow flex items-center justify-center overflow-hidden">
+        <div className="w-[230px] h-[150px] bg-gray-200 rounded-[10px] overflow-hidden flex items-center justify-center relative">
         {imagenUrl ? (
-            <img src={imagenUrl} alt="Auto" className="w-full h-full object-cover" />
+            <Image
+            src={imagenUrl}
+            alt="Imagen del auto"
+            fill
+            className="object-contain"
+            />
         ) : (
-            <span className="text-4xl text-gray-400">🚗</span>
+            <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm">
+            Sin imagen
+            </div>
         )}
         </div>
     );
