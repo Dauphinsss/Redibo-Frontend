@@ -17,11 +17,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, autos, onFiltrar }) 
     const valor = e.target.value;
     setBusqueda(valor);
 
-    if (valor.trim() === "") {
+    const valorNormalizado = valor.trim().toLowerCase();
+
+    if (valorNormalizado === "") {
       onFiltrar(autos);
     } else {
       const filtrados = autos.filter((auto) =>
-        `${auto.nombre} ${auto.marca}`.toLowerCase().includes(valor.toLowerCase())
+        `${auto.nombre} ${auto.marca}`.toLowerCase().includes(valorNormalizado)
       );
       onFiltrar(filtrados);
     }
