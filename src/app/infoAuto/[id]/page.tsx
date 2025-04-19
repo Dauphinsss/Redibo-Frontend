@@ -6,7 +6,7 @@ import DescriHost from '@/components/recodeComponentes/RecodeDescriHost'
 import DescripcionAuto from '@/components/recodeComponentes/RecodeDescripcionAuto'
 import Reserva from '@/components/recodeComponentes/RecodeReserva'
 import Ubicacion from '@/components/recodeComponentes/RecodeUbicacion'
-import { getCarById } from '@/service/serviceRecode'
+import { getCarById } from '@/service/services_Recode'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params; 
