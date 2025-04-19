@@ -16,7 +16,7 @@ export default function Home() {
   const [filtroCiudad, setFiltroCiudad] = useState("");
   const [filtroMarca, setFiltroMarca] = useState("");
   const [filtroCombustible, setFiltroCombustible] = useState("");
-  const [ordenSeleccionado, setOrdenSeleccionado] = useState<string>("Recomendación");
+  const [ordenSeleccionado, setOrdenSeleccionado] = useState<string>("Ordenados por");
 
   const mostrarMasAutos = () => {
     setAutosVisibles((prev) => prev + CANTIDAD_POR_LOTE);
@@ -108,9 +108,10 @@ export default function Home() {
   }, [filtroCiudad, filtroMarca, filtroCombustible, autos]);
 
   // #### Lógica de ordenamiento
-  const ordenarAutos = (criterio: string) => {
-    const autosOrdenados = [...autosFiltrados];
 
+  const ordenarAutos = (criterio: string) => {
+    let autosOrdenados = [...autosFiltrados];
+     
     if (criterio === "Modelo Ascendente") {
       autosOrdenados.sort((a, b) => a.nombre.localeCompare(b.nombre)); // Orden alfabético A-Z
     } else if (criterio === "Modelo Descendente") {
@@ -123,16 +124,16 @@ export default function Home() {
       autosOrdenados.sort(
         (a, b) => parseFloat(b.precioPorDia.replace("Bs. ", "")) - parseFloat(a.precioPorDia.replace("Bs. ", ""))
       );
-    }
+    }else{autosOrdenados=autos;}
 
     setAutosFiltrados(autosOrdenados);
   };
 
   // #### Detectar cambio en el criterio de orden
   useEffect(() => {
-    if (ordenSeleccionado !== "Recomendación") {
+    if (ordenSeleccionado!= "Orednados por") {
       ordenarAutos(ordenSeleccionado);
-    }
+    }else{setAutosFiltrados([...autos]);}
   }, [ordenSeleccionado]);
 
   const autosActuales = autosFiltrados.slice(0, autosVisibles);
