@@ -1,5 +1,4 @@
-
-import CarsCarousel from "@/components/custom/CarsCarousel";
+import Carrucel from "@/components/custom/Carrucel";
 import Header from "@/components/ui/Header";
 import SearchBar from "@/components/ui/searchbar";
 
@@ -16,7 +15,7 @@ export default function Home() {
           Tu tienda en línea para rentar autos.
         </p>
         <div className="mt-8 w-full max-w-7xl">
-          <CarsCarousel />
+          <Carrucel />
         </div>
       </main>
     </div>
