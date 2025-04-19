@@ -13,16 +13,21 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({ placeholder, autos, onFiltrar }) => {
   const [busqueda, setBusqueda] = useState("");
 
+  // const [mensajeError, setMensajeError] = useState("");
+
   const handleBusqueda = (e: React.ChangeEvent<HTMLInputElement>) => {
     const valor = e.target.value;
     setBusqueda(valor);
+    // setMensajeError("");
     
     //con este const eliminamos los espacios al inicio y al final de cada palabra
-    const valorNormalizado = valor.trim().toLowerCase();
+    const valorNormalizado = valor.trim().replace(/\s+/g, ' ').toLowerCase();
 
     if (valorNormalizado === "") {
+      // setMensajeError("Debe ingresar un término de búsqueda válido");
       onFiltrar(autos);
     } else {
+      // setMensajeError("");
       const filtrados = autos.filter((auto) =>
         `${auto.nombre} ${auto.marca}`.toLowerCase().includes(valorNormalizado)
       );
@@ -45,6 +50,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, autos, onFiltrar }) 
       >
         <MagnifyingGlassIcon className="h-5 w-5" />
       </button>
+      {/* {mensajeError && (<p className="mt-2 text-red-500 text-sm">{mensajeError}</p>)} */}
     </div>
   );
 };
