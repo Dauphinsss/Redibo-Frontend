@@ -1,8 +1,15 @@
-const WelcomeComponent: React.FC = () => {
+"use client";
+
+import { Header } from "./header";
+import { LoginForm } from "./loginForm";
+
+export default function LoginPage() {
 return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
-        <h1>Falta implemetar</h1>
-    </div>
+    <>
+    <Header />
+    <main className="flex items-center justify-center min-h-screen bg-background text-foreground">
+        <LoginForm />
+    </main>
+    </>
 );
-};
-export default WelcomeComponent;
+}
