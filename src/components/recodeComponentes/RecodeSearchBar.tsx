@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
-import { RecodeAuto } from "@/components/recodeComponentes/RecodeAuto";
+import { AutoCard_Interfaces_Recode as RecodeAuto } from "@/interface/AutoCard_Interface_Recode";
 
 interface SearchBarProps {
   placeholder: string;
@@ -21,7 +21,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, autos, onFiltrar }) 
       onFiltrar(autos);
     } else {
       const filtrados = autos.filter((auto) =>
-        `${auto.nombre} ${auto.marca}`.toLowerCase().includes(valor.toLowerCase())
+        `${auto.modelo} ${auto.marca}`.toLowerCase().includes(valor.toLowerCase())
       );
       onFiltrar(filtrados);
     }
