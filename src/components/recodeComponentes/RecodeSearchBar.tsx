@@ -16,7 +16,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, autos, onFiltrar }) 
   const handleBusqueda = (e: React.ChangeEvent<HTMLInputElement>) => {
     const valor = e.target.value;
     setBusqueda(valor);
-
+    
+    //con este const eliminamos los espacios al inicio y al final de cada palabra
     const valorNormalizado = valor.trim().toLowerCase();
 
     if (valorNormalizado === "") {
