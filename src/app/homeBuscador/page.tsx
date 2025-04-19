@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import RecodeCarList from "@/components/recodeComponentes/RecodeCarList";
+import RecodeCarList from "@/components/carCard/RecodeCarList";
 import SearchBar from "@/components/recodeComponentes/RecodeSearchBar";
 import Filter from "@/components/recodeComponentes/RecodeFilter";
 import { RecodeAuto as Auto } from "@/components/recodeComponentes/RecodeAuto";

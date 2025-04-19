@@ -11,12 +11,6 @@ export const getAllCars = async () => {
   }
 };
 
-/*export async function getCarById(id: string) {
-  const res = await fetch(`https://search-car-backend.vercel.app/detailCar/${id}`);
-  if (!res.ok) throw new Error('No se pudo obtener el auto');
-  return await res.json();
-}*/
-
 export const getCarById = async (id: string) => {
   try {
     const response = await api2.get(`/detailCar/${id}`);
