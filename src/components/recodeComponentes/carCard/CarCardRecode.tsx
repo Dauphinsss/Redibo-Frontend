@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { AutoCard_Interfaces_Recode as Auto } from "@/interface/AutoCard_Interface_Recode";
-import CarCardImage from "./CarCardImg";
-import CarCardHeader from "./CarCardHeader";
-import CarCardSpecs from "./CarCardSpecs";
-import CarCardHost from "./CarCardHost";
-import CarCardUbicacion from "./CarCardUbicacion";
-import CarCardPrice from "./CarCardPrice";
+import CarCardImage from "./CarCardImgRecode";
+import CarCardHeader from "./CarCardHeaderRecode";
+import CarCardSpecs from "./CarCardSpecsRecode";
+import CarCardHost from "./CarCardHostRecode";
+import CarCardUbicacion from "./CarCardUbicacionRecode";
+import CarCardPrice from "./CarCardPriceRecode";
 
 export type RecodeCarCardProps = Auto;
 

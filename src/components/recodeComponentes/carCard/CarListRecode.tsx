@@ -1,4 +1,4 @@
-import RecodeCarCard, { RecodeCarCardProps } from "./RecodeCarCard";
+import RecodeCarCard, { RecodeCarCardProps } from "./CarCardRecode";
 
 interface Props {
     carCards: RecodeCarCardProps[];
