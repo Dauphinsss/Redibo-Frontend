@@ -1,9 +1,9 @@
 "use client";
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useFormContext } from "../context/FormContext";
 
 // Componentes modulares
 import CampoImagen from "../../../components/inputimagen/CampoImagen";
@@ -13,10 +13,12 @@ import CampoDescripcion from "../../../components/inputimagen/CampoDescripcion";
 import BotonesFormulario from "../../../components/inputimagen/BotonesFormulario";
 
 export default function InputImagen() {
+  const { formData, updateFinalizacion, submitForm } = useFormContext();
+  
   // Estado para almacenar las imágenes cargadas
-  const [mainImage, setMainImage] = useState<string | null>(null);
-  const [secondaryImage1, setSecondaryImage1] = useState<string | null>(null);
-  const [secondaryImage2, setSecondaryImage2] = useState<string | null>(null);
+  const [mainImage, setMainImage] = useState<File | null>(null);
+  const [secondaryImage1, setSecondaryImage1] = useState<File | null>(null);
+  const [secondaryImage2, setSecondaryImage2] = useState<File | null>(null);
   
   // Estado para los valores de los campos
   const [mantenimientos, setMantenimientos] = useState<string>("");
@@ -31,22 +33,28 @@ export default function InputImagen() {
   const [precioError, setPrecioError] = useState<string | null>(null);
   const [descripcionError, setDescripcionError] = useState<string | null>(null);
   
-  // Estado para controlar la habilitación del botón finalizar
+  // Estado para controlar la habilitación del botón finalizar - AÑADIDO
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
-  // Verificar validez del formulario cuando cualquier estado cambie
+  // Función estable para actualizar el contexto
+  const updateContext = useCallback(() => {
+    updateFinalizacion({
+      imagenes: [mainImage, secondaryImage1, secondaryImage2].filter(Boolean) as File[],
+      mantenimientos: mantenimientos ? parseInt(mantenimientos) : 0,
+      precioAlquiler: precio ? parseFloat(precio) : 0,
+      descripcion
+    });
+  }, [mainImage, secondaryImage1, secondaryImage2, mantenimientos, precio, descripcion, updateFinalizacion]);
+
+  // Efecto para validación del formulario
   useEffect(() => {
     const isValid = 
-      // Todas las imágenes subidas y sin errores
       mainImage !== null && mainImageError === null &&
       secondaryImage1 !== null && secondaryImage1Error === null &&
       secondaryImage2 !== null && secondaryImage2Error === null &&
-      // Mantenimientos válido
       mantenimientos !== "" && mantenimientosError === null &&
-      // Precio válido
       precio !== "" && precioError === null &&
-      // Descripción válida
-      /*descripcion !== "" &&*/ descripcionError === null;
+      descripcionError === null;
     
     setIsFormValid(isValid);
   }, [
@@ -55,8 +63,23 @@ export default function InputImagen() {
     secondaryImage2, secondaryImage2Error,
     mantenimientos, mantenimientosError,
     precio, precioError,
-    /*descripcion,*/ descripcionError
+    descripcionError
   ]);
+
+  // Efecto para actualizar el contexto (con dependencias estables)
+  useEffect(() => {
+    updateContext();
+  }, [updateContext]);
+
+  const handleSubmit = async () => {
+    try {
+      await submitForm();
+      return true;
+    } catch (error) {
+      console.error("Error al enviar el formulario:", error);
+      return false;
+    }
+  };
 
   return (
     <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
@@ -77,41 +100,37 @@ export default function InputImagen() {
       </div>
 
       <div className="flex flex-col mt-6">
-      <label className="text-base font-medium mb-2">
-        Debe cargar obligatoriamente tres imágenes: <span className="text-red-600">*</span>
-      </label>
+        <label className="text-base font-medium mb-2">
+          Debe cargar obligatoriamente tres imágenes: <span className="text-red-600">*</span>
+        </label>
       </div>
 
       {/* Formulario de carga de imágenes */}
       <div className="w-full max-w-5xl px-9 space-y-6">
         {/* Área de carga de imágenes */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Imagen principal */}
           <CampoImagen 
-            imageUrl={mainImage}
+            image={mainImage}
             onImageChange={setMainImage}
             error={mainImageError}
             setError={setMainImageError}
           />
           
-          {/* Imagen secundaria 1 */}
           <CampoImagen 
-            imageUrl={secondaryImage1}
+            image={secondaryImage1}
             onImageChange={setSecondaryImage1}
             error={secondaryImage1Error}
             setError={setSecondaryImage1Error}
           />
           
-          {/* Imagen secundaria 2 */}
           <CampoImagen 
-            imageUrl={secondaryImage2}
+            image={secondaryImage2}
             onImageChange={setSecondaryImage2}
             error={secondaryImage2Error}
             setError={setSecondaryImage2Error}
           />
         </div>
         
-        {/* Número de mantenimientos */}
         <CampoMantenimientos
           mantenimientos={mantenimientos}
           setMantenimientos={setMantenimientos}
@@ -119,7 +138,6 @@ export default function InputImagen() {
           setError={setMantenimientosError}
         />
 
-        {/* Precio de alquiler por día */}
         <CampoPrecio
           precio={precio}
           setPrecio={setPrecio}
@@ -127,7 +145,6 @@ export default function InputImagen() {
           setError={setPrecioError}
         />
 
-        {/* Descripción */}
         <CampoDescripcion
           descripcion={descripcion}
           setDescripcion={setDescripcion}
@@ -136,8 +153,10 @@ export default function InputImagen() {
         />
       </div>
 
-      {/* Botones de Cancelar y Finalizar */}
-      <BotonesFormulario isFormValid={isFormValid} />
+      <BotonesFormulario 
+        isFormValid={isFormValid} 
+        onSubmit={handleSubmit} 
+      />
     </div>
   );
 }

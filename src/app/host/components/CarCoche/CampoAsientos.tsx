@@ -1,26 +1,34 @@
+"use client";
+
 import { Input } from "@/components/ui/input";
 
-interface Props {
-  asientos: string;
-  setAsientos: (val: string) => void;
+interface CampoAsientosProps {
+  asientos: number;
+  onAsientosChange: (value: number) => void;
   error: string;
-  setError: (val: string) => void;
+  setError: (value: string) => void;
 }
 
-export default function AsientosSelect({
+export default function CampoAsientos({
   asientos,
-  setAsientos,
+  onAsientosChange,
   error,
   setError,
-}: Props) {
+}: CampoAsientosProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    
     if (value === "" || /^\d+$/.test(value)) {
-      setAsientos(value);
-      if (value === "") setError("El número de asientos es obligatorio");
-      else if (parseInt(value) <= 0) setError("Debe ser mayor a 0");
-      else if (parseInt(value) >= 240) setError("Debe ser menor a 240");
-      else setError("");
+      const numValue = value === "" ? 0 : parseInt(value);
+      onAsientosChange(numValue);
+      
+      if (numValue <= 0) {
+        setError("Debe ser mayor a 0");
+      } else if (numValue > 20) {
+        setError("Máximo 20 asientos");
+      } else {
+        setError("");
+      }
     } else {
       setError("Solo se permiten números");
     }
@@ -32,11 +40,13 @@ export default function AsientosSelect({
         Asientos: <span className="text-red-600">*</span>
       </label>
       <Input
-        type="text"
-        value={asientos}
+        type="number"
+        value={asientos || ""}
         onChange={handleChange}
-        placeholder="Introduzca la cant. de asientos en su vehículo"
+        placeholder="Número de asientos"
         className="w-full max-w-md"
+        min="1"
+        max="20"
       />
       {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
     </div>

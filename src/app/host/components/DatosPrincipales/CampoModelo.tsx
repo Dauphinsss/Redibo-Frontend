@@ -3,15 +3,15 @@ import { Input } from "@/components/ui/input";
 
 interface CampoModeloProps {
   modelo: string;
-  setModelo: (value: string) => void;
+  onModeloChange: (value: string) => void;
   modeloError: string;
   setModeloError: (value: string) => void;
 }
 
-export default function CampoModelo({ modelo, setModelo, modeloError, setModeloError }: CampoModeloProps) {
+export default function CampoModelo({ modelo, onModeloChange, modeloError, setModeloError }: CampoModeloProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toUpperCase();
-    setModelo(value);
+    onModeloChange(value);
 
     if (value.length > 50) {
       setModeloError("El modelo no puede exceder los 50 caracteres.");
@@ -25,7 +25,13 @@ export default function CampoModelo({ modelo, setModelo, modeloError, setModeloE
   return (
     <div className="flex flex-col">
       <label className="text-base font-medium mb-1">Modelo: <span className="text-red-600"> *</span></label>
-      <Input type="text" value={modelo} onChange={handleChange}  className="max-w-md" />
+      <Input
+        type="text"
+        value={modelo}
+        onChange={handleChange}
+        className="max-w-md"
+        placeholder="Ej: COROLLA, F-150, ONIX"
+      />
       {modeloError && <p className="text-sm text-red-600 mt-1">{modeloError}</p>}
     </div>
   );

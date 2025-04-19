@@ -6,14 +6,14 @@ import { Label } from "@/components/ui/label";
 
 interface CampoCombustibleProps {
   combustibles: string[];
-  setCombustibles: React.Dispatch<React.SetStateAction<string[]>>;
+  onCombustiblesChange: (value: string[]) => void;
   error: string;
-  setError: React.Dispatch<React.SetStateAction<string>>;
+  setError: (value: string) => void;
 }
 
 export default function CampoCombustible({
   combustibles,
-  setCombustibles,
+  onCombustiblesChange,
   error,
   setError,
 }: CampoCombustibleProps) {
@@ -22,19 +22,22 @@ export default function CampoCombustible({
   const handleCheckboxChange = (checked: boolean, tipo: string) => {
     if (checked) {
       if (combustibles.length >= 2) {
-        return; // No permite seleccionar más de 2 opciones
+        setError("Máximo 2 tipos de combustible");
+        return;
       }
       const nuevos = [...combustibles, tipo];
-      setCombustibles(nuevos);
+      onCombustiblesChange(nuevos);
+      setError("");
     } else {
       const nuevos = combustibles.filter((item) => item !== tipo);
-      setCombustibles(nuevos);
+      onCombustiblesChange(nuevos);
+      setError(nuevos.length === 0 ? "Seleccione al menos un tipo de combustible" : "");
     }
   };
 
   return (
     <div className="space-y-4">
-      <Label className="text-lg font-medium text-gray-700">
+      <Label className="text-lg font-medium">
         Combustible<span className="text-red-600">*</span>
       </Label>
       <div className="space-y-3">
@@ -44,15 +47,13 @@ export default function CampoCombustible({
               id={tipo}
               checked={combustibles.includes(tipo)}
               onCheckedChange={(checked) => handleCheckboxChange(!!checked, tipo)}
-              disabled={combustibles.length >= 2 && !combustibles.includes(tipo)} // Deshabilita si ya hay 2 seleccionados
+              disabled={combustibles.length >= 2 && !combustibles.includes(tipo)}
             />
-            <Label htmlFor={tipo} className="text-gray-800">
-              {tipo}
-            </Label>
+            <Label htmlFor={tipo}>{tipo}</Label>
           </div>
         ))}
       </div>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
 }

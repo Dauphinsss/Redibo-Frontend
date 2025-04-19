@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Select,
   SelectTrigger,
@@ -6,19 +8,33 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
-export default function TransmisionSelect({
-  transmision,
-  setTransmision,
-}: {
+interface CampoTransmisionProps {
   transmision: string;
-  setTransmision: (val: string) => void;
-}) {
+  onTransmisionChange: (value: string) => void;
+  error: string;
+  setError: (value: string) => void;
+}
+
+export default function CampoTransmision({
+  transmision,
+  onTransmisionChange,
+  error,
+  setError,
+}: CampoTransmisionProps) {
+  const handleValueChange = (value: string) => {
+    onTransmisionChange(value);
+    setError(value ? "" : "Seleccione el tipo de transmisión");
+  };
+
   return (
     <div className="flex flex-col">
       <label className="text-base font-medium mb-1">
         Transmisión: <span className="text-red-600">*</span>
       </label>
-      <Select value={transmision} onValueChange={setTransmision}>
+      <Select 
+        value={transmision} 
+        onValueChange={handleValueChange}
+      >
         <SelectTrigger className="w-full max-w-md">
           <SelectValue placeholder="Seleccione" />
         </SelectTrigger>
@@ -28,9 +44,7 @@ export default function TransmisionSelect({
           <SelectItem value="semiautomatico">Semi-automático</SelectItem>
         </SelectContent>
       </Select>
-      {transmision === "" && (
-        <p className="text-sm text-red-600 mt-1">Debe seleccionar el tipo de transmisión</p>
-      )}
+      {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
     </div>
   );
 }

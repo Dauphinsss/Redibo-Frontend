@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import { useFormContext } from "../context/FormContext";
 import { Button } from "@/components/ui/button";
 import CampoCombustible from "../../../components/CarCoche/CampoCombustible";
 import CampoAsientos from "../../../components/CarCoche/CampoAsientos";
@@ -14,31 +15,81 @@ import BotonesFormulario from "../../../components/CarCoche/BotonesFormulario";
 
 export default function CaracteristicasCoche() {
   const router = useRouter();
+  const { updateCaracteristicas } = useFormContext();
 
+  // Estados locales
   const [combustibles, setCombustibles] = useState<string[]>([]);
-  const [asientos, setAsientos] = useState<string>("");
-  const [puertas, setPuertas] = useState<string>("");
+  const [asientos, setAsientos] = useState<number>(0);
+  const [puertas, setPuertas] = useState<number>(0);
   const [transmision, setTransmision] = useState<string>("");
   const [seguro, setSeguro] = useState<boolean>(false);
 
-  const [asientosError, setAsientosError] = useState<string>("");
+  // Estados de error
   const [combustiblesError, setCombustiblesError] = useState<string>("");
+  const [asientosError, setAsientosError] = useState<string>("");
+  const [puertasError, setPuertasError] = useState<string>("");
+  const [transmisionError, setTransmisionError] = useState<string>("");
+  const [seguroError, setSeguroError] = useState<string>("");
 
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
+  // Handlers optimizados
+  const handleCombustiblesChange = useCallback((value: string[]) => {
+    setCombustibles(value);
+    setCombustiblesError(value.length > 0 ? "" : "Seleccione al menos un tipo de combustible");
+  }, []);
+
+  const handleAsientosChange = useCallback((value: number) => {
+    setAsientos(value);
+    setAsientosError(value > 0 ? "" : "El número de asientos es obligatorio");
+  }, []);
+
+  const handlePuertasChange = useCallback((value: number) => {
+    setPuertas(value);
+    setPuertasError(value > 0 ? "" : "El número de puertas es obligatorio");
+  }, []);
+
+  const handleTransmisionChange = useCallback((value: string) => {
+    setTransmision(value);
+    setTransmisionError(value ? "" : "La transmisión es obligatoria");
+  }, []);
+
+  const handleSeguroChange = useCallback((value: boolean) => {
+    setSeguro(value);
+    setSeguroError(value ? "" : "El seguro SOAT es obligatorio");
+  }, []);
+
+  // Validación del formulario
   useEffect(() => {
-    const combustiblesValid = combustibles.length > 0 && combustibles.length <= 2;
-    const asientosValid = asientos.trim() !== "" && parseInt(asientos) > 0 && asientosError === "";
-    const areAllFieldsValid =
-      combustiblesValid &&
-      asientosValid &&
-      puertas !== "" &&
+    const isValid = (
+      combustibles.length > 0 &&
+      asientos > 0 &&
+      puertas > 0 &&
       transmision !== "" &&
       seguro === true &&
-      combustiblesError === "";
+      !combustiblesError &&
+      !asientosError &&
+      !puertasError &&
+      !transmisionError &&
+      !seguroError
+    );
+    setIsFormValid(isValid);
+  }, [combustibles, asientos, puertas, transmision, seguro, combustiblesError, asientosError, puertasError, transmisionError, seguroError]);
 
-    setIsFormValid(areAllFieldsValid);
-  }, [combustibles, asientos, puertas, transmision, seguro, asientosError, combustiblesError]);
+  // Actualización del contexto
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateCaracteristicas({
+        combustible: combustibles.join(", "),
+        asientos,
+        puertas,
+        transmision,
+        seguro 
+      });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [combustibles, asientos, puertas, transmision, seguro, updateCaracteristicas]);
 
   return (
     <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
@@ -59,22 +110,42 @@ export default function CaracteristicasCoche() {
       <div className="w-full max-w-5xl pl-9 space-y-6">
         <CampoCombustible
           combustibles={combustibles}
-          setCombustibles={setCombustibles}
+          onCombustiblesChange={handleCombustiblesChange}
           error={combustiblesError}
           setError={setCombustiblesError}
         />
         <CampoAsientos
           asientos={asientos}
-          setAsientos={setAsientos}
+          onAsientosChange={handleAsientosChange}
           error={asientosError}
           setError={setAsientosError}
         />
-        <CampoPuertas puertas={puertas} setPuertas={setPuertas} />
-        <CampoTransmision transmision={transmision} setTransmision={setTransmision} />
-        <CampoSeguro seguro={seguro} setSeguro={setSeguro} />
+        <CampoPuertas 
+          puertas={puertas}
+          onPuertasChange={handlePuertasChange}
+          error={puertasError}
+          setError={setPuertasError}
+        />
+        <CampoTransmision
+          transmision={transmision}
+          onTransmisionChange={handleTransmisionChange}
+          error={transmisionError}
+          setError={setTransmisionError}
+        />
+        <CampoSeguro
+          seguro={seguro}
+          onSeguroChange={handleSeguroChange}
+          error={seguroError}
+          setError={setSeguroError}
+        />
       </div>
 
-      <BotonesFormulario isFormValid={isFormValid} />
+      <div className="w-full max-w-5xl flex justify-between mt-10 px-10">
+        <BotonesFormulario 
+          isFormValid={isFormValid}
+          onNext={() => router.push("/host/home/add/caradicional")}
+        />
+      </div>
     </div>
   );
 }

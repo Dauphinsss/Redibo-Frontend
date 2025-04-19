@@ -102,7 +102,7 @@ export default function ViewCarsPage() {
         <h3 className="text-center text-2xl font-semibold my-8">
           No se encontraron carros
         </h3>
-        <Button onClick={() => router.push("/host/home/add")}>
+        <Button onClick={() => router.push("/host/home/add/direccion")}>
           Crear primer carro
         </Button>
       </div>

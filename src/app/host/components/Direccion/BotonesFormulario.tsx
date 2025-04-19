@@ -1,14 +1,18 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 
 interface BotonesFormularioProps {
   isFormValid: boolean;
   onNext?: () => void;
 }
 
-export default function BotonesFormulario({ isFormValid, onNext }: BotonesFormularioProps) {
+export default function BotonesFormulario({ 
+  isFormValid,
+  onNext
+}: BotonesFormularioProps) {
   const router = useRouter();
 
   return (

@@ -1,13 +1,26 @@
+"use client";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
-export default function SeguroCheckbox({
-  seguro,
-  setSeguro,
-}: {
+interface CampoSeguroProps {
   seguro: boolean;
-  setSeguro: (val: boolean) => void;
-}) {
+  onSeguroChange: (value: boolean) => void;
+  error: string;
+  setError: (value: string) => void;
+}
+
+export default function CampoSeguro({
+  seguro,
+  onSeguroChange,
+  error,
+  setError,
+}: CampoSeguroProps) {
+  const handleChange = (checked: boolean) => {
+    onSeguroChange(checked);
+    setError(checked ? "" : "El seguro SOAT es obligatorio");
+  };
+
   return (
     <div className="flex flex-col">
       <label className="text-base font-medium mb-1">
@@ -17,15 +30,13 @@ export default function SeguroCheckbox({
         <Checkbox
           id="soat"
           checked={seguro}
-          onCheckedChange={(checked) => setSeguro(checked === true)}
+          onCheckedChange={(checked) => handleChange(checked === true)}
         />
         <Label htmlFor="soat">
           SOAT (Seguro Obligatorio de Accidentes de Tránsito)
         </Label>
       </div>
-      {!seguro && (
-        <p className="text-sm text-red-600 mt-1">El seguro SOAT es obligatorio</p>
-      )}
+      {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
     </div>
   );
 }
