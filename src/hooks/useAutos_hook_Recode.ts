@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { AutoCard_Interfaces_Recode as Auto } from '@/interface/AutoCard_Interface_Recode';
 import { RawAuto_Interface_Recode as RawAuto } from '@/interface/RawAuto_Interface_Recode';
 import { getAllCars } from '@/service/services_Recode';
@@ -31,10 +31,9 @@ export function useAutos(cantidadPorLote = 8) {
         fetchAutos();
     }, []);
 
-    const filtrarYOrdenarAutos = () => {
+    const filtrarYOrdenarAutos = useCallback(() => {
         let resultado = [...autos];
 
-        // Filtro por texto
         if (textoBusqueda.trim()) {
         const query = textoBusqueda.trim().toLowerCase();
         resultado = resultado.filter(auto =>
@@ -42,7 +41,6 @@ export function useAutos(cantidadPorLote = 8) {
         );
         }
 
-        // Ordenamiento
         switch (ordenSeleccionado) {
         case 'Modelo Ascendente':
             resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
@@ -59,11 +57,11 @@ export function useAutos(cantidadPorLote = 8) {
         }
 
         setAutosFiltrados(resultado);
-    };
+    }, [autos, textoBusqueda, ordenSeleccionado]);
 
     useEffect(() => {
         filtrarYOrdenarAutos();
-    }, [textoBusqueda, ordenSeleccionado, autos]);
+    }, [filtrarYOrdenarAutos]);
 
     const autosActuales = useMemo(() => {
         return autosFiltrados.slice(0, autosVisibles);
@@ -83,6 +81,6 @@ export function useAutos(cantidadPorLote = 8) {
         setAutosFiltrados,
         mostrarMasAutos,
         cargando,
-        filtrarAutos: setTextoBusqueda
+        filtrarAutos: setTextoBusqueda,
     };
 }

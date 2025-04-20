@@ -9,57 +9,53 @@ interface Props {
     ordenSeleccionado: string;
     setOrdenSeleccionado: (orden: string) => void;
     setAutosFiltrados: (autos: Auto[]) => void;
-}
+    }
 
-const ordenados = [
+    const ordenados = [
     'Precio bajo a alto',
     'Precio alto a bajo',
     'Modelo Ascendente',
     'Modelo Descendente',
-];
+    ];
 
-export default function OrdenadorBusquedaRecode({
+    export default function OrdenadorBusquedaRecode({
     autos,
     ordenSeleccionado,
     setOrdenSeleccionado,
     setAutosFiltrados,
-}: Props) {
+    }: Props) {
     useEffect(() => {
         if (!autos || autos.length === 0) return;
-
-        console.log('Orden seleccionado:', ordenSeleccionado);
-        console.log('Primer precio:', autos[0]?.precioPorDia, 'tipo:', typeof autos[0]?.precioPorDia);
-
-        if (ordenSeleccionado === 'Recomendación') {
-            setAutosFiltrados(autos);
-            return;
-        }
 
         const ordenadosLista = [...autos];
 
         switch (ordenSeleccionado) {
-            case 'Modelo Ascendente':
-                ordenadosLista.sort((a, b) => a.modelo.localeCompare(b.modelo));
-                break;
-            case 'Modelo Descendente':
-                ordenadosLista.sort((a, b) => b.modelo.localeCompare(a.modelo));
-                break;
-            case 'Precio bajo a alto':
-                ordenadosLista.sort((a, b) => a.precioPorDia - b.precioPorDia);
-                break;
-            case 'Precio alto a bajo':
-                ordenadosLista.sort((a, b) => b.precioPorDia - a.precioPorDia);
-                break;
+        case 'Modelo Ascendente':
+            ordenadosLista.sort((a, b) => a.modelo.localeCompare(b.modelo));
+            break;
+        case 'Modelo Descendente':
+            ordenadosLista.sort((a, b) => b.modelo.localeCompare(a.modelo));
+            break;
+        case 'Precio bajo a alto':
+            ordenadosLista.sort((a, b) => a.precioPorDia - b.precioPorDia);
+            break;
+        case 'Precio alto a bajo':
+            ordenadosLista.sort((a, b) => b.precioPorDia - a.precioPorDia);
+            break;
+        case 'Recomendación':
+        default:
+            // no ordenar
+            break;
         }
 
         setAutosFiltrados(ordenadosLista);
-    }, [ordenSeleccionado]);
+    }, [ordenSeleccionado, autos, setAutosFiltrados]);
 
     return (
         <Filter
-            lista={ordenados}
-            nombre="Ordenados por"
-            onChange={setOrdenSeleccionado}
+        lista={ordenados}
+        nombre="Ordenados por"
+        onChange={setOrdenSeleccionado}
         />
     );
 }
