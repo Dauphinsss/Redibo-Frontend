@@ -12,7 +12,7 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ placeholder, autos, onFiltrar }) => {
   const [busqueda, setBusqueda] = useState("");
-
+  const [mostrarBoton, setMostrarBoton] = useState(true);
   // const [mensajeError, setMensajeError] = useState("");
 
   const handleBusqueda = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,14 +42,19 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, autos, onFiltrar }) 
         placeholder={placeholder}
         value={busqueda}
         onChange={handleBusqueda}
+        onFocus={() => setMostrarBoton(false)}
+        onBlur={() => setMostrarBoton(true)}
         className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[11px] md:text-base lg:text-lg"
       />
-      <button
-        type="button"
-        className="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black text-white rounded-md flex items-center justify-center"
-      >
-        <MagnifyingGlassIcon className="h-5 w-5" />
-      </button>
+      {mostrarBoton && (
+        <button
+          type="button"
+          className="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black text-white rounded-md flex items-center justify-center"
+        >
+          <MagnifyingGlassIcon className="h-5 w-5" />
+        </button>
+      )}
+
       {/* {mensajeError && (<p className="mt-2 text-red-500 text-sm">{mensajeError}</p>)} */}
     </div>
   );
