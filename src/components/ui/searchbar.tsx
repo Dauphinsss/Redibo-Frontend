@@ -8,7 +8,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 var canClose = true;
 
 const SearchBar = () => {
-    const [searchTerm, setSearchTerm] = useState("");
+    let [searchTerm, setSearchTerm] = useState("");
     const [savedSearches, setSavedSearches] = useState<string[]>([]);
     const [isClicked, setIsClicked] = useState(false);
     const router = useRouter();
@@ -56,6 +56,8 @@ const SearchBar = () => {
     }, [isSearchPage, query]);
 
     const handleButtonClick = () => {
+        searchTerm = searchTerm.trim();
+        setSearchTerm(searchTerm);
         if (searchTerm && !savedSearches.includes(searchTerm)) {
             const updatedSearches = [searchTerm, ...savedSearches.filter(s => s !== searchTerm)];
             setSavedSearches(updatedSearches);
