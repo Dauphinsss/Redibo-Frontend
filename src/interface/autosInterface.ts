@@ -22,7 +22,8 @@ export interface ImagenAuto {
     marca: string;
     modelo: string;
     placa: string;
-    combustible: string[];
+    año: number;
+    
   }
   
   export interface InfoPrincipalProps {
