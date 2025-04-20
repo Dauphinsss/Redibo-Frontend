@@ -85,18 +85,18 @@ export default function AddDireccion() {
     const timer = setTimeout(() => {
       if (pais || departamento || provincia || calle || numCasa) {
         updateDireccion({
-          pais,
-          departamento,
-          provincia,
+          ciudadId: Number(pais),
+          provinciaId: Number(provincia),
           calle,
-          numCasa,
+          zona: departamento,
+          num_casa: numCasa,
         });
       }
     }, 100);
 
     return () => clearTimeout(timer);
   }, [pais, departamento, provincia, calle, numCasa, updateDireccion]);
-
+  
   const handleConfirmExit = () => {
     router.push("/host/pages");
   };

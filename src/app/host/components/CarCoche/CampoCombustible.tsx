@@ -5,8 +5,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 interface CampoCombustibleProps {
-  combustibles: string[];
-  onCombustiblesChange: (value: string[]) => void;
+  combustibles: number[];
+  onCombustiblesChange: (value: number[]) => void;
   error: string;
   setError: (value: string) => void;
 }
@@ -17,19 +17,23 @@ export default function CampoCombustible({
   error,
   setError,
 }: CampoCombustibleProps) {
-  const opcionesCombustible = ["Gasolina", "Diesel", "Gas Natural", "Eléctrico"];
+  const opcionesCombustible = [
+    { id: 1, label: "Gasolina" },
+    { id: 2, label: "Gas Natural" },
+    { id: 3, label: "Electrico" },
+    { id: 4, label: "Diesel" },
+  ];
 
-  const handleCheckboxChange = (checked: boolean, tipo: string) => {
+  const handleCheckboxChange = (checked: boolean, id: number) => {
     if (checked) {
       if (combustibles.length >= 2) {
         setError("Máximo 2 tipos de combustible");
         return;
       }
-      const nuevos = [...combustibles, tipo];
-      onCombustiblesChange(nuevos);
+      onCombustiblesChange([...combustibles, id]);
       setError("");
     } else {
-      const nuevos = combustibles.filter((item) => item !== tipo);
+      const nuevos = combustibles.filter((c) => c !== id);
       onCombustiblesChange(nuevos);
       setError(nuevos.length === 0 ? "Seleccione al menos un tipo de combustible" : "");
     }
@@ -41,15 +45,15 @@ export default function CampoCombustible({
         Combustible<span className="text-red-600">*</span>
       </Label>
       <div className="space-y-3">
-        {opcionesCombustible.map((tipo) => (
-          <div key={tipo} className="flex items-center space-x-2">
+        {opcionesCombustible.map(({ id, label }) => (
+          <div key={id} className="flex items-center space-x-2">
             <Checkbox
-              id={tipo}
-              checked={combustibles.includes(tipo)}
-              onCheckedChange={(checked) => handleCheckboxChange(!!checked, tipo)}
-              disabled={combustibles.length >= 2 && !combustibles.includes(tipo)}
+              id={String(id)}
+              checked={combustibles.includes(id)}
+              onCheckedChange={(checked) => handleCheckboxChange(!!checked, id)}
+              disabled={combustibles.length >= 2 && !combustibles.includes(id)}
             />
-            <Label htmlFor={tipo}>{tipo}</Label>
+            <Label htmlFor={String(id)}>{label}</Label>
           </div>
         ))}
       </div>

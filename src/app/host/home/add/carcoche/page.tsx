@@ -18,7 +18,7 @@ export default function CaracteristicasCoche() {
   const { updateCaracteristicas } = useFormContext();
 
   // Estados locales
-  const [combustibles, setCombustibles] = useState<string[]>([]);
+  const [combustibles, setCombustibles] = useState<number[]>([]);
   const [asientos, setAsientos] = useState<number>(0);
   const [puertas, setPuertas] = useState<number>(0);
   const [transmision, setTransmision] = useState<string>("");
@@ -34,7 +34,7 @@ export default function CaracteristicasCoche() {
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
   // Handlers optimizados
-  const handleCombustiblesChange = useCallback((value: string[]) => {
+  const handleCombustiblesChange = useCallback((value: number[]) => {
     setCombustibles(value);
     setCombustiblesError(value.length > 0 ? "" : "Seleccione al menos un tipo de combustible");
   }, []);
@@ -61,7 +61,7 @@ export default function CaracteristicasCoche() {
 
   // Validación del formulario
   useEffect(() => {
-    const isValid = (
+    const isValid =
       combustibles.length > 0 &&
       asientos > 0 &&
       puertas > 0 &&
@@ -71,20 +71,31 @@ export default function CaracteristicasCoche() {
       !asientosError &&
       !puertasError &&
       !transmisionError &&
-      !seguroError
-    );
+      !seguroError;
+
     setIsFormValid(isValid);
-  }, [combustibles, asientos, puertas, transmision, seguro, combustiblesError, asientosError, puertasError, transmisionError, seguroError]);
+  }, [
+    combustibles,
+    asientos,
+    puertas,
+    transmision,
+    seguro,
+    combustiblesError,
+    asientosError,
+    puertasError,
+    transmisionError,
+    seguroError,
+  ]);
 
   // Actualización del contexto
   useEffect(() => {
     const timer = setTimeout(() => {
       updateCaracteristicas({
-        combustible: combustibles.join(", "),
+        combustibleIds: combustibles,
         asientos,
         puertas,
-        transmision,
-        seguro 
+        transmicion: transmision as "automatica" | "manual",
+        soat: seguro,
       });
     }, 100);
 
@@ -120,7 +131,7 @@ export default function CaracteristicasCoche() {
           error={asientosError}
           setError={setAsientosError}
         />
-        <CampoPuertas 
+        <CampoPuertas
           puertas={puertas}
           onPuertasChange={handlePuertasChange}
           error={puertasError}
@@ -141,7 +152,7 @@ export default function CaracteristicasCoche() {
       </div>
 
       <div className="w-full max-w-5xl flex justify-between mt-10 px-10">
-        <BotonesFormulario 
+        <BotonesFormulario
           isFormValid={isFormValid}
           onNext={() => router.push("/host/home/add/caradicional")}
         />

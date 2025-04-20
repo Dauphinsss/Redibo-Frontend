@@ -7,18 +7,19 @@ import BotonSiguiente from "@/app/host/components/CarAdicional/BotonSiguiente";
 
 const CarAdicionalPage: React.FC = () => {
   return (
-    <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
-      <BotonAnterior />
-      
-      <TituloFormulario texto="Características Adicionales" />
-      
-      <ListaCaracteristicas />
-      
+    <main className="p-6 min-h-screen bg-gray-100">
+      <header className="flex items-center">
+        <BotonAnterior />
+        <TituloFormulario as="h1" texto="Características Adicionales" />
+      </header>
+      <section className="mt-6">
+        <ListaCaracteristicas />
+      </section>
       <div className="w-full max-w-5xl flex justify-between mt-10 px-10">
         <div className="flex-1"></div>
         <BotonSiguiente />
       </div>
-    </div>
+  </main>
   );
 };
 

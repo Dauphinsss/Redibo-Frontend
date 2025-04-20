@@ -79,8 +79,8 @@ export default function DatosPrincipales() {
     const timer = setTimeout(() => {
       if (vin || anio || marca || modelo || placa) {
         updateDatosPrincipales({
-          vin,
-          anio,
+          vim: vin, // Se asigna 'vin' al campo 'vim'
+          anio: Number(anio),
           marca,
           modelo,
           placa,

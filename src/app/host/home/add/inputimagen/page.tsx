@@ -13,7 +13,7 @@ import CampoDescripcion from "../../../components/inputimagen/CampoDescripcion";
 import BotonesFormulario from "../../../components/inputimagen/BotonesFormulario";
 
 export default function InputImagen() {
-  const { formData, updateFinalizacion, submitForm } = useFormContext();
+  const { updateFinalizacion, submitForm } = useFormContext();
   
   // Estado para almacenar las imágenes cargadas
   const [mainImage, setMainImage] = useState<File | null>(null);
@@ -33,15 +33,16 @@ export default function InputImagen() {
   const [precioError, setPrecioError] = useState<string | null>(null);
   const [descripcionError, setDescripcionError] = useState<string | null>(null);
   
-  // Estado para controlar la habilitación del botón finalizar - AÑADIDO
+  // Estado para controlar la habilitación del botón finalizar
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
-  // Función estable para actualizar el contexto
+  // Función estable para actualizar el contexto, adaptada a las propiedades definidas en FormContext
   const updateContext = useCallback(() => {
     updateFinalizacion({
       imagenes: [mainImage, secondaryImage1, secondaryImage2].filter(Boolean) as File[],
-      mantenimientos: mantenimientos ? parseInt(mantenimientos) : 0,
-      precioAlquiler: precio ? parseFloat(precio) : 0,
+      num_mantenimientos: mantenimientos ? parseInt(mantenimientos) : 0,
+      precio_por_dia: precio ? parseFloat(precio) : 0,
+      estado: "disponible",
       descripcion
     });
   }, [mainImage, secondaryImage1, secondaryImage2, mantenimientos, precio, descripcion, updateFinalizacion]);
@@ -71,13 +72,13 @@ export default function InputImagen() {
     updateContext();
   }, [updateContext]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<{ success: boolean; error?: string }> => {
     try {
       await submitForm();
-      return true;
-    } catch (error) {
+      return { success: true };
+    } catch (error: any) {
       console.error("Error al enviar el formulario:", error);
-      return false;
+      return { success: false, error: error.message || "Error desconocido" };
     }
   };
 

@@ -9,11 +9,9 @@ const BotonSiguiente: React.FC = () => {
   const { formData } = useFormContext();
 
   const handleContinue = () => {
-    const featuresSelected = Object.values(formData.caracteristicasAdicionales)
-      .some(value => value === true);
-
-    if (!featuresSelected) {
-      alert("Por favor selecciona al menos una característica");
+    const extraIds = formData.caracteristicasAdicionales.extraIds ?? [];
+    if (extraIds.length < 2) {
+      alert("Por favor selecciona al menos dos características");
       return;
     }
     
