@@ -26,7 +26,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar }) => {
       <input
         type="text"
         placeholder={placeholder}
-        aria-label="Campo de búsqueda de autos por nombre o marca"
+        aria-label="Campo de búsqueda de autos por modelo o marca"
         value={busqueda}
         onChange={(e) => setBusqueda(e.target.value)}
         className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[11px] md:text-base lg:text-lg"

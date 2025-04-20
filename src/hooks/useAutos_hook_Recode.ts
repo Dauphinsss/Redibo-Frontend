@@ -10,8 +10,8 @@ export function useAutos(cantidadPorLote = 8) {
     const [autosVisibles, setAutosVisibles] = useState(cantidadPorLote);
     const [cargando, setCargando] = useState(true);
     const [ordenSeleccionado, setOrdenSeleccionado] = useState('Recomendación');
+    const [textoBusqueda, setTextoBusqueda] = useState('');
 
-    // Cargar autos desde API
     const fetchAutos = async () => {
         try {
         setCargando(true);
@@ -31,28 +31,46 @@ export function useAutos(cantidadPorLote = 8) {
         fetchAutos();
     }, []);
 
-    // Autos visibles actualmente (paginación por lote)
+    const filtrarYOrdenarAutos = () => {
+        let resultado = [...autos];
+
+        // Filtro por texto
+        if (textoBusqueda.trim()) {
+        const query = textoBusqueda.trim().toLowerCase();
+        resultado = resultado.filter(auto =>
+            `${auto.modelo} ${auto.marca}`.toLowerCase().includes(query)
+        );
+        }
+
+        // Ordenamiento
+        switch (ordenSeleccionado) {
+        case 'Modelo Ascendente':
+            resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
+            break;
+        case 'Modelo Descendente':
+            resultado.sort((a, b) => b.modelo.localeCompare(a.modelo));
+            break;
+        case 'Precio bajo a alto':
+            resultado.sort((a, b) => a.precioPorDia - b.precioPorDia);
+            break;
+        case 'Precio alto a bajo':
+            resultado.sort((a, b) => b.precioPorDia - a.precioPorDia);
+            break;
+        }
+
+        setAutosFiltrados(resultado);
+    };
+
+    useEffect(() => {
+        filtrarYOrdenarAutos();
+    }, [textoBusqueda, ordenSeleccionado, autos]);
+
     const autosActuales = useMemo(() => {
         return autosFiltrados.slice(0, autosVisibles);
     }, [autosFiltrados, autosVisibles]);
 
     const mostrarMasAutos = () => {
-        setAutosVisibles((prev) => prev + cantidadPorLote);
-    };
-
-    // Búsqueda por texto (marca o modelo)
-    const filtrarAutos = (query: string) => {
-        if (!query.trim()) {
-        setAutosFiltrados(autos);
-        return;
-        }
-
-        const resultados = autos.filter(auto =>
-        auto.modelo.toLowerCase().includes(query.toLowerCase()) ||
-        auto.marca.toLowerCase().includes(query.toLowerCase())
-        );
-
-        setAutosFiltrados(resultados);
+        setAutosVisibles(prev => prev + cantidadPorLote);
     };
 
     return {
@@ -65,6 +83,6 @@ export function useAutos(cantidadPorLote = 8) {
         setAutosFiltrados,
         mostrarMasAutos,
         cargando,
-        filtrarAutos
+        filtrarAutos: setTextoBusqueda
     };
 }
