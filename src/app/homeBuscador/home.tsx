@@ -17,7 +17,7 @@ export default function Home() {
     const [autosVisibles, setAutosVisibles] = useState(CANTIDAD_POR_LOTE);
     const [cargando, setCargando] = useState(true);
 
-    const [ordenSeleccionado, setOrdenSeleccionado] = useState('Recomendación');
+    const [ordenSeleccionado, setOrdenSeleccionado] = useState("Ordenados por");
 
     const ordenados = [
         'Precio bajo a alto',
@@ -52,7 +52,7 @@ export default function Home() {
     useEffect(() => {
         const ordenar = () => {
         const ordenadosLista = [...autos];
-
+        
         switch (ordenSeleccionado) {
             case 'Modelo Ascendente':
             ordenadosLista.sort((a, b) => a.modelo.localeCompare(b.modelo));
@@ -61,17 +61,25 @@ export default function Home() {
             ordenadosLista.sort((a, b) => b.modelo.localeCompare(a.modelo));
             break;
             case 'Precio bajo a alto':
-            ordenadosLista.sort((a, b) => parseFloat(a.precioPorDia) - parseFloat(b.precioPorDia));
+                ordenadosLista.sort((a, b) =>
+                      parseFloat(a.precioPorDia.replace("Bs. ", "")) -
+                      parseFloat(b.precioPorDia.replace("Bs. ", ""))
+                  );
+              
             break;
             case 'Precio alto a bajo':
-            ordenadosLista.sort((a, b) => parseFloat(b.precioPorDia) - parseFloat(a.precioPorDia));
-            break;
-        }
+                ordenadosLista.sort((a, b) =>
+                      parseFloat(b.precioPorDia.replace("Bs. ", "")) -
+                      parseFloat(a.precioPorDia.replace("Bs. ", ""))
+                  );
+            break;    
+         }
+        
 
         setAutosFiltrados(ordenadosLista);
         };
 
-        if (ordenSeleccionado !== 'Recomendación') ordenar();
+        if (ordenSeleccionado) {ordenar();}else{setAutosFiltrados([...autos]);}
     }, [ordenSeleccionado, autos]);
 
     const autosActuales = autosFiltrados.slice(0, autosVisibles);
