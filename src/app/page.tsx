@@ -4,7 +4,7 @@ import Header from "@/components/ui/Header";
 import { notFound } from "next/navigation";
 
 export default function Home() {
-  const mostrarPagina = false;
+  const mostrarPagina = true;
 
   if (!mostrarPagina) {
     return notFound();
