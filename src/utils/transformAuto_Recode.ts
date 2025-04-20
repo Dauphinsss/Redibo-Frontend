@@ -18,8 +18,8 @@ export const transformAuto = (item: RawAuto): AutoCard => ({
     calificacionAuto: 4.5,
     ciudad: item.direccion?.zona || "Desconocido",
     calle: item.direccion?.calle || "No especificada",
-    precioOficial: `Bs. ${item.precio_por_dia}`,
-    precioDescuento: `Bs. ${item.precio_por_dia}`,
-    precioPorDia: `Bs. ${item.precio_por_dia}`,
+    precioOficial: Number(item.precio_por_dia),
+    precioDescuento: Number(item.precio_por_dia),
+    precioPorDia: Number(item.precio_por_dia),
     imagenURL: item.imagen?.[0]?.data || "",
 });

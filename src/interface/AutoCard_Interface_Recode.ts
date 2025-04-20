@@ -12,7 +12,7 @@ export interface AutoCard_Interfaces_Recode {
     ciudad: string;
     calle: string;
     imagenURL: string;
-    precioOficial: string;
-    precioDescuento: string;
-    precioPorDia: string;
+    precioOficial: number;
+    precioDescuento: number;
+    precioPorDia: number;
 }
