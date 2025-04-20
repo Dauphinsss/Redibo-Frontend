@@ -19,7 +19,11 @@ export interface RawAuto_Interface_Recode {
     };
     direccion?: {
         calle?: string;
-        zona?: string;
+        provincia?: {
+            ciudad?: {
+                nombre?: string;
+            };
+        };
     };
     imagen?: {
         data?: string;
