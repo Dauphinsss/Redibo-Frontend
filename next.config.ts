@@ -5,6 +5,14 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: '**.cloudinary.com'
+      },
+      {
+        protocol: 'https',
+        hostname:'**.shutterstock.com',
+      },
+      {
+        protocol: 'https',
         hostname: '**.freepik.com',
       },
       {
@@ -13,6 +21,8 @@ const nextConfig = {
       }
     ]
   }
+
+  
 }
 
 export default nextConfig;
