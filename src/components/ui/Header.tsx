@@ -84,13 +84,15 @@ export default function Header() {
                         <LogIn className="mr-2 h-4 w-4" />
                         Iniciar sesión
                       </Button>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start"
-                      >
-                        <UserPlus className="mr-2 h-4 w-4" />
-                        Registrarse
-                      </Button>
+                      <Link href="/registro">
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start"
+                        >
+                          <UserPlus className="mr-2 h-4 w-4" />
+                          Registrarse
+                        </Button>
+                      </Link>
                     </>
                   )}
                 </div>
