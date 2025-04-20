@@ -49,38 +49,43 @@ export default function Home() {
         fetchAutos();
     }, []);
 
-    useEffect(() => {
-        const ordenar = () => {
-        const ordenadosLista = [...autos];
-        
+    const ordenarAutos = (lista: Auto[]) => {
+        const ordenadosLista = [...lista];
+    
         switch (ordenSeleccionado) {
             case 'Modelo Ascendente':
-            ordenadosLista.sort((a, b) => a.modelo.localeCompare(b.modelo));
-            break;
+                ordenadosLista.sort((a, b) => a.modelo.localeCompare(b.modelo));
+                break;
             case 'Modelo Descendente':
-            ordenadosLista.sort((a, b) => b.modelo.localeCompare(a.modelo));
-            break;
+                ordenadosLista.sort((a, b) => b.modelo.localeCompare(a.modelo));
+                break;
             case 'Precio bajo a alto':
-                ordenadosLista.sort((a, b) =>
-                      parseFloat(a.precioPorDia.replace("Bs. ", "")) -
-                      parseFloat(b.precioPorDia.replace("Bs. ", ""))
-                  );
-              
-            break;
+                ordenadosLista.sort(
+                    (a, b) =>
+                        parseFloat(a.precioPorDia.replace("Bs. ", "")) -
+                        parseFloat(b.precioPorDia.replace("Bs. ", ""))
+                );
+                break;
             case 'Precio alto a bajo':
-                ordenadosLista.sort((a, b) =>
-                      parseFloat(b.precioPorDia.replace("Bs. ", "")) -
-                      parseFloat(a.precioPorDia.replace("Bs. ", ""))
-                  );
-            break;    
-         }
-        
+                ordenadosLista.sort(
+                    (a, b) =>
+                        parseFloat(b.precioPorDia.replace("Bs. ", "")) -
+                        parseFloat(a.precioPorDia.replace("Bs. ", ""))
+                );
+                break;
+        }
+    
+        return ordenadosLista;
+    };
+    
 
-        setAutosFiltrados(ordenadosLista);
-        };
-
-        if (ordenSeleccionado) {ordenar();}else{setAutosFiltrados([...autos]);}
-    }, [ordenSeleccionado, autos]);
+    useEffect(()=> {
+        if (ordenSeleccionado) {
+            const nuevaLista = ordenarAutos(autosFiltrados);
+            setAutosFiltrados(nuevaLista);
+        }else{
+            setAutosFiltrados([...autos]);}
+    },[ordenSeleccionado])
 
     const autosActuales = autosFiltrados.slice(0, autosVisibles);
 
@@ -90,7 +95,9 @@ export default function Home() {
             <SearchBar
             placeholder="Buscar por nombre, marca"
             autos={autos}
-            onFiltrar={setAutosFiltrados}
+            onFiltrar={(resultadosFiltrados) => {
+                setAutosFiltrados(ordenarAutos(resultadosFiltrados));
+            }}
             />
             <div className="mb-6">{/* RecodeCarousel */}</div>
         </div>
