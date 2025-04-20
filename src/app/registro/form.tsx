@@ -41,7 +41,6 @@ export default function Form() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [phoneTouched, setPhoneTouched] = useState(false);
   const [ciudades, setCiudades] = useState<Ciudad[]>([]);
-
   //const [passwordError, setPasswordError] = useState(false);
   const [isFormDirty, setIsFormDirty] = useState(false);
   const [showExitWarning, setShowExitWarning] = useState(false);
@@ -138,7 +137,7 @@ export default function Form() {
       fechaNacimiento: birthdate,
       genero: gender,
       ciudad: city,
-      contraseña: password,
+      contrasena: password,
       telefono: phone,
       rol: userType,
     };
@@ -549,16 +548,19 @@ export default function Form() {
                         : ""
                     }
                   />
-                  {passwordTouched && (
-                    <>
-                      {password.length < 8 && (
-                        <InputErrorIcon message="La contraseña debe tener al menos 8 caracteres." />
-                      )}
-                      {password.length >= 8 && !isPasswordStrong(password) && (
-                        <InputErrorIcon message="La contraseña es débil. Debe contener al menos una mayúscula, un número y un carácter especial." />
-                      )}
-                    </>
-                  )}
+                    {passwordTouched && (
+                  <>
+                    {password.length < 8 ? (
+                      <InputErrorIcon message="Debe tener al menos 8 caracteres." />
+                    ) : !/[A-Z]/.test(password) ? (
+                      <InputErrorIcon message="Debe contener al menos una letra mayúscula." />
+                    ) : !/[0-9]/.test(password) ? (
+                      <InputErrorIcon message="Debe contener al menos un número." />
+                    ) : !/[^A-Za-z0-9]/.test(password) ? (
+                      <InputErrorIcon message="Debe contener al menos un carácter especial." />
+                    ) : null}
+                  </>
+                )}
                 </div>
               </div>
 
