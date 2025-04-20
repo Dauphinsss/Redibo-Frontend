@@ -80,8 +80,11 @@ export default function Home() {
     
 
     useEffect(()=> {
-        const nuevaLista = ordenarAutos(autosFiltrados);
-        setAutosFiltrados(nuevaLista);
+        if (ordenSeleccionado) {
+            const nuevaLista = ordenarAutos(autosFiltrados);
+            setAutosFiltrados(nuevaLista);
+        }else{
+            setAutosFiltrados([...autos]);}
     },[ordenSeleccionado])
 
     const autosActuales = autosFiltrados.slice(0, autosVisibles);
