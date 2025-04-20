@@ -67,8 +67,8 @@ export default function Home() {
             </div>
             </div>
 
-            <div className="md:w-1/3 bg-gray-100 h-[300px] rounded shadow-inner flex items-center justify-center text-gray-500">
-            RecodeMapView próximamente
+            <div className="hidden lg:flex lg:w-1/3 bg-gray-100 h-[300px] rounded shadow-inner items-center justify-center text-gray-500">
+                RecodeMapView próximamente
             </div>
         </div>
         </main>

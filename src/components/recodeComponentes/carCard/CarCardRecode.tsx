@@ -35,10 +35,13 @@ export default function RecodeCarCard(props: Auto) {
 
   return (
     <div className="w-full max-w-[750px] md:h-[320px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-4">
-      
-      <CarCardImage imagenUrl={imagenURL} />
+      {/* Imagen del auto */}
+      <div className="w-[230px] h-[150px] md:h-full flex items-center justify-center">
+        <CarCardImage imagenUrl={imagenURL} />
+      </div>
 
-      <div className="flex-1 flex flex-col justify-between">
+      {/* Info del auto */}
+      <div className="flex-1 min-w-0 flex flex-col justify-between">
         <div>
           <CarCardHeader nombre={modelo} marca={marca} />
           <CarCardSpecs
@@ -55,6 +58,7 @@ export default function RecodeCarCard(props: Auto) {
         </div>
       </div>
 
+      {/* Precio */}
       <CarCardPrice
         id={idAuto}
         precioOficial={precioOficial}
