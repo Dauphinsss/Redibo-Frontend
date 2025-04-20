@@ -14,7 +14,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar }) => {
   //Aplica debounce de 300ms a la búsqueda
   useEffect(() => {
     const timer = setTimeout(() => {
-      const valorNormalizado = busqueda.trim().replace(/\s+/g, " ").toLowerCase();
+      const valorNormalizado = busqueda
+      .trim()
+      .replace(/\s+/g, " ")
+      .replace(/[^\p{L}\p{N}\s]/gu, "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")   
+      .toLowerCase();
       onFiltrar(valorNormalizado);
     }, 300);
 
@@ -26,9 +32,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar }) => {
       <input
         type="text"
         placeholder={placeholder}
-        aria-label="Campo de búsqueda de autos por modelo o marca"
+        aria-label="Campo de búsqueda de autos por modelo, marca"
         value={busqueda}
         onChange={(e) => setBusqueda(e.target.value)}
+        maxLength={50}
         className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[11px] md:text-base lg:text-lg"
       />
       <button

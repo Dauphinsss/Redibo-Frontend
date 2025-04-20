@@ -31,14 +31,24 @@ export function useAutos(cantidadPorLote = 8) {
         fetchAutos();
     }, []);
 
+    const normalizarTexto = (texto: string) => {
+        return texto
+            .normalize("NFD") 
+            .replace(/[\u0300-\u036f]/g, "") 
+            .toLowerCase(); 
+    };
+
     const filtrarYOrdenarAutos = useCallback(() => {
         let resultado = [...autos];
 
         if (textoBusqueda.trim()) {
-        const query = textoBusqueda.trim().toLowerCase();
-        resultado = resultado.filter(auto =>
-            `${auto.modelo} ${auto.marca}`.toLowerCase().includes(query)
-        );
+        const query =normalizarTexto(textoBusqueda.trim());
+            resultado = resultado.filter(auto =>{
+                const autoModelo = normalizarTexto(auto.modelo);
+                const autoMarca = normalizarTexto(auto.marca);
+                return `${autoModelo} ${autoMarca}`.toLowerCase().includes(query);
+            });
+            resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
         }
 
         switch (ordenSeleccionado) {
