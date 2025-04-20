@@ -40,6 +40,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar }) => {
         placeholder={placeholder}
         aria-label="Campo de búsqueda de autos por modelo, marca"
         value={busqueda}
+        maxLength={50}
         onChange={(e) => setBusqueda(e.target.value)}
         onFocus={() => setMostrarBoton(false)}
         onBlur={() => setMostrarBoton(true)}
