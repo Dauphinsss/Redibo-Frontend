@@ -6,11 +6,16 @@ import DescriHost from '@/components/recodeComponentes/RecodeDescriHost'
 import DescripcionAuto from '@/components/recodeComponentes/RecodeDescripcionAuto'
 import Reserva from '@/components/recodeComponentes/RecodeReserva'
 import Ubicacion from '@/components/recodeComponentes/RecodeUbicacion'
-import { getCarById } from '@/service/serviceRecode'
+import { getCarById } from '@/service/services_Recode'
+import NotFound from '@/app/not-found'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params; 
   const autoData = await getCarById(resolvedParams.id);
+
+  if (!autoData) {
+    NotFound();
+  }
   
   const auto = {
       nombre: `${autoData.marca || "Marca desconocida"} ${autoData.modelo || "Modelo desconocido"}`,
@@ -69,7 +74,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 <InfoDestacable 
                     marca={autoData.marca}
                     modelo={autoData.modelo}
-                    combustible={autoData.combustiblecarro}
+                    año={autoData.año}
                     placa={''}                  
                 />
                 

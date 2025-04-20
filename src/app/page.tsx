@@ -1,6 +1,10 @@
 import Header from "@/components/ui/Header";
+import NotFound from "./not-found";
 
 export default function Home() {
+  if (!true){
+    NotFound
+  }
   return (
     <div>
       <Header />
