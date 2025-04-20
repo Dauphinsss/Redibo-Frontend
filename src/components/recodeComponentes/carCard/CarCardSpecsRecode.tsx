@@ -1,4 +1,6 @@
-import { FaChair, FaDoorOpen, FaCogs, FaGasPump } from "react-icons/fa";
+import { FaCogs, FaGasPump } from "react-icons/fa";
+import { GiCarDoor } from "react-icons/gi";
+import { IoPeople } from "react-icons/io5";
 
 interface Props {
     asientos: number;
@@ -22,8 +24,8 @@ export default function CarCardSpecs({
     return (
         <div className="flex flex-col gap-1 text-sm mt-2">
         <div className="flex gap-4 flex-wrap">
-            <span className="flex items-center gap-1"><FaChair /> {asientos} asientos</span>
-            <span className="flex items-center gap-1"><FaDoorOpen /> {puertas} puertas</span>
+            <span className="flex items-center gap-1"><IoPeople /> {asientos} asientos</span>
+            <span className="flex items-center gap-1"><GiCarDoor /> {puertas} puertas</span>
             <span className="flex items-center gap-1"><FaCogs /> {transmision}</span>
         </div>
         <div className="flex items-center gap-2 flex-wrap mt-2">
