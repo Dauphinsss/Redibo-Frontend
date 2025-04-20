@@ -16,7 +16,7 @@ export const transformAuto = (item: RawAuto): AutoCard => ({
     estadoAlquiler: item.estado,
     nombreHost: item.usuario_rol?.usuario?.nombre || "Sin nombre",
     calificacionAuto: 4.5,
-    ciudad: item.direccion?.zona || "Desconocido",
+    ciudad: item.direccion?.provincia?.ciudad?.nombre || "Desconocido",
     calle: item.direccion?.calle || "No especificada",
     precioOficial: Number(item.precio_por_dia),
     precioDescuento: Number(item.precio_por_dia),

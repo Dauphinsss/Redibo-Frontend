@@ -10,8 +10,14 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar }) => {
   const [busqueda, setBusqueda] = useState("");
+  const [mostrarBoton, setMostrarBoton] = useState(true);
 
-  //Aplica debounce de 300ms a la búsqueda
+  // Mostrar el botón si hay texto
+  useEffect(() => {
+    setMostrarBoton(busqueda.trim().length === 0);
+  }, [busqueda]);
+
+  // Debounce de 300ms
   useEffect(() => {
     const timer = setTimeout(() => {
       const valorNormalizado = busqueda
@@ -35,16 +41,19 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar }) => {
         aria-label="Campo de búsqueda de autos por modelo, marca"
         value={busqueda}
         onChange={(e) => setBusqueda(e.target.value)}
-        maxLength={50}
+        onFocus={() => setMostrarBoton(false)}
+        onBlur={() => setMostrarBoton(true)}
         className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[11px] md:text-base lg:text-lg"
       />
-      <button
-        type="button"
-        aria-label="Buscar autos"
-        className="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black text-white rounded-md flex items-center justify-center"
-      >
-        <MagnifyingGlassIcon className="h-5 w-5" />
-      </button>
+      {mostrarBoton && (
+        <button
+          type="button"
+          aria-label="Buscar autos"
+          className="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black text-white rounded-md flex items-center justify-center"
+        >
+          <MagnifyingGlassIcon className="h-5 w-5" />
+        </button>
+      )}
     </div>
   );
 };
