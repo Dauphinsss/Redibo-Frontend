@@ -14,30 +14,19 @@
     width: 100%;
     padding: 10px;
     margin-right: 10px;
-    border-radius: 25px;
+    border-radius: 10px 0 0 10px;
     margin: 20px 0;
     background-color: #f1f1f1;
     border: 1px solid #ccc;
-    padding-left: 40px;
+    padding-left: 20px;
     box-sizing: border-box;
 }
 
-.search-bar .icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #aaa;
-    font-size: 18px;
-}
-
-.search-button{
-    position: absolute;
-    right: 2px;
+.search-button{    
     background-color: black;
     color: white;
     border: none;
-    border-radius: 40%;
+    border-radius:0 10px 10px 0;
     padding: 15px;
     cursor: pointer;
     width: 50px;

@@ -153,11 +153,11 @@ export default function Header() {
           ) : (
             <>
               <Button variant="ghost" onClick={() => setIsLoggedIn(true)}>
-                <LogIn className="mr-2 h-4 w-4" />
+                <LogIn className="h-4 w-4" />
                 Iniciar sesión
               </Button>
               <Button variant="default">
-                <UserPlus className="mr-2 h-4 w-4" />
+                <UserPlus className="h-4 w-4" />
                 Registrarse
               </Button>
             </>
