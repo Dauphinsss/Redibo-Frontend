@@ -9,7 +9,7 @@ interface FilterProps {
 const Filter: React.FC<FilterProps> = ({ lista, nombre, onChange }) => {
     return (
         <select
-        className="border border-black rounded-md p-2"
+        className="border border-black rounded-md p-2 w-full sm:w-auto min-w-[200px]"
         defaultValue=""
         onChange={(e) => onChange(e.target.value)}
         >
