@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useSwipeable } from "react-swipeable";
 
 interface AutoImagProps {
   imagenes: { id: number; data: string }[];
@@ -24,13 +25,21 @@ export default function Autoimag({ imagenes, nombre }: AutoImagProps) {
     );
   };
 
+  const handlers = useSwipeable({
+    onSwipedLeft: () => nextImage(),
+    onSwipedRight: () => prevImage(),
+    trackMouse: true,
+    preventScrollOnSwipe: true,
+  })
+
+
   return (
     <section className="max-w-3xl mx-auto px-4 py-4">
       <h2 className="text-xl sm:text-2xl font-bold mb-4">{nombre}</h2>
 
       <div className="relative rounded-lg overflow-hidden">
         {tieneImagenes ? (
-          <div className="relative aspect-video bg-white">
+          <div className="relative aspect-video bg-white" {...handlers}>
             <Image
               src={imagenes[currentImageIndex].data}
               alt={`${nombre} - Vista ${currentImageIndex + 1}`}
@@ -43,14 +52,14 @@ export default function Autoimag({ imagenes, nombre }: AutoImagProps) {
               <>
                 <button
                   onClick={prevImage}
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 text-white p-2 rounded-full hover:bg-opacity-50 transition z-10"
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 text-white p-2 rounded-full hover:bg-opacity-50 transition z-10 hidden sm:block"
                   aria-label="Imagen anterior"
                 >
                   &larr;
                 </button>
                 <button
                   onClick={nextImage}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 text-white p-2 rounded-full hover:bg-opacity-50 transition z-10"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 text-white p-2 rounded-full hover:bg-opacity-50 transition z-10 hidden sm:block"
                   aria-label="Siguiente imagen"
                 >
                   &rarr;
