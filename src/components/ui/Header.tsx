@@ -144,10 +144,9 @@ export default function Header() {
             </DropdownMenu>
           ) : (
             <>
-              <Button variant="ghost" onClick={() => setIsLoggedIn(true)}>
-                <LogIn className="mr-2 h-4 w-4" />
-                Iniciar sesión
-              </Button>
+              <Link href="/login" className="text-sm font-medium">
+            Iniciar Sesion
+          </Link>
               <Link href="/registro">
                 <Button variant="default">
                   <UserPlus className="mr-2 h-4 w-4" />
