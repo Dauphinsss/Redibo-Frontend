@@ -32,7 +32,7 @@ const SearchBar = () => {
             canClose = true;
         }
 
-        const restored = localStorage.getItem("restoreSearch");
+        const restored = sessionStorage.getItem("restoreSearch");
         if (restored && searchTerm === "") {
             setSearchTerm(restored);
         }
@@ -57,12 +57,13 @@ const SearchBar = () => {
     const handleButtonClick = () => {
         if (!searchTerm.trim()) return;
 
-        if (searchTerm || !savedSearches.includes(searchTerm)) {
-            const updatedSearches = [searchTerm, ...savedSearches.filter(s => s !== searchTerm)];
+        if (searchTerm || !savedSearches.includes(searchTerm.toLowerCase())) {
+            const updatedSearches = [searchTerm.toLowerCase(), ...savedSearches.filter(
+                s => s.toLowerCase() !== searchTerm.toLowerCase())];
             setSavedSearches(updatedSearches);
             
             localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
-            localStorage.setItem("restoreSearch", searchTerm);
+            sessionStorage.setItem("restoreSearch", searchTerm.toLowerCase());
             router.push(`/searchMock?query=${encodeURIComponent(searchTerm)}`);
             setIsClicked(false);
         }
@@ -87,7 +88,7 @@ const SearchBar = () => {
         const updatedSearches = [search, ...savedSearches.filter(item => item !== search)]
         setSavedSearches(updatedSearches);
         localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
-        localStorage.setItem("restoreSearch", search);
+        sessionStorage.setItem("restoreSearch", search);
         router.push(`/searchMock?query=${encodeURIComponent(search)}`);
     }
 
@@ -108,14 +109,9 @@ const SearchBar = () => {
                 onChange={(e) => {
                     const value = e.target.value;
                     setSearchTerm(value);
-                
-                    if (value.trim() === "") {
-                        localStorage.removeItem("restoreSearch");
-                    } else {
-                        localStorage.setItem("restoreSearch", value);
-                    }
-                }}
-                
+                    sessionStorage.setItem("restoreSearch", value.toLowerCase());
+                }
+            }
                 onClick={handleClick}
                 onKeyDown={handleKeyDown}
                 placeholder="Buscar..."
