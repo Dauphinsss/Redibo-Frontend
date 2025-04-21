@@ -1,11 +1,11 @@
 "use client";
 
-import './../../styles/searchbar.css'; 
+import './../../styles/searchbar.css';
 import React, { useRef, useEffect, useState } from "react";
 import { FaSearch } from 'react-icons/fa';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
-var canClose = true;
+let canClose = true;
 
 const SearchBar = () => {
     const [searchTerm, setSearchTerm] = useState("");
@@ -24,7 +24,7 @@ const SearchBar = () => {
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node) && 
+            if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node) &&
                 savedSearchesRef.current && !savedSearchesRef.current.contains(event.target as Node) &&
                 canClose) {
                 setIsClicked(false);
@@ -39,7 +39,7 @@ const SearchBar = () => {
 
         if (searchTerm === "" && isSearchPage) {
             const params = new URLSearchParams(window.location.search);
-            params.delete('query');       
+            params.delete('query');
         }
 
         const stored = localStorage.getItem("savedSearches");
@@ -60,7 +60,7 @@ const SearchBar = () => {
         if (searchTerm || !savedSearches.includes(searchTerm)) {
             const updatedSearches = [searchTerm, ...savedSearches.filter(s => s !== searchTerm)];
             setSavedSearches(updatedSearches);
-            
+
             localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
             localStorage.setItem("restoreSearch", searchTerm);
             router.push(`/searchMock?query=${encodeURIComponent(searchTerm)}`);
@@ -83,7 +83,7 @@ const SearchBar = () => {
     const handleSearchItemClick = (search: string) => {
         setSearchTerm(search);
         setIsClicked(false);
-        
+
         const updatedSearches = [search, ...savedSearches.filter(item => item !== search)]
         setSavedSearches(updatedSearches);
         localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
@@ -108,14 +108,14 @@ const SearchBar = () => {
                 onChange={(e) => {
                     const value = e.target.value;
                     setSearchTerm(value);
-                
+
                     if (value.trim() === "") {
                         localStorage.removeItem("restoreSearch");
                     } else {
                         localStorage.setItem("restoreSearch", value);
                     }
                 }}
-                
+
                 onClick={handleClick}
                 onKeyDown={handleKeyDown}
                 placeholder="Buscar..."

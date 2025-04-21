@@ -32,7 +32,7 @@ export default function Header() {
                 localStorage.removeItem("restoreSearch");
               }
             }
-          }
+            }
           >
             REDIBO
           </Link>
@@ -67,7 +67,7 @@ export default function Header() {
                     <>
                       <div className="flex items-center gap-2 mb-4">
                         <Avatar className="h-8 w-8">
-                          
+
                           <AvatarFallback>US</AvatarFallback>
                         </Avatar>
                         <div className="text-sm font-medium">Usuario</div>
@@ -109,17 +109,17 @@ export default function Header() {
         {/* Desktop navigation */}
         <nav className="hidden md:flex justify-center items-center gap-6">
           <Link href="/" className="text-sm font-medium"
-          onClick={() => {
-            const current = document.querySelector('input.input') as HTMLInputElement;
-            const value = current?.value.trim();
+            onClick={() => {
+              const current = document.querySelector('input.input') as HTMLInputElement;
+              const value = current?.value.trim();
 
-            if (value) {
-              localStorage.setItem("restoreSearch", value);
-            } else {
-              localStorage.removeItem("restoreSearch");
+              if (value) {
+                localStorage.setItem("restoreSearch", value);
+              } else {
+                localStorage.removeItem("restoreSearch");
+              }
             }
-          }
-        }>
+            }>
             Inicio
           </Link>
           <Link href="/productos" className="text-sm font-medium">
