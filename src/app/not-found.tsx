@@ -1,24 +1,12 @@
-
 import Link from "next/link";
 import Image from "next/image";
 
 export default function NotFound() {
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col">
-        
-      <header className="border-b">
-        <div className="flex h-16 items-center justify-between px-4 md:px-6">
-          <div className="flex items-center gap-2">
-            <Link href="/" className="font-bold text-xl">
-              REDIBO
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-grow container mx-auto px-4 py-12">
-        <div className="flex flex-col md:flex-row items-center gap-8">
-          <div className="md:w-1/2">
+      <main className="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-4xl">
+          <div className="md:w-1/2 text-center md:text-left">
             <h1 className="text-4xl font-bold text-gray-800 mb-2">Ups algo pasó acá</h1>
             <h2 className="text-5xl font-extrabold text-red-500 mb-8">ERROR 404</h2>
             
@@ -47,20 +35,20 @@ export default function NotFound() {
             </div>
           </div>
           
-          <div className="transform-3d md:transform-flat ... md:w-1/2 ">
+          <div className="md:w-1/2 flex justify-center">
             <Image
               src="https://res.cloudinary.com/dzoeeaovz/image/upload/v1745119055/Error404_ffbvg7.png"
               alt="Error 404"
               width={500}
               height={500}
-              className="w-full max-w-md mx-auto"
+              className="w-full max-w-xs md:max-w-md"
             />
           </div>
         </div>
       </main>
 
       <footer className="py-6 text-center text-gray-500 text-sm border-t">
-        <p>© {new Date().getFullYear()} REDIBO. Todos los derechos reservados.</p>
+        <p>© {new Date().getFullYear()} Somos REDIBO. Un gusto poder ayudarte¡¡¡</p>
       </footer>
     </div>
   );

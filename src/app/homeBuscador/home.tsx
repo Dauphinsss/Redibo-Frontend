@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import RecodeCarList from '@/components/recodeComponentes/carCard/CarListRecode';
-import SearchBar from '@/components/recodeComponentes/RecodeSearchBar';
-import Filter from '@/components/recodeComponentes/RecodeFilter';
+import SearchBar from '@/components/recodeComponentes/detailsCar/RecodeSearchBar';
+import Filter from '@/components/recodeComponentes/detailsCar/RecodeFilter';
 import { AutoCard_Interfaces_Recode as Auto } from '@/interface/AutoCard_Interface_Recode';
 import { RawAuto_Interface_Recode as RawAuto } from '@/interface/RawAuto_Interface_Recode';
 import { transformAuto } from '@/utils/transformAuto_Recode';

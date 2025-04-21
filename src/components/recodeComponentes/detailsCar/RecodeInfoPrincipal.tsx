@@ -1,6 +1,7 @@
 import { FaUserFriends, FaGasPump, FaStar } from "react-icons/fa";
 import { MdPlace } from "react-icons/md";
-import { GiCarDoor, GiGearStick } from "react-icons/gi";
+import { GiCarDoor } from "react-icons/gi";
+import { TbManualGearboxFilled } from "react-icons/tb";
 
 interface InfoPrincipalProps {
     asientos: number;
@@ -29,7 +30,7 @@ export default function InfoPrincipal({
                     <GiCarDoor className="text-gray-600" />{puertas}
                 </span>
                 <span className="flex items-center gap-1">
-                    <GiGearStick className="text-gray-600" />{transmision}
+                    <TbManualGearboxFilled className="text-gray-600" />{transmision}
                 </span>
                 <span className="flex items-center gap-1">
                     <FaGasPump className="text-gray-600" />{combustible}
