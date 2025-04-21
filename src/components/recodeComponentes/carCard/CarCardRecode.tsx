@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useState } from "react";
 import { AutoCard_Interfaces_Recode as Auto } from "@/interface/AutoCard_Interface_Recode";
 import CarCardImage from "./CarCardImgRecode";
 import CarCardHeader from "./CarCardHeaderRecode";
@@ -11,7 +11,7 @@ import CarCardPrice from "./CarCardPriceRecode";
 
 export type RecodeCarCardProps = Auto;
 
-export default function RecodeCarCard(props: Auto) {
+function RecodeCarCard(props: Auto) {
   const {
     idAuto,
     modelo,
@@ -68,3 +68,5 @@ export default function RecodeCarCard(props: Auto) {
     </div>
   );
 }
+
+export default memo(RecodeCarCard);

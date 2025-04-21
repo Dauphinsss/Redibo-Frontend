@@ -17,7 +17,7 @@ export default function CarCardImg({ imagenUrl }: Props) {
                     width={230}
                     height={150}
                     className="object-contain"
-                    priority
+                    loading="lazy"
                 />
                 ) : (
                 <span className="text-sm bg-gray-100 text-black">Sin imagen</span>
