@@ -1,10 +1,11 @@
+import { memo } from "react";
 import RecodeCarCard, { RecodeCarCardProps } from "./CarCardRecode";
 
 interface Props {
     carCards: RecodeCarCardProps[];
 }
 
-export default function RecodeCarList({ carCards }: Props) {
+function RecodeCarList({ carCards }: Props) {
     return (
         <div className="flex flex-col gap-6">
             {carCards.map((car) => (
@@ -13,3 +14,5 @@ export default function RecodeCarList({ carCards }: Props) {
         </div>
     );
 }
+
+export default memo(RecodeCarList);
