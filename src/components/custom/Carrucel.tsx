@@ -1,45 +1,48 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import {
-    Carousel,
-    CarouselContent,
-    CarouselNext,
-    CarouselPrevious,
-  } from "@/components/ui/carousel"
+  Carousel,
+  CarouselContent,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 import Autoplay from 'embla-carousel-autoplay'
 import CarrucelItem from './CarrucelItem'
+import { useMostRentedCars } from '@/api/queries/useMostRentedCars'
 
 function Carrucel() {
-  const [data, setData] = useState([])
-  const fetchData = async ()=>{
-    try{
-      const response = await fetch('http://localhost:4000/api/cars/most-rented')
-      const jsonData = await response.json()
-      setData(jsonData)
-    }catch(e){
-      console.error(e)
-    }
+  const { data: content = [], isLoading, isError } = useMostRentedCars();
+
+  if (isLoading) {
+    return <p className="text-center text-xl font-semibold text-muted-foreground"> cargando autos...</p>
   }
-  useEffect(() => {
-    fetchData()
-  }, [])
+  if (isError) {
+    return <p className="text-center text-xl text-blue-950">Error al cargar los autos</p>
+  }
+  if (content.length === 0) {
+    return (
+      <p className="text-center text-xl font-semibold text-muted-foreground">
+        No hay autos disponibles por el momento
+      </p>
+    )
+  }
   return (
-    <Carousel opts={{align: "start",loop:true,}} className="w-full max-w-6xl" 
+    <Carousel opts={{ align: "start", loop: true, }} className="w-full max-w-6xl"
       plugins={[
         Autoplay({
           delay: 3500,
           stopOnInteraction: false,
           stopOnMouseEnter: true,
         }),
-      ]} 
+      ]}
     >
       <CarouselContent className="-ml-1">
-        {data.map((car,idx) => (
+        {content.map((car, idx) => (
           <CarrucelItem car={car} key={idx} />
         ))}
       </CarouselContent>
-      <CarouselPrevious/>
-      <CarouselNext/>
+      <CarouselPrevious />
+      <CarouselNext />
     </Carousel>
   )
 }
