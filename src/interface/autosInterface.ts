@@ -1,45 +1,28 @@
-export interface ImagenAuto {
-    id: number;
-    data: string;
-  }
-  
-  export interface AutoImagProps {
-    imagenes: ImagenAuto[];
-    nombre: string;
-  }
-  
-  export interface DescriHostProps {
-    nombreHost: string;
-    calificacion: number;
-    numAuto: number;
-  }
-  
-  export interface DescripcionAutoProps {
-    descripcion: string;
-  }
-  
-  export interface InfoDestacableProps {
-    marca: string;
-    modelo: string;
-    anio: number;
-    soat: boolean;
-    
-  }
-  
-  export interface InfoPrincipalProps {
-    asientos: number;
-    puertas: number;
-    transmision: string;
-    combustible: string[];
-    calificacion: number;
-    direccion: string;
-  }
-  
-  export interface ReservaProps {
-    precio: string;
-  }
-  
-  export interface UbicacionProps {
-    direccion: string;
-  }
-  
+export interface AutoImage {
+  id: number;
+  data: string;
+}
+
+export interface TipoCombustible {
+  tipo_de_combustible: string;
+}
+
+export interface Combustible {
+  tipocombustible?: TipoCombustible;
+}
+
+export interface Direccion {
+  calle?: string;
+  zona?: string;
+}
+
+export interface AutoData {
+  marca?: string;
+  modelo?: string;
+  imagen?: AutoImage[];
+  direccion?: Direccion;
+  precio_por_dia?: string;
+  combustiblecarro?: Combustible[];
+  anio?: string;
+  soat?: string;
+}
