@@ -111,7 +111,20 @@ export default function Header() {
 
         {/* Desktop navigation */}
         <nav className="hidden md:flex justify-center items-center gap-6">
-          <Link href="/" className="text-sm font-medium">
+          <Link href="/" className="text-sm font-medium"
+          onClick={() => {
+            const current = document.querySelector('input.input') as HTMLInputElement;
+            const value = current?.value.trim();
+
+            if (value) {
+              localStorage.setItem("restoreSearch", value);
+              localStorage.setItem("lastSearchTerm", value);
+            } else {
+              localStorage.removeItem("restoreSearch");
+              localStorage.removeItem("lastSearchTerm");
+            }
+          }
+        }>
             Inicio
           </Link>
           <Link href="/productos" className="text-sm font-medium">
