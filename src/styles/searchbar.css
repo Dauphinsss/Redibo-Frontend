@@ -22,14 +22,14 @@
     box-sizing: border-box;
 }
 
-.search-bar .icon {
+/*.search-bar .icon {
     position: absolute;
     left: 10px;
     top: 50%;
     transform: translateY(-50%);
     color: #aaa;
     font-size: 18px;
-}
+}*/
 
 .search-button{
     position: absolute;
