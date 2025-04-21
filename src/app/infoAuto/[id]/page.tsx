@@ -5,7 +5,6 @@ import InfoDestacable from '@/components/recodeComponentes/detailsCar/RecodeInfo
 import DescriHost from '@/components/recodeComponentes/detailsCar/RecodeDescriHost'
 import DescripcionAuto from '@/components/recodeComponentes/detailsCar/RecodeDescripcionAuto'
 import Reserva from '@/components/recodeComponentes/detailsCar/RecodeReserva'
-import Ubicacion from '@/components/recodeComponentes/detailsCar/RecodeUbicacion'
 import { getCarById } from '@/service/services_Recode'
 import NotFound from '@/app/not-found'
 
@@ -85,9 +84,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             </div>
           </div>
           
-          <div className="w-full max-w-6xl border-t border-gray-300 lg:hidden py-4">
-            <Ubicacion direccion={auto.ubicacion} />
-          </div>
         </main>
       </>
     );

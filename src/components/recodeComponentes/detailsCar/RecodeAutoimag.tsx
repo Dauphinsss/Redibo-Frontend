@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import Image from 'next/image';
 
 interface AutoImagProps {
   imagenes: { id: number; data: string }[];
@@ -30,7 +29,7 @@ export default function Autoimag({ imagenes, nombre }: AutoImagProps) {
       <div className="relative rounded-lg overflow-hidden">
         {tieneImagenes ? (
           <div className="relative aspect-video bg-white">
-            <Image
+            <img
               src={imagenes[currentImageIndex].data}
               alt={`${nombre} - Vista ${currentImageIndex + 1}`}
               className="w-full h-full object-scale-down p-1"
