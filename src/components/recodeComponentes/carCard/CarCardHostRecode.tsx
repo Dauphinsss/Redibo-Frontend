@@ -11,7 +11,7 @@ export default function CarCardHost({ nombreHost, calificacion }: Props) {
         <div className="flex items-center gap-2">
             <FaUser /> {nombreHost}
         </div>
-        <div className="flex items-center gap-1 text-yellow-500 font-bold">
+        <div className="flex items-center gap-1 text-gray-300 font-bold">
             <FaStar /> {calificacion}
         </div>
         </div>
