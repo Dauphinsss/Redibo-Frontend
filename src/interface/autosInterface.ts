@@ -10,7 +10,16 @@ export interface TipoCombustible {
 export interface Combustible {
   tipocombustible?: TipoCombustible;
 }
+export interface InfoDestacableProps {
+  marca: string;
+  modelo: string;
+  anio: number;
+  soat: boolean;
 
+}
+export interface ReservaProps {
+  precio: string;
+}
 export interface Direccion {
   calle?: string;
   zona?: string;
