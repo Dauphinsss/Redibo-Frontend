@@ -38,7 +38,7 @@ export default function InfoPrincipal({
             </div>
             
             <div className="flex items-center gap-1 text-gray-700">
-                <FaStar className="text-black" />
+                <FaStar className="text-gray-300" />
                 <span>{calificacion} - 1000 evaluaciones</span>
             </div>
             

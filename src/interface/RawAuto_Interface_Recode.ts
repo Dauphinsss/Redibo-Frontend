@@ -5,7 +5,7 @@ export interface RawAuto_Interface_Recode {
     asientos: number;
     puertas: number;
     transmision: string;
-    precio_por_dia: string;
+    precio_por_dia: number;
     combustiblecarro: {
         tipocombustible?: {
             tipo_de_combustible: string;
@@ -19,7 +19,11 @@ export interface RawAuto_Interface_Recode {
     };
     direccion?: {
         calle?: string;
-        zona?: string;
+        provincia?: {
+            ciudad?: {
+                nombre?: string;
+            };
+        };
     };
     imagen?: {
         data?: string;

@@ -1,56 +1,60 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
-import { AutoCard_Interfaces_Recode as RecodeAuto } from "@/interface/AutoCard_Interface_Recode";
 
 interface SearchBarProps {
   placeholder: string;
-  autos: RecodeAuto[];
-  onFiltrar: (filtrados: RecodeAuto[]) => void;
+  onFiltrar: (query: string) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ placeholder, autos, onFiltrar }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar }) => {
   const [busqueda, setBusqueda] = useState("");
+  const [mostrarBoton, setMostrarBoton] = useState(true);
 
-  // const [mensajeError, setMensajeError] = useState("");
+  // Mostrar el botón si hay texto
+  useEffect(() => {
+    setMostrarBoton(busqueda.trim().length === 0);
+  }, [busqueda]);
 
-  const handleBusqueda = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const valor = e.target.value;
-    setBusqueda(valor);
-    // setMensajeError("");
-    
-    //con este const eliminamos los espacios al inicio y al final de cada palabra
-    const valorNormalizado = valor.trim().replace(/\s+/g, ' ').toLowerCase();
+  // Debounce de 300ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const valorNormalizado = busqueda
+      .trim()
+      .replace(/\s+/g, " ")
+      .replace(/[^\p{L}\p{N}\s]/gu, "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")   
+      .toLowerCase();
+      onFiltrar(valorNormalizado);
+    }, 300);
 
-    if (valorNormalizado === "") {
-      // setMensajeError("Debe ingresar un término de búsqueda válido");
-      onFiltrar(autos);
-    } else {
-      // setMensajeError("");
-      const filtrados = autos.filter((auto) =>
-        `${auto.modelo} ${auto.marca}`.toLowerCase().includes(valorNormalizado)
-      );
-      onFiltrar(filtrados);
-    }
-  };
+    return () => clearTimeout(timer);
+  }, [busqueda, onFiltrar]);
 
   return (
     <div className="relative w-full max-w-md">
       <input
         type="text"
         placeholder={placeholder}
+        aria-label="Campo de búsqueda de autos por modelo, marca"
         value={busqueda}
-        onChange={handleBusqueda}
+        maxLength={50}
+        onChange={(e) => setBusqueda(e.target.value)}
+        onFocus={() => setMostrarBoton(false)}
+        onBlur={() => setMostrarBoton(true)}
         className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[11px] md:text-base lg:text-lg"
       />
-      <button
-        type="button"
-        className="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black text-white rounded-md flex items-center justify-center"
-      >
-        <MagnifyingGlassIcon className="h-5 w-5" />
-      </button>
-      {/* {mensajeError && (<p className="mt-2 text-red-500 text-sm">{mensajeError}</p>)} */}
+      {mostrarBoton && (
+        <button
+          type="button"
+          aria-label="Buscar autos"
+          className="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black text-white rounded-md flex items-center justify-center"
+        >
+          <MagnifyingGlassIcon className="h-5 w-5" />
+        </button>
+      )}
     </div>
   );
 };

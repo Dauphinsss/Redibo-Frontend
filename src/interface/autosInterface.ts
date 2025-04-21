@@ -21,8 +21,8 @@ export interface ImagenAuto {
   export interface InfoDestacableProps {
     marca: string;
     modelo: string;
-    placa: string;
-    año: number;
+    anio: number;
+    soat: boolean;
     
   }
   

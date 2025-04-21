@@ -74,8 +74,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 <InfoDestacable 
                     marca={autoData.marca}
                     modelo={autoData.modelo}
-                    año={autoData.año}
-                    placa={''}                  
+                    anio={autoData.anio}
+                    soat={autoData.soat}                  
                 />
                 
                 <Reserva 
