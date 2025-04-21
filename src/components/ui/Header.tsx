@@ -26,7 +26,6 @@ export default function Header() {
             onClick={() => {
               const current = document.querySelector('input.input') as HTMLInputElement;
               const value = current?.value.trim();
-
               if (value) {
                 localStorage.setItem("restoreSearch", value);
                 localStorage.setItem("lastSearchTerm", value);

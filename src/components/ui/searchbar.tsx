@@ -32,6 +32,11 @@ const SearchBar = () => {
             canClose = true;
         }
 
+        const restored = localStorage.getItem("restoreSearch");
+        if (restored && searchTerm === "") {
+            setSearchTerm(restored);
+        }
+
         if(isSearchPage && query && !hasSetQuery.current) {
             setSearchTerm(query);
             hasSetQuery.current = true;
@@ -42,12 +47,6 @@ const SearchBar = () => {
             setSavedSearches(JSON.parse(stored));
         }
 
-        const restored = localStorage.getItem("restoreSearch");
-        if (restored && searchTerm === "") {
-            setSearchTerm(restored);
-            localStorage.removeItem("restoreSearch");
-        }
-
         document.addEventListener('click', handleClickOutside);
         return () => {
             document.removeEventListener('click', handleClickOutside);
@@ -56,19 +55,13 @@ const SearchBar = () => {
     }, [isSearchPage, query]);
 
     const handleButtonClick = () => {
-        if (searchTerm && !savedSearches.includes(searchTerm)) {
+        if (searchTerm || !savedSearches.includes(searchTerm)) {
             const updatedSearches = [searchTerm, ...savedSearches.filter(s => s !== searchTerm)];
             setSavedSearches(updatedSearches);
             
             localStorage.setItem("lastSearchTerm", searchTerm);
             localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
-            router.push(`/searchMock?query=${encodeURIComponent(searchTerm)}`);
-            setIsClicked(false);
-        } else if (searchTerm) {
-            const updatedSearches = [searchTerm, ...savedSearches.filter(item => item !== searchTerm)]
-            setSavedSearches(updatedSearches);
-            localStorage.setItem("lastSearchTerm", searchTerm);
-            localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
+            localStorage.setItem("restoreSearch", searchTerm);
             router.push(`/searchMock?query=${encodeURIComponent(searchTerm)}`);
             setIsClicked(false);
         }
@@ -94,6 +87,7 @@ const SearchBar = () => {
         setSavedSearches(updatedSearches);
         localStorage.setItem("lastSearchTerm", search);
         localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
+        localStorage.setItem("restoreSearch", search);
         router.push(`/searchMock?query=${encodeURIComponent(search)}`);
     }
 
@@ -111,7 +105,10 @@ const SearchBar = () => {
             <input
                 type="text"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    localStorage.setItem("restoreSearch", e.target.value);
+                }}
                 onClick={handleClick}
                 onKeyDown={handleKeyDown}
                 placeholder="Buscar..."
