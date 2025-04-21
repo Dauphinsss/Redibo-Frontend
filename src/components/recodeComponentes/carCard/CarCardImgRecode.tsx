@@ -8,8 +8,8 @@ interface Props {
 
 export default function CarCardImg({ imagenUrl }: Props) {
     return (
-        <div className="w-[250px] h-[250px] rounded-xl flex items-center justify-center">
-            <div className="w-[250px] h-[150px] rounded-[10px] overflow-hidden bg-white flex items-center justify-center">
+        <div className="w-full h-[180px] flex items-center justify-center">
+            <div className="w-[230px] h-[150px] rounded-[10px] overflow-hidden bg-white flex items-center justify-center">
                 {imagenUrl ? (
                 <Image
                     src={imagenUrl}
