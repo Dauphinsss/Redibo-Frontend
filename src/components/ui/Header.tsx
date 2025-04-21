@@ -28,10 +28,8 @@ export default function Header() {
               const value = current?.value.trim();
               if (value) {
                 localStorage.setItem("restoreSearch", value);
-                localStorage.setItem("lastSearchTerm", value);
               } else {
                 localStorage.removeItem("restoreSearch");
-                localStorage.removeItem("lastSearchTerm");
               }
             }
           }
@@ -117,10 +115,8 @@ export default function Header() {
 
             if (value) {
               localStorage.setItem("restoreSearch", value);
-              localStorage.setItem("lastSearchTerm", value);
             } else {
               localStorage.removeItem("restoreSearch");
-              localStorage.removeItem("lastSearchTerm");
             }
           }
         }>

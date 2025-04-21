@@ -37,9 +37,9 @@ const SearchBar = () => {
             setSearchTerm(restored);
         }
 
-        if(isSearchPage && query && !hasSetQuery.current) {
-            setSearchTerm(query);
-            hasSetQuery.current = true;
+        if (searchTerm === "" && isSearchPage) {
+            const params = new URLSearchParams(window.location.search);
+            params.delete('query');       
         }
 
         const stored = localStorage.getItem("savedSearches");
@@ -52,14 +52,15 @@ const SearchBar = () => {
             document.removeEventListener('click', handleClickOutside);
         }
 
-    }, [isSearchPage, query]);
+    }, [searchTerm]);
 
     const handleButtonClick = () => {
+        if (!searchTerm.trim()) return;
+
         if (searchTerm || !savedSearches.includes(searchTerm)) {
             const updatedSearches = [searchTerm, ...savedSearches.filter(s => s !== searchTerm)];
             setSavedSearches(updatedSearches);
             
-            localStorage.setItem("lastSearchTerm", searchTerm);
             localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
             localStorage.setItem("restoreSearch", searchTerm);
             router.push(`/searchMock?query=${encodeURIComponent(searchTerm)}`);
@@ -85,7 +86,6 @@ const SearchBar = () => {
         
         const updatedSearches = [search, ...savedSearches.filter(item => item !== search)]
         setSavedSearches(updatedSearches);
-        localStorage.setItem("lastSearchTerm", search);
         localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
         localStorage.setItem("restoreSearch", search);
         router.push(`/searchMock?query=${encodeURIComponent(search)}`);
@@ -106,9 +106,16 @@ const SearchBar = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    localStorage.setItem("restoreSearch", e.target.value);
+                    const value = e.target.value;
+                    setSearchTerm(value);
+                
+                    if (value.trim() === "") {
+                        localStorage.removeItem("restoreSearch");
+                    } else {
+                        localStorage.setItem("restoreSearch", value);
+                    }
                 }}
+                
                 onClick={handleClick}
                 onKeyDown={handleKeyDown}
                 placeholder="Buscar..."
