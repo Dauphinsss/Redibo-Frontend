@@ -2,7 +2,7 @@
 
 import { useAutos } from '@/hooks/useAutos_hook_Recode';
 import RecodeCarList from '@/components/recodeComponentes/carCard/CarListRecode';
-import SearchBar from '@/components/recodeComponentes/detailsCar/RecodeSearchBar';
+import SearchBar from '@/components/recodeComponentes/seccionOrdenarMasResultados/RecodeSearchBar';
 import HeaderBusquedaRecode from '@/components/recodeComponentes/seccionOrdenarMasResultados/HeaderBusquedaRecode';
 import AutoSkeletonList from '@/components/recodeComponentes/carCard/CarSkeletonListRecode' 
 
