@@ -43,12 +43,12 @@ export function useAutos(cantidadPorLote = 8) {
 
         if (textoBusqueda.trim()) {
         const query =normalizarTexto(textoBusqueda.trim());
-            resultado = resultado.filter(auto =>{
-                const autoModelo = normalizarTexto(auto.modelo);
-                const autoMarca = normalizarTexto(auto.marca);
-                return `${autoModelo} ${autoMarca}`.toLowerCase().includes(query);
+            resultado = resultado.filter(auto => {
+                const autoTexto = `${auto.marca} ${auto.modelo}`;
+                const textoNormalizado = normalizarTexto(autoTexto).replace(/[^\p{L}\p{N}\s.\-\/]/gu, "").replace(/\s+/g, " ").trim();
+                const palabrasBusqueda = query.split(" ");
+                return palabrasBusqueda.every(palabra => textoNormalizado.includes(palabra));
             });
-            resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
         }
 
         switch (ordenSeleccionado) {
