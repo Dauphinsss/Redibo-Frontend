@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { memo } from "react";
 
 interface Props {
     precioOficial: number;
@@ -7,7 +8,7 @@ interface Props {
     id: string;
 }
 
-export default function CarCardPrice({ precioOficial, precioDescuento, precioPorDia, id }: Props) {
+function CarCardPrice({ precioOficial, precioDescuento, precioPorDia, id }: Props) {
     return (
         <div className="flex flex-col justify-between items-end text-right min-w-[130px]">
         <div>
@@ -23,3 +24,4 @@ export default function CarCardPrice({ precioOficial, precioDescuento, precioPor
         </div>
     );
 }
+export default memo(CarCardPrice);

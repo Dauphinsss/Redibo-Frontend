@@ -1,9 +1,11 @@
+import { memo } from "react";
+
 interface Props {
     nombre: string;
     marca: string;
 }
 
-export default function CarCardHeader({ nombre, marca }: Props) {
+function CarCardHeader({ nombre, marca }: Props) {
     return (
         <div className="mb-2">
         <h2 className="text-lg font-bold">{nombre}</h2>
@@ -11,3 +13,4 @@ export default function CarCardHeader({ nombre, marca }: Props) {
         </div>
     );
 }
+export default memo(CarCardHeader);

@@ -1,4 +1,6 @@
-export default function AutoSkeletonList() {
+import { memo } from "react";
+
+function AutoSkeletonList() {
     return (
         <div className="flex flex-col gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
@@ -26,3 +28,4 @@ export default function AutoSkeletonList() {
         </div>
     );
 }  
+export default memo(AutoSkeletonList);

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { FaGasPump } from "react-icons/fa";
 import { GiCarDoor } from "react-icons/gi";
 import { IoPeople } from "react-icons/io5";
@@ -13,7 +14,7 @@ interface Props {
     onCombustibleChange: (val: string) => void;
 }
 
-export default function CarCardSpecs({
+function CarCardSpecs({
     asientos,
     puertas,
     transmision,
@@ -24,25 +25,26 @@ export default function CarCardSpecs({
 }: Props) {
     return (
         <div className="flex flex-col gap-1 text-sm mt-2">
-        <div className="flex gap-4 flex-wrap">
-            <span className="flex items-center gap-1"><IoPeople /> {asientos} asientos</span>
-            <span className="flex items-center gap-1"><GiCarDoor /> {puertas} puertas</span>
-            <span className="flex items-center gap-1"><TbManualGearboxFilled /> {transmision}</span>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap mt-2">
-            <FaGasPump />
-            <span>Tipo de combustible:</span>
-            <select
-            value={combustibleSeleccionado}
-            onChange={(e) => onCombustibleChange(e.target.value)}
-            className="border px-2 py-1 rounded"
-            >
-            {combustibles.map((c, i) => (
-                <option key={i}>{c}</option>
-            ))}
-            </select>
-        </div>
+            <div className="flex gap-4 flex-wrap">
+                <span className="flex items-center gap-1"><IoPeople /> {asientos} asientos</span>
+                <span className="flex items-center gap-1"><GiCarDoor /> {puertas} puertas</span>
+                <span className="flex items-center gap-1"><TbManualGearboxFilled /> {transmision}</span>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap mt-2">
+                <FaGasPump />
+                <span>Tipo de combustible:</span>
+                <select
+                value={combustibleSeleccionado}
+                onChange={(e) => onCombustibleChange(e.target.value)}
+                className="border px-2 py-1 rounded"
+                >
+                {combustibles.map((c, i) => (
+                    <option key={i}>{c}</option>
+                ))}
+                </select>
+            </div>
         <p className="mt-1">Estado: <strong>{estado}</strong></p>
         </div>
     );
 }
+export default memo(CarCardSpecs);

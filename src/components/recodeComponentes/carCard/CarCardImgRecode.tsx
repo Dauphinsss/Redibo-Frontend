@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import { memo } from "react";
 
 interface Props {
     imagenUrl: string;
 }
 
-export default function CarCardImg({ imagenUrl }: Props) {
+function CarCardImg({ imagenUrl }: Props) {
     return (
         <div className="w-full h-[180px] flex items-center justify-center">
             <div className="w-[230px] h-[150px] rounded-[10px] overflow-hidden bg-white flex items-center justify-center">
@@ -26,3 +27,4 @@ export default function CarCardImg({ imagenUrl }: Props) {
         </div>
     );
 }
+export default memo(CarCardImg);
