@@ -37,6 +37,7 @@ export default function Autoimag({ imagenes, nombre }: AutoImagProps) {
               fill
               className="object-scale-down p-1"
               sizes="(max-width: 768px) 100vw, 700px"
+              loading="lazy"
             />
 
             {imagenes.length > 1 && (
