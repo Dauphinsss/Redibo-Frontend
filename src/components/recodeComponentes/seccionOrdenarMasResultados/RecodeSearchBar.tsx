@@ -23,7 +23,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar }) => {
       const valorNormalizado = busqueda
       .trim()
       .replace(/\s+/g, " ")
-      .replace(/[^\p{L}\p{N}\s]/gu, "")
+      .replace(/[^\p{L}\p{N}\s.\-\/]/gu, "")
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")   
       .toLowerCase();
