@@ -21,14 +21,15 @@ const API_BASE_URL = "http://localhost:4000/api";
 export default function AddDireccion() {
   const router = useRouter();
   const [cancelOpen, setCancelOpen] = useState(false);
-  const { updateDireccion } = useFormContext();
+  const { formData, updateDireccion } = useFormContext();
+  const { direccion } = formData; // Acceder a 'direccion' desde el contexto
 
   // Campos
-  const [pais, setPais] = useState("");
-  const [departamento, setDepartamento] = useState("");
-  const [provincia, setProvincia] = useState("");
-  const [calle, setCalle] = useState("");
-  const [numCasa, setNumCasa] = useState("");
+  const [pais, setPais] = useState(direccion?.ciudadId?.toString() || ""); // Usar datos del contexto si están disponibles
+  const [departamento, setDepartamento] = useState(direccion?.zona || ""); // Usar datos del contexto si están disponibles
+  const [provincia, setProvincia] = useState(direccion?.provinciaId?.toString() || ""); // Usar datos del contexto si están disponibles
+  const [calle, setCalle] = useState(direccion?.calle || ""); // Usar datos del contexto si están disponibles
+  const [numCasa, setNumCasa] = useState(direccion?.num_casa || ""); // Usar datos del contexto si están disponibles
 
   // Errores
   const [paisError, setPaisError] = useState("");
@@ -80,13 +81,24 @@ export default function AddDireccion() {
     setIsFormValid(isValid);
   }, [pais, departamento, provincia, calle, numCasa, paisError, departamentoError, provinciaError, calleError, numCasaError]);
 
+  // Cargar datos del contexto al renderizar inicialmente
+  useEffect(() => {
+    if (direccion) {
+      setPais(direccion.ciudadId?.toString() || "");
+      setDepartamento(direccion.zona || "");
+      setProvincia(direccion.provinciaId?.toString() || "");
+      setCalle(direccion.calle || "");
+      setNumCasa(direccion.num_casa || "");
+    }
+  }, [direccion]);
+
   // Actualización optimizada del contexto
   useEffect(() => {
     const timer = setTimeout(() => {
       if (pais || departamento || provincia || calle || numCasa) {
         updateDireccion({
-          ciudadId: Number(pais),
-          provinciaId: Number(provincia),
+          ciudadId: pais ? Number(pais) : null, // Asegurar 'null' si está vacío
+          provinciaId: provincia ? Number(provincia) : null, // Asegurar 'null' si está vacío
           calle,
           zona: departamento,
           num_casa: numCasa,
@@ -96,7 +108,7 @@ export default function AddDireccion() {
 
     return () => clearTimeout(timer);
   }, [pais, departamento, provincia, calle, numCasa, updateDireccion]);
-  
+
   const handleConfirmExit = () => {
     router.push("/host/pages");
   };
@@ -118,48 +130,48 @@ export default function AddDireccion() {
       </div>
 
       <div className="w-full max-w-5xl pl-9 space-y-6">
-        <CampoPais 
-          pais={pais} 
+        <CampoPais
+          pais={pais}
           onPaisChange={handlePaisChange}
-          paisError={paisError} 
-          setPaisError={setPaisError} 
+          paisError={paisError}
+          setPaisError={setPaisError}
           setDepartamento={setDepartamento}
           setProvincia={setProvincia}
           apiUrl={API_BASE_URL}
         />
-        <CampoDepartamento 
-          departamento={departamento} 
+        <CampoDepartamento
+          departamento={departamento}
           onDepartamentoChange={handleDepartamentoChange}
-          departamentoError={departamentoError} 
+          departamentoError={departamentoError}
           setDepartamentoError={setDepartamentoError}
           pais={pais}
           setProvincia={setProvincia}
           apiUrl={API_BASE_URL}
         />
-        <CampoProvincia 
-          provincia={provincia} 
+        <CampoProvincia
+          provincia={provincia}
           onProvinciaChange={handleProvinciaChange}
-          provinciaError={provinciaError} 
+          provinciaError={provinciaError}
           setProvinciaError={setProvinciaError}
           departamento={departamento}
           apiUrl={API_BASE_URL}
         />
-        <CampoCalle 
-          calle={calle} 
+        <CampoCalle
+          calle={calle}
           onCalleChange={handleCalleChange}
-          calleError={calleError} 
-          setCalleError={setCalleError} 
+          calleError={calleError}
+          setCalleError={setCalleError}
         />
-        <CampoNumCasa 
-          numCasa={numCasa} 
+        <CampoNumCasa
+          numCasa={numCasa}
           onNumCasaChange={handleNumCasaChange}
-          numCasaError={numCasaError} 
-          setNumCasaError={setNumCasaError} 
+          numCasaError={numCasaError}
+          setNumCasaError={setNumCasaError}
         />
       </div>
 
       <div className="w-full max-w-5xl flex justify-between mt-10 px-10">
-        <BotonesFormulario 
+        <BotonesFormulario
           isFormValid={isFormValid}
           onNext={() => router.push("/host/home/add/datosprincipales")}
         />
