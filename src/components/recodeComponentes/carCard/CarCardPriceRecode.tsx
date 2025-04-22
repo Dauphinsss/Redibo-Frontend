@@ -16,7 +16,7 @@ function CarCardPrice({ precioOficial, precioDescuento, precioPorDia, id }: Prop
             <p className="text-gray-400 line-through">BOB. {precioDescuento.toFixed(2)}</p>
             <p className="text-sm text-gray-600">Por día: BOB. {precioPorDia.toFixed(2)}</p>
         </div>
-        <Link href={`/infoAuto/${id}`} target="_blank">
+        <Link href={`/infoAuto_Recode/${id}`} target="_blank">
             <button className="bg-black text-white px-4 py-2 rounded mt-4 hover:bg-gray-800">
             Ver oferta
             </button>

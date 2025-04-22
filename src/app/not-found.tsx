@@ -26,7 +26,7 @@ export default function NotFound() {
               <div className="space-y-2 mt-4">
                 <p className="text-gray-500">Resultados de búsqueda:</p>
                 <Link 
-                  href="/homeBuscador" 
+                  href="/homeBuscador_Recode" 
                   className="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
                 >
                   Ver resultados
