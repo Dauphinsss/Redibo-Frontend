@@ -15,14 +15,15 @@ import BotonesFormulario from "../../../components/CarCoche/BotonesFormulario";
 
 export default function CaracteristicasCoche() {
   const router = useRouter();
-  const { updateCaracteristicas } = useFormContext();
+  const { formData, updateCaracteristicas } = useFormContext();
+  const { caracteristicas } = formData;
 
   // Estados locales
-  const [combustibles, setCombustibles] = useState<number[]>([]);
-  const [asientos, setAsientos] = useState<number>(0);
-  const [puertas, setPuertas] = useState<number>(0);
-  const [transmision, setTransmision] = useState<string>("");
-  const [seguro, setSeguro] = useState<boolean>(false);
+  const [combustibles, setCombustibles] = useState<number[]>(caracteristicas?.combustibleIds || []);
+  const [asientos, setAsientos] = useState<number>(caracteristicas?.asientos || 0);
+  const [puertas, setPuertas] = useState<number>(caracteristicas?.puertas || 0);
+  const [transmision, setTransmision] = useState<string>(caracteristicas?.transmicion || "");
+  const [seguro, setSeguro] = useState<boolean>(caracteristicas?.soat || false);
 
   // Estados de error
   const [combustiblesError, setCombustiblesError] = useState<string>("");
@@ -86,6 +87,17 @@ export default function CaracteristicasCoche() {
     transmisionError,
     seguroError,
   ]);
+
+  // Load data from context on initial render
+  useEffect(() => {
+    if (caracteristicas) {
+      setCombustibles(caracteristicas.combustibleIds || []);
+      setAsientos(caracteristicas.asientos || 0);
+      setPuertas(caracteristicas.puertas || 0);
+      setTransmision(caracteristicas.transmicion || "");
+      setSeguro(caracteristicas.soat || false);
+    }
+  }, [caracteristicas]);
 
   // Actualización del contexto
   useEffect(() => {

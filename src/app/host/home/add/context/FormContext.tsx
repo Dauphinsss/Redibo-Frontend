@@ -10,10 +10,11 @@ import {
 } from "react";
 
 interface DireccionData {
-  provinciaId: number;
+  provinciaId: number | null; // Permitir null
   calle: string;
   zona: string;
   num_casa?: string;
+  ciudadId?: number | null; // Incluir ciudadId y permitir null
 }
 
 interface DatosPrincipalesData {
@@ -69,7 +70,7 @@ interface FormContextType {
 const FormContext = createContext<FormContextType | undefined>(undefined);
 
 const initialFormData: FormData = {
-  direccion: { provinciaId: 0, calle: "", zona: "", num_casa: "" },
+  direccion: { provinciaId: null, calle: "", zona: "", num_casa: "", ciudadId: null }, // provinciaId y ciudadId inicializados como null
   datosPrincipales: {
     vim: "",
     anio: new Date().getFullYear(),
@@ -135,7 +136,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
     const { direccion, datosPrincipales, caracteristicas, finalizacion, caracteristicasAdicionales } =
       formData;
     return (
-      direccion.provinciaId > 0 &&
+      direccion.provinciaId !== null && // Modificado para permitir null inicialmente
       direccion.calle.trim() !== "" &&
       direccion.zona.trim() !== "" &&
       datosPrincipales.vim.trim() !== "" &&
@@ -179,7 +180,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
     }
 
     const {
-      direccion: { provinciaId, calle, zona, num_casa },
+      direccion: { provinciaId, calle, zona, num_casa, ciudadId }, // Incluir ciudadId
       datosPrincipales: { vim, anio, marca, modelo, placa },
       caracteristicas: { combustibleIds, asientos, puertas, transmicion, soat },
       caracteristicasAdicionales: { extraIds },
@@ -196,6 +197,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
 
     const payload = {
       provinciaId,
+      ciudadId, // Incluir ciudadId en el payload
       calle,
       zona,
       num_casa: num_casa || null,
@@ -215,6 +217,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
       transmicion,
       estado,
       descripcion,
+
    };
 
     try {
@@ -249,21 +252,24 @@ export function FormProvider({ children }: { children: ReactNode }) {
     }
   }, [formData, validateForm, resetForm]);
 
+  const value = useMemo(() => ({
+    formData,
+    isSubmitting,
+    submitError,
+    submitSuccess,
+    updateDireccion,
+    updateDatosPrincipales,
+    updateCaracteristicas,
+    updateCaracteristicasAdicionales,
+    updateFinalizacion,
+    submitForm,
+    resetForm
+  }), [formData, isSubmitting, submitError, submitSuccess, updateDireccion, updateDatosPrincipales, updateCaracteristicas, updateCaracteristicasAdicionales, updateFinalizacion, submitForm, resetForm]);
+
+
   return (
     <FormContext.Provider
-      value={{
-        formData,
-        isSubmitting,
-        submitError,
-        submitSuccess,
-        updateDireccion,
-        updateDatosPrincipales,
-        updateCaracteristicas,
-        updateCaracteristicasAdicionales,
-        updateFinalizacion,
-        submitForm,
-        resetForm
-      }}
+      value={value}
     >
       {children}
     </FormContext.Provider>

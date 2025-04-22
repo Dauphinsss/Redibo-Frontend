@@ -24,8 +24,8 @@ export default function CampoAsientos({
       
       if (numValue <= 0) {
         setError("Debe ser mayor a 0");
-      } else if (numValue > 20) {
-        setError("Máximo 20 asientos");
+      } else if (numValue > 240) {
+        setError("Máximo 240 asientos");
       } else {
         setError("");
       }
@@ -46,7 +46,7 @@ export default function CampoAsientos({
         placeholder="Número de asientos"
         className="w-full max-w-md"
         min="1"
-        max="20"
+        max="240"
       />
       {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
     </div>
