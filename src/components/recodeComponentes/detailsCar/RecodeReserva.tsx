@@ -1,4 +1,4 @@
-import { ReservaProps } from '@/interface/autosInterface';
+import { ReservaProps } from '@/interface/autosInterface_Recode';
 
 export default function Reserva({ precio }: ReservaProps) {
   return (
