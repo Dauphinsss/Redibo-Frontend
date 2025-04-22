@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
@@ -13,18 +14,19 @@ import CampoDescripcion from "../../../components/inputimagen/CampoDescripcion";
 import BotonesFormulario from "../../../components/inputimagen/BotonesFormulario";
 
 export default function InputImagen() {
-  const { updateFinalizacion, submitForm } = useFormContext();
-  
+  const { formData, updateFinalizacion, submitForm } = useFormContext();
+  const { finalizacion } = formData;
+
   // Estado para almacenar las imágenes cargadas
-  const [mainImage, setMainImage] = useState<File | null>(null);
-  const [secondaryImage1, setSecondaryImage1] = useState<File | null>(null);
-  const [secondaryImage2, setSecondaryImage2] = useState<File | null>(null);
-  
+  const [mainImage, setMainImage] = useState<File | null>(finalizacion?.imagenes?.[0] || null);
+  const [secondaryImage1, setSecondaryImage1] = useState<File | null>(finalizacion?.imagenes?.[1] || null);
+  const [secondaryImage2, setSecondaryImage2] = useState<File | null>(finalizacion?.imagenes?.[2] || null);
+
   // Estado para los valores de los campos
-  const [mantenimientos, setMantenimientos] = useState<string>("");
-  const [precio, setPrecio] = useState<string>("");
-  const [descripcion, setDescripcion] = useState<string>("");
-  
+  const [mantenimientos, setMantenimientos] = useState<string>(finalizacion?.num_mantenimientos?.toString() || "");
+  const [precio, setPrecio] = useState<string>(finalizacion?.precio_por_dia?.toString() || "");
+  const [descripcion, setDescripcion] = useState<string>(finalizacion?.descripcion || "");
+
   // Estado para mensajes de error
   const [mainImageError, setMainImageError] = useState<string | null>(null);
   const [secondaryImage1Error, setSecondaryImage1Error] = useState<string | null>(null);
@@ -32,7 +34,7 @@ export default function InputImagen() {
   const [mantenimientosError, setMantenimientosError] = useState<string | null>(null);
   const [precioError, setPrecioError] = useState<string | null>(null);
   const [descripcionError, setDescripcionError] = useState<string | null>(null);
-  
+
   // Estado para controlar la habilitación del botón finalizar
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
@@ -49,14 +51,14 @@ export default function InputImagen() {
 
   // Efecto para validación del formulario
   useEffect(() => {
-    const isValid = 
+    const isValid =
       mainImage !== null && mainImageError === null &&
       secondaryImage1 !== null && secondaryImage1Error === null &&
       secondaryImage2 !== null && secondaryImage2Error === null &&
       mantenimientos !== "" && mantenimientosError === null &&
       precio !== "" && precioError === null &&
       descripcionError === null;
-    
+
     setIsFormValid(isValid);
   }, [
     mainImage, mainImageError,
@@ -66,6 +68,19 @@ export default function InputImagen() {
     precio, precioError,
     descripcionError
   ]);
+
+  // Load data from context on initial render
+  useEffect(() => {
+    if (finalizacion) {
+      // It's not possible to pre-fill file inputs for security reasons.
+      // You may need to handle the actual display of images differently 
+      // based on your specific use case.  For example, storing image URLs.
+
+      setMantenimientos(finalizacion.num_mantenimientos?.toString() || "");
+      setPrecio(finalizacion.precio_por_dia?.toString() || "");
+      setDescripcion(finalizacion.descripcion || "");
+    }
+  }, [finalizacion]);
 
   // Efecto para actualizar el contexto (con dependencias estables)
   useEffect(() => {
@@ -110,28 +125,28 @@ export default function InputImagen() {
       <div className="w-full max-w-5xl px-9 space-y-6">
         {/* Área de carga de imágenes */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <CampoImagen 
+          <CampoImagen
             image={mainImage}
             onImageChange={setMainImage}
             error={mainImageError}
             setError={setMainImageError}
           />
-          
-          <CampoImagen 
+
+          <CampoImagen
             image={secondaryImage1}
             onImageChange={setSecondaryImage1}
             error={secondaryImage1Error}
             setError={setSecondaryImage1Error}
           />
-          
-          <CampoImagen 
+
+          <CampoImagen
             image={secondaryImage2}
             onImageChange={setSecondaryImage2}
             error={secondaryImage2Error}
             setError={setSecondaryImage2Error}
           />
         </div>
-        
+
         <CampoMantenimientos
           mantenimientos={mantenimientos}
           setMantenimientos={setMantenimientos}
@@ -154,9 +169,9 @@ export default function InputImagen() {
         />
       </div>
 
-      <BotonesFormulario 
-        isFormValid={isFormValid} 
-        onSubmit={handleSubmit} 
+      <BotonesFormulario
+        isFormValid={isFormValid}
+        onSubmit={handleSubmit}
       />
     </div>
   );

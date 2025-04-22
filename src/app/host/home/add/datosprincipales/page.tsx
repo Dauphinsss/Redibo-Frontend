@@ -17,15 +17,16 @@ import BotonesFormulario from "../../../components/DatosPrincipales/BotonesFormu
 
 export default function DatosPrincipales() {
   const router = useRouter();
-  const { updateDatosPrincipales } = useFormContext();
+  const { formData, updateDatosPrincipales } = useFormContext();
+  const { datosPrincipales } = formData; // Obtener datosPrincipales del contexto
   const currentYear = 2025;
 
   // Campos
-  const [vin, setVin] = useState("");
-  const [anio, setAnio] = useState("");
-  const [marca, setMarca] = useState("");
-  const [modelo, setModelo] = useState("");
-  const [placa, setPlaca] = useState("");
+  const [vin, setVin] = useState(datosPrincipales?.vim || ""); // Usar datos del contexto
+  const [anio, setAnio] = useState(datosPrincipales?.anio?.toString() || ""); // Usar datos del contexto y convertir a string
+  const [marca, setMarca] = useState(datosPrincipales?.marca || ""); // Usar datos del contexto
+  const [modelo, setModelo] = useState(datosPrincipales?.modelo || ""); // Usar datos del contexto
+  const [placa, setPlaca] = useState(datosPrincipales?.placa || ""); // Usar datos del contexto
 
   // Errores
   const [vinError, setVinError] = useState("");
@@ -73,6 +74,17 @@ export default function DatosPrincipales() {
     );
     setIsFormValid(isValid);
   }, [vin, anio, marca, modelo, placa, vinError, anioError, marcaError, modeloError, placaError]);
+
+  // Load data from context on initial render
+  useEffect(() => {
+    if (datosPrincipales) {
+      setVin(datosPrincipales.vim || "");
+      setAnio(datosPrincipales.anio?.toString() || "");
+      setMarca(datosPrincipales.marca || "");
+      setModelo(datosPrincipales.modelo || "");
+      setPlaca(datosPrincipales.placa || "");
+    }
+  }, [datosPrincipales]);
 
   // Actualización optimizada del contexto
   useEffect(() => {
