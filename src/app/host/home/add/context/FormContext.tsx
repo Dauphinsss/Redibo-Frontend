@@ -172,6 +172,12 @@ export function FormProvider({ children }: { children: ReactNode }) {
     setIsSubmitting(true);
     setSubmitError(null);
 
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setSubmitError("No se encontró un token de autenticación. Por favor, inicie sesión.");
+      return;
+    }
+
     const {
       direccion: { provinciaId, calle, zona, num_casa },
       datosPrincipales: { vim, anio, marca, modelo, placa },
@@ -187,8 +193,6 @@ export function FormProvider({ children }: { children: ReactNode }) {
     } = formData;
 
     const imagesBase64 = await Promise.all(imagenes.map(toBase64));
-    const id_usuario_rol = 1; //No se donde ponerlo dado que en si el backend no deberia tener problemas si este no esa presente
-    //lo puse por si acaso pero en si no se como implementar lo, hay un problema entre backend y forntend.
 
     const payload = {
       provinciaId,
@@ -211,10 +215,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
       transmicion,
       estado,
       descripcion,
-      //id_usuario_rol deberia de entrar dado que tuve que modificar el backend por que me decia
-      //error 500 por que no le estaba pasando el id_usuario_rol lo que en si no deberia pasar, 
-      //pero incluso si le paso el id_usuario_rol no me lo toma en cuenta y no se por que.
-    };
+   };
 
     try {
       const apiUrl = "http://localhost:4000/api/v2";
