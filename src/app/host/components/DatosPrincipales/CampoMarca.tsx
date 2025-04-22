@@ -1,3 +1,4 @@
+// CampoMarca.tsx
 "use client";
 import { Input } from "@/components/ui/input";
 
@@ -13,7 +14,10 @@ export default function CampoMarca({ marca, onMarcaChange, marcaError, setMarcaE
     const value = e.target.value.toUpperCase();
     onMarcaChange(value);
 
-    if (value.length > 50) {
+    // Validaciones
+    if (!value.trim()) {
+      setMarcaError("La marca es obligatoria");
+    } else if (value.length > 50) {
       setMarcaError("La marca no puede exceder los 50 caracteres.");
     } else if (!/^[A-Z\s]*$/.test(value)) {
       setMarcaError("Solo se permiten letras mayúsculas.");
@@ -29,8 +33,14 @@ export default function CampoMarca({ marca, onMarcaChange, marcaError, setMarcaE
         type="text"
         value={marca}
         onChange={handleChange}
+        onBlur={() => {
+          if (!marca.trim()) {
+            setMarcaError("La marca es obligatoria");
+          }
+        }}
         className="max-w-md"
         placeholder="Ej: TOYOTA, FORD, CHEVROLET"
+        maxLength={51}
       />
       {marcaError && <p className="text-sm text-red-600 mt-1">{marcaError}</p>}
     </div>

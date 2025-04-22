@@ -19,10 +19,16 @@ const CampoImagen: React.FC<CampoImagenProps> = ({
   const imageRef = useRef<HTMLInputElement>(null);
 
   const validateImage = useCallback((file: File): string | null => {
-    // Validar tipo
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    // Validar extensión del archivo (solo .jpg y .png)
+    const fileName = file.name.toLowerCase();
+    if (!fileName.endsWith('.jpg') && !fileName.endsWith('.png')) {
+      return "Solo se permiten imágenes .jpg o .png";
+    }
+    
+    // Validar tipo MIME (image/jpeg para .jpg y image/png para .png)
+    const allowedTypes = ['image/jpeg', 'image/png'];
     if (!allowedTypes.includes(file.type)) {
-      return "Solo se permiten imágenes JPEG, PNG o WEBP";
+      return "Formato de archivo no válido";
     }
     
     // Validar tamaño (2MB máximo)
@@ -68,7 +74,7 @@ const CampoImagen: React.FC<CampoImagenProps> = ({
           type="file"
           ref={imageRef}
           onChange={handleImageUpload}
-          accept="image/jpeg,image/png,image/webp"
+          accept=".jpg,.png" // Solo acepta .jpg y .png explícitamente
           className="hidden"
         />
         <Button 
@@ -85,7 +91,7 @@ const CampoImagen: React.FC<CampoImagenProps> = ({
           </div>
         )}
       </div>
-      <p className="text-xs text-gray-500 mt-1">*Solo JPEG/PNG/WEBP, máx. 2MB</p>
+      <p className="text-xs text-gray-500 mt-1">*Solo .jpg/.png, máx. 2MB</p>
     </div>
   );
 };

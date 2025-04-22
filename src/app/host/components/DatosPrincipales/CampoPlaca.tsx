@@ -10,15 +10,62 @@ interface CampoPlacaProps {
 
 export default function CampoPlaca({ placa, onPlacaChange, placaError, setPlacaError }: CampoPlacaProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toUpperCase();
-    onPlacaChange(value);
+    let value = e.target.value.toUpperCase();
+    let newValue = "";
+    let hasLetters = false;
+    let letterCount = 0;
 
-    if (!/^[A-Z0-9-]*$/.test(value) && value !== "") {
-      setPlacaError("Solo se permiten letras mayúsculas, números y guiones.");
-    } else if (value.length > 10) {
-      setPlacaError("La placa no puede exceder los 10 caracteres.");
+    // Procesar cada carácter
+    for (let i = 0; i < value.length; i++) {
+      const char = value[i];
+
+      // Si ya tenemos 3 letras, no permitir más caracteres
+      if (letterCount >= 3) {
+        break;
+      }
+
+      // Primera posición debe ser número
+      if (i === 0 && !/[0-9]/.test(char)) {
+        continue;
+      }
+
+      // Primeros 4 caracteres (si existen) deben ser números (máximo 4 números)
+      if (!hasLetters && /[0-9]/.test(char) && newValue.replace('-', '').length < 4) {
+        newValue += char;
+      } 
+      // Manejar letras (máximo 3)
+      else if (/[A-Z]/.test(char)) {
+        if (!hasLetters) {
+          // Agregar guion antes de la primera letra
+          newValue += "-" + char;
+          hasLetters = true;
+          letterCount = 1;
+        } else {
+          newValue += char;
+          letterCount++;
+        }
+      }
+    }
+
+    // Validaciones
+    if (!newValue.trim()) {
+      setPlacaError("La placa es obligatoria");
+    } else if (newValue.length > 8) { // 4 números + guión + 3 letras = 8
+      setPlacaError("La placa no puede exceder los 8 caracteres (4 números + 3 letras).");
+    } else if (!/^[0-9]{3,4}-[A-Z]{0,3}$/.test(newValue)) {
+      setPlacaError("Formato inválido. Ejemplos: 123-ABC, 1234-XYZ");
+    } else if (hasLetters && letterCount < 3) {
+      setPlacaError("Debe ingresar exactamente 3 letras después del guión.");
     } else {
       setPlacaError("");
+    }
+
+    onPlacaChange(newValue);
+  };
+
+  const handleBlur = () => {
+    if (!placa.trim()) {
+      setPlacaError("La placa es obligatoria");
     }
   };
 
@@ -29,8 +76,10 @@ export default function CampoPlaca({ placa, onPlacaChange, placaError, setPlacaE
         type="text"
         value={placa}
         onChange={handleChange}
+        onBlur={handleBlur}
         className="max-w-md"
-        placeholder="Ej: ABC123 o XYZ-456"
+        placeholder="Ej: 123-ABC o 1234-XYZ"
+        maxLength={8} // 4 números + guión + 3 letras
       />
       {placaError && <p className="text-sm text-red-600 mt-1">{placaError}</p>}
     </div>
