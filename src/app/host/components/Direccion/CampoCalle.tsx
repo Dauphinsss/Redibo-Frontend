@@ -14,8 +14,10 @@ export default function CampoCalle({ calle, onCalleChange, calleError, setCalleE
     onCalleChange(value);
     if (!value.trim()) {
       setCalleError("La calle es obligatoria");
-    } else if (value.length > 100) {
-      setCalleError("La calle no puede exceder los 100 caracteres");
+    } else if (value.length < 5) {
+      setCalleError("La calle no puede tener menos de 5 caracteres");
+    } else if (value.length >= 200) {
+      setCalleError("La calle no puede exceder los 200 caracteres");
     } else {
       setCalleError("");
     }
@@ -29,7 +31,9 @@ export default function CampoCalle({ calle, onCalleChange, calleError, setCalleE
         value={calle} 
         onChange={handleChange}
         placeholder="Ej: Av. América entre Ayacucho y Bolívar"
-        className="max-w-md" 
+        className="max-w-md"
+        maxLength={200}
+        minLength={5}
       />
       {calleError && <p className="text-sm text-red-600 mt-1">{calleError}</p>}
     </div>
