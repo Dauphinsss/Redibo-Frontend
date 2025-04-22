@@ -33,14 +33,43 @@ interface GetCarsResponse {
   total: number;
 }
 
+// Función para obtener el token de desarrollo
+async function getDevToken(): Promise<string> {
+  try {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      return storedToken;
+    }
+
+    const response = await axios.get<{ success: boolean; token: string }>(
+      "http://localhost:4000/api/v2/cars/dev-token"
+    );
+
+    if (response.data.success && response.data.token) {
+      localStorage.setItem("token", response.data.token);
+      return response.data.token;
+    }
+
+    throw new Error("No se pudo obtener el token de desarrollo");
+  } catch (error: any) {
+    console.error("Error al obtener el token de desarrollo:", error.response?.data || error.message);
+    throw new Error("Error al obtener el token de desarrollo");
+  }
+}
+
 export async function getCars({ skip = 0, take = 10, hostId = 1 } = {}): Promise<{ data: Car[]; total: number }> {
   try {
+    const token = await getDevToken(); // Obtener el token de desarrollo
+
     const response = await axios.get<GetCarsResponse>(API_URL, {
       params: {
         hostId,
         start: skip,    // El backend usa "start" en lugar de "skip"
         limit: take     // El backend usa "limit" en lugar de "take"
-      }
+      },
+      headers: {
+        Authorization: `Bearer ${token}`, // Incluir el token en el encabezado
+      },
     });
 
     // Transformación de datos

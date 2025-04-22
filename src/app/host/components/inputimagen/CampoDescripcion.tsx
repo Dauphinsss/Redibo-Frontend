@@ -47,7 +47,7 @@ const CampoDescripcion: React.FC<CampoDescripcionProps> = ({
             {error}
           </div>
         )}
-        <div className={`text-sm ${descripcion.length > 140 ? 'text-red-500' : 'text-gray-500'}`}>
+        <div className={`text-sm ${descripcion.length > 149 ? 'text-red-500' : 'text-gray-500'}`}>
           {descripcion.length}/150 caracteres
         </div>
       </div>

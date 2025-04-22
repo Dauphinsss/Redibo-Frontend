@@ -40,7 +40,7 @@ export default function CampoTransmision({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="manual">Manual</SelectItem>
-          <SelectItem value="automatica">Automática</SelectItem>
+          <SelectItem value="automatica">Automático</SelectItem>
         </SelectContent>
       </Select>
       {error && <p className="text-sm text-red-600 mt-1">{error}</p>}

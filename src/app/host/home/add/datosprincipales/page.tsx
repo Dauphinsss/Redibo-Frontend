@@ -103,10 +103,6 @@ export default function DatosPrincipales() {
     return () => clearTimeout(timer);
   }, [vin, anio, marca, modelo, placa, updateDatosPrincipales]);
 
-  const handleConfirmExit = () => {
-    router.push("/host/pages");
-  };
-
   return (
     <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
       <Link href="/host/home/add/direccion">

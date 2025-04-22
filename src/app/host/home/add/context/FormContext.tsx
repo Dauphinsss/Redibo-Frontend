@@ -173,6 +173,12 @@ export function FormProvider({ children }: { children: ReactNode }) {
     setIsSubmitting(true);
     setSubmitError(null);
 
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setSubmitError("No se encontró un token de autenticación. Por favor, inicie sesión.");
+      return;
+    }
+
     const {
       direccion: { provinciaId, calle, zona, num_casa, ciudadId }, // Incluir ciudadId
       datosPrincipales: { vim, anio, marca, modelo, placa },
@@ -188,7 +194,6 @@ export function FormProvider({ children }: { children: ReactNode }) {
     } = formData;
 
     const imagesBase64 = await Promise.all(imagenes.map(toBase64));
-    const id_usuario_rol = 1;
 
     const payload = {
       provinciaId,
@@ -212,7 +217,8 @@ export function FormProvider({ children }: { children: ReactNode }) {
       transmicion,
       estado,
       descripcion,
-    };
+
+   };
 
     try {
       const apiUrl = "http://localhost:4000/api/v2";
