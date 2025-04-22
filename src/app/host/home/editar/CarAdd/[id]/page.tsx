@@ -122,7 +122,7 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
       setSuccessMessage(response.data.mensaje || "¡Características guardadas exitosamente!");
       
       // Redirigir después de un breve retraso
-      setTimeout(() => router.push("/host/cars"), 1500);
+      setTimeout(() => router.push("/host/pages"), 1500);
     } catch (err: any) {
       console.error("Error completo:", err);
       
@@ -140,7 +140,7 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    router.push("/host/cars");  // Asegúrate de que esta ruta exista
+    router.push("/host/pages"); // Asegúrate de que esta ruta exista
   };
 
   if (isLoading) {
