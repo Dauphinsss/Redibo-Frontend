@@ -16,7 +16,7 @@ export default function NotFound() {
               <div className="space-y-2">
                 <p className="text-gray-500">Link del home:</p>
                 <Link 
-                  href="/" 
+                  href="https://home-buscador.vercel.app" 
                   className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                 >
                   Página de inicio
