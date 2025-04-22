@@ -104,6 +104,7 @@ const SearchBar = () => {
     return (
         <div className="search-bar" ref={searchBarRef}>
             <input
+                maxLength={50}
                 type="text"
                 value={searchTerm}
                 onChange={(e) => {
