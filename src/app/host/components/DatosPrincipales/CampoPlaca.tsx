@@ -13,8 +13,8 @@ export default function CampoPlaca({ placa, onPlacaChange, placaError, setPlacaE
     const value = e.target.value.toUpperCase();
     onPlacaChange(value);
 
-    if (!/^[A-Z0-9-]*$/.test(value) && value !== "") {
-      setPlacaError("Solo se permiten letras mayúsculas, números y guiones.");
+    if (!/^[A-Z]{3}-?\d{3,4}$/.test(value) && value !== "") {
+      setPlacaError("Ingrese una placa valida");
     } else if (value.length > 10) {
       setPlacaError("La placa no puede exceder los 10 caracteres.");
     } else {

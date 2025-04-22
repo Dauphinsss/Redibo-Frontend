@@ -20,9 +20,9 @@ const CampoImagen: React.FC<CampoImagenProps> = ({
 
   const validateImage = useCallback((file: File): string | null => {
     // Validar tipo
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const allowedTypes = ['image/jpg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      return "Solo se permiten imágenes JPEG, PNG o WEBP";
+      return "Solo se permiten imágenes JPG, PNG o WEBP";
     }
     
     // Validar tamaño (2MB máximo)
