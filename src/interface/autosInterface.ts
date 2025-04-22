@@ -1,5 +1,6 @@
 export interface AutoImage {
   id: number;
+  estado: string;
   data: string;
 }
 
