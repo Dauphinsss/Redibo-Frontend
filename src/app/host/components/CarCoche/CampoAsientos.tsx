@@ -46,7 +46,7 @@ export default function CampoAsientos({
         placeholder="Número de asientos"
         className="w-full max-w-md"
         min="1"
-        max="20"
+        max="240"
       />
       {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
     </div>
