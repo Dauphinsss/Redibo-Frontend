@@ -14,7 +14,7 @@ export default function Home() {
         <p className="mt-4 text-base sm:text-lg text-center max-w-xl">
           Tu tienda en línea para rentar autos.
         </p>
-        <div className="mt-8 w-full max-w-7xl">
+        <div className="mt-8 w-full max-w-7xl flex justify-center">
           <Carrucel />
         </div>
       </main>

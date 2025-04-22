@@ -139,7 +139,6 @@ const SearchBar = () => {
                 </div>
             )}
 
-            <FaSearch className='icon' />
             <button className='search-button' onClick={() => handleButtonClick()}>
                 <FaSearch className='search-icon' />
             </button>
