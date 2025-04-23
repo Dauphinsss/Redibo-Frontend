@@ -43,6 +43,12 @@ const EditarDireccionPage: React.FC = () => {
   const [selectedProvincia, setSelectedProvincia] = useState<number | null>(null);
   const [calle, setCalle] = useState<string>("");
   const [numCasa, setNumCasa] = useState<string>("");
+  
+  // Estados para los errores de cada campo
+  const [paisError, setPaisError] = useState<string | null>(null);
+  const [ciudadError, setCiudadError] = useState<string | null>(null);
+  const [provinciaError, setProvinciaError] = useState<string | null>(null);
+  const [calleError, setCalleError] = useState<string | null>(null);
   const [numCasaError, setNumCasaError] = useState<string | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -56,6 +62,28 @@ const EditarDireccionPage: React.FC = () => {
   
   // Estado para controlar la visibilidad del modal
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  
+  // Estado para validación del formulario completo
+  const [formValid, setFormValid] = useState(false);
+
+  // Función para validar todo el formulario
+  useEffect(() => {
+    // Verificar si todos los campos requeridos están llenos y sin errores
+    const isValid = 
+      selectedPais !== null && !paisError &&
+      selectedCiudad !== null && !ciudadError &&
+      selectedProvincia !== null && !provinciaError &&
+      calle.trim() !== "" && !calleError &&
+      numCasa.trim() !== "" && !numCasaError;
+    
+    setFormValid(isValid);
+  }, [
+    selectedPais, paisError,
+    selectedCiudad, ciudadError,
+    selectedProvincia, provinciaError,
+    calle, calleError,
+    numCasa, numCasaError
+  ]);
   
   // Cargar datos iniciales: todos los países y datos del carro
   useEffect(() => {
@@ -137,6 +165,42 @@ const EditarDireccionPage: React.FC = () => {
     fetchInitialData();
   }, [carId]);
 
+  // Validar el país seleccionado
+  useEffect(() => {
+    if (selectedPais === null) {
+      setPaisError("Debe seleccionar un país");
+    } else {
+      setPaisError(null);
+    }
+  }, [selectedPais]);
+
+  // Validar la ciudad seleccionada
+  useEffect(() => {
+    if (selectedPais && selectedCiudad === null) {
+      setCiudadError("Debe seleccionar una ciudad");
+    } else {
+      setCiudadError(null);
+    }
+  }, [selectedPais, selectedCiudad]);
+
+  // Validar la provincia seleccionada
+  useEffect(() => {
+    if (selectedCiudad && selectedProvincia === null) {
+      setProvinciaError("Debe seleccionar una provincia");
+    } else {
+      setProvinciaError(null);
+    }
+  }, [selectedCiudad, selectedProvincia]);
+
+  // Validar la calle
+  useEffect(() => {
+    if (selectedProvincia && calle.trim() === "") {
+      setCalleError("La dirección de la calle es obligatoria");
+    } else {
+      setCalleError(null);
+    }
+  }, [selectedProvincia, calle]);
+
   // Manejador para cuando cambia el país seleccionado
   const handlePaisChange = async (value: string) => {
     const paisId = Number(value);
@@ -149,6 +213,8 @@ const EditarDireccionPage: React.FC = () => {
     setNombreProvincia("");
     setCiudades([]);
     setProvincias([]);
+    setCalle("");
+    setNumCasa("");
     
     // Actualizar el nombre del país seleccionado
     const paisSeleccionado = paises.find(p => p.id === paisId);
@@ -168,7 +234,7 @@ const EditarDireccionPage: React.FC = () => {
     } catch (err) {
       console.error("Error al cargar ciudades:", err);
       setCiudades([]);
-      alert("No se pudieron cargar las ciudades para este país");
+      setCiudadError("No se pudieron cargar las ciudades para este país");
     }
   };
 
@@ -181,6 +247,8 @@ const EditarDireccionPage: React.FC = () => {
     setSelectedProvincia(null);
     setNombreProvincia("");
     setProvincias([]);
+    setCalle("");
+    setNumCasa("");
     
     // Actualizar el nombre de la ciudad seleccionada
     const ciudadSeleccionada = ciudades.find(c => c.id === ciudadId);
@@ -200,7 +268,7 @@ const EditarDireccionPage: React.FC = () => {
     } catch (err) {
       console.error("Error al cargar provincias:", err);
       setProvincias([]);
-      alert("No se pudieron cargar las provincias para esta ciudad");
+      setProvinciaError("No se pudieron cargar las provincias para esta ciudad");
     }
   };
 
@@ -217,6 +285,18 @@ const EditarDireccionPage: React.FC = () => {
     }
   };
 
+  // Manejador para validar el cambio en la calle
+  const handleCalleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCalle(value);
+    
+    if (value.trim() === "") {
+      setCalleError("La dirección de la calle es obligatoria");
+    } else {
+      setCalleError(null);
+    }
+  };
+
   // Manejador para validar el número de casa (solo números)
   const handleNumCasaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -224,7 +304,12 @@ const EditarDireccionPage: React.FC = () => {
     // Solo permitir dígitos
     if (value === '' || /^\d+$/.test(value)) {
       setNumCasa(value);
-      setNumCasaError(null);
+      
+      if (value.trim() === "") {
+        setNumCasaError("El número de casa es obligatorio");
+      } else {
+        setNumCasaError(null);
+      }
     } else {
       setNumCasaError("Solo se permiten números");
     }
@@ -256,39 +341,52 @@ const EditarDireccionPage: React.FC = () => {
 
   // Validar antes de enviar
   const validarFormulario = (): boolean => {
-    // Validar que el número de casa solo contenga números
-    if (numCasa && !/^\d+$/.test(numCasa)) {
-      setNumCasaError("Solo se permiten números en el número de casa");
-      return false;
-    }
+    let isValid = true;
     
-    // Validar campos requeridos
+    // Validar país
     if (!selectedPais) {
-      alert("Debe seleccionar un país");
-      return false;
+      setPaisError("Debe seleccionar un país");
+      isValid = false;
+    } else {
+      setPaisError(null);
     }
     
+    // Validar ciudad
     if (!selectedCiudad) {
-      alert("Debe seleccionar una ciudad");
-      return false;
+      setCiudadError("Debe seleccionar una ciudad");
+      isValid = false;
+    } else {
+      setCiudadError(null);
     }
     
+    // Validar provincia
     if (!selectedProvincia) {
-      alert("Debe seleccionar una provincia");
-      return false;
+      setProvinciaError("Debe seleccionar una provincia");
+      isValid = false;
+    } else {
+      setProvinciaError(null);
     }
     
+    // Validar calle
     if (!calle.trim()) {
-      alert("La dirección de la calle es obligatoria");
-      return false;
+      setCalleError("La dirección de la calle es obligatoria");
+      isValid = false;
+    } else {
+      setCalleError(null);
     }
     
+    // Validar número de casa
     if (!numCasa.trim()) {
-      alert("El número de casa es obligatorio");
-      return false;
+      setNumCasaError("El número de casa es obligatorio");
+      isValid = false;
+    } else if (!/^\d+$/.test(numCasa)) {
+      setNumCasaError("Solo se permiten números en el número de casa");
+      isValid = false;
+    } else {
+      setNumCasaError(null);
     }
     
-    return true;
+    return isValid;
   };
 
   // Esta función ahora se ejecuta al hacer clic en "FINALIZAR EDICIÓN Y GUARDAR"
@@ -428,12 +526,14 @@ const EditarDireccionPage: React.FC = () => {
 
       {/* País */}
       <div className="w-full max-w-5xl flex flex-col mt-4">
-        <label className="text-lg font-semibold mb-1">País</label>
+        <label className="text-lg font-semibold mb-1">
+          País <span className="text-red-500">*</span>
+        </label>
         <Select
           value={selectedPais?.toString()}
           onValueChange={handlePaisChange}
         >
-          <SelectTrigger className="w-[600px] mt-2">
+          <SelectTrigger className={`w-[600px] mt-2 ${paisError ? 'border-red-500' : ''}`}>
             <SelectValue placeholder="Seleccione un país">
               {nombrePais || "Seleccione un país"}
             </SelectValue>
@@ -448,17 +548,22 @@ const EditarDireccionPage: React.FC = () => {
             </SelectGroup>
           </SelectContent>
         </Select>
+        {paisError && (
+          <p className="text-red-500 text-sm mt-1">{paisError}</p>
+        )}
       </div>
 
       {/* Ciudad */}
       <div className="w-full max-w-5xl flex flex-col mt-4">
-        <label className="text-lg font-semibold mb-1">Ciudad</label>
+        <label className="text-lg font-semibold mb-1">
+          Ciudad <span className="text-red-500">*</span>
+        </label>
         <Select
           value={selectedCiudad?.toString()}
           onValueChange={handleCiudadChange}
           disabled={!selectedPais}
         >
-          <SelectTrigger className="w-[600px] mt-2">
+          <SelectTrigger className={`w-[600px] mt-2 ${ciudadError && selectedPais ? 'border-red-500' : ''}`}>
             <SelectValue placeholder="Seleccione una ciudad">
               {nombreCiudad || "Seleccione una ciudad"}
             </SelectValue>
@@ -473,17 +578,22 @@ const EditarDireccionPage: React.FC = () => {
             </SelectGroup>
           </SelectContent>
         </Select>
+        {ciudadError && selectedPais && (
+          <p className="text-red-500 text-sm mt-1">{ciudadError}</p>
+        )}
       </div>
 
       {/* Provincia */}
       <div className="w-full max-w-5xl flex flex-col mt-4">
-        <label className="text-lg font-semibold mb-1">Provincia</label>
+        <label className="text-lg font-semibold mb-1">
+          Provincia <span className="text-red-500">*</span>
+        </label>
         <Select
           value={selectedProvincia?.toString()}
           onValueChange={handleProvinciaChange}
           disabled={!selectedCiudad}
         >
-          <SelectTrigger className="w-[600px] mt-2">
+          <SelectTrigger className={`w-[600px] mt-2 ${provinciaError && selectedCiudad ? 'border-red-500' : ''}`}>
             <SelectValue placeholder="Seleccione una provincia">
               {nombreProvincia || "Seleccione una provincia"}
             </SelectValue>
@@ -498,32 +608,50 @@ const EditarDireccionPage: React.FC = () => {
             </SelectGroup>
           </SelectContent>
         </Select>
+        {provinciaError && selectedCiudad && (
+          <p className="text-red-500 text-sm mt-1">{provinciaError}</p>
+        )}
       </div>
 
       {/* Dirección calle */}
       <div className="w-full max-w-5xl flex flex-col mt-6">
-        <label className="text-lg font-semibold mb-1">Dirección de la calle</label>
+        <label className="text-lg font-semibold mb-1">
+          Dirección de la calle <span className="text-red-500">*</span>
+        </label>
         <input
           type="text"
           value={calle}
-          onChange={(e) => setCalle(e.target.value)}
-          className="w-[600px] mt-2 p-2 border border-gray-300 rounded"
+          onChange={handleCalleChange}
+          disabled={!selectedProvincia}
+          className={`w-[600px] mt-2 p-2 border ${calleError && selectedProvincia ? 'border-red-500' : 'border-gray-300'} rounded`}
         />
+        {calleError && selectedProvincia && (
+          <p className="text-red-500 text-sm mt-1">{calleError}</p>
+        )}
       </div>
 
       {/* Número de casa - Con validación para solo números */}
       <div className="w-full max-w-5xl flex flex-col mt-6">
-        <label className="text-lg font-semibold mb-1">Número de casa</label>
+        <label className="text-lg font-semibold mb-1">
+          Número de casa <span className="text-red-500">*</span>
+        </label>
         <input
           type="text"
           value={numCasa}
           onChange={handleNumCasaChange}
+          disabled={calle.trim() === ""}
           className={`w-[600px] mt-2 p-2 border ${numCasaError ? 'border-red-500' : 'border-gray-300'} rounded`}
           placeholder="Ingrese solo números"
         />
         {numCasaError && (
           <p className="text-red-500 text-sm mt-1">{numCasaError}</p>
         )}
+      </div>
+      
+      <div className="mt-4 w-full max-w-5xl">
+        <p className="text-sm text-gray-500">
+          <span className="text-red-500">*</span> Campos obligatorios
+        </p>
       </div>
       
       {/* Botones */}
@@ -540,7 +668,7 @@ const EditarDireccionPage: React.FC = () => {
           type="button"
           onClick={handleMostrarDialogoConfirmacion}
           className="w-64 h-12"
-          disabled={isSaving || !!numCasaError}
+          disabled={isSaving || !formValid}
         >
           {isSaving ? "Guardando..." : "FINALIZAR EDICIÓN Y GUARDAR"}
         </Button>
