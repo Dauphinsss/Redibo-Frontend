@@ -350,9 +350,6 @@ const EditarDireccionPage: React.FC = () => {
         }
       );
       
-      console.log("Respuesta del servidor:", response.data);
-      setSuccessMessage("Dirección actualizada correctamente");
-      
       // Redirigir después de un breve retraso
       setTimeout(() => router.push("/host"), 1500);
     } catch (err: any) {
@@ -392,10 +389,7 @@ const EditarDireccionPage: React.FC = () => {
                 }
               }
             );
-            
-            console.log("Respuesta con formato alternativo:", responseRetry.data);
-            setSuccessMessage("Dirección actualizada correctamente");
-            
+
             // Redirigir después de un breve retraso
             setTimeout(() => router.push("/host"), 1500);
           } catch (errRetry) {
