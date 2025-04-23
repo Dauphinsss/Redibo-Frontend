@@ -49,6 +49,7 @@ export function useAutos(cantidadPorLote = 8) {
                 const palabrasBusqueda = query.split(" ");
                 return palabrasBusqueda.every(palabra => textoNormalizado.includes(palabra));
             });
+            resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
         }
 
         switch (ordenSeleccionado) {
