@@ -47,6 +47,12 @@ const EditarDireccionPage: React.FC = () => {
   const [selectedProvincia, setSelectedProvincia] = useState<number | null>(null);
   const [calle, setCalle] = useState<string>("");
   const [numCasa, setNumCasa] = useState<string>("");
+  
+  // Estados para los errores de cada campo
+  const [paisError, setPaisError] = useState<string | null>(null);
+  const [ciudadError, setCiudadError] = useState<string | null>(null);
+  const [provinciaError, setProvinciaError] = useState<string | null>(null);
+  const [calleError, setCalleError] = useState<string | null>(null);
   const [numCasaError, setNumCasaError] = useState<string | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -57,6 +63,9 @@ const EditarDireccionPage: React.FC = () => {
   const [nombrePais, setNombrePais] = useState<string>("");
   const [nombreCiudad, setNombreCiudad] = useState<string>("");
   const [nombreProvincia, setNombreProvincia] = useState<string>("");
+  
+  // Estado para controlar la visibilidad del modal
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   
   // Cargar datos iniciales: todos los países y datos del carro
   useEffect(() => {
@@ -138,6 +147,42 @@ const EditarDireccionPage: React.FC = () => {
     fetchInitialData();
   }, [carId]);
 
+  // Validar el país seleccionado
+  useEffect(() => {
+    if (selectedPais === null) {
+      setPaisError("Debe seleccionar un país");
+    } else {
+      setPaisError(null);
+    }
+  }, [selectedPais]);
+
+  // Validar la ciudad seleccionada
+  useEffect(() => {
+    if (selectedPais && selectedCiudad === null) {
+      setCiudadError("Debe seleccionar una ciudad");
+    } else {
+      setCiudadError(null);
+    }
+  }, [selectedPais, selectedCiudad]);
+
+  // Validar la provincia seleccionada
+  useEffect(() => {
+    if (selectedCiudad && selectedProvincia === null) {
+      setProvinciaError("Debe seleccionar una provincia");
+    } else {
+      setProvinciaError(null);
+    }
+  }, [selectedCiudad, selectedProvincia]);
+
+  // Validar la calle
+  useEffect(() => {
+    if (selectedProvincia && calle.trim() === "") {
+      setCalleError("La dirección de la calle es obligatoria");
+    } else {
+      setCalleError(null);
+    }
+  }, [selectedProvincia, calle]);
+
   // Manejador para cuando cambia el país seleccionado
   const handlePaisChange = async (value: string) => {
     const paisId = Number(value);
@@ -150,6 +195,8 @@ const EditarDireccionPage: React.FC = () => {
     setNombreProvincia("");
     setCiudades([]);
     setProvincias([]);
+    setCalle("");
+    setNumCasa("");
     
     // Actualizar el nombre del país seleccionado
     const paisSeleccionado = paises.find(p => p.id === paisId);
@@ -169,7 +216,7 @@ const EditarDireccionPage: React.FC = () => {
     } catch (err) {
       console.error("Error al cargar ciudades:", err);
       setCiudades([]);
-      alert("No se pudieron cargar las ciudades para este país");
+      setCiudadError("No se pudieron cargar las ciudades para este país");
     }
   };
 
@@ -182,6 +229,8 @@ const EditarDireccionPage: React.FC = () => {
     setSelectedProvincia(null);
     setNombreProvincia("");
     setProvincias([]);
+    setCalle("");
+    setNumCasa("");
     
     // Actualizar el nombre de la ciudad seleccionada
     const ciudadSeleccionada = ciudades.find(c => c.id === ciudadId);
@@ -201,7 +250,7 @@ const EditarDireccionPage: React.FC = () => {
     } catch (err) {
       console.error("Error al cargar provincias:", err);
       setProvincias([]);
-      alert("No se pudieron cargar las provincias para esta ciudad");
+      setProvinciaError("No se pudieron cargar las provincias para esta ciudad");
     }
   };
 
@@ -218,6 +267,18 @@ const EditarDireccionPage: React.FC = () => {
     }
   };
 
+  // Manejador para validar el cambio en la calle
+  const handleCalleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCalle(value);
+    
+    if (value.trim() === "") {
+      setCalleError("La dirección de la calle es obligatoria");
+    } else {
+      setCalleError(null);
+    }
+  };
+
   // Manejador para validar el número de casa (solo números)
   const handleNumCasaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -225,7 +286,12 @@ const EditarDireccionPage: React.FC = () => {
     // Solo permitir dígitos
     if (value === '' || /^\d+$/.test(value)) {
       setNumCasa(value);
-      setNumCasaError(null);
+      
+      if (value.trim() === "") {
+        setNumCasaError("El número de casa es obligatorio");
+      } else {
+        setNumCasaError(null);
+      }
     } else {
       setNumCasaError("Solo se permiten números");
     }
@@ -258,39 +324,52 @@ const EditarDireccionPage: React.FC = () => {
 
   // Validar antes de enviar
   const validarFormulario = (): boolean => {
-    // Validar que el número de casa solo contenga números
-    if (numCasa && !/^\d+$/.test(numCasa)) {
-      setNumCasaError("Solo se permiten números en el número de casa");
-      return false;
-    }
+    let isValid = true;
     
-    // Validar campos requeridos
+    // Validar país
     if (!selectedPais) {
-      alert("Debe seleccionar un país");
-      return false;
+      setPaisError("Debe seleccionar un país");
+      isValid = false;
+    } else {
+      setPaisError(null);
     }
     
+    // Validar ciudad
     if (!selectedCiudad) {
-      alert("Debe seleccionar una ciudad");
-      return false;
+      setCiudadError("Debe seleccionar una ciudad");
+      isValid = false;
+    } else {
+      setCiudadError(null);
     }
     
+    // Validar provincia
     if (!selectedProvincia) {
-      alert("Debe seleccionar una provincia");
-      return false;
+      setProvinciaError("Debe seleccionar una provincia");
+      isValid = false;
+    } else {
+      setProvinciaError(null);
     }
     
+    // Validar calle
     if (!calle.trim()) {
-      alert("La dirección de la calle es obligatoria");
-      return false;
+      setCalleError("La dirección de la calle es obligatoria");
+      isValid = false;
+    } else {
+      setCalleError(null);
     }
     
+    // Validar número de casa
     if (!numCasa.trim()) {
-      alert("El número de casa es obligatorio");
-      return false;
+      setNumCasaError("El número de casa es obligatorio");
+      isValid = false;
+    } else if (!/^\d+$/.test(numCasa)) {
+      setNumCasaError("Solo se permiten números en el número de casa");
+      isValid = false;
+    } else {
+      setNumCasaError(null);
     }
     
-    return true;
+    return isValid;
   };
 
   // Esta función se ejecuta al hacer clic en el botón de enviar dentro del formulario
@@ -423,159 +502,152 @@ const EditarDireccionPage: React.FC = () => {
         </div>
       )}
 
-      <form onSubmit={handlePrepareSubmit}>
-        {/* País */}
-        <div className="w-full max-w-5xl flex flex-col mt-4">
-          <label className="text-lg font-semibold mb-1">País</label>
-          <Select
-            value={selectedPais?.toString()}
-            onValueChange={handlePaisChange}
-          >
-            <SelectTrigger className="w-[600px] mt-2">
-              <SelectValue placeholder="Seleccione un país">
-                {nombrePais || "Seleccione un país"}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {paises.map((pais) => (
-                  <SelectItem key={pais.id} value={pais.id.toString()}>
-                    {pais.nombre}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
+      {/* País */}
+      <div className="w-full max-w-5xl flex flex-col mt-4">
+        <label className="text-lg font-semibold mb-1">País</label>
+        <Select
+          value={selectedPais?.toString()}
+          onValueChange={handlePaisChange}
+        >
+          <SelectTrigger className="w-[600px] mt-2">
+            <SelectValue placeholder="Seleccione un país">
+              {nombrePais || "Seleccione un país"}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {paises.map((pais) => (
+                <SelectItem key={pais.id} value={pais.id.toString()}>
+                  {pais.nombre}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
 
-        {/* Ciudad */}
-        <div className="w-full max-w-5xl flex flex-col mt-4">
-          <label className="text-lg font-semibold mb-1">Ciudad</label>
-          <Select
-            value={selectedCiudad?.toString()}
-            onValueChange={handleCiudadChange}
-            disabled={!selectedPais}
-          >
-            <SelectTrigger className="w-[600px] mt-2">
-              <SelectValue placeholder="Seleccione una ciudad">
-                {nombreCiudad || "Seleccione una ciudad"}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {ciudades.map((ciudad) => (
-                  <SelectItem key={ciudad.id} value={ciudad.id.toString()}>
-                    {ciudad.nombre}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Ciudad */}
+      <div className="w-full max-w-5xl flex flex-col mt-4">
+        <label className="text-lg font-semibold mb-1">Ciudad</label>
+        <Select
+          value={selectedCiudad?.toString()}
+          onValueChange={handleCiudadChange}
+          disabled={!selectedPais}
+        >
+          <SelectTrigger className="w-[600px] mt-2">
+            <SelectValue placeholder="Seleccione una ciudad">
+              {nombreCiudad || "Seleccione una ciudad"}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {ciudades.map((ciudad) => (
+                <SelectItem key={ciudad.id} value={ciudad.id.toString()}>
+                  {ciudad.nombre}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
 
-        {/* Provincia */}
-        <div className="w-full max-w-5xl flex flex-col mt-4">
-          <label className="text-lg font-semibold mb-1">Provincia</label>
-          <Select
-            value={selectedProvincia?.toString()}
-            onValueChange={handleProvinciaChange}
-            disabled={!selectedCiudad}
-          >
-            <SelectTrigger className="w-[600px] mt-2">
-              <SelectValue placeholder="Seleccione una provincia">
-                {nombreProvincia || "Seleccione una provincia"}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {provincias.map((provincia) => (
-                  <SelectItem key={provincia.id} value={provincia.id.toString()}>
-                    {provincia.nombre}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Provincia */}
+      <div className="w-full max-w-5xl flex flex-col mt-4">
+        <label className="text-lg font-semibold mb-1">Provincia</label>
+        <Select
+          value={selectedProvincia?.toString()}
+          onValueChange={handleProvinciaChange}
+          disabled={!selectedCiudad}
+        >
+          <SelectTrigger className="w-[600px] mt-2">
+            <SelectValue placeholder="Seleccione una provincia">
+              {nombreProvincia || "Seleccione una provincia"}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {provincias.map((provincia) => (
+                <SelectItem key={provincia.id} value={provincia.id.toString()}>
+                  {provincia.nombre}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
 
-        {/* Dirección calle */}
-        <div className="w-full max-w-5xl flex flex-col mt-6">
-          <label className="text-lg font-semibold mb-1">Dirección de la calle</label>
-          <input
-            type="text"
-            value={calle}
-            onChange={(e) => setCalle(e.target.value)}
-            className="w-[600px] mt-2 p-2 border border-gray-300 rounded"
-          />
-        </div>
+      {/* Dirección calle */}
+      <div className="w-full max-w-5xl flex flex-col mt-6">
+        <label className="text-lg font-semibold mb-1">Dirección de la calle</label>
+        <input
+          type="text"
+          value={calle}
+          onChange={(e) => setCalle(e.target.value)}
+          className="w-[600px] mt-2 p-2 border border-gray-300 rounded"
+        />
+      </div>
 
-        {/* Número de casa - Con validación para solo números */}
-        <div className="w-full max-w-5xl flex flex-col mt-6">
-          <label className="text-lg font-semibold mb-1">Número de casa</label>
-          <input
-            type="text"
-            value={numCasa}
-            onChange={handleNumCasaChange}
-            className={`w-[600px] mt-2 p-2 border ${numCasaError ? 'border-red-500' : 'border-gray-300'} rounded`}
-            placeholder="Ingrese solo números"
-          />
-          {numCasaError && (
-            <p className="text-red-500 text-sm mt-1">{numCasaError}</p>
-          )}
-        </div>
-        
-        {/* Botones */}
-        <div className="flex justify-between mt-10 w-full max-w-5xl">
-          <Button
-            type="button"
-            onClick={handleCancel}
-            variant="secondary"
-            className="w-[160px] h-12 text-lg font-semibold transition-colors duration-200"
-            style={{ backgroundColor: "#D3D3D3" }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#E0E0E0")}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#D3D3D3")}
-            disabled={isLoading || isSaving}
-          >
-            CANCELAR
-          </Button>
-          
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button 
-                type="submit"
-                variant="default"
-                className="h-12 text-lg font-semibold text-white px-6"
-                disabled={isSaving || !!numCasaError}
-              >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    GUARDANDO...
-                  </>
-                ) : (
-                  "FINALIZAR EDICIÓN Y GUARDAR"
-                )}
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  Guardar cambios
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  ¿Desea guardar los cambios en la dirección?
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={handleConfirmSubmit}>
-                  Confirmar
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      </form>
+      {/* Número de casa - Con validación para solo números */}
+      <div className="w-full max-w-5xl flex flex-col mt-6">
+        <label className="text-lg font-semibold mb-1">Número de casa</label>
+        <input
+          type="text"
+          value={numCasa}
+          onChange={handleNumCasaChange}
+          className={`w-[600px] mt-2 p-2 border ${numCasaError ? 'border-red-500' : 'border-gray-300'} rounded`}
+          placeholder="Ingrese solo números"
+        />
+        {numCasaError && (
+          <p className="text-red-500 text-sm mt-1">{numCasaError}</p>
+        )}
+      </div>
+      
+      {/* Botones */}
+      <div className="flex justify-between mt-10 w-full max-w-5xl">
+        <Button
+          type="button"
+          onClick={handleCancel}
+          variant="secondary"
+          className="w-40 h-12"
+        >
+          Cancelar
+        </Button>
+        <Button
+          type="button"
+          onClick={handleMostrarDialogoConfirmacion}
+          className="w-64 h-12"
+          disabled={isSaving || !!numCasaError}
+        >
+          {isSaving ? "Guardando..." : "FINALIZAR EDICIÓN Y GUARDAR"}
+        </Button>
+      </div>
+      
+      {/* Modal de confirmación */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl">GUARDAR CAMBIOS</DialogTitle>
+            <DialogDescription className="text-center pt-2">
+              ¿Desea guardar cambios?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center gap-4 pt-2">
+            <Button 
+              variant="secondary" 
+              onClick={() => setShowConfirmDialog(false)}
+              className="w-32"
+            >
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleGuardar}
+              className="w-32"
+            >
+              Guardar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
