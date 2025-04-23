@@ -72,6 +72,8 @@ export function useAutos(cantidadPorLote = 8) {
 
     useEffect(() => {
         filtrarYOrdenarAutos();
+        setAutosVisibles(cantidadPorLote);
+
     }, [filtrarYOrdenarAutos]);
 
     const autosActuales = useMemo(() => {
