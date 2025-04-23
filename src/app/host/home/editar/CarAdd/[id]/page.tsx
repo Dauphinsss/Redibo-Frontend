@@ -47,8 +47,12 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
         const response = await axios.get(`${API_URL}/vehiculo/${vehiculoId}/caracteristicas-adicionales`);
         console.log("Response data:", response.data);
         
-        if (response.data?.caracteristicasAdicionales) {
-          const caracteristicasActivas = response.data.caracteristicasAdicionales;
+        if (response.data) {
+          // Extraer las características de la respuesta, adaptándose a diferentes estructuras posibles
+          const caracteristicasActivas = 
+            Array.isArray(response.data) ? response.data : 
+            response.data.caracteristicasAdicionales || 
+            [];
           
           const itemsSeleccionados = CARACTERISTICAS_OPTIONS
             .filter(item => caracteristicasActivas.includes(item.label))
@@ -100,10 +104,13 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
         return;
       }
 
-      // Enviar directamente el array de nombres al backend
-      const response = await axios.post(
+      // CORRECCIÓN: Enviar objeto con la propiedad nuevasCaracteristicasAdicionales
+      // CORRECCIÓN: Usar PUT en lugar de POST para coincidir con la ruta
+      const response = await axios.put(
         `${API_URL}/vehiculo/${vehiculoId}/caracteristicas-adicionales`, 
-        caracteristicasParaEnviar, // Enviar el array directamente como el cuerpo de la solicitud
+        { 
+          nuevasCaracteristicasAdicionales: caracteristicasParaEnviar 
+        },
         {
           headers: {
             'Content-Type': 'application/json',
@@ -115,7 +122,7 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
       setSuccessMessage(response.data.mensaje || "¡Características guardadas exitosamente!");
       
       // Redirigir después de un breve retraso
-      setTimeout(() => router.push("/host/cars"), 1500);
+      setTimeout(() => router.push("/host/pages"), 1500);
     } catch (err: any) {
       console.error("Error completo:", err);
       
@@ -133,7 +140,7 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    router.push("/host");
+    router.push("/host/pages"); // Asegúrate de que esta ruta exista
   };
 
   if (isLoading) {
