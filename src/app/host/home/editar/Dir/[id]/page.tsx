@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import {
   Select,
   SelectTrigger,
@@ -13,13 +14,16 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 const API_URL = "http://localhost:4000/api";
 
@@ -53,9 +57,6 @@ const EditarDireccionPage: React.FC = () => {
   const [nombrePais, setNombrePais] = useState<string>("");
   const [nombreCiudad, setNombreCiudad] = useState<string>("");
   const [nombreProvincia, setNombreProvincia] = useState<string>("");
-  
-  // Estado para controlar la visibilidad del modal
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   
   // Cargar datos iniciales: todos los países y datos del carro
   useEffect(() => {
@@ -241,7 +242,8 @@ const EditarDireccionPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="p-6 flex items-center justify-center min-h-screen">
-        <p className="text-lg">Cargando datos del vehículo...</p>
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500 mb-4" />
+        <p className="text-lg ml-3">Cargando datos del vehículo...</p>
       </div>
     );
   }
@@ -291,23 +293,26 @@ const EditarDireccionPage: React.FC = () => {
     return true;
   };
 
-  // Esta función ahora se ejecuta al hacer clic en "FINALIZAR EDICIÓN Y GUARDAR"
-  const handleMostrarDialogoConfirmacion = () => {
-    // Validar primero antes de mostrar el diálogo
-    if (validarFormulario()) {
-      setShowConfirmDialog(true); // Mostrar el diálogo de confirmación
-    }
+  // Esta función se ejecuta al hacer clic en el botón de enviar dentro del formulario
+  const handlePrepareSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Validar antes de mostrar el diálogo
+    validarFormulario();
+    // El diálogo se abrirá automáticamente si el validación pasa
+    // porque el botón tiene AlertDialogTrigger
   };
 
-  // Guardar los cambios - ADAPTADO AL MODELO DEL BACKEND
-  const handleGuardar = async () => {
+  // Función adaptada del primer código para manejar la confirmación del envío
+  const handleConfirmSubmit = async () => {
     if (!carId) {
       alert("ID del vehículo no encontrado");
       return;
     }
     
-    // Cerrar el diálogo de confirmación
-    setShowConfirmDialog(false);
+    // Validar nuevamente antes de enviar al servidor
+    if (!validarFormulario()) {
+      return;
+    }
     
     setIsSaving(true);
     setError(null);
@@ -331,19 +336,10 @@ const EditarDireccionPage: React.FC = () => {
       num_casa: numCasa
     };
     
-    // También preparar un formato alternativo por si el backend espera otro nombre de campo
-    const formatoAlternativo = {
-      id_provincia: selectedProvincia ? parseInt(selectedProvincia.toString()) : null, // Versión alternativa del nombre del campo
-      calle: calle,
-      num_casa: numCasa
-    };
-    
-    console.log("Datos a enviar (formato principal):", datosParaEnviar);
-    console.log("Datos a enviar (formato alternativo):", formatoAlternativo);
+    console.log("Datos a enviar:", datosParaEnviar);
     console.log(`Enviando a: ${API_URL}/carro/direccion/${carId}`);
     
     try {
-      // Intentar con el formato principal primero
       const response = await axios.put(
         `${API_URL}/carro/direccion/${carId}`, 
         datosParaEnviar,
@@ -354,10 +350,7 @@ const EditarDireccionPage: React.FC = () => {
         }
       );
       
-      console.log("Respuesta del servidor:", response.data);
-      setSuccessMessage("Dirección actualizada correctamente");
-      
-      // Redirigir después de un breve retraso - MODIFICADO A "/host"
+      // Redirigir después de un breve retraso
       setTimeout(() => router.push("/host"), 1500);
     } catch (err: any) {
       console.error("Error al actualizar la dirección:", err);
@@ -375,9 +368,16 @@ const EditarDireccionPage: React.FC = () => {
       if (err.response?.data?.error && typeof err.response.data.error === 'string') {
         const errorText = err.response.data.error.toLowerCase();
         
-        // Si hay pistas sobre el formato esperado, intentamos con el formato alternativo
+        // Si hay pistas sobre el formato esperado, intentamos con un formato alternativo
         if (errorText.includes('formato') || errorText.includes('invalid')) {
           console.log("Intentando con formato alternativo basado en el error...");
+          
+          // Formato alternativo por si el backend espera otro nombre de campo
+          const formatoAlternativo = {
+            id_provincia: selectedProvincia ? parseInt(selectedProvincia.toString()) : null,
+            calle: calle,
+            num_casa: numCasa
+          };
           
           try {
             const responseRetry = await axios.put(
@@ -389,11 +389,8 @@ const EditarDireccionPage: React.FC = () => {
                 }
               }
             );
-            
-            console.log("Respuesta con formato alternativo:", responseRetry.data);
-            setSuccessMessage("Dirección actualizada correctamente");
-            
-            // Redirigir después de un breve retraso - MODIFICADO A "/host"
+
+            // Redirigir después de un breve retraso
             setTimeout(() => router.push("/host"), 1500);
           } catch (errRetry) {
             console.error("Error también con formato alternativo:", errRetry);
@@ -426,152 +423,159 @@ const EditarDireccionPage: React.FC = () => {
         </div>
       )}
 
-      {/* País */}
-      <div className="w-full max-w-5xl flex flex-col mt-4">
-        <label className="text-lg font-semibold mb-1">País</label>
-        <Select
-          value={selectedPais?.toString()}
-          onValueChange={handlePaisChange}
-        >
-          <SelectTrigger className="w-[600px] mt-2">
-            <SelectValue placeholder="Seleccione un país">
-              {nombrePais || "Seleccione un país"}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {paises.map((pais) => (
-                <SelectItem key={pais.id} value={pais.id.toString()}>
-                  {pais.nombre}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
+      <form onSubmit={handlePrepareSubmit}>
+        {/* País */}
+        <div className="w-full max-w-5xl flex flex-col mt-4">
+          <label className="text-lg font-semibold mb-1">País</label>
+          <Select
+            value={selectedPais?.toString()}
+            onValueChange={handlePaisChange}
+          >
+            <SelectTrigger className="w-[600px] mt-2">
+              <SelectValue placeholder="Seleccione un país">
+                {nombrePais || "Seleccione un país"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {paises.map((pais) => (
+                  <SelectItem key={pais.id} value={pais.id.toString()}>
+                    {pais.nombre}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
-      {/* Ciudad */}
-      <div className="w-full max-w-5xl flex flex-col mt-4">
-        <label className="text-lg font-semibold mb-1">Ciudad</label>
-        <Select
-          value={selectedCiudad?.toString()}
-          onValueChange={handleCiudadChange}
-          disabled={!selectedPais}
-        >
-          <SelectTrigger className="w-[600px] mt-2">
-            <SelectValue placeholder="Seleccione una ciudad">
-              {nombreCiudad || "Seleccione una ciudad"}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {ciudades.map((ciudad) => (
-                <SelectItem key={ciudad.id} value={ciudad.id.toString()}>
-                  {ciudad.nombre}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
+        {/* Ciudad */}
+        <div className="w-full max-w-5xl flex flex-col mt-4">
+          <label className="text-lg font-semibold mb-1">Ciudad</label>
+          <Select
+            value={selectedCiudad?.toString()}
+            onValueChange={handleCiudadChange}
+            disabled={!selectedPais}
+          >
+            <SelectTrigger className="w-[600px] mt-2">
+              <SelectValue placeholder="Seleccione una ciudad">
+                {nombreCiudad || "Seleccione una ciudad"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {ciudades.map((ciudad) => (
+                  <SelectItem key={ciudad.id} value={ciudad.id.toString()}>
+                    {ciudad.nombre}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
-      {/* Provincia */}
-      <div className="w-full max-w-5xl flex flex-col mt-4">
-        <label className="text-lg font-semibold mb-1">Provincia</label>
-        <Select
-          value={selectedProvincia?.toString()}
-          onValueChange={handleProvinciaChange}
-          disabled={!selectedCiudad}
-        >
-          <SelectTrigger className="w-[600px] mt-2">
-            <SelectValue placeholder="Seleccione una provincia">
-              {nombreProvincia || "Seleccione una provincia"}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {provincias.map((provincia) => (
-                <SelectItem key={provincia.id} value={provincia.id.toString()}>
-                  {provincia.nombre}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
+        {/* Provincia */}
+        <div className="w-full max-w-5xl flex flex-col mt-4">
+          <label className="text-lg font-semibold mb-1">Provincia</label>
+          <Select
+            value={selectedProvincia?.toString()}
+            onValueChange={handleProvinciaChange}
+            disabled={!selectedCiudad}
+          >
+            <SelectTrigger className="w-[600px] mt-2">
+              <SelectValue placeholder="Seleccione una provincia">
+                {nombreProvincia || "Seleccione una provincia"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {provincias.map((provincia) => (
+                  <SelectItem key={provincia.id} value={provincia.id.toString()}>
+                    {provincia.nombre}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
-      {/* Dirección calle */}
-      <div className="w-full max-w-5xl flex flex-col mt-6">
-        <label className="text-lg font-semibold mb-1">Dirección de la calle</label>
-        <input
-          type="text"
-          value={calle}
-          onChange={(e) => setCalle(e.target.value)}
-          className="w-[600px] mt-2 p-2 border border-gray-300 rounded"
-        />
-      </div>
+        {/* Dirección calle */}
+        <div className="w-full max-w-5xl flex flex-col mt-6">
+          <label className="text-lg font-semibold mb-1">Dirección de la calle</label>
+          <input
+            type="text"
+            value={calle}
+            onChange={(e) => setCalle(e.target.value)}
+            className="w-[600px] mt-2 p-2 border border-gray-300 rounded"
+          />
+        </div>
 
-      {/* Número de casa - Con validación para solo números */}
-      <div className="w-full max-w-5xl flex flex-col mt-6">
-        <label className="text-lg font-semibold mb-1">Número de casa</label>
-        <input
-          type="text"
-          value={numCasa}
-          onChange={handleNumCasaChange}
-          className={`w-[600px] mt-2 p-2 border ${numCasaError ? 'border-red-500' : 'border-gray-300'} rounded`}
-          placeholder="Ingrese solo números"
-        />
-        {numCasaError && (
-          <p className="text-red-500 text-sm mt-1">{numCasaError}</p>
-        )}
-      </div>
-      
-      {/* Botones */}
-      <div className="flex justify-between mt-10 w-full max-w-5xl">
-        <Button
-          type="button"
-          onClick={handleCancel}
-          variant="secondary"
-          className="w-40 h-12"
-        >
-          Cancelar
-        </Button>
-        <Button
-          type="button"
-          onClick={handleMostrarDialogoConfirmacion}
-          className="w-64 h-12"
-          disabled={isSaving || !!numCasaError}
-        >
-          {isSaving ? "Guardando..." : "FINALIZAR EDICIÓN Y GUARDAR"}
-        </Button>
-      </div>
-      
-      {/* Modal de confirmación */}
-      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="text-center text-xl">GUARDAR CAMBIOS</DialogTitle>
-            <DialogDescription className="text-center pt-2">
-              ¿Desea guardar cambios?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="sm:justify-center gap-4 pt-2">
-            <Button 
-              variant="secondary" 
-              onClick={() => setShowConfirmDialog(false)}
-              className="w-32"
-            >
-              Cancelar
-            </Button>
-            <Button 
-              onClick={handleGuardar}
-              className="w-32"
-            >
-              Guardar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        {/* Número de casa - Con validación para solo números */}
+        <div className="w-full max-w-5xl flex flex-col mt-6">
+          <label className="text-lg font-semibold mb-1">Número de casa</label>
+          <input
+            type="text"
+            value={numCasa}
+            onChange={handleNumCasaChange}
+            className={`w-[600px] mt-2 p-2 border ${numCasaError ? 'border-red-500' : 'border-gray-300'} rounded`}
+            placeholder="Ingrese solo números"
+          />
+          {numCasaError && (
+            <p className="text-red-500 text-sm mt-1">{numCasaError}</p>
+          )}
+        </div>
+        
+        {/* Botones */}
+        <div className="flex justify-between mt-10 w-full max-w-5xl">
+          <Button
+            type="button"
+            onClick={handleCancel}
+            variant="secondary"
+            className="w-[160px] h-12 text-lg font-semibold transition-colors duration-200"
+            style={{ backgroundColor: "#D3D3D3" }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#E0E0E0")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#D3D3D3")}
+            disabled={isLoading || isSaving}
+          >
+            CANCELAR
+          </Button>
+          
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button 
+                type="submit"
+                variant="default"
+                className="h-12 text-lg font-semibold text-white px-6"
+                disabled={isSaving || !!numCasaError}
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    GUARDANDO...
+                  </>
+                ) : (
+                  "FINALIZAR EDICIÓN Y GUARDAR"
+                )}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Guardar cambios
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  ¿Desea guardar los cambios en la dirección?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleConfirmSubmit}>
+                  Confirmar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </form>
     </div>
   );
 };
