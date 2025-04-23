@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
@@ -13,6 +12,14 @@ import {
   SelectGroup,
   SelectItem,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const API_URL = "http://localhost:4000/api";
 
@@ -46,6 +53,9 @@ const EditarDireccionPage: React.FC = () => {
   const [nombrePais, setNombrePais] = useState<string>("");
   const [nombreCiudad, setNombreCiudad] = useState<string>("");
   const [nombreProvincia, setNombreProvincia] = useState<string>("");
+  
+  // Estado para controlar la visibilidad del modal
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   
   // Cargar datos iniciales: todos los países y datos del carro
   useEffect(() => {
@@ -220,6 +230,14 @@ const EditarDireccionPage: React.FC = () => {
     }
   };
 
+  // Manejador para cancelar - similar al del primer código
+  const handleCancel = () => {
+    if (window.confirm("¿Está seguro que desea cancelar? Los cambios no guardados se perderán.")) {
+      router.push("/host"); // Redirigir a la lista de vehículos
+    }
+    // No hace nada si el usuario cancela el diálogo
+  };
+
   if (isLoading) {
     return (
       <div className="p-6 flex items-center justify-center min-h-screen">
@@ -273,6 +291,14 @@ const EditarDireccionPage: React.FC = () => {
     return true;
   };
 
+  // Esta función ahora se ejecuta al hacer clic en "FINALIZAR EDICIÓN Y GUARDAR"
+  const handleMostrarDialogoConfirmacion = () => {
+    // Validar primero antes de mostrar el diálogo
+    if (validarFormulario()) {
+      setShowConfirmDialog(true); // Mostrar el diálogo de confirmación
+    }
+  };
+
   // Guardar los cambios - ADAPTADO AL MODELO DEL BACKEND
   const handleGuardar = async () => {
     if (!carId) {
@@ -280,10 +306,8 @@ const EditarDireccionPage: React.FC = () => {
       return;
     }
     
-    // Validar antes de enviar
-    if (!validarFormulario()) {
-      return;
-    }
+    // Cerrar el diálogo de confirmación
+    setShowConfirmDialog(false);
     
     setIsSaving(true);
     setError(null);
@@ -333,8 +357,8 @@ const EditarDireccionPage: React.FC = () => {
       console.log("Respuesta del servidor:", response.data);
       setSuccessMessage("Dirección actualizada correctamente");
       
-      // Redirigir después de un breve retraso
-      setTimeout(() => router.push("/vehiculos"), 1500);
+      // Redirigir después de un breve retraso - MODIFICADO A "/host"
+      setTimeout(() => router.push("/host"), 1500);
     } catch (err: any) {
       console.error("Error al actualizar la dirección:", err);
       
@@ -369,8 +393,8 @@ const EditarDireccionPage: React.FC = () => {
             console.log("Respuesta con formato alternativo:", responseRetry.data);
             setSuccessMessage("Dirección actualizada correctamente");
             
-            // Redirigir después de un breve retraso
-            setTimeout(() => router.push("/vehiculos"), 1500);
+            // Redirigir después de un breve retraso - MODIFICADO A "/host"
+            setTimeout(() => router.push("/host"), 1500);
           } catch (errRetry) {
             console.error("Error también con formato alternativo:", errRetry);
             // Mantener el error original
@@ -502,21 +526,52 @@ const EditarDireccionPage: React.FC = () => {
         )}
       </div>
       
-      {/* Información de depuración - Opcional, quitar en producción */}
-      {selectedProvincia && (
-        <div className="w-full max-w-5xl mt-4 text-gray-500 text-sm">
-          <p>ID de provincia seleccionada: {selectedProvincia}</p>
-        </div>
-      )}
+      {/* Botones */}
+      <div className="flex justify-between mt-10 w-full max-w-5xl">
+        <Button
+          type="button"
+          onClick={handleCancel}
+          variant="secondary"
+          className="w-40 h-12"
+        >
+          Cancelar
+        </Button>
+        <Button
+          type="button"
+          onClick={handleMostrarDialogoConfirmacion}
+          className="w-64 h-12"
+          disabled={isSaving || !!numCasaError}
+        >
+          {isSaving ? "Guardando..." : "FINALIZAR EDICIÓN Y GUARDAR"}
+        </Button>
+      </div>
       
-      {/* Botón de guardar */}
-      <Button 
-        onClick={handleGuardar} 
-        className="mt-6"
-        disabled={isSaving || !!numCasaError}
-      >
-        {isSaving ? "Guardando..." : "Guardar"}
-      </Button>
+      {/* Modal de confirmación */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl">GUARDAR CAMBIOS</DialogTitle>
+            <DialogDescription className="text-center pt-2">
+              ¿Desea guardar cambios?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center gap-4 pt-2">
+            <Button 
+              variant="secondary" 
+              onClick={() => setShowConfirmDialog(false)}
+              className="w-32"
+            >
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleGuardar}
+              className="w-32"
+            >
+              Guardar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

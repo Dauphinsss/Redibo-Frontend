@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -90,8 +91,18 @@ export default function ViewCarsPage() {
     }
   };
 
-  const handleDelete = (carId: number) => {
-    setCars((prev) => prev.filter((car) => car.id !== carId));
+  const handleDelete = async (carId: number) => {
+    try {
+      // Llamada a la API para eliminar el vehículo
+      await axios.delete(`http://localhost:4000/api/vehiculo/${carId}`); 
+      // Una vez eliminado correctamente, actualizamos el estado local
+      setCars((prev) => prev.filter((car) => car.id !== carId));
+      // Opcional: Mostrar mensaje de éxito
+      alert("Vehículo eliminado correctamente");
+    } catch (error) {
+      console.error("Error al eliminar el vehículo:", error);
+      alert("Error al eliminar el vehículo");
+    }
   };
 
   if (loading) {
@@ -120,7 +131,7 @@ export default function ViewCarsPage() {
       />
       <div className="w-full max-w-5xl">
         <h1 className="text-4xl font-bold text-center my-8">Mis Carros</h1>
-       <div className="flex items-center justify-between w-full">
+      <div className="flex items-center justify-between w-full">
         <span className="text-lg font-medium order-1">Lista de carros</span>
         <Link href="/host/home/add/direccion" className="order-2">
           <Button className="bg-black text-white px-6 py-3 rounded-lg flex items-center gap-2 cursor-pointer">
