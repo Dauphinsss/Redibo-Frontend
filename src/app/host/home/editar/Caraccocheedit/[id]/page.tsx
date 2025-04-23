@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2 } from "lucide-react";
 import {
   Select,
   SelectTrigger,
@@ -13,6 +14,17 @@ import {
   SelectGroup,
   SelectItem,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 const API_URL = "http://localhost:4000/api";
 
@@ -73,6 +85,7 @@ const CaracteristicasPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -189,7 +202,8 @@ const CaracteristicasPage: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Nueva función para preparar la validación antes de mostrar el diálogo
+  const handlePrepareSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     // Marcar todos los campos como tocados para mostrar todos los errores
@@ -212,9 +226,22 @@ const CaracteristicasPage: React.FC = () => {
       return;
     }
     
+    // Si la validación pasa, el diálogo se abrirá automáticamente
+    // porque el botón está conectado como AlertDialogTrigger
+    setError(null);
+  };
+
+  // Función para procesar el envío después de confirmar en el diálogo
+  const handleConfirmSubmit = async () => {
+    if (!vehiculoId) {
+      setError("ID del vehículo no encontrado");
+      return;
+    }
+    
     try {
       setIsSaving(true);
       setError(null);
+      setSuccessMessage(null);
   
       // Convertir IDs de combustibles a nombres y mantenerlos como array
       const tipoDeCombustible = formData.combustibles
@@ -237,15 +264,25 @@ const CaracteristicasPage: React.FC = () => {
       console.log(`Intentando actualizar: ${API_URL}/vehiculo/${vehiculoId}/caracteristicas`);
   
       // Actualizar características usando la ruta correcta
-      await axios.put(`${API_URL}/vehiculo/${vehiculoId}/caracteristicas`, caracteristicasData);
-  
-      router.push("/host/pages");
+      const response = await axios.put(`${API_URL}/vehiculo/${vehiculoId}/caracteristicas`, caracteristicasData);
+      
+      
+      // Redirigir después de un breve retraso
+      setTimeout(() => router.push("/host/pages"), 1500);
     } catch (err: any) {
       console.error("Error completo al guardar:", err);
       console.error("URL solicitada para guardar:", err.config?.url);
       console.error("Datos enviados:", err.config?.data);
-      const errorMsg = err.response?.data?.message || err.message || "Error al guardar las características";
-      setError(errorMsg);
+      
+      // Extraer mensaje de error detallado si está disponible
+      const errorMessage = 
+        err.response?.data?.mensaje || 
+        err.response?.data?.error ||
+        err.response?.data?.message || 
+        err.message || 
+        "Error al guardar las características";
+      
+      setError(errorMessage);
     } finally {
       setIsSaving(false);
     }
@@ -259,7 +296,12 @@ const CaracteristicasPage: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div className="p-6 flex justify-center min-h-screen">Cargando...</div>;
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500 mb-4" />
+        <p className="text-lg">Cargando características...</p>
+      </div>
+    );
   }
 
   // Función para mostrar mensaje de error si el campo ha sido tocado y tiene error
@@ -276,12 +318,22 @@ const CaracteristicasPage: React.FC = () => {
       </div>
 
       {error && (
-        <div className="w-full max-w-5xl mb-4 px-7">
-          <p className="text-red-500">{error}</p>
+        <div className="w-full max-w-5xl mb-4 pl-7">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {error}
+          </div>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="w-full max-w-5xl pl-7">
+      {successMessage && (
+        <div className="w-full max-w-5xl mb-4 pl-7">
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+            {successMessage}
+          </div>
+        </div>
+      )}
+
+      <form onSubmit={handlePrepareSubmit} className="w-full max-w-5xl pl-7">
         {/* Combustible */}
         <div className="mb-6">
           <label className="text-lg font-semibold mb-2">Tipo de combustible*</label>
@@ -393,23 +445,57 @@ const CaracteristicasPage: React.FC = () => {
           </div>
           {showErrorMessage('soat')}
         </div>
-        {/* Botones */}
+        
+        {/* Botones con diálogo de confirmación */}
         <div className="flex justify-between mt-10">
           <Button
             type="button"
             onClick={handleCancel}
             variant="secondary"
-            className="w-40 h-12"
+            className="w-[160px] h-12 text-lg font-semibold transition-colors duration-200"
+            style={{ backgroundColor: "#D3D3D3" }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#E0E0E0")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#D3D3D3")}
+            disabled={isLoading || isSaving}
           >
-            Cancelar
+            CANCELAR
           </Button>
-          <Button
-            type="submit"
-            className="w-64 h-12"
-            disabled={isSaving}
-          >
-            {isSaving ? "Guardando..." : "FINALIZAR EDICIÓN Y GUARDAR"}
-          </Button>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                type="submit"
+                variant="default"
+                className="h-12 text-lg font-semibold text-white px-6"
+                disabled={isSaving || Object.keys(validationErrors).length > 0}
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    GUARDANDO...
+                  </>
+                ) : (
+                  "FINALIZAR EDICIÓN Y GUARDAR"
+                )}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Guardar cambios
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  ¿Desea guardar los cambios en las características del vehículo?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleConfirmSubmit}>
+                  Confirmar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </form>
     </div>
