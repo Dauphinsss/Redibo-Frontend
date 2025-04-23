@@ -6,6 +6,17 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 const API_URL = "http://localhost:4000/api";
 
@@ -79,9 +90,30 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
     );
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Función para validar el formulario antes de mostrar el diálogo
+  const handlePrepareSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Convertir los IDs seleccionados a los nombres exactos para el backend
+    const caracteristicasParaEnviar = selectedItems
+      .map(id => {
+        const caracteristica = CARACTERISTICAS_OPTIONS.find(item => item.id === id);
+        return caracteristica ? caracteristica.label : null;
+      })
+      .filter(Boolean) as string[];
+    
+    // Verificar que haya al menos una característica seleccionada
+    if (caracteristicasParaEnviar.length === 0) {
+      setError("Debe seleccionar al menos una característica adicional");
+      return;
+    }
+    
+    // Si la validación pasa, el diálogo se abrirá automáticamente
+    // porque el botón está conectado como AlertDialogTrigger
+  };
+
+  // Función para procesar el envío después de confirmar en el diálogo
+  const handleConfirmSubmit = async () => {
     setIsSaving(true);
     setError(null);
     setSuccessMessage(null);
@@ -96,13 +128,6 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
         .filter(Boolean) as string[];
 
       console.log("Array de características para enviar:", caracteristicasParaEnviar);
-      
-      // Verificar que haya al menos una característica seleccionada
-      if (caracteristicasParaEnviar.length === 0) {
-        setError("Debe seleccionar al menos una característica adicional");
-        setIsSaving(false);
-        return;
-      }
 
       // CORRECCIÓN: Enviar objeto con la propiedad nuevasCaracteristicasAdicionales
       // CORRECCIÓN: Usar PUT en lugar de POST para coincidir con la ruta
@@ -118,8 +143,6 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
         }
       );
 
-      console.log("Respuesta del servidor:", response.data);
-      setSuccessMessage(response.data.mensaje || "¡Características guardadas exitosamente!");
       
       // Redirigir después de un breve retraso
       setTimeout(() => router.push("/host/pages"), 1500);
@@ -140,8 +163,10 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    router.push("/host/pages"); // Asegúrate de que esta ruta exista
-  };
+    if (window.confirm("¿Desea cancelar? Los cambios no guardados se perderán.")) {
+      router.push("/host/pages");
+    }
+  }
 
   if (isLoading) {
     return (
@@ -175,7 +200,7 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
       )}
 
       <div className="w-full h-120 flex items-center justify-center">
-        <form onSubmit={handleSubmit} className="w-full max-w-5xl">
+        <form onSubmit={handlePrepareSubmit} className="w-full max-w-5xl">
           <div className="grid grid-cols-2 gap-4 mb-6">
             {CARACTERISTICAS_OPTIONS.map((item) => (
               <div key={item.id} className="flex items-center space-x-2 py-2">
@@ -192,35 +217,58 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
                   {item.label}
                 </label>
               </div>
-              ))}
-            </div>
+            ))}
+          </div>
 
           <div className="w-full flex justify-between items-center mt-10">
             <Button 
               type="button"
               onClick={handleCancel}
               variant="secondary"
-              className="w-[160px] h-12 text-lg font-semibold"
-              disabled={isSaving}
+              className="w-[160px] h-12 text-lg font-semibold transition-colors duration-200"
+              style={{ backgroundColor: "#D3D3D3" }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#E0E0E0")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#D3D3D3")}
+              disabled={isLoading || isSaving}
             >
               CANCELAR
             </Button>
             
-            <Button 
-              type="submit"
-              variant="default"
-              className="h-12 text-lg font-semibold text-white px-6"
-              disabled={isSaving || selectedItems.length === 0}
-            >
-              {isSaving ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  GUARDANDO...
-                </>
-              ) : (
-                "FINALIZAR EDICIÓN Y GUARDAR"
-              )}
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  type="submit"
+                  variant="default"
+                  className="h-12 text-lg font-semibold text-white px-6"
+                  disabled={isSaving || selectedItems.length === 0}
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      GUARDANDO...
+                    </>
+                  ) : (
+                    "FINALIZAR EDICIÓN Y GUARDAR"
+                  )}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Guardar cambios
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    ¿Desea guardar los cambios en las características adicionales?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleConfirmSubmit}>
+                    Confirmar
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </form>
       </div>
