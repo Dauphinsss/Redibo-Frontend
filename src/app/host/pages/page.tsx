@@ -184,7 +184,7 @@ export default function ViewCarsPage() {
                   </div>
                   <Badge
                     variant={
-                      car.status === "Disponible" ? "default" : "destructive"
+                      car.status === "Disponible" ? "default" : "default"
                     }
                   >
                     {car.status}

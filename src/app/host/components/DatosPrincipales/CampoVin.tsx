@@ -71,11 +71,16 @@ export default function CampoVin({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toUpperCase();
-    onVinChange(value);
+    //onVinChange(value);
+
+    // 2. Eliminar todos los espacios en blanco y convertir a mayúsculas
+    const processedValue = value.replace(/\s/g, '').toUpperCase();
+    // 3. Actualizar el estado en el componente padre con el valor procesado
+    onVinChange(processedValue);
 
     // Si ya tocó o llegó a 17 caracteres, mostramos error de inmediato
     if (touched || value.length === 17) {
-      setVinError(validateVin(value));
+      setVinError(validateVin(processedValue));
     } else {
       setVinError("");
     }
