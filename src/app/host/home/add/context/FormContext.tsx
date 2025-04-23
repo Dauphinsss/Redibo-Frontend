@@ -76,7 +76,7 @@ const initialFormData: FormData = {
   datosPrincipales: { vim: "", año: new Date().getFullYear(), marca: "", modelo: "", placa: "" },
   caracteristicas: { combustibleIds: [], asientos: 0, puertas: 0, transmicion: "automatica", soat: false },
   caracteristicasAdicionales: { extraIds: [] },
-  finalizacion: { imagenes: [], num_mantenimientos: 0, precio_por_dia: 0, estado: "disponible", descripcion: "" }
+  finalizacion: { imagenes: [], num_mantenimientos: 0, precio_por_dia: 0, estado: "Disponible", descripcion: "" }
 };
 
 export function FormProvider({ children }: { children: ReactNode }) {
