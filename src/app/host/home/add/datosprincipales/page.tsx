@@ -6,7 +6,17 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { useFormContext } from "../context/FormContext";
 import { Button } from "@/components/ui/button";
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 import CampoVin from "../../../components/DatosPrincipales/CampoVin";
 import CampoAnio from "../../../components/DatosPrincipales/CampoAnio";
@@ -18,15 +28,15 @@ import BotonesFormulario from "../../../components/DatosPrincipales/BotonesFormu
 export default function DatosPrincipales() {
   const router = useRouter();
   const { formData, updateDatosPrincipales } = useFormContext();
-  const { datosPrincipales } = formData; // Obtener datosPrincipales del contexto
-  const currentYear = 2025;
+  const { datosPrincipales } = formData;
+  const currentYear = new Date().getFullYear();
 
   // Campos
-  const [vin, setVin] = useState(datosPrincipales?.vim || ""); // Usar datos del contexto
-  const [anio, setAnio] = useState(datosPrincipales?.anio?.toString() || ""); // Usar datos del contexto y convertir a string
-  const [marca, setMarca] = useState(datosPrincipales?.marca || ""); // Usar datos del contexto
-  const [modelo, setModelo] = useState(datosPrincipales?.modelo || ""); // Usar datos del contexto
-  const [placa, setPlaca] = useState(datosPrincipales?.placa || ""); // Usar datos del contexto
+  const [vin, setVin] = useState(datosPrincipales?.vim || "");
+  const [anio, setAnio] = useState<string>(""); // Inicia vacío para mostrar placeholder
+  const [marca, setMarca] = useState(datosPrincipales?.marca || "");
+  const [modelo, setModelo] = useState(datosPrincipales?.modelo || "");
+  const [placa, setPlaca] = useState(datosPrincipales?.placa || "");
 
   // Errores
   const [vinError, setVinError] = useState("");
@@ -65,21 +75,25 @@ export default function DatosPrincipales() {
 
   // Validación del formulario
   useEffect(() => {
-    const isValid = (
-      vinError === "" && vin.trim() !== "" &&
-      anioError === "" && anio.trim() !== "" &&
-      marcaError === "" && marca.trim() !== "" &&
-      modeloError === "" && modelo.trim() !== "" &&
-      placaError === "" && placa.trim() !== ""
-    );
+    const isValid =
+      vinError === "" &&
+      vin.trim() !== "" &&
+      anioError === "" &&
+      anio.trim() !== "" &&
+      marcaError === "" &&
+      marca.trim() !== "" &&
+      modeloError === "" &&
+      modelo.trim() !== "" &&
+      placaError === "" &&
+      placa.trim() !== "";
     setIsFormValid(isValid);
   }, [vin, anio, marca, modelo, placa, vinError, anioError, marcaError, modeloError, placaError]);
 
-  // Load data from context on initial render
+  // Load data from context on initial render (except año)
   useEffect(() => {
     if (datosPrincipales) {
       setVin(datosPrincipales.vim || "");
-      setAnio(datosPrincipales.anio?.toString() || "");
+      // No seteamos 'anio' aquí para que permanezca vacío hasta que el usuario elija
       setMarca(datosPrincipales.marca || "");
       setModelo(datosPrincipales.modelo || "");
       setPlaca(datosPrincipales.placa || "");
@@ -91,8 +105,8 @@ export default function DatosPrincipales() {
     const timer = setTimeout(() => {
       if (vin || anio || marca || modelo || placa) {
         updateDatosPrincipales({
-          vim: vin, // Se asigna 'vin' al campo 'vim'
-          anio: Number(anio),
+          vim: vin,
+          anio: anio.trim() !== "" ? Number(anio) : 0,
           marca,
           modelo,
           placa,
@@ -120,41 +134,41 @@ export default function DatosPrincipales() {
       </div>
 
       <div className="w-full max-w-5xl pl-9 space-y-6">
-        <CampoVin 
-          vin={vin} 
-          onVinChange={handleVinChange} 
-          vinError={vinError} 
-          setVinError={setVinError} 
+        <CampoVin
+          vin={vin}
+          onVinChange={handleVinChange}
+          vinError={vinError}
+          setVinError={setVinError}
         />
-        <CampoAnio 
-          anio={anio} 
-          onAnioChange={handleAnioChange} 
-          anioError={anioError} 
-          setAnioError={setAnioError} 
+        <CampoAnio
+          anio={anio}
+          onAnioChange={handleAnioChange}
+          anioError={anioError}
+          setAnioError={setAnioError}
           currentYear={currentYear}
         />
-        <CampoMarca 
-          marca={marca} 
-          onMarcaChange={handleMarcaChange} 
-          marcaError={marcaError} 
-          setMarcaError={setMarcaError} 
+        <CampoMarca
+          marca={marca}
+          onMarcaChange={handleMarcaChange}
+          marcaError={marcaError}
+          setMarcaError={setMarcaError}
         />
-        <CampoModelo 
-          modelo={modelo} 
-          onModeloChange={handleModeloChange} 
-          modeloError={modeloError} 
-          setModeloError={setModeloError} 
+        <CampoModelo
+          modelo={modelo}
+          onModeloChange={handleModeloChange}
+          modeloError={modeloError}
+          setModeloError={setModeloError}
         />
-        <CampoPlaca 
-          placa={placa} 
-          onPlacaChange={handlePlacaChange} 
-          placaError={placaError} 
-          setPlacaError={setPlacaError} 
+        <CampoPlaca
+          placa={placa}
+          onPlacaChange={handlePlacaChange}
+          placaError={placaError}
+          setPlacaError={setPlacaError}
         />
       </div>
 
       <div className="w-full max-w-5xl flex justify-between mt-10 px-10">
-        <BotonesFormulario 
+        <BotonesFormulario
           isFormValid={isFormValid}
           onNext={() => router.push("/host/home/add/carcoche")}
         />

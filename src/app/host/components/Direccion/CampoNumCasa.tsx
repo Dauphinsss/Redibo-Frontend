@@ -30,7 +30,7 @@ export default function CampoNumCasa({ numCasa, onNumCasaChange, numCasaError, s
         type="text" 
         value={numCasa} 
         onChange={handleChange}
-        placeholder="Ej: 1234 o S/N"
+        placeholder="Ej: 1234 o 0000"
         className="max-w-md" 
       />
       {numCasaError && <p className="text-sm text-red-600 mt-1">{numCasaError}</p>}

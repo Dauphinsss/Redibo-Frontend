@@ -42,20 +42,21 @@ export default function CampoAnio({
     <div className="flex flex-col max-w-md">
       <label className="text-base font-medium mb-1">Año del coche:<span className="text-red-600"> *</span></label>
       <Select 
-        value={anio} 
-        onValueChange={handleSelectChange}
-      >
+          value={anio || undefined} 
+          onValueChange={handleSelectChange}
+        >
         <SelectTrigger className="w-full">
-          <SelectValue placeholder="Selecciona un año" />
-        </SelectTrigger>
-        <SelectContent className="max-h-60 overflow-y-auto">
-          {years.map((year) => (
-            <SelectItem key={year} value={year}>
-              {year}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+            <SelectValue placeholder="Selecciona el año del coche" />
+          </SelectTrigger>
+          <SelectContent className="max-h-60 overflow-y-auto">
+            {years.map((year) => (
+              <SelectItem key={year} value={year}>
+                {year}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
       {anioError && (
         <p className="text-sm text-red-600 mt-1">{anioError}</p>
       )}
