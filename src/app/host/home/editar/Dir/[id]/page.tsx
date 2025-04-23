@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
@@ -46,24 +47,9 @@ const EditarDireccionPage: React.FC = () => {
   const [nombreCiudad, setNombreCiudad] = useState<string>("");
   const [nombreProvincia, setNombreProvincia] = useState<string>("");
   
-  // Debug: mostrar estado actual
+  // Cargar datos iniciales: todos los países y datos del carro
   useEffect(() => {
-    console.log("Estado actual:", {
-      carId,
-      selectedPais,
-      selectedCiudad,
-      selectedProvincia,
-      calle,
-      numCasa,
-      nombrePais,
-      nombreCiudad,
-      nombreProvincia
-    });
-  }, [carId, selectedPais, selectedCiudad, selectedProvincia, calle, numCasa, nombrePais, nombreCiudad, nombreProvincia]);
-
-  // 🔹 Cargar datos del carro desde la API específica
-  useEffect(() => {
-    const fetchCarroConDireccion = async () => {
+    const fetchInitialData = async () => {
       if (!carId) {
         setIsLoading(false);
         setError("ID del vehículo no encontrado");
@@ -71,55 +57,65 @@ const EditarDireccionPage: React.FC = () => {
       }
 
       try {
-        // Debug: mostrar URL de petición
+        // 1. Cargar todos los países disponibles primero
+        try {
+          const paisesResponse = await axios.get(`${API_URL}/paises`);
+          console.log("Países cargados:", paisesResponse.data);
+          if (paisesResponse.data && Array.isArray(paisesResponse.data)) {
+            setPaises(paisesResponse.data);
+          }
+        } catch (err) {
+          console.error("Error al cargar países:", err);
+          setError("No se pudieron cargar los países disponibles");
+        }
+
+        // 2. Obtener datos del carro con dirección
         console.log(`Obteniendo datos de: ${API_URL}/carro/direccion/${carId}`);
+        const carroResponse = await axios.get(`${API_URL}/carro/direccion/${carId}`);
+        const datosCarro = carroResponse.data;
         
-        // Usar la API con el ID dinámico del carro
-        const response = await axios.get(`${API_URL}/carro/direccion/${carId}`);
-        const carro = response.data;
-        
-        // Debug: mostrar respuesta
-        console.log("Datos recibidos del API:", carro);
+        console.log("Datos recibidos del carro:", datosCarro);
 
         // Establecer los valores seleccionados
-        setSelectedPais(carro.paisId);
-        setSelectedCiudad(carro.ciudadId);
-        setSelectedProvincia(carro.provinciaId);
-        setCalle(carro.calle || "");
-        setNumCasa(carro.num_casa || "");
+        setSelectedPais(datosCarro.paisId);
+        setSelectedCiudad(datosCarro.ciudadId);
+        setSelectedProvincia(datosCarro.provinciaId);
+        setCalle(datosCarro.calle || "");
+        setNumCasa(datosCarro.num_casa || "");
 
         // Establecer los nombres para mostrar
-        setNombrePais(carro.paisNombre || "");
-        setNombreCiudad(carro.ciudadNombre || "");
-        setNombreProvincia(carro.provinciaNombre || "");
+        setNombrePais(datosCarro.paisNombre || "");
+        setNombreCiudad(datosCarro.ciudadNombre || "");
+        setNombreProvincia(datosCarro.provinciaNombre || "");
 
-        // Crear las opciones disponibles si vienen en la respuesta
-        if (carro.paisesDisponibles) {
-          setPaises(carro.paisesDisponibles);
-        } else {
-          // Crear al menos una opción con el país actual
-          if (carro.paisId && carro.paisNombre) {
-            setPaises([{ id: carro.paisId, nombre: carro.paisNombre }]);
+        // 3. Cargar todas las ciudades del país seleccionado
+        if (datosCarro.paisId) {
+          try {
+            const ciudadesResponse = await axios.get(`${API_URL}/ciudades/${datosCarro.paisId}`);
+            console.log("Ciudades cargadas:", ciudadesResponse.data);
+            if (ciudadesResponse.data && Array.isArray(ciudadesResponse.data)) {
+              setCiudades(ciudadesResponse.data);
+            }
+          } catch (err) {
+            console.error("Error al cargar ciudades:", err);
+            setCiudades([{ id: datosCarro.ciudadId, nombre: datosCarro.ciudadNombre }]);
           }
         }
 
-        if (carro.ciudadesDisponibles) {
-          setCiudades(carro.ciudadesDisponibles);
-        } else {
-          // Crear al menos una opción con la ciudad actual
-          if (carro.ciudadId && carro.ciudadNombre) {
-            setCiudades([{ id: carro.ciudadId, nombre: carro.ciudadNombre }]);
+        // 4. Cargar todas las provincias de la ciudad seleccionada
+        if (datosCarro.ciudadId) {
+          try {
+            const provinciasResponse = await axios.get(`${API_URL}/provincias/${datosCarro.ciudadId}`);
+            console.log("Provincias cargadas:", provinciasResponse.data);
+            if (provinciasResponse.data && Array.isArray(provinciasResponse.data)) {
+              setProvincias(provinciasResponse.data);
+            }
+          } catch (err) {
+            console.error("Error al cargar provincias:", err);
+            setProvincias([{ id: datosCarro.provinciaId, nombre: datosCarro.provinciaNombre }]);
           }
         }
 
-        if (carro.provinciasDisponibles) {
-          setProvincias(carro.provinciasDisponibles);
-        } else {
-          // Crear al menos una opción con la provincia actual
-          if (carro.provinciaId && carro.provinciaNombre) {
-            setProvincias([{ id: carro.provinciaId, nombre: carro.provinciaNombre }]);
-          }
-        }
       } catch (err) {
         console.error("Error al cargar datos del vehículo:", err);
         setError("Error al cargar los datos del vehículo");
@@ -128,15 +124,15 @@ const EditarDireccionPage: React.FC = () => {
       }
     };
 
-    fetchCarroConDireccion();
+    fetchInitialData();
   }, [carId]);
 
   // Manejador para cuando cambia el país seleccionado
-  const handlePaisChange = (value: string) => {
+  const handlePaisChange = async (value: string) => {
     const paisId = Number(value);
     setSelectedPais(paisId);
     
-    // Como estamos limitados a una sola API, reseteamos las selecciones dependientes
+    // Resetear selecciones dependientes
     setSelectedCiudad(null);
     setNombreCiudad("");
     setSelectedProvincia(null);
@@ -150,16 +146,28 @@ const EditarDireccionPage: React.FC = () => {
       setNombrePais(paisSeleccionado.nombre);
     }
     
-    // Nota: En una implementación real, aquí haríamos una petición para obtener las ciudades del país
-    alert("Para obtener las ciudades de este país, necesitarías consultar la API de ciudades.");
+    // Cargar todas las ciudades del país seleccionado
+    try {
+      const response = await axios.get(`${API_URL}/ciudades/${paisId}`);
+      console.log(`Ciudades del país ${paisId}:`, response.data);
+      if (response.data && Array.isArray(response.data)) {
+        setCiudades(response.data);
+      } else {
+        setCiudades([]);
+      }
+    } catch (err) {
+      console.error("Error al cargar ciudades:", err);
+      setCiudades([]);
+      alert("No se pudieron cargar las ciudades para este país");
+    }
   };
 
   // Manejador para cuando cambia la ciudad seleccionada
-  const handleCiudadChange = (value: string) => {
+  const handleCiudadChange = async (value: string) => {
     const ciudadId = Number(value);
     setSelectedCiudad(ciudadId);
     
-    // Reseteamos la provincia
+    // Resetear provincia
     setSelectedProvincia(null);
     setNombreProvincia("");
     setProvincias([]);
@@ -170,8 +178,20 @@ const EditarDireccionPage: React.FC = () => {
       setNombreCiudad(ciudadSeleccionada.nombre);
     }
     
-    // Nota: En una implementación real, aquí haríamos una petición para obtener las provincias de la ciudad
-    alert("Para obtener las provincias de esta ciudad, necesitarías consultar la API de provincias.");
+    // Cargar todas las provincias de la ciudad seleccionada
+    try {
+      const response = await axios.get(`${API_URL}/provincias/${ciudadId}`);
+      console.log(`Provincias de la ciudad ${ciudadId}:`, response.data);
+      if (response.data && Array.isArray(response.data)) {
+        setProvincias(response.data);
+      } else {
+        setProvincias([]);
+      }
+    } catch (err) {
+      console.error("Error al cargar provincias:", err);
+      setProvincias([]);
+      alert("No se pudieron cargar las provincias para esta ciudad");
+    }
   };
 
   // Manejador para cuando cambia la provincia seleccionada
@@ -183,6 +203,7 @@ const EditarDireccionPage: React.FC = () => {
     const provinciaSeleccionada = provincias.find(p => p.id === provinciaId);
     if (provinciaSeleccionada) {
       setNombreProvincia(provinciaSeleccionada.nombre);
+      console.log(`Provincia seleccionada: ID=${provinciaId}, Nombre=${provinciaSeleccionada.nombre}`);
     }
   };
 
@@ -252,7 +273,7 @@ const EditarDireccionPage: React.FC = () => {
     return true;
   };
 
-  // Guardar los cambios
+  // Guardar los cambios - ADAPTADO AL MODELO DEL BACKEND
   const handleGuardar = async () => {
     if (!carId) {
       alert("ID del vehículo no encontrado");
@@ -268,30 +289,38 @@ const EditarDireccionPage: React.FC = () => {
     setError(null);
     setSuccessMessage(null);
     
-    // Preparar los datos para el envío
-    // Tomando en cuenta que el API podría esperar los nombres en lugar de IDs
-    // similar a cómo se hace en CaracteristicasAdicionalesPage
+    // Verificar que tenemos un ID de provincia válido
+    if (!selectedProvincia) {
+      setError("No se ha seleccionado una provincia válida");
+      setIsSaving(false);
+      return;
+    }
+    
+    // Obtener detalles de la provincia seleccionada para confirmar
+    const provinciaSeleccionada = provincias.find(p => p.id === selectedProvincia);
+    console.log("Provincia seleccionada para enviar:", provinciaSeleccionada);
+    
+    // Preparar los datos en el formato que el backend espera
     const datosParaEnviar = {
-      direccion: {
-        pais: nombrePais,
-        ciudad: nombreCiudad,
-        provincia: nombreProvincia,
-        calle: calle,
-        num_casa: numCasa
-      },
-      // También enviamos los IDs por si el backend los necesita
-      paisId: selectedPais,
-      ciudadId: selectedCiudad,
-      provinciaId: selectedProvincia
+      id_provincia: selectedProvincia ? parseInt(selectedProvincia.toString()) : null, // ID de la provincia seleccionada en el combobox
+      calle: calle,
+      num_casa: numCasa
     };
     
-    // Debug: mostrar datos a enviar
-    console.log("Datos a enviar:", datosParaEnviar);
+    // También preparar un formato alternativo por si el backend espera otro nombre de campo
+    const formatoAlternativo = {
+      id_provincia: selectedProvincia ? parseInt(selectedProvincia.toString()) : null, // Versión alternativa del nombre del campo
+      calle: calle,
+      num_casa: numCasa
+    };
+    
+    console.log("Datos a enviar (formato principal):", datosParaEnviar);
+    console.log("Datos a enviar (formato alternativo):", formatoAlternativo);
     console.log(`Enviando a: ${API_URL}/carro/direccion/${carId}`);
     
     try {
-      // Intentar con POST como en CaracteristicasAdicionalesPage
-      const response = await axios.post(
+      // Intentar con el formato principal primero
+      const response = await axios.put(
         `${API_URL}/carro/direccion/${carId}`, 
         datosParaEnviar,
         {
@@ -301,46 +330,52 @@ const EditarDireccionPage: React.FC = () => {
         }
       );
       
-      // Debug: mostrar respuesta
       console.log("Respuesta del servidor:", response.data);
-      
       setSuccessMessage("Dirección actualizada correctamente");
       
-      // Redirigir después de un breve retraso para que el usuario vea el mensaje de éxito
+      // Redirigir después de un breve retraso
       setTimeout(() => router.push("/vehiculos"), 1500);
     } catch (err: any) {
-      console.error("Error completo:", err);
+      console.error("Error al actualizar la dirección:", err);
       
-      // Intentar con PUT si POST falla (por si acaso el endpoint espera PUT)
-      try {
-        console.log("POST falló, intentando con PUT...");
+      // Extraer mensaje de error detallado si está disponible
+      const errorMessage = 
+        err.response?.data?.mensaje || 
+        err.response?.data?.error || 
+        err.message || 
+        "Error al guardar los cambios";
+      
+      setError(`Error: ${errorMessage}`);
+      
+      // Verificar si el error indica qué formato espera
+      if (err.response?.data?.error && typeof err.response.data.error === 'string') {
+        const errorText = err.response.data.error.toLowerCase();
         
-        const responsePut = await axios.put(
-          `${API_URL}/carro/direccion/${carId}`, 
-          datosParaEnviar,
-          {
-            headers: {
-              'Content-Type': 'application/json'
-            }
+        // Si hay pistas sobre el formato esperado, intentamos con el formato alternativo
+        if (errorText.includes('formato') || errorText.includes('invalid')) {
+          console.log("Intentando con formato alternativo basado en el error...");
+          
+          try {
+            const responseRetry = await axios.put(
+              `${API_URL}/carro/direccion/${carId}`, 
+              formatoAlternativo,
+              {
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              }
+            );
+            
+            console.log("Respuesta con formato alternativo:", responseRetry.data);
+            setSuccessMessage("Dirección actualizada correctamente");
+            
+            // Redirigir después de un breve retraso
+            setTimeout(() => router.push("/vehiculos"), 1500);
+          } catch (errRetry) {
+            console.error("Error también con formato alternativo:", errRetry);
+            // Mantener el error original
           }
-        );
-        
-        console.log("Respuesta PUT del servidor:", responsePut.data);
-        setSuccessMessage("Dirección actualizada correctamente");
-        
-        // Redirigir después de un breve retraso
-        setTimeout(() => router.push("/vehiculos"), 1500);
-      } catch (errPut: any) {
-        console.error("Error también con PUT:", errPut);
-        
-        // Extraer mensaje de error detallado si está disponible
-        const errorMessage = 
-          err.response?.data?.mensaje || 
-          err.response?.data?.error || 
-          err.message || 
-          "Error al guardar los cambios";
-        
-        setError(errorMessage);
+        }
       }
     } finally {
       setIsSaving(false);
@@ -466,6 +501,14 @@ const EditarDireccionPage: React.FC = () => {
           <p className="text-red-500 text-sm mt-1">{numCasaError}</p>
         )}
       </div>
+      
+      {/* Información de depuración - Opcional, quitar en producción */}
+      {selectedProvincia && (
+        <div className="w-full max-w-5xl mt-4 text-gray-500 text-sm">
+          <p>ID de provincia seleccionada: {selectedProvincia}</p>
+        </div>
+      )}
+      
       {/* Botón de guardar */}
       <Button 
         onClick={handleGuardar} 
