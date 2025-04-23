@@ -58,7 +58,7 @@ export default function DatosPrincipales() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
     const fetchCarData = async () => {
@@ -75,13 +75,26 @@ export default function DatosPrincipales() {
         if (response.data.data) vehiculoData = response.data.data;
         if (response.data.vehiculo) vehiculoData = response.data.vehiculo;
 
-        setFormData({
+        const initialData = {
           brand: vehiculoData.marca || "",
           model: vehiculoData.modelo || "",
           year: vehiculoData.año?.toString() || "",
           vin: vehiculoData.vim || "",
           plate: vehiculoData.placa || "",
+        };
+
+        setFormData(initialData);
+        
+        // Validar inicialmente todos los campos
+        const initialErrors: Partial<Record<keyof CarFormData, string>> = {};
+        Object.entries(initialData).forEach(([key, value]) => {
+          const fieldKey = key as keyof CarFormData;
+          const error = validateField(fieldKey, value as string);
+          if (error) initialErrors[fieldKey] = error;
         });
+        
+        setFieldErrors(initialErrors);
+        
       } catch (err) {
         try {
           const [marcaResp, modeloResp, anioResp, vimResp, placaResp] = await Promise.all([
@@ -92,13 +105,26 @@ export default function DatosPrincipales() {
             axios.get(`${API_URL}/vehiculo/${carId}/placa`).catch(e => ({ data: "" })),
           ]);
 
-          setFormData({
+          const initialData = {
             brand: typeof marcaResp.data === "object" ? marcaResp.data.marca || "" : marcaResp.data || "",
             model: typeof modeloResp.data === "object" ? modeloResp.data.modelo || "" : modeloResp.data || "",
             year: typeof anioResp.data === "object" ? anioResp.data.año?.toString() || "" : anioResp.data?.toString() || "",
             vin: typeof vimResp.data === "object" ? vimResp.data.vim || "" : vimResp.data || "",
             plate: typeof placaResp.data === "object" ? placaResp.data.placa || "" : placaResp.data || "",
+          };
+
+          setFormData(initialData);
+          
+          // Validar inicialmente todos los campos
+          const initialErrors: Partial<Record<keyof CarFormData, string>> = {};
+          Object.entries(initialData).forEach(([key, value]) => {
+            const fieldKey = key as keyof CarFormData;
+            const error = validateField(fieldKey, value as string);
+            if (error) initialErrors[fieldKey] = error;
           });
+          
+          setFieldErrors(initialErrors);
+          
         } catch (err2) {
           setGeneralError("Error al cargar los datos del vehículo");
         }
@@ -110,11 +136,35 @@ export default function DatosPrincipales() {
     fetchCarData();
   }, [carId]);
 
+  // Efecto para verificar la validez del formulario cada vez que cambian los errores
+  useEffect(() => {
+    const isValid = Object.keys(fieldErrors).length === 0 && 
+                    formData.brand.trim() !== '' && 
+                    formData.model.trim() !== '' && 
+                    formData.year.trim() !== '' && 
+                    formData.vin.trim() !== '' && 
+                    formData.plate.trim() !== '';
+    
+    setIsFormValid(isValid);
+  }, [fieldErrors, formData]);
+
   const handleChange = (field: keyof CarFormData, value: string) => {
-    const error = validateField(field, value);
-  
     setFormData((prev) => ({ ...prev, [field]: value }));
-    setFieldErrors((prev) => ({ ...prev, [field]: error }));
+    
+    // Validar el campo inmediatamente
+    const error = validateField(field, value);
+    
+    // Actualizar los errores
+    setFieldErrors((prev) => {
+      if (error) {
+        return { ...prev, [field]: error };
+      } else {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      }
+    });
+    
     setGeneralError(null);
   };
   
@@ -122,10 +172,13 @@ export default function DatosPrincipales() {
     switch (field) {
       case "brand":
         if (!value.trim()) return "La marca es obligatoria";
-        if (!/^[a-zA-Z\s]+$/.test(value)) return "Solo letras permitidas en marca";
+        if (value !== value.toUpperCase()) return "La marca debe estar en MAYÚSCULAS";
+        if (!/^[A-Z\s]+$/.test(value)) return "Solo letras mayúsculas y espacios permitidos";
         break;
       case "model":
         if (!value.trim()) return "El modelo es obligatorio";
+        if (value !== value.toUpperCase()) return "El modelo debe estar en MAYÚSCULAS";
+        if (!/^[A-Z\s]+$/.test(value)) return "Solo letras mayúsculas y espacios permitidos";
         break;
       case "year":
         if (!value) return "Debe seleccionar un año";
@@ -133,56 +186,17 @@ export default function DatosPrincipales() {
         break;
       case "plate":
         if (!value.trim()) return "La placa es obligatoria";
-        if (!/^[A-Z0-9-]{5,10}$/i.test(value)) return "Formato de placa inválido";
+        if (!/^[0-9]{3,4}-[A-Z]{0,3}$/.test(value)) return "Formato de placa inválido (ej. 1234-ABC)";
+        if (value !== value.toUpperCase()) return "La placa debe estar en MAYÚSCULAS";
         break;
       case "vin":
         if (!value.trim()) return "El VIN es obligatorio";
-        if (!/^[A-HJ-NPR-Z0-9]{17}$/i.test(value)) return "El VIN debe tener 17 caracteres válidos";
+        if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(value)) return "El VIN debe tener 17 caracteres válidos";
+        if (value !== value.toUpperCase()) return "El VIN debe estar en MAYÚSCULAS";
         break;
     }
     return undefined;
   };  
-
-  const validateForm = (): boolean => {
-    const errors: Partial<Record<keyof CarFormData, string>> = {};
-
-    // Validación de la marca
-    if (!formData.brand.trim()) {
-        errors.brand = "La marca es obligatoria";
-    } else if (!/^[A-Z\s]+$/.test(formData.brand)) {
-        // Acepta solo letras mayúsculas y espacios
-        errors.brand = "La marca solo debe contener letras mayúsculas";
-    }
-
-     // Validación del modelo
-    if (!formData.model.trim()) {
-        errors.model = "El modelo es obligatorio";
-    } else if (!/^[A-Z\s]+$/.test(formData.model)) {
-        // Acepta solo letras mayúsculas y espacios
-        errors.model = "El modelo solo debe contener letras mayúsculas";
-    }
-
-    if (!formData.year) {
-      errors.year = "Debe seleccionar un año";
-    } else if (isNaN(parseInt(formData.year))) {
-      errors.year = "Año inválido";
-    }
-
-    if (!formData.plate.trim()) {
-      errors.plate = "La placa es obligatoria";
-    } else if (!/^[0-9]{3,4}-[A-Z]{0,3}$/.test(formData.plate)) {
-      errors.plate = "Formato de placa inválido (usa solo mayúsculas)";
-    }
-
-    if (!formData.vin.trim()) {
-        errors.vin = "El VIN es obligatorio";
-    } else if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(formData.vin)) {
-        errors.vin = "El VIN debe tener 17 caracteres válidos (solo mayúsculas y números)";
-    }      
-
-    setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
 
   // Función para manejar la validación del formulario antes de mostrar el diálogo
   const handlePrepareSubmit = (e: React.FormEvent) => {
@@ -192,7 +206,18 @@ export default function DatosPrincipales() {
       return;
     }
 
-    if (!validateForm()) return;
+    // Validar todos los campos nuevamente para asegurarse
+    const errors: Partial<Record<keyof CarFormData, string>> = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      const fieldKey = key as keyof CarFormData;
+      const error = validateField(fieldKey, value as string);
+      if (error) errors[fieldKey] = error;
+    });
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
     
     // Si la validación pasa, el diálogo se abrirá automáticamente por estar
     // conectado al botón como AlertDialogTrigger
@@ -202,6 +227,12 @@ export default function DatosPrincipales() {
   const handleConfirmSubmit = async () => {
     if (!carId) {
       setGeneralError("ID del vehículo no encontrado");
+      return;
+    }
+
+    // Volver a validar antes de enviar
+    if (!isFormValid) {
+      setGeneralError("Por favor, corrija los errores antes de continuar");
       return;
     }
 
@@ -278,7 +309,7 @@ export default function DatosPrincipales() {
             className={`w-[600px] mt-2 border-2 rounded-md ${
               fieldErrors.vin ? "border-red-500" : "border-black"
             }`}
-            placeholder="Introducir Número VIN"
+            placeholder="Introducir Número VIN (EN MAYÚSCULAS)"
           />
           {fieldErrors.vin && <span className="text-sm text-red-500 mt-1">{fieldErrors.vin}</span>}
         </div>
@@ -317,7 +348,7 @@ export default function DatosPrincipales() {
             className={`w-[600px] mt-2 border-2 rounded-md ${
               fieldErrors.brand ? "border-red-500" : "border-black"
             }`}
-            placeholder="Introducir Marca"
+            placeholder="Introducir Marca (EN MAYÚSCULAS)"
           />
           {fieldErrors.brand && <span className="text-sm text-red-500 mt-1">{fieldErrors.brand}</span>}
         </div>
@@ -332,7 +363,7 @@ export default function DatosPrincipales() {
             className={`w-[600px] mt-2 border-2 rounded-md ${
               fieldErrors.model ? "border-red-500" : "border-black"
             }`}
-            placeholder="Introducir Modelo"
+            placeholder="Introducir Modelo (EN MAYÚSCULAS)"
           />
           {fieldErrors.model && <span className="text-sm text-red-500 mt-1">{fieldErrors.model}</span>}
         </div>
@@ -347,7 +378,7 @@ export default function DatosPrincipales() {
             className={`w-[600px] mt-2 border-2 rounded-md ${
               fieldErrors.plate ? "border-red-500" : "border-black"
             }`}
-            placeholder="Introducir Placa"
+            placeholder="Introducir Placa (formato: 1234-ABC)"
           />
           {fieldErrors.plate && <span className="text-sm text-red-500 mt-1">{fieldErrors.plate}</span>}
         </div>
@@ -372,7 +403,7 @@ export default function DatosPrincipales() {
                 type="submit"
                 variant="default"
                 className="h-12 text-lg font-semibold text-white px-6"
-                disabled={isLoading || isSaving}
+                disabled={isLoading || isSaving || !isFormValid}
               >
                 {isSaving ? "GUARDANDO..." : "FINALIZAR EDICIÓN Y GUARDAR"}
               </Button>
