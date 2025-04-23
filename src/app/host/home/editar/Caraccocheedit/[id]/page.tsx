@@ -48,6 +48,14 @@ interface CaracteristicasFormData {
   soat: boolean;
 }
 
+interface ValidationErrors {
+  combustibles?: string;
+  asientos?: string;
+  puertas?: string;
+  transmision?: string;
+  soat?: string;
+}
+
 const CaracteristicasPage: React.FC = () => {
   const router = useRouter();
   const params = useParams();
@@ -61,9 +69,11 @@ const CaracteristicasPage: React.FC = () => {
     soat: false
   });
 
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const fetchCaracteristicas = async () => {
@@ -118,7 +128,47 @@ const CaracteristicasPage: React.FC = () => {
     fetchCaracteristicas();
   }, [vehiculoId]);
 
+  // Validación en tiempo real cuando cambian los valores
+  useEffect(() => {
+    validateForm();
+  }, [formData]);
+
+  const validateForm = () => {
+    const errors: ValidationErrors = {};
+    
+    // Validación de combustibles (seleccionar 1 o 2 tipos)
+    if (formData.combustibles.length === 0) {
+      errors.combustibles = "Seleccione al menos un tipo de combustible";
+    } else if (formData.combustibles.length > 2) {
+      errors.combustibles = "Seleccione máximo 2 tipos de combustible";
+    }
+
+    // Validación de asientos
+    if (!formData.asientos) {
+      errors.asientos = "Debe seleccionar el número de asientos";
+    }
+
+    // Validación de puertas
+    if (!formData.puertas) {
+      errors.puertas = "Debe seleccionar el número de puertas";
+    }
+
+    // Validación de transmisión
+    if (!formData.transmision) {
+      errors.transmision = "Debe seleccionar un tipo de transmisión";
+    }
+
+    // Validación de SOAT
+    if (!formData.soat) {
+      errors.soat = "El SOAT es obligatorio";
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleCombustibleChange = (id: string) => {
+    setTouchedFields({...touchedFields, combustibles: true});
     setFormData(prev => {
       const newCombustibles = prev.combustibles.includes(id)
         ? prev.combustibles.filter(c => c !== id)
@@ -132,6 +182,7 @@ const CaracteristicasPage: React.FC = () => {
   };
 
   const handleFieldChange = (field: keyof Omit<CaracteristicasFormData, 'combustibles'>, value: string | boolean) => {
+    setTouchedFields({...touchedFields, [field]: true});
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -141,13 +192,23 @@ const CaracteristicasPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!vehiculoId) {
-      setError("ID del vehículo no encontrado");
+    // Marcar todos los campos como tocados para mostrar todos los errores
+    const allTouched = {
+      combustibles: true,
+      asientos: true,
+      puertas: true,
+      transmision: true,
+      soat: true
+    };
+    setTouchedFields(allTouched);
+    
+    if (!validateForm()) {
+      setError("Por favor, corrija los errores antes de continuar");
       return;
     }
-  
-    if (formData.combustibles.length === 0) {
-      setError("Seleccione al menos un tipo de combustible");
+    
+    if (!vehiculoId) {
+      setError("ID del vehículo no encontrado");
       return;
     }
     
@@ -201,6 +262,13 @@ const CaracteristicasPage: React.FC = () => {
     return <div className="p-6 flex justify-center min-h-screen">Cargando...</div>;
   }
 
+  // Función para mostrar mensaje de error si el campo ha sido tocado y tiene error
+  const showErrorMessage = (fieldName: keyof ValidationErrors) => {
+    return touchedFields[fieldName] && validationErrors[fieldName] ? (
+      <p className="text-red-500 text-sm mt-1">{validationErrors[fieldName]}</p>
+    ) : null;
+  };
+
   return (
     <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
       <div className="w-full max-w-5xl">
@@ -216,7 +284,7 @@ const CaracteristicasPage: React.FC = () => {
       <form onSubmit={handleSubmit} className="w-full max-w-5xl pl-7">
         {/* Combustible */}
         <div className="mb-6">
-          <label className="text-lg font-semibold mb-2">Tipo de combustible</label>
+          <label className="text-lg font-semibold mb-2">Tipo de combustible*</label>
           <div className="mt-2 space-y-2">
             {COMBUSTIBLE_OPTIONS.map((item) => (
               <div key={item.id} className="flex items-center">
@@ -231,6 +299,7 @@ const CaracteristicasPage: React.FC = () => {
               </div>
             ))}
           </div>
+          {showErrorMessage('combustibles')}
         </div>
 
         {/* Asientos */}
@@ -240,7 +309,7 @@ const CaracteristicasPage: React.FC = () => {
             value={formData.asientos}
             onValueChange={(value) => handleFieldChange("asientos", value)}
           >
-            <SelectTrigger className="w-[600px] border-2">
+            <SelectTrigger className={`w-[600px] border-2 ${touchedFields.asientos && validationErrors.asientos ? 'border-red-500' : ''}`}>
               <SelectValue>
                 {ASIENTOS_OPTIONS.find(opt => opt.value === formData.asientos)?.label || "Seleccione"}
               </SelectValue>
@@ -255,6 +324,7 @@ const CaracteristicasPage: React.FC = () => {
               </SelectGroup>
             </SelectContent>
           </Select>
+          {showErrorMessage('asientos')}
         </div>
 
         {/* Puertas */}
@@ -264,7 +334,7 @@ const CaracteristicasPage: React.FC = () => {
             value={formData.puertas}
             onValueChange={(value) => handleFieldChange("puertas", value)}
           >
-            <SelectTrigger className="w-[600px] border-2">
+            <SelectTrigger className={`w-[600px] border-2 ${touchedFields.puertas && validationErrors.puertas ? 'border-red-500' : ''}`}>
               <SelectValue>
                 {PUERTAS_OPTIONS.find(opt => opt.value === formData.puertas)?.label || "Seleccione"}
               </SelectValue>
@@ -279,6 +349,7 @@ const CaracteristicasPage: React.FC = () => {
               </SelectGroup>
             </SelectContent>
           </Select>
+          {showErrorMessage('puertas')}
         </div>
 
         {/* Transmisión */}
@@ -288,7 +359,7 @@ const CaracteristicasPage: React.FC = () => {
             value={formData.transmision}
             onValueChange={(value) => handleFieldChange("transmision", value)}
           >
-            <SelectTrigger className="w-[600px] border-2">
+            <SelectTrigger className={`w-[600px] border-2 ${touchedFields.transmision && validationErrors.transmision ? 'border-red-500' : ''}`}>
               <SelectValue>
                 {TRANSMISION_OPTIONS.find(opt => opt.value === formData.transmision)?.label || "Seleccione"}
               </SelectValue>
@@ -303,21 +374,24 @@ const CaracteristicasPage: React.FC = () => {
               </SelectGroup>
             </SelectContent>
           </Select>
+          {showErrorMessage('transmision')}
         </div>
 
         {/* SOAT */}
         <div className="mb-6">
-          <label className="text-lg font-semibold mb-2">Seguro SOAT</label>
+          <label className="text-lg font-semibold mb-2">Seguro SOAT*</label>
           <div className="flex items-center">
             <Checkbox
               id="soat"
               checked={formData.soat}
               onCheckedChange={(checked) => handleFieldChange("soat", checked as boolean)}
+              className={touchedFields.soat && validationErrors.soat ? 'border-red-500' : ''}
             />
             <label htmlFor="soat" className="ml-2">
               SOAT 
             </label>
           </div>
+          {showErrorMessage('soat')}
         </div>
         {/* Botones */}
         <div className="flex justify-between mt-10">
