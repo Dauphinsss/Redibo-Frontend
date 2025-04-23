@@ -22,14 +22,14 @@ export default function DatosPrincipales() {
 
   // Campos
   const [vin, setVin] = useState(datosPrincipales?.vim || "");
-  const [anio, setAnio] = useState<string>(datosPrincipales?.anio?.toString() || "");
+  const [año, setAño] = useState<string>(datosPrincipales?.año?.toString() || "");
   const [marca, setMarca] = useState(datosPrincipales?.marca || "");
   const [modelo, setModelo] = useState(datosPrincipales?.modelo || "");
   const [placa, setPlaca] = useState(datosPrincipales?.placa || "");
 
   // Errores
   const [vinError, setVinError] = useState("");
-  const [anioError, setAnioError] = useState("");
+  const [añoError, setAñoError] = useState("");
   const [marcaError, setMarcaError] = useState("");
   const [modeloError, setModeloError] = useState("");
   const [placaError, setPlacaError] = useState("");
@@ -43,8 +43,8 @@ export default function DatosPrincipales() {
   }, []);
 
   const handleAnioChange = useCallback((value: string) => {
-    setAnio(value);
-    setAnioError(value ? "" : "El año es obligatorio");
+    setAño(value);
+    setAñoError(value ? "" : "El año es obligatorio");
   }, []);
 
   const handleMarcaChange = useCallback((value: string) => {
@@ -65,18 +65,18 @@ export default function DatosPrincipales() {
   useEffect(() => {
     const isValid =
       vinError === "" && vin.trim() &&
-      anioError === "" && anio.trim() &&
+      añoError === "" && año.trim() &&
       marcaError === "" && marca.trim() &&
       modeloError === "" && modelo.trim() &&
       placaError === "" && placa.trim();
     setIsFormValid(Boolean(isValid));
-  }, [vin, anio, marca, modelo, placa, vinError, anioError, marcaError, modeloError, placaError]);
+  }, [vin, año, marca, modelo, placa, vinError, añoError, marcaError, modeloError, placaError]);
 
   // Carga inicial de datos
   useEffect(() => {
     if (datosPrincipales) {
       setVin(datosPrincipales.vim || "");
-      setAnio(datosPrincipales.anio?.toString() || "");
+      setAño(datosPrincipales.año?.toString() || "");
       setMarca(datosPrincipales.marca || "");
       setModelo(datosPrincipales.modelo || "");
       setPlaca(datosPrincipales.placa || "");
@@ -86,10 +86,10 @@ export default function DatosPrincipales() {
   // Sincronización con contexto
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (vin || anio || marca || modelo || placa) {
+      if (vin || año || marca || modelo || placa) {
         updateDatosPrincipales({
           vim: vin,
-          anio: Number(anio),
+          año: Number(año),
           marca,
           modelo,
           placa,
@@ -97,7 +97,7 @@ export default function DatosPrincipales() {
       }
     }, 100);
     return () => clearTimeout(timer);
-  }, [vin, anio, marca, modelo, placa, updateDatosPrincipales]);
+  }, [vin, año, marca, modelo, placa, updateDatosPrincipales]);
 
   return (
     <main className="p-6 min-h-screen bg-gray-100">
@@ -130,10 +130,10 @@ export default function DatosPrincipales() {
           setVinError={setVinError}
         />
         <CampoAnio
-          anio={anio}
+          año={año}
           onAnioChange={handleAnioChange}
-          anioError={anioError}
-          setAnioError={setAnioError}
+          añoError={añoError}
+          setAnioError={setAñoError}
           currentYear={currentYear}
         />
         <CampoMarca

@@ -14,6 +14,17 @@ import {
 } from "@/components/ui/select";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 const API_URL = "http://localhost:4000/api";
 
@@ -47,6 +58,7 @@ export default function DatosPrincipales() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchCarData = async () => {
@@ -106,7 +118,6 @@ export default function DatosPrincipales() {
     setGeneralError(null);
   };
   
-
   const validateField = (field: keyof CarFormData, value: string): string | undefined => {
     switch (field) {
       case "brand":
@@ -173,7 +184,8 @@ export default function DatosPrincipales() {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Función para manejar la validación del formulario antes de mostrar el diálogo
+  const handlePrepareSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!carId) {
       setGeneralError("ID del vehículo no encontrado");
@@ -181,6 +193,17 @@ export default function DatosPrincipales() {
     }
 
     if (!validateForm()) return;
+    
+    // Si la validación pasa, el diálogo se abrirá automáticamente por estar
+    // conectado al botón como AlertDialogTrigger
+  };
+
+  // Función para procesar el envío real después de confirmar en el diálogo
+  const handleConfirmSubmit = async () => {
+    if (!carId) {
+      setGeneralError("ID del vehículo no encontrado");
+      return;
+    }
 
     try {
       setIsSaving(true);
@@ -243,7 +266,7 @@ export default function DatosPrincipales() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="w-full max-w-5xl pl-13">
+      <form onSubmit={handlePrepareSubmit} className="w-full max-w-5xl pl-13">
 
         {/* VIN */}
         <div className="w-full flex flex-col mt-4">
@@ -331,23 +354,48 @@ export default function DatosPrincipales() {
 
         {/* Botones */}
         <div className="w-full flex justify-between items-center mt-10">
-          <Button
+            <Button
             type="button"
             onClick={handleCancel}
             variant="secondary"
-            className="w-[160px] h-12 text-lg font-semibold"
+            className="w-[160px] h-12 text-lg font-semibold transition-colors duration-200"
+            style={{ backgroundColor: "#D3D3D3" }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#E0E0E0")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#D3D3D3")}
             disabled={isLoading || isSaving}
-          >
+            >
             CANCELAR
-          </Button>
-          <Button
-            type="submit"
-            variant="default"
-            className="h-12 text-lg font-semibold text-white px-6"
-            disabled={isLoading || isSaving}
-          >
-            {isSaving ? "GUARDANDO..." : "FINALIZAR EDICIÓN Y GUARDAR"}
-          </Button>
+            </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                type="submit"
+                variant="default"
+                className="h-12 text-lg font-semibold text-white px-6"
+                disabled={isLoading || isSaving}
+              >
+                {isSaving ? "GUARDANDO..." : "FINALIZAR EDICIÓN Y GUARDAR"}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Guardar cambios
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  ¿Desea guardar los cambios efectuados?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleConfirmSubmit}
+                >
+                  Confirmar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </form>
     </div>
