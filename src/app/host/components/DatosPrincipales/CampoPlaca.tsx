@@ -14,29 +14,18 @@ export default function CampoPlaca({ placa, onPlacaChange, placaError, setPlacaE
     let newValue = "";
     let hasLetters = false;
     let letterCount = 0;
-
-    // Procesar cada carácter
+  
     for (let i = 0; i < value.length; i++) {
       const char = value[i];
-
-      // Si ya tenemos 3 letras, no permitir más caracteres
-      if (letterCount >= 3) {
-        break;
-      }
-
-      // Primera posición debe ser número
-      if (i === 0 && !/[0-9]/.test(char)) {
-        continue;
-      }
-
-      // Primeros 4 caracteres (si existen) deben ser números (máximo 4 números)
+  
+      if (letterCount >= 3) break;
+  
+      if (i === 0 && !/[0-9]/.test(char)) continue;
+  
       if (!hasLetters && /[0-9]/.test(char) && newValue.replace('-', '').length < 4) {
         newValue += char;
-      } 
-      // Manejar letras (máximo 3)
-      else if (/[A-Z]/.test(char)) {
+      } else if (/[A-Z]/.test(char)) {
         if (!hasLetters) {
-          // Agregar guion antes de la primera letra
           newValue += "-" + char;
           hasLetters = true;
           letterCount = 1;
@@ -46,22 +35,27 @@ export default function CampoPlaca({ placa, onPlacaChange, placaError, setPlacaE
         }
       }
     }
-
+  
     // Validaciones
+    const parts = newValue.split("-");
+    const numericPart = parts[0] || "";
+    const letterPart = parts[1] || "";
+  
     if (!newValue.trim()) {
       setPlacaError("La placa es obligatoria");
-    } else if (newValue.length > 8) { // 4 números + guión + 3 letras = 8
+    } else if (newValue.length > 8) {
       setPlacaError("La placa no puede exceder los 8 caracteres (4 números + 3 letras).");
     } else if (!/^[0-9]{3,4}-[A-Z]{0,3}$/.test(newValue)) {
       setPlacaError("Formato inválido. Ejemplos: 123-ABC, 1234-XYZ");
-    } else if (hasLetters && letterCount < 3) {
-      setPlacaError("Debe ingresar exactamente 3 letras después del guión.");
+    } else if (numericPart.length < 4 || letterPart.length < 3) {
+      setPlacaError("Placa incompleta, por favor ingrese la placa completa.");
     } else {
       setPlacaError("");
     }
-
+  
     onPlacaChange(newValue);
   };
+  
 
   const handleBlur = () => {
     if (!placa.trim()) {

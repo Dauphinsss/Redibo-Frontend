@@ -25,7 +25,7 @@ export default function CampoCalle({ calle, onCalleChange, calleError, setCalleE
 
   return (
     <div className="flex flex-col">
-      <label className="text-base font-medium mb-1">Calle:<span className="text-red-600"> *</span></label>
+      <label className="text-base font-medium mb-1">Dirección de la calle:<span className="text-red-600"> *</span></label>
       <Input 
         type="text" 
         value={calle} 

@@ -11,17 +11,29 @@ interface CampoNumCasaProps {
 export default function CampoNumCasa({ numCasa, onNumCasaChange, numCasaError, setNumCasaError }: CampoNumCasaProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    const onlyNumbersRegex = /^\d*$/;
     onNumCasaChange(value);
-    if (!value.trim()) {
-      setNumCasaError("El número de casa es obligatorio");
-    } else if (!/^[A-Za-z0-9\s-]*$/.test(value)) {
-      setNumCasaError("Solo se permiten letras, números y guiones");
-    } else if (value.length > 20) {
-      setNumCasaError("El número no puede exceder los 20 caracteres");
-    } else {
-      setNumCasaError("");
+    if (onlyNumbersRegex.test(value) || value === '') {
+      // Si es solo números o está vacío, actualiza el estado local (que pasará el valor al padre)
+      onNumCasaChange(value);
+
+      // Luego, aplica las validaciones de negocio
+      if (!value.trim()) {
+          setNumCasaError("El número de casa es obligatorio");
+      } else if (value.length > 20) { // Mantienes la validación de longitud si es necesario
+          setNumCasaError("El número no puede exceder los 20 caracteres");
+      } else {
+          // Si pasa todas las validaciones, limpia el error
+          setNumCasaError("");
+      }
+     } else {
+      // Si el valor contiene caracteres no numéricos, NO actualizamos el estado
+      // Mostramos un error para informar al usuario
+      setNumCasaError("Solo se permiten números");
+      // No llamas a onNumCasaChange(value) aquí para evitar que el caracter no numérico aparezca en el input
     }
-  };
+  };
+
 
   return (
     <div className="flex flex-col">

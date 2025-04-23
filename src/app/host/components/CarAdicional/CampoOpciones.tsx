@@ -63,9 +63,8 @@ CaracteristicaCheckbox.displayName = "CaracteristicaCheckbox";
 
 const ListaCaracteristicas: React.FC = () => {
   const { formData, updateCaracteristicasAdicionales } = useFormContext();
-
-  // Garantizar que extraIds tenga un valor inicial, por ejemplo [].
   const currentExtraIds = formData.caracteristicasAdicionales.extraIds ?? [];
+
 
   const handleCheckboxChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>, featureId: number) => {
@@ -80,10 +79,16 @@ const ListaCaracteristicas: React.FC = () => {
     },
     [currentExtraIds, updateCaracteristicasAdicionales]
   );
-
   return (
-    <div className="w-full max-w-5xl pl-9">
-      <div className="grid grid-rows-7 grid-flow-col gap-x-12 gap-y-7 w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-9">
+      <div
+        className={`
+          grid
+          grid-cols-2 gap-x-6 gap-y-6        /* ⬅ MOD: 2 columnas en móvil */
+          sm:grid-rows-7 sm:grid-flow-col     /* ⬅ MOD: tu layout original en sm+ */
+          sm:gap-x-12 sm:gap-y-7
+        `}
+      >
         {ITEMS.map((item) => (
           <CaracteristicaCheckbox
             key={item.id}

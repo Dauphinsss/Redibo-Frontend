@@ -6,17 +6,6 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { useFormContext } from "../context/FormContext";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
 
 import CampoVin from "../../../components/DatosPrincipales/CampoVin";
 import CampoAnio from "../../../components/DatosPrincipales/CampoAnio";
@@ -33,7 +22,7 @@ export default function DatosPrincipales() {
 
   // Campos
   const [vin, setVin] = useState(datosPrincipales?.vim || "");
-  const [anio, setAnio] = useState<string>(""); // Inicia vacío para mostrar placeholder
+  const [anio, setAnio] = useState<string>(datosPrincipales?.anio?.toString() || "");
   const [marca, setMarca] = useState(datosPrincipales?.marca || "");
   const [modelo, setModelo] = useState(datosPrincipales?.modelo || "");
   const [placa, setPlaca] = useState(datosPrincipales?.placa || "");
@@ -70,70 +59,70 @@ export default function DatosPrincipales() {
 
   const handlePlacaChange = useCallback((value: string) => {
     setPlaca(value);
-    setPlacaError(value ? "" : "La placa es obligatoria");
   }, []);
 
   // Validación del formulario
   useEffect(() => {
     const isValid =
-      vinError === "" &&
-      vin.trim() !== "" &&
-      anioError === "" &&
-      anio.trim() !== "" &&
-      marcaError === "" &&
-      marca.trim() !== "" &&
-      modeloError === "" &&
-      modelo.trim() !== "" &&
-      placaError === "" &&
-      placa.trim() !== "";
-    setIsFormValid(isValid);
+      vinError === "" && vin.trim() &&
+      anioError === "" && anio.trim() &&
+      marcaError === "" && marca.trim() &&
+      modeloError === "" && modelo.trim() &&
+      placaError === "" && placa.trim();
+    setIsFormValid(Boolean(isValid));
   }, [vin, anio, marca, modelo, placa, vinError, anioError, marcaError, modeloError, placaError]);
 
-  // Load data from context on initial render (except año)
+  // Carga inicial de datos
   useEffect(() => {
     if (datosPrincipales) {
       setVin(datosPrincipales.vim || "");
-      // No seteamos 'anio' aquí para que permanezca vacío hasta que el usuario elija
+      setAnio(datosPrincipales.anio?.toString() || "");
       setMarca(datosPrincipales.marca || "");
       setModelo(datosPrincipales.modelo || "");
       setPlaca(datosPrincipales.placa || "");
     }
   }, [datosPrincipales]);
 
-  // Actualización optimizada del contexto
+  // Sincronización con contexto
   useEffect(() => {
     const timer = setTimeout(() => {
       if (vin || anio || marca || modelo || placa) {
         updateDatosPrincipales({
           vim: vin,
-          anio: anio.trim() !== "" ? Number(anio) : 0,
+          anio: Number(anio),
           marca,
           modelo,
           placa,
         });
       }
     }, 100);
-
     return () => clearTimeout(timer);
   }, [vin, anio, marca, modelo, placa, updateDatosPrincipales]);
 
   return (
-    <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
-      <Link href="/host/home/add/direccion">
-        <Button
-          variant="secondary"
-          className="flex items-center gap-1 self-start justify-start cursor-pointer w-32 h-10 text-base font-medium transition-all duration-200 hover:bg-gray-100 hover:brightness-90"
-        >
-          <ChevronLeft className="h-3 w-3" />
-          Volver
-        </Button>
-      </Link>
+    <main className="p-6 min-h-screen bg-gray-100">
+      {/* HEADER: Volver + Título apilados */}
+      <header className="flex flex-col items-start max-w-5xl mx-auto">
+        <Link href="/host/home/add/direccion">
+          <Button
+            variant="secondary"
+            className="
+              w-auto sm:w-40 h-10              /* ancho adaptativo, altura */
+              flex items-center gap-1
+              text-base font-medium
+              transition-transform duration-200 ease-in-out transform
+              hover:scale-105 hover:bg-gray-100 hover:brightness-90
+            "
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Volver
+          </Button>
+        </Link>
+        <h1 className="text-5xl font-bold my-5">Datos Principales</h1> {/* Título más grande */}
+      </header>
 
-      <div className="w-full max-w-5xl flex justify-start">
-        <h1 className="text-4xl font-bold my-5 pl-7">Datos Principales</h1>
-      </div>
-
-      <div className="w-full max-w-5xl pl-9 space-y-6">
+      {/* SECTION: Campos del formulario, centrados y con espacio */}
+      <section className="w-full max-w-5xl mx-auto mt-6 space-y-6 px-4 sm:px-9">
         <CampoVin
           vin={vin}
           onVinChange={handleVinChange}
@@ -165,14 +154,15 @@ export default function DatosPrincipales() {
           placaError={placaError}
           setPlacaError={setPlacaError}
         />
-      </div>
+      </section>
 
-      <div className="w-full max-w-5xl flex justify-between mt-10 px-10">
+      {/* FOOTER: Botón siguiente alineado a la derecha */}
+      <div className="w-full max-w-5xl mx-auto mt-10 px-4 sm:px-10 flex justify-end">
         <BotonesFormulario
           isFormValid={isFormValid}
           onNext={() => router.push("/host/home/add/carcoche")}
         />
       </div>
-    </div>
+    </main>
   );
 }

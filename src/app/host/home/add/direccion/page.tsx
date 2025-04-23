@@ -6,8 +6,6 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { useFormContext } from "../context/FormContext";
 import { Button } from "@/components/ui/button";
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
-
 import CampoPais from "../../../components/Direccion/CampoPais";
 import CampoDepartamento from "../../../components/Direccion/CampoDepartamento";
 import CampoProvincia from "../../../components/Direccion/CampoProvincia";
@@ -20,16 +18,15 @@ const API_BASE_URL = "http://localhost:4000/api";
 
 export default function AddDireccion() {
   const router = useRouter();
-  const [cancelOpen, setCancelOpen] = useState(false);
   const { formData, updateDireccion } = useFormContext();
-  const { direccion } = formData; // Acceder a 'direccion' desde el contexto
+  const { direccion } = formData;
 
   // Campos
-  const [pais, setPais] = useState(direccion?.ciudadId?.toString() || ""); // Usar datos del contexto si están disponibles
-  const [departamento, setDepartamento] = useState(direccion?.zona || ""); // Usar datos del contexto si están disponibles
-  const [provincia, setProvincia] = useState(direccion?.provinciaId?.toString() || ""); // Usar datos del contexto si están disponibles
-  const [calle, setCalle] = useState(direccion?.calle || ""); // Usar datos del contexto si están disponibles
-  const [numCasa, setNumCasa] = useState(direccion?.num_casa || ""); // Usar datos del contexto si están disponibles
+  const [pais, setPais] = useState(direccion?.ciudadId?.toString() || "");
+  const [departamento, setDepartamento] = useState(direccion?.zona || "");
+  const [provincia, setProvincia] = useState(direccion?.provinciaId?.toString() || "");
+  const [calle, setCalle] = useState(direccion?.calle || "");
+  const [numCasa, setNumCasa] = useState(direccion?.num_casa || "");
 
   // Errores
   const [paisError, setPaisError] = useState("");
@@ -71,17 +68,16 @@ export default function AddDireccion() {
 
   // Validación del formulario
   useEffect(() => {
-    const isValid = (
-      paisError === "" && pais.trim() !== "" &&
-      departamentoError === "" && departamento.trim() !== "" &&
-      provinciaError === "" && provincia.trim() !== "" &&
-      calleError === "" && calle.trim() !== "" &&
-      numCasaError === "" && numCasa.trim() !== ""
-    );
-    setIsFormValid(isValid);
+    const valid =
+      pais && !paisError &&
+      departamento && !departamentoError &&
+      provincia && !provinciaError &&
+      calle && !calleError &&
+      numCasa && !numCasaError;
+    setIsFormValid(Boolean(valid));
   }, [pais, departamento, provincia, calle, numCasa, paisError, departamentoError, provinciaError, calleError, numCasaError]);
 
-  // Cargar datos del contexto al renderizar inicialmente
+  // Carga inicial desde el contexto
   useEffect(() => {
     if (direccion) {
       setPais(direccion.ciudadId?.toString() || "");
@@ -92,44 +88,46 @@ export default function AddDireccion() {
     }
   }, [direccion]);
 
-  // Actualización optimizada del contexto
+  // Sincronización con contexto
   useEffect(() => {
     const timer = setTimeout(() => {
       if (pais || departamento || provincia || calle || numCasa) {
         updateDireccion({
-          ciudadId: pais ? Number(pais) : null, // Asegurar 'null' si está vacío
-          provinciaId: provincia ? Number(provincia) : null, // Asegurar 'null' si está vacío
+          ciudadId: pais ? Number(pais) : null,
+          provinciaId: provincia ? Number(provincia) : null,
           calle,
           zona: departamento,
           num_casa: numCasa,
         });
       }
     }, 100);
-
     return () => clearTimeout(timer);
   }, [pais, departamento, provincia, calle, numCasa, updateDireccion]);
 
-  const handleConfirmExit = () => {
-    router.push("/host/pages");
-  };
-
   return (
-    <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
-      <Link href="/host/pages">
-        <Button
-          variant="secondary"
-          className="flex items-center gap-1 self-start justify-start cursor-pointer w-32 h-10 text-base font-medium transition-all duration-200 hover:bg-gray-100 hover:brightness-90"
-        >
-          <ChevronLeft className="h-3 w-3" />
-          Volver
-        </Button>
-      </Link>
+    <main className="p-6 min-h-screen bg-gray-100">
+      {/* HEADER: Botón Volver y título apilados */}
+      <header className="flex flex-col items-start max-w-5xl mx-auto">
+        <Link href="/host/pages">
+          <Button
+            variant="secondary"
+            className="
+              w-auto sm:w-40 h-10          /* ancho adaptativo, altura reducida */
+              flex items-center gap-1
+              text-base font-medium
+              transition-transform duration-200 ease-in-out transform
+              hover:scale-105 hover:bg-gray-100 hover:brightness-90
+            "
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Volver
+          </Button>
+        </Link>
+        <h1 className="text-5xl font-bold my-5">Dirección</h1> {/* título aumentado */}
+      </header>
 
-      <div className="w-full max-w-5xl flex justify-start">
-        <h1 className="text-4xl font-bold my-5 pl-7">Dirección</h1>
-      </div>
-
-      <div className="w-full max-w-5xl pl-9 space-y-6">
+      {/* SECCIÓN: Campos centrados con padding y separación */}
+      <section className="w-full max-w-5xl mx-auto mt-6 space-y-6 px-4 sm:px-9">
         <CampoPais
           pais={pais}
           onPaisChange={handlePaisChange}
@@ -168,14 +166,15 @@ export default function AddDireccion() {
           numCasaError={numCasaError}
           setNumCasaError={setNumCasaError}
         />
-      </div>
+      </section>
 
-      <div className="w-full max-w-5xl flex justify-between mt-10 px-10">
+      {/* FOOTER: Botón siguiente alineado a la derecha */}
+      <div className="w-full max-w-5xl mx-auto mt-10 px-4 sm:px-10 flex justify-end pr-10">
         <BotonesFormulario
           isFormValid={isFormValid}
           onNext={() => router.push("/host/home/add/datosprincipales")}
         />
       </div>
-    </div>
+    </main>
   );
 }
