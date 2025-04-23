@@ -36,11 +36,10 @@ export default function CampoPais({
   const [countries, setCountries] = useState<Country[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState("");
-
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
-
+  
     async function fetchCountries() {
       try {
         setLoading(true);
@@ -48,10 +47,16 @@ export default function CampoPais({
         const response = await axios.get(`${apiUrl}/paises`, {
           signal: controller.signal
         });
-        
+  
         if (isMounted) {
           setCountries(response.data);
           setPaisError("");
+  
+          // Buscar "Bolivia" y seleccionarlo si no hay país seleccionado aún
+          const bolivia = response.data.find((c: Country) => c.nombre === "Bolivia");
+          if (bolivia && !pais) {
+            onPaisChange(bolivia.id.toString());
+          }
         }
       } catch (err) {
         if (isMounted) {
@@ -69,15 +74,15 @@ export default function CampoPais({
         }
       }
     }
-
+  
     fetchCountries();
-
+  
     return () => {
       isMounted = false;
       controller.abort();
     };
-  }, [apiUrl, setPaisError]);
-
+  }, [apiUrl, setPaisError, onPaisChange, pais]);
+  
   const handleValueChange = (value: string) => {
     onPaisChange(value);
     setDepartamento("");

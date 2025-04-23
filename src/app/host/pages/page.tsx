@@ -4,11 +4,13 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+//import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Header from "@/components/ui/Header";
+//import { header} from "@/components/ui/Header";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -111,20 +113,11 @@ export default function ViewCarsPage() {
 
   return (
     <div className="p-6 flex flex-col items-center min-h-screen bg-gray-100">
-      <header className="border-b w-full">
-        <div className="flex h-12 items-center justify-between pl-2 md:pl-2 mt-[-10px]">
-          <div className="font-bold text-xl mt-[-20px]">
-            <Link href="/">REDIBO</Link>
-          </div>
-          <div className="mr-2 pointer-events-none">
-            <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </div>
-        </div>
-      </header>
-
+      <Header
+        forceLoggedInView={true} // Criterio 2: Siempre muestra la vista de logueado
+        disableInteractions={true} // Criterio 1: Deshabilita interacciones (excepto logo)
+                                  // Criterio 3 (Logo activo): Se maneja dentro de Header.tsx
+      />
       <div className="w-full max-w-5xl">
         <h1 className="text-4xl font-bold text-center my-8">Mis Carros</h1>
        <div className="flex items-center justify-between w-full">
@@ -270,7 +263,7 @@ export default function ViewCarsPage() {
           ))}
         </InfiniteScroll>
 
-        {!hasMore && (
+        {!hasMore && cars.length > 0 && ( // Condición añadida para no mostrar si no hay carros
           <p className="text-center text-gray-500 mt-6">
             No hay más autos para mostrar
           </p>
