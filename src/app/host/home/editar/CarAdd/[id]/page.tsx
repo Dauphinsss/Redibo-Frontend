@@ -46,6 +46,7 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -82,6 +83,15 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
     fetchCaracteristicas();
   }, [vehiculoId]);
 
+  useEffect(() => {
+    // Validar número de características cada vez que cambia la selección
+    if (selectedItems.length < 2) {
+      setValidationError("Debe seleccionar al menos 2 características adicionales");
+    } else {
+      setValidationError(null);
+    }
+  }, [selectedItems]);
+
   const handleCheckboxChange = (id: string) => {
     setSelectedItems(prev =>
       prev.includes(id)
@@ -102,18 +112,25 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
       })
       .filter(Boolean) as string[];
     
-    // Verificar que haya al menos una característica seleccionada
-    if (caracteristicasParaEnviar.length === 0) {
-      setError("Debe seleccionar al menos una característica adicional");
+    // Verificar que haya al menos dos características seleccionadas
+    if (caracteristicasParaEnviar.length < 2) {
+      setValidationError("Debe seleccionar al menos 2 características adicionales");
       return;
     }
     
     // Si la validación pasa, el diálogo se abrirá automáticamente
     // porque el botón está conectado como AlertDialogTrigger
+    setValidationError(null);
   };
 
   // Función para procesar el envío después de confirmar en el diálogo
   const handleConfirmSubmit = async () => {
+    // Verificar nuevamente antes de enviar
+    if (selectedItems.length < 2) {
+      setValidationError("Debe seleccionar al menos 2 características adicionales");
+      return;
+    }
+    
     setIsSaving(true);
     setError(null);
     setSuccessMessage(null);
@@ -143,6 +160,7 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
         }
       );
 
+      setSuccessMessage("Características guardadas correctamente");
       
       // Redirigir después de un breve retraso
       setTimeout(() => router.push("/host/pages"), 1500);
@@ -220,6 +238,14 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
             ))}
           </div>
 
+          {validationError && (
+            <div className="w-full mb-4">
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                {validationError}
+              </div>
+            </div>
+          )}
+
           <div className="w-full flex justify-between items-center mt-10">
             <Button 
               type="button"
@@ -240,7 +266,7 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
                   type="submit"
                   variant="default"
                   className="h-12 text-lg font-semibold text-white px-6"
-                  disabled={isSaving || selectedItems.length === 0}
+                  disabled={isSaving || selectedItems.length < 2}
                 >
                   {isSaving ? (
                     <>
