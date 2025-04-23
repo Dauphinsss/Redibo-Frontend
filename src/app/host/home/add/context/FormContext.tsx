@@ -1,3 +1,4 @@
+// src/contexts/FormContext.tsx
 "use client";
 
 import {
@@ -8,18 +9,19 @@ import {
   useCallback,
   useMemo
 } from "react";
+import { createFullCar, FullCarPayload } from "@/app/host/services/carService";
 
 interface DireccionData {
-  provinciaId: number | null; // Permitir null
+  id_provincia: number | null;
+  ciudadId?: number | null;
   calle: string;
   zona: string;
-  num_casa?: string;
-  ciudadId?: number | null; // Incluir ciudadId y permitir null
+  num_casa: string;
 }
 
 interface DatosPrincipalesData {
   vim: string;
-  anio: number;
+  año: number;
   marca: string;
   modelo: string;
   placa: string;
@@ -70,29 +72,11 @@ interface FormContextType {
 const FormContext = createContext<FormContextType | undefined>(undefined);
 
 const initialFormData: FormData = {
-  direccion: { provinciaId: null, calle: "", zona: "", num_casa: "", ciudadId: null }, // provinciaId y ciudadId inicializados como null
-  datosPrincipales: {
-    vim: "",
-    anio: new Date().getFullYear(),
-    marca: "",
-    modelo: "",
-    placa: ""
-  },
-  caracteristicas: {
-    combustibleIds: [],
-    asientos: 0,
-    puertas: 0,
-    transmicion: "automatica",
-    soat: false
-  },
+  direccion: { id_provincia: null, ciudadId: null, calle: "", zona: "", num_casa: "" },
+  datosPrincipales: { vim: "", año: new Date().getFullYear(), marca: "", modelo: "", placa: "" },
+  caracteristicas: { combustibleIds: [], asientos: 0, puertas: 0, transmicion: "automatica", soat: false },
   caracteristicasAdicionales: { extraIds: [] },
-  finalizacion: {
-    imagenes: [],
-    num_mantenimientos: 0,
-    precio_por_dia: 0,
-    estado: "disponible",
-    descripcion: ""
-  }
+  finalizacion: { imagenes: [], num_mantenimientos: 0, precio_por_dia: 0, estado: "disponible", descripcion: "" }
 };
 
 export function FormProvider({ children }: { children: ReactNode }) {
@@ -102,28 +86,23 @@ export function FormProvider({ children }: { children: ReactNode }) {
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const updateDireccion = useCallback(
-    (data: DireccionData) =>
-      setFormData((prev) => ({ ...prev, direccion: data })),
+    (data: DireccionData) => setFormData(prev => ({ ...prev, direccion: data })),
     []
   );
   const updateDatosPrincipales = useCallback(
-    (data: DatosPrincipalesData) =>
-      setFormData((prev) => ({ ...prev, datosPrincipales: data })),
+    (data: DatosPrincipalesData) => setFormData(prev => ({ ...prev, datosPrincipales: data })),
     []
   );
   const updateCaracteristicas = useCallback(
-    (data: CaracteristicasData) =>
-      setFormData((prev) => ({ ...prev, caracteristicas: data })),
+    (data: CaracteristicasData) => setFormData(prev => ({ ...prev, caracteristicas: data })),
     []
   );
   const updateCaracteristicasAdicionales = useCallback(
-    (data: CaracteristicasAdicionalesData) =>
-      setFormData((prev) => ({ ...prev, caracteristicasAdicionales: data })),
+    (data: CaracteristicasAdicionalesData) => setFormData(prev => ({ ...prev, caracteristicasAdicionales: data })),
     []
   );
   const updateFinalizacion = useCallback(
-    (data: FinalizacionData) =>
-      setFormData((prev) => ({ ...prev, finalizacion: data })),
+    (data: FinalizacionData) => setFormData(prev => ({ ...prev, finalizacion: data })),
     []
   );
   const resetForm = useCallback(() => {
@@ -133,21 +112,20 @@ export function FormProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const validateForm = useCallback(() => {
-    const { direccion, datosPrincipales, caracteristicas, finalizacion, caracteristicasAdicionales } =
-      formData;
+    const { direccion, datosPrincipales, caracteristicas, caracteristicasAdicionales, finalizacion } = formData;
     return (
-      direccion.provinciaId !== null && // Modificado para permitir null inicialmente
+      direccion.id_provincia !== null &&
       direccion.calle.trim() !== "" &&
       direccion.zona.trim() !== "" &&
       datosPrincipales.vim.trim() !== "" &&
-      datosPrincipales.anio >= 1900 &&
+      datosPrincipales.año >= 1900 &&
       datosPrincipales.marca.trim() !== "" &&
       datosPrincipales.modelo.trim() !== "" &&
       datosPrincipales.placa.trim() !== "" &&
       caracteristicas.combustibleIds.length > 0 &&
       caracteristicas.asientos > 0 &&
       caracteristicas.puertas > 0 &&
-      caracteristicasAdicionales.extraIds.length > 0 && // Validación de extraIds
+      caracteristicasAdicionales.extraIds.length > 0 &&
       finalizacion.imagenes.length >= 3 &&
       finalizacion.precio_por_dia > 0 &&
       finalizacion.estado.trim() !== ""
@@ -158,11 +136,8 @@ export function FormProvider({ children }: { children: ReactNode }) {
     new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => {
-        const b64 = (reader.result as string).split(",")[1];
-        resolve(b64);
-      };
-      reader.onerror = (err) => reject(err);
+      reader.onload = () => resolve((reader.result as string).split(",")[1]);
+      reader.onerror = err => reject(err);
     });
 
   const submitForm = useCallback(async () => {
@@ -173,77 +148,46 @@ export function FormProvider({ children }: { children: ReactNode }) {
     setIsSubmitting(true);
     setSubmitError(null);
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setSubmitError("No se encontró un token de autenticación. Por favor, inicie sesión.");
-      return;
-    }
-
     const {
-      direccion: { provinciaId, calle, zona, num_casa, ciudadId }, // Incluir ciudadId
-      datosPrincipales: { vim, anio, marca, modelo, placa },
+      direccion: { id_provincia, calle, zona, num_casa },
+      datosPrincipales: { vim, año, marca, modelo, placa },
       caracteristicas: { combustibleIds, asientos, puertas, transmicion, soat },
       caracteristicasAdicionales: { extraIds },
-      finalizacion: {
-        imagenes,
-        num_mantenimientos,
-        precio_por_dia,
-        estado,
-        descripcion
-      }
+      finalizacion: { imagenes, num_mantenimientos, precio_por_dia, estado, descripcion }
     } = formData;
 
     const imagesBase64 = await Promise.all(imagenes.map(toBase64));
 
-    const payload = {
-      provinciaId,
-      ciudadId, // Incluir ciudadId en el payload
+    const payload: FullCarPayload = {
+      id_provincia: id_provincia!,
       calle,
       zona,
-      num_casa: num_casa || null,
+      num_casa,
       vim,
-      anio,
+      año,
       marca,
       modelo,
       placa,
       asientos,
       puertas,
       soat,
+      transmicion,
       combustibleIds,
       extraIds,
-      imagesBase64,
       precio_por_dia,
       num_mantenimientos,
-      transmicion,
       estado,
       descripcion,
-
-   };
+      imagesBase64
+    };
 
     try {
-      const apiUrl = "http://localhost:4000/api/v2";
-      if (!apiUrl) {
-        throw new Error("La variable de entorno NEXT_PUBLIC_API_URL no está definida.");
-      }
-
-      const res = await fetch(`${apiUrl}/cars/full`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token") || ""}`
-        },
-        body: JSON.stringify(payload)
-      });
-
-      const json = await res.json();
-      if (!res.ok) {
-        const errorMsg = Array.isArray(json.errors)
-          ? json.errors.map((e: any) => `${e.field}: ${e.message}`).join("\n")
-          : json.message || JSON.stringify(json);
-        setSubmitError(errorMsg);
-      } else {
+      const result = await createFullCar(payload);
+      if (result.success) {
         setSubmitSuccess(true);
         resetForm();
+      } else {
+        setSubmitError(result.message || "Error al crear el carro");
       }
     } catch (err: any) {
       setSubmitError(err.message || "Error desconocido");
@@ -252,28 +196,24 @@ export function FormProvider({ children }: { children: ReactNode }) {
     }
   }, [formData, validateForm, resetForm]);
 
-  const value = useMemo(() => ({
-    formData,
-    isSubmitting,
-    submitError,
-    submitSuccess,
-    updateDireccion,
-    updateDatosPrincipales,
-    updateCaracteristicas,
-    updateCaracteristicasAdicionales,
-    updateFinalizacion,
-    submitForm,
-    resetForm
-  }), [formData, isSubmitting, submitError, submitSuccess, updateDireccion, updateDatosPrincipales, updateCaracteristicas, updateCaracteristicasAdicionales, updateFinalizacion, submitForm, resetForm]);
-
-
-  return (
-    <FormContext.Provider
-      value={value}
-    >
-      {children}
-    </FormContext.Provider>
+  const value = useMemo(
+    () => ({
+      formData,
+      isSubmitting,
+      submitError,
+      submitSuccess,
+      updateDireccion,
+      updateDatosPrincipales,
+      updateCaracteristicas,
+      updateCaracteristicasAdicionales,
+      updateFinalizacion,
+      submitForm,
+      resetForm
+    }),
+    [formData, isSubmitting, submitError, submitSuccess, updateDireccion, updateDatosPrincipales, updateCaracteristicas, updateCaracteristicasAdicionales, updateFinalizacion, submitForm, resetForm]
   );
+
+  return <FormContext.Provider value={value}>{children}</FormContext.Provider>;
 }
 
 export function useFormContext() {

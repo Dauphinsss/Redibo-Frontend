@@ -9,17 +9,17 @@ import {
 } from "@/components/ui/select";
 
 interface CampoAnioProps {
-  anio: string;
+  año: string;
   onAnioChange: (value: string) => void;
-  anioError: string;
+  añoError: string;
   setAnioError: (value: string) => void;
   currentYear: number;
 }
 
 export default function CampoAnio({
-  anio,
+  año,
   onAnioChange,
-  anioError,
+  añoError,
   setAnioError,
   currentYear,
 }: CampoAnioProps) {
@@ -42,7 +42,7 @@ export default function CampoAnio({
     <div className="flex flex-col max-w-md">
       <label className="text-base font-medium mb-1">Año del coche:<span className="text-red-600"> *</span></label>
       <Select 
-          value={anio || undefined} 
+          value={año || undefined} 
           onValueChange={handleSelectChange}
         >
         <SelectTrigger className="w-full">
@@ -57,8 +57,8 @@ export default function CampoAnio({
           </SelectContent>
         </Select>
 
-      {anioError && (
-        <p className="text-sm text-red-600 mt-1">{anioError}</p>
+      {añoError && (
+        <p className="text-sm text-red-600 mt-1">{añoError}</p>
       )}
     </div>
   );

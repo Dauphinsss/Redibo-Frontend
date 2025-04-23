@@ -24,7 +24,7 @@ export default function AddDireccion() {
   // Campos
   const [pais, setPais] = useState(direccion?.ciudadId?.toString() || "");
   const [departamento, setDepartamento] = useState(direccion?.zona || "");
-  const [provincia, setProvincia] = useState(direccion?.provinciaId?.toString() || "");
+  const [provincia, setProvincia] = useState(direccion?.id_provincia?.toString() || "");
   const [calle, setCalle] = useState(direccion?.calle || "");
   const [numCasa, setNumCasa] = useState(direccion?.num_casa || "");
 
@@ -82,7 +82,7 @@ export default function AddDireccion() {
     if (direccion) {
       setPais(direccion.ciudadId?.toString() || "");
       setDepartamento(direccion.zona || "");
-      setProvincia(direccion.provinciaId?.toString() || "");
+      setProvincia(direccion.id_provincia?.toString() || "");
       setCalle(direccion.calle || "");
       setNumCasa(direccion.num_casa || "");
     }
@@ -94,7 +94,7 @@ export default function AddDireccion() {
       if (pais || departamento || provincia || calle || numCasa) {
         updateDireccion({
           ciudadId: pais ? Number(pais) : null,
-          provinciaId: provincia ? Number(provincia) : null,
+          id_provincia: provincia ? Number(provincia) : null,
           calle,
           zona: departamento,
           num_casa: numCasa,

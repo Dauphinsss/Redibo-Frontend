@@ -1,22 +1,30 @@
 // src/services/authService.ts
-import axios from 'axios';
+import axios from "axios";
 
-const TOKEN_KEY = 'token';
+const TOKEN_KEY = "token";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v2";
+const DEV_TOKEN_ENDPOINT = `${API_BASE}/cars/dev-token`;
 
+/**
+ * Obtiene y almacena en localStorage un token de desarrollo.
+ * Si ya existe uno, lo devuelve directamente.
+ */
 export async function getDevToken(): Promise<string> {
   const stored = localStorage.getItem(TOKEN_KEY);
   if (stored) return stored;
 
-  const res = await axios.get<{ success: boolean; token: string }>(
-    `${process.env.NEXT_PUBLIC_API_URL}/cars/dev-token`
-  );
-  if (res.data.success && res.data.token) {
-    localStorage.setItem(TOKEN_KEY, res.data.token);
-    return res.data.token;
+  const response = await axios.get<{ success: boolean; token: string }>(DEV_TOKEN_ENDPOINT);
+  if (response.data.success && response.data.token) {
+    localStorage.setItem(TOKEN_KEY, response.data.token);
+    return response.data.token;
   }
-  throw new Error('No se obtuvo token de desarrollo');
+
+  throw new Error("No se pudo obtener el token de desarrollo");
 }
 
+/**
+ * Recupera el token almacenado en localStorage, o null si no existe.
+ */
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
