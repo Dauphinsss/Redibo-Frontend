@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,17 @@ import BotonesFormulario from "../../../components/inputimagen/BotonesFormulario
 export default function InputImagen() {
   const { formData, updateFinalizacion, submitForm } = useFormContext();
   const { finalizacion } = formData;
+  
+  // Ref para controlar las actualizaciones y evitar ciclos
+  const updatingFromContextRef = useRef(false);
+  const formDataRef = useRef({
+    mainImage: null as File | null,
+    secondaryImage1: null as File | null,
+    secondaryImage2: null as File | null,
+    mantenimientos: "",
+    precio: "",
+    descripcion: ""
+  });
 
   // Estado para almacenar las imágenes cargadas
   const [mainImage, setMainImage] = useState<File | null>(finalizacion?.imagenes?.[0] || null);
@@ -38,8 +49,41 @@ export default function InputImagen() {
   // Estado para controlar la habilitación del botón finalizar
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
-  // Función estable para actualizar el contexto, adaptada a las propiedades definidas en FormContext
-  const updateContext = useCallback(() => {
+  // Función para actualizar el contexto de forma segura
+  const updateContextSafely = () => {
+    // Verificar si algún valor realmente cambió
+    const currentData = {
+      mainImage,
+      secondaryImage1,
+      secondaryImage2,
+      mantenimientos,
+      precio,
+      descripcion
+    };
+    
+    const prevData = formDataRef.current;
+    
+    // No actualizar el contexto si los valores son iguales
+    if (
+      prevData.mainImage === currentData.mainImage &&
+      prevData.secondaryImage1 === currentData.secondaryImage1 &&
+      prevData.secondaryImage2 === currentData.secondaryImage2 &&
+      prevData.mantenimientos === currentData.mantenimientos &&
+      prevData.precio === currentData.precio &&
+      prevData.descripcion === currentData.descripcion
+    ) {
+      return;
+    }
+    
+    // Actualizar la referencia
+    formDataRef.current = { ...currentData };
+    
+    // No actualizamos si estamos procesando un cambio desde el contexto
+    if (updatingFromContextRef.current) {
+      return;
+    }
+    
+    // Actualizar el contexto con los valores actuales
     updateFinalizacion({
       imagenes: [mainImage, secondaryImage1, secondaryImage2].filter(Boolean) as File[],
       num_mantenimientos: mantenimientos ? parseInt(mantenimientos) : 0,
@@ -47,7 +91,45 @@ export default function InputImagen() {
       estado: "disponible",
       descripcion
     });
-  }, [mainImage, secondaryImage1, secondaryImage2, mantenimientos, precio, descripcion, updateFinalizacion]);
+  };
+
+  // Inicializa los estados desde el contexto cuando cambia finalizacion
+  useEffect(() => {
+    if (finalizacion) {
+      try {
+        updatingFromContextRef.current = true;
+        
+        // Actualizar estados solo si hay cambios reales
+        if (finalizacion.num_mantenimientos?.toString() !== mantenimientos) {
+          setMantenimientos(finalizacion.num_mantenimientos?.toString() || "");
+        }
+        
+        if (finalizacion.precio_por_dia?.toString() !== precio) {
+          setPrecio(finalizacion.precio_por_dia?.toString() || "");
+        }
+        
+        if (finalizacion.descripcion !== descripcion) {
+          setDescripcion(finalizacion.descripcion || "");
+        }
+        
+        // No podemos actualizar las imágenes desde el contexto directamente,
+        // ya que no podemos convertir urls a File objects
+      } finally {
+        updatingFromContextRef.current = false;
+      }
+    }
+  }, [finalizacion]);
+
+  // Efecto para actualizar el contexto cuando cambien los valores locales
+  useEffect(() => {
+    // Usamos setTimeout para asegurarnos de que la actualización
+    // ocurra después del ciclo de renderizado actual
+    const timeout = setTimeout(() => {
+      updateContextSafely();
+    }, 0);
+    
+    return () => clearTimeout(timeout);
+  }, [mainImage, secondaryImage1, secondaryImage2, mantenimientos, precio, descripcion]);
 
   // Efecto para validación del formulario
   useEffect(() => {
@@ -68,24 +150,6 @@ export default function InputImagen() {
     precio, precioError,
     descripcionError
   ]);
-
-  // Load data from context on initial render
-  useEffect(() => {
-    if (finalizacion) {
-      // It's not possible to pre-fill file inputs for security reasons.
-      // You may need to handle the actual display of images differently 
-      // based on your specific use case.  For example, storing image URLs.
-
-      setMantenimientos(finalizacion.num_mantenimientos?.toString() || "");
-      setPrecio(finalizacion.precio_por_dia?.toString() || "");
-      setDescripcion(finalizacion.descripcion || "");
-    }
-  }, [finalizacion]);
-
-  // Efecto para actualizar el contexto (con dependencias estables)
-  useEffect(() => {
-    updateContext();
-  }, [updateContext]);
 
   const handleSubmit = async (): Promise<{ success: boolean; error?: string }> => {
     try {

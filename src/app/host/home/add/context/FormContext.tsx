@@ -73,7 +73,7 @@ const FormContext = createContext<FormContextType | undefined>(undefined);
 
 const initialFormData: FormData = {
   direccion: { id_provincia: null, ciudadId: null, calle: "", zona: "", num_casa: "" },
-  datosPrincipales: { vim: "", año: new Date().getFullYear(), marca: "", modelo: "", placa: "" },
+  datosPrincipales: { vim: "", año: 0, marca: "", modelo: "", placa: "" },
   caracteristicas: { combustibleIds: [], asientos: 0, puertas: 0, transmicion: "automatica", soat: false },
   caracteristicasAdicionales: { extraIds: [] },
   finalizacion: { imagenes: [], num_mantenimientos: 0, precio_por_dia: 0, estado: "Disponible", descripcion: "" }

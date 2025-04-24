@@ -30,7 +30,7 @@ export default function CampoAsientos({
         setError("");
       }
     } else {
-      setError("Solo se permiten números");
+      setError("Solo se permiten números positivos");
     }
   };
 
