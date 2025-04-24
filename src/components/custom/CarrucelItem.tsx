@@ -9,7 +9,7 @@ type CarrucelItemProps = {
 
 function CarrucelItem({ car }: CarrucelItemProps) {
   return (
-    <CarouselItem className="pl-1 md:basis-1 xl:basis-1/4">
+    <CarouselItem className="pl-1 sm:basis-1/2 md:basis-1/3 lg:basis-1/3 xl:basis-1/4">
       <div className="p-1 ">
         <Card className='p-0 rounded-t-2xl bg-black border-0'>
           <CardContent className="flex flex-col items-center justify-items-start p-0 text-white">

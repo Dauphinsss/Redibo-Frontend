@@ -41,8 +41,8 @@ function Carrucel() {
           <CarrucelItem car={car} key={idx} />
         ))}
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className='left-[-15px]'/>
+      <CarouselNext className='right-[-15px]'/>
     </Carousel>
   )
 }
