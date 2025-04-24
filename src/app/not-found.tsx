@@ -39,7 +39,7 @@ export default function NotFound() {
           
           <div className="md:w-1/2 flex justify-center">
             <Image
-              src="https://res.cloudinary.com/dzoeeaovz/image/upload/v1745119055/Error404_ffbvg7.png"
+              src="/Error404_ffbvg7.png"
               alt="Error 404"
               width={500}
               height={500}
