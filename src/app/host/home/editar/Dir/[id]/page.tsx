@@ -342,6 +342,10 @@ const EditarDireccionPage: React.FC = () => {
     
     if (!value.trim()) {
       setCalleError("La dirección de calle es obligatoria");
+    } else if (!/^[\w\s.]+$/.test(value)) {
+      setCalleError("La calle solo puede contener letras, números, espacios y puntos");
+    } else if (value.length > 200) {
+      setCalleError("La calle no puede exceder los 200 caracteres");
     } else {
       setCalleError(null);
     }
@@ -446,7 +450,7 @@ const EditarDireccionPage: React.FC = () => {
         }
       );
       
-      setSuccessMessage("Dirección actualizada correctamente");
+ //     setSuccessMessage("Dirección actualizada correctamente");
       
       // Redirigir después de un breve retraso
       setTimeout(() => router.push("/host"), 1500);
