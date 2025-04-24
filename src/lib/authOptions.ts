@@ -9,22 +9,21 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   pages: {
-    signIn: "/login", // Ruta personalizada de login
+    signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
-      // Guardamos el ID del usuario en el token (si inicia por primera vez)
-      if (user) token.id = (user as any).id;
+    async jwt({ token, account }) {
+      if (account) {
+        token.accessToken = account.id_token || account.access_token;
+      }
       return token;
     },
     async session({ session, token }) {
-      // Transferimos el ID al objeto de sesión (para el frontend)
-      if (token && session.user) {
-        session.user.id = token.id as string;
-      }
-      return session;
+      return {
+        ...session,
+        accessToken: token.accessToken,
+      };
     },
-    
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

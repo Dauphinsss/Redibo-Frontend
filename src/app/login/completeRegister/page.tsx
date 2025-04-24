@@ -71,7 +71,7 @@ export default function CompleteRegisterForm() {
     const userData = {
       nombre: session?.user?.name || "",
       correo: session?.user?.email || "",
-      fechaNacimiento, // ✅ ahora en snake_case
+      fechaNacimiento, // ahora en snake_case
       genero,
       ciudad,
       telefono,
@@ -80,12 +80,12 @@ export default function CompleteRegisterForm() {
     };
   
     try {
-      console.log("🧪 Enviando al backend:", userData);
-      console.log("🧪 Clave fecha_nacimiento:", userData.fechaNacimiento,); // ✅ Este ya no fallará
+      console.log("Enviando al backend:", userData);
+      console.log("Clave fecha_nacimiento:", userData.fechaNacimiento,); //Este ya no fallará
   
       // Enviar al backend (registro real)
-      const response = await axios.post(`${API_URL}/api/auth/register-google`, userData);
-      toast.success("✅ Registro exitoso. Bienvenido/a a REDIBO.");
+    
+      toast.success("Registro exitoso. Bienvenido/a a REDIBO.");
   
       // Cerrar el popup y notificar a la ventana principal
       if (window.opener) {
@@ -98,7 +98,7 @@ export default function CompleteRegisterForm() {
         router.push("/");
       }
     } catch (error: any) {
-      console.error("❌ Error al completar registro con Google:", error);
+      console.error(" Error al completar registro con Google:", error);
       toast.error("Ocurrió un error al registrar tu perfil.");
     }
   };

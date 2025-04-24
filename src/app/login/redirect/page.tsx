@@ -1,4 +1,4 @@
-// ✅ 1. Login Redirect Page
+//1. Login Redirect Page
 // Archivo: src/app/login/redirect/page.tsx
 
 "use client";
@@ -21,7 +21,7 @@ export default function LoginRedirectPage() {
 
         try {
           const { data } = await axios.get(url);
-          console.log("✅ Respuesta del backend:", data);
+          console.log("Respuesta del backend:", data);
 
           if (data.perfilCompleto) {
             // Guardar en localStorage
@@ -34,7 +34,7 @@ export default function LoginRedirectPage() {
             router.push("/login/completeRegister");
           }
         } catch (error) {
-          console.error("❌ Error al verificar perfil:", error);
+          console.error("Error al verificar perfil:", error);
           router.push("/login/completeRegister");
         }
       }
