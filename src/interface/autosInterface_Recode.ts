@@ -1,5 +1,6 @@
 export interface AutoImage {
   id: number;
+  estado: string;
   data: string;
 }
 
@@ -18,7 +19,7 @@ export interface InfoDestacableProps {
 
 }
 export interface ReservaProps {
-  precio: string;
+  precio: number;
 }
 export interface Direccion {
   calle?: string;

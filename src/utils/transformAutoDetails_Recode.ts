@@ -1,22 +1,32 @@
-import { AutoData } from './../interface/autosInterface';
+import { RawAutoDetails_Interface_Recode } from "@/interface/RawAutoDetails_Interface_Recode";
+import { AutoDetails_interface_Recode } from "@/interface/AutoDetails_interface_Recode";
 
-export function transformAutoDetails_Recode(autoData: AutoData) {
-    return {
-        nombre: `${autoData.marca || "Marca desconocida"} ${autoData.modelo || "Modelo desconocido"}`,
-        imagenes: autoData.imagen?.map((img) => ({
-            id: img.id,
-            data: img.data,
-            })) || [],
-        descripcion: `Auto ${autoData.marca || "desconocido"} ${autoData.modelo || "desconocido"} en excelente estado`,
-        host: {
-            nombre: "Anfitrión Ejemplo",
-            calificacion: 4.8,
-            autosCount: 3,
-            },
-        ubicacion: `${autoData.direccion?.calle || "Calle desconocida"}, ${autoData.direccion?.zona || "Zona desconocida"}`,
-        precio: autoData.precio_por_dia || "Precio no disponible",
-        combustible: Array.isArray(autoData.combustiblecarro) && autoData.combustiblecarro.length > 0
-        ? autoData.combustiblecarro[0]?.tipocombustible?.tipo_de_combustible || "No especificado"
-        : "No especificado"
-    };
-}
+export const transformAutoDetails_Recode = (
+    item: RawAutoDetails_Interface_Recode
+    ): AutoDetails_interface_Recode => ({
+    marca: item.marca,
+    modelo: item.modelo,
+    placa: item.placa,
+    anio: item.anio,
+    asientos: item.asientos,
+    puertas: item.puertas,
+    soat: item.soat,
+    precio: Number(item.precio_por_dia),
+    descripcion: item.descripcion,
+    transmision: item.transmision,
+    calle: item.direccion?.calle || "",
+    zona: item.direccion?.zona || "",
+    ciudad: item.direccion?.provincia?.ciudad?.nombre || "",
+    provincia: item.direccion?.provincia?.nombre || "",
+    nombreHost: item.usuario_rol?.usuario?.nombre || "",
+    combustibles:
+        item.combustiblecarro?.map(
+        (c) => c.tipocombustible?.tipo_de_combustible
+        ).filter(Boolean) as string[] || [],
+    imagenes:
+        item.imagen?.map(({ id, data }) => ({ id, data })) || [],
+    caracteristicasAdicionales:
+        item.caracteristicasadicionalescarro?.map(
+        (c) => c.caracteristicas_adicionales?.nombre
+        ) || [],
+});

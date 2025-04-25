@@ -15,18 +15,20 @@ export default function NotFound() {
               
               <div className="space-y-2">
                 <p className="text-gray-500">Link del home:</p>
-                <Link 
-                  href="/" 
+                <a
+                  href="https://home-buscador.vercel.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                 >
                   Página de inicio
-                </Link>
+                </a>
               </div>
               
               <div className="space-y-2 mt-4">
                 <p className="text-gray-500">Resultados de búsqueda:</p>
                 <Link 
-                  href="/homeBuscador" 
+                  href="https://home-buscador.vercel.app/homeBuscador_Recode" 
                   className="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
                 >
                   Ver resultados
@@ -37,7 +39,7 @@ export default function NotFound() {
           
           <div className="md:w-1/2 flex justify-center">
             <Image
-              src="https://res.cloudinary.com/dzoeeaovz/image/upload/v1745119055/Error404_ffbvg7.png"
+              src="/Error404_ffbvg7.png"
               alt="Error 404"
               width={500}
               height={500}

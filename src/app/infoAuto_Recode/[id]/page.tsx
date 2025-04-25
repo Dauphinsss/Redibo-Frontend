@@ -23,29 +23,31 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <main className="w-full flex flex-col items-center px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8 py-6">
           <div className="flex-1">
-            <Autoimag imagenes={auto.imagenes} nombre={auto.nombre} />
+            <Autoimag 
+              imagenes={auto.imagenes} 
+              nombre={auto.modelo}/>
             <InfoPrincipal
               asientos={5}
               puertas={4}
-              transmision="Automática"
-              combustible={auto.combustible}
+              transmision={auto.transmision}
+              combustible={auto.combustibles.join(', ')}
               calificacion={4.5}
-              direccion={auto.ubicacion}
+              direccion={`${auto.ciudad}, ${auto.calle}`}
             />
             <DescripcionAuto descripcion={auto.descripcion} />
             <DescriHost
-              nombreHost={auto.host.nombre}
-              calificacion={auto.host.calificacion}
-              numAuto={auto.host.autosCount}
+              nombreHost={auto.nombreHost}
+              calificacion={4.5}
+              numAuto={1}
             />
           </div>
           <div className="lg:w-1/3">
             <div className="sticky top-4 flex flex-col gap-4">
               <InfoDestacable
-                marca={autoData.marca}
-                modelo={autoData.modelo}
-                anio={autoData.anio}
-                soat={autoData.soat}
+                marca={auto.marca}
+                modelo={auto.modelo}
+                anio={auto.anio}
+                soat={auto.soat}
               />
               <Reserva precio={auto.precio} />
             </div>

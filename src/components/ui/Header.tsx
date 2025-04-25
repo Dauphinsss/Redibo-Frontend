@@ -42,7 +42,7 @@ export default function Header() {
                 <Link href="/" className="text-sm font-medium">
                   Inicio
                 </Link>
-                <Link href="/homeBuscador" className="text-sm font-medium">
+                <Link href="/homeBuscador_Recode" className="text-sm font-medium">
                   Buscar
                 </Link>
                 <Link href="/acerca" className="text-sm font-medium">
@@ -100,7 +100,7 @@ export default function Header() {
           <Link href="/" className="text-sm font-medium">
             Inicio
           </Link>
-          <Link href="/homeBuscador" className="text-sm font-medium">
+          <Link href="/homeBuscador_Recode" className="text-sm font-medium">
             Buscar
           </Link>
           <Link href="/acerca" className="text-sm font-medium">

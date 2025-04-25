@@ -1,28 +1,25 @@
-// next.config.js o next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**.cloudinary.com'
+        hostname: 'res.cloudinary.com',
       },
       {
         protocol: 'https',
-        hostname:'**.shutterstock.com',
+        hostname: 'image.shutterstock.com',
       },
       {
         protocol: 'https',
-        hostname: '**.freepik.com',
+        hostname: 'img.freepik.com',
       },
       {
         protocol: 'https',
-        hostname: '**.motork.net',
+        hostname: 'www.motork.net',
       }
     ]
   }
-
-  
-}
+};
 
 export default nextConfig;

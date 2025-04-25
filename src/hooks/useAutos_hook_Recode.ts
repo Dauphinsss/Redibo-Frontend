@@ -49,21 +49,22 @@ export function useAutos(cantidadPorLote = 8) {
                 const palabrasBusqueda = query.split(" ");
                 return palabrasBusqueda.every(palabra => textoNormalizado.includes(palabra));
             });
+            resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
         }
 
         switch (ordenSeleccionado) {
-        case 'Modelo Ascendente':
-            resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
-            break;
-        case 'Modelo Descendente':
-            resultado.sort((a, b) => b.modelo.localeCompare(a.modelo));
-            break;
-        case 'Precio bajo a alto':
-            resultado.sort((a, b) => a.precioPorDia - b.precioPorDia);
-            break;
-        case 'Precio alto a bajo':
-            resultado.sort((a, b) => b.precioPorDia - a.precioPorDia);
-            break;
+            case 'Modelo Ascendente':
+                resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
+                break;
+            case 'Modelo Descendente':
+                resultado.sort((a, b) => b.modelo.localeCompare(a.modelo));
+                break;
+            case 'Precio bajo a alto':
+                resultado.sort((a, b) => a.precioPorDia - b.precioPorDia);
+                break;
+            case 'Precio alto a bajo':
+                resultado.sort((a, b) => b.precioPorDia - a.precioPorDia);
+                break;
         }
 
         setAutosFiltrados(resultado);
@@ -71,7 +72,9 @@ export function useAutos(cantidadPorLote = 8) {
 
     useEffect(() => {
         filtrarYOrdenarAutos();
-    }, [filtrarYOrdenarAutos]);
+        setAutosVisibles(cantidadPorLote);
+
+    }, [filtrarYOrdenarAutos, cantidadPorLote]);
 
     const autosActuales = useMemo(() => {
         return autosFiltrados.slice(0, autosVisibles);
