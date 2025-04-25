@@ -131,7 +131,6 @@ export function useAutos(cantidadPorLote = 8) {
         return sNormal.startsWith(normalizadoTexto);
       }) || posiblesSugerencias[0];
     
-      const sugerenciaNormalizada = normalizar(sugerencia);
       const diferencia = sugerencia.slice(textoSinEspaciosExtra.length);
     
       return busqueda + diferencia;
