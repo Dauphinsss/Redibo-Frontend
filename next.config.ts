@@ -16,7 +16,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'www.motork.net',
+        hostname: 'cdn-datak.motork.net',
       }
     ]
   }
