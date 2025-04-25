@@ -80,6 +80,54 @@ export function useAutos(cantidadPorLote = 8) {
     const mostrarMasAutos = () => {
         setAutosVisibles(prev => prev + cantidadPorLote);
     };
+    
+    const obtenerSugerencia = (busqueda: string): string => {
+      if (!busqueda.trim()) return "";
+    
+      const normalizar = (t: string) =>
+        t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    
+      const palabrasBusqueda = normalizar(busqueda).split(/\s+/).filter(Boolean);
+    
+      const match = autosFiltrados.find((auto) => {
+        const combinaciones = [
+          `${auto.marca} ${auto.modelo}`,
+          `${auto.modelo} ${auto.marca}`,
+        ];
+    
+        return combinaciones.some((combinado) => {
+          const combinadoNormalizado = normalizar(combinado)
+            .replace(/[^\p{L}\p{N}\s.\-\/]/gu, "")
+            .replace(/\s+/g, " ")
+            .trim();
+          return palabrasBusqueda.every((palabra) =>
+            combinadoNormalizado.includes(palabra)
+          );
+        });
+      });
+    
+      if (!match) return "";
+    
+      const posiblesSugerencias = [
+        `${match.marca} ${match.modelo}`,
+        `${match.modelo} ${match.marca}`,
+      ];
+    
+      const textoSinEspaciosExtra = busqueda.replace(/\s+/g, " ").trimStart();
+      const normalizadoTexto = normalizar(textoSinEspaciosExtra);
+    
+      const sugerencia = posiblesSugerencias.find((s) =>
+        normalizar(s).startsWith(normalizadoTexto)
+      ) || posiblesSugerencias[0];
+    
+      const sugerenciaNormalizada = normalizar(sugerencia);
+      const diferencia = sugerencia.slice(textoSinEspaciosExtra.length);
+    
+      return busqueda + diferencia;
+    };
+    
+      
+      
 
     return {
         autos,
@@ -92,5 +140,6 @@ export function useAutos(cantidadPorLote = 8) {
         mostrarMasAutos,
         cargando,
         filtrarAutos: setTextoBusqueda,
+        obtenerSugerencia
     };
 }

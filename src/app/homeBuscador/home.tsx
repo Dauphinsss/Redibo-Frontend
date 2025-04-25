@@ -18,6 +18,7 @@ export default function Home() {
         mostrarMasAutos,
         cargando,
         filtrarAutos,
+        obtenerSugerencia,
     } = useAutos(8);
 
     return (
@@ -27,6 +28,7 @@ export default function Home() {
             <SearchBar
             placeholder="Buscar por modelo, marca"
             onFiltrar={filtrarAutos}
+            obtenerSugerencia={obtenerSugerencia}
             />
             {/* <div className="mt-6">RecodeCarousel aquí (opcional)</div> */}
         </section>
