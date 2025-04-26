@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Menu, User, LogIn, UserPlus, LogOut, ChevronDown } from "lucide-react";
-import { useSession, signOut } from "next-auth/react";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -20,11 +21,11 @@ import {
 } from "@/components/ui/sheet";
 
 export default function Header() {
-  const { data: session } = useSession();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <header className="border-b">
-      <div className="flex h-16 items-center justify-between px-4 md:px-6">
+      <div className=" flex h-16 items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-2">
           <Link href="/" className="font-bold text-xl">
             REDIBO
@@ -56,24 +57,18 @@ export default function Header() {
                   Contacto
                 </Link>
                 <div className="mt-4 border-t pt-4">
-                  {session?.user ? (
+                  {isLoggedIn ? (
                     <>
-                      <Link href="/perfil">
-                        <div className="flex items-center gap-2 mb-4 hover:bg-accent hover:text-accent-foreground rounded-md p-2">
-                          <Avatar className="h-8 w-8">
-                            {session.user.image ? (
-                              <img src={session.user.image} alt={session.user.name || ''} className="h-8 w-8 rounded-full" />
-                            ) : (
-                              <AvatarFallback>{session.user.name?.charAt(0) || 'U'}</AvatarFallback>
-                            )}
-                          </Avatar>
-                          <div className="text-sm font-medium">{session.user.name}</div>
-                        </div>
-                      </Link>
+                      <div className="flex items-center gap-2 mb-4">
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback>US</AvatarFallback>
+                        </Avatar>
+                        <div className="text-sm font-medium">Usuario</div>
+                      </div>
                       <Button
                         variant="outline"
                         className="w-full justify-start"
-                        onClick={() => signOut()}
+                        onClick={() => setIsLoggedIn(false)}
                       >
                         <LogOut className="mr-2 h-4 w-4" />
                         Cerrar sesión
@@ -81,25 +76,21 @@ export default function Header() {
                     </>
                   ) : (
                     <>
-                      <Link href="/login">
-                        <Button
-                          variant="default"
-                          className="w-full justify-start mb-2"
-                          disabled={true}
-                        >
-                          <LogIn className="mr-2 h-4 w-4" />
-                          Iniciar sesión
-                        </Button>
-                      </Link>
-                      <Link href="/registro">
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start"
-                        >
-                          <UserPlus className="mr-2 h-4 w-4" />
-                          Registrarse
-                        </Button>
-                      </Link>
+                      <Button
+                        variant="default"
+                        className="w-full justify-start mb-2"
+                        onClick={() => setIsLoggedIn(true)}
+                      >
+                        <LogIn className="mr-2 h-4 w-4" />
+                        Iniciar sesión
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                      >
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Registrarse
+                      </Button>
                     </>
                   )}
                 </div>
@@ -126,30 +117,24 @@ export default function Header() {
 
         {/* Auth section - desktop */}
         <div className="hidden md:flex items-center gap-4">
-          {session?.user ? (
+          {isLoggedIn ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
-                    {session.user.image ? (
-                      <img src={session.user.image} alt={session.user.name || ''} className="h-8 w-8 rounded-full" />
-                    ) : (
-                      <AvatarFallback>{session.user.name?.charAt(0) || 'U'}</AvatarFallback>
-                    )}
+                    <AvatarFallback>US</AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium">{session.user.name}</span>
+                  <span className="text-sm font-medium">Usuario</span>
                   <ChevronDown className="h-4 w-4 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <Link href="/perfil">
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Mi perfil</span>
-                  </DropdownMenuItem>
-                </Link>
+                <DropdownMenuItem>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Mi perfil</span>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
+                <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Cerrar sesión</span>
                 </DropdownMenuItem>
@@ -157,17 +142,12 @@ export default function Header() {
             </DropdownMenu>
           ) : (
             <>
-              
-                <Button variant="ghost" className="hidden md:inline-flex" disabled>
-                  <LogIn className="mr-2 h-4 w-4" />
-                Iniciar Sesión
-                </Button>
-              
-              <Link href="/registro">
-                <Button variant="default">
-                  
-                  Registrarse
-                </Button>
+              <Button variant="ghost" onClick={() => setIsLoggedIn(true)}>
+                <LogIn className="mr-2 h-4 w-4" />
+                Iniciar sesión
+              </Button>
+              <Link href="/registro" className="text-sm font-medium">
+                <Button variant="default">Registrarse</Button>
               </Link>
             </>
           )}
