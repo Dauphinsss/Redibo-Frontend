@@ -1,5 +1,8 @@
+'use client';
+
 import Link from "next/link";
 import Image from "next/image";
+
 
 export default function NotFound() {
   return (
@@ -7,8 +10,8 @@ export default function NotFound() {
       <main className="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
         <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-4xl">
           <div className="md:w-1/2 text-center md:text-left">
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">Ups algo pasó acá</h1>
-            <h2 className="text-5xl font-extrabold text-red-500 mb-8">ERROR 404</h2>
+            <h1 className="text-4xl font-bold text-gray-800 mb-2">¿Buscando lo que no existe?</h1>
+            <h2 className="text-5xl font-extrabold text-red-500 mb-8">ERROR 500 DEL SERVIDOR</h2>
             
             <div className="mb-8">
               <p className="text-lg text-gray-600 mb-4">Si quieres puedes ir a:</p>
@@ -39,7 +42,7 @@ export default function NotFound() {
           
           <div className="md:w-1/2 flex justify-center">
             <Image
-              src="/Error404_ffbvg7.png"
+              src="/perdido.png"
               alt="Error 404"
               width={500}
               height={500}
