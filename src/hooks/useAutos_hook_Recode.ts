@@ -47,7 +47,12 @@ export function useAutos(cantidadPorLote = 8) {
                 const autoTexto = `${auto.marca} ${auto.modelo}`;
                 const textoNormalizado = normalizarTexto(autoTexto).replace(/[^\p{L}\p{N}\s.\-\/]/gu, "").replace(/\s+/g, " ").trim();
                 const palabrasBusqueda = query.split(" ");
-                return palabrasBusqueda.every(palabra => textoNormalizado.includes(palabra));
+                //return palabrasBusqueda.every(palabra => textoNormalizado.includes(palabra));
+                return palabrasBusqueda.every(palabra =>
+                  textoNormalizado.split(" ").some(palabraTexto =>
+                      palabraTexto.startsWith(palabra)
+                  )
+              );
             });
             resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
         }
@@ -103,9 +108,11 @@ export function useAutos(cantidadPorLote = 8) {
             .replace(/[^\p{L}\p{N}\s.\-\/]/gu, "")
             .replace(/\s+/g, " ")
             .trim();
-          return palabrasBusqueda.every((palabra) =>
-            combinadoNormalizado.includes(palabra)
-          );
+            return palabrasBusqueda.every((palabra) =>
+              combinadoNormalizado
+                .split(" ")
+                .some(palabraTexto => palabraTexto.startsWith(palabra))
+            );
         });
       });
     
@@ -119,11 +126,11 @@ export function useAutos(cantidadPorLote = 8) {
       const textoSinEspaciosExtra = busqueda.replace(/\s+/g, " ").trimStart();
       const normalizadoTexto = normalizar(textoSinEspaciosExtra);
     
-      const sugerencia = posiblesSugerencias.find((s) =>
-        normalizar(s).startsWith(normalizadoTexto)
-      ) || posiblesSugerencias[0];
+      const sugerencia = posiblesSugerencias.find((s) => {
+        const sNormal = normalizar(s).replace(/\s+/g, " ").trim();
+        return sNormal.startsWith(normalizadoTexto);
+      }) || posiblesSugerencias[0];
     
-      const sugerenciaNormalizada = normalizar(sugerencia);
       const diferencia = sugerencia.slice(textoSinEspaciosExtra.length);
     
       return busqueda + diferencia;
