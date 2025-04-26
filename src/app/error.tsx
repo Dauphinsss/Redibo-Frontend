@@ -8,7 +8,7 @@ export default function NotFound() {
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col">
       <main className="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-4xl">
+        <div className="flex flex-col-reverse md:flex-row items-center justify-center gap-8 max-w-4xl">
           <div className="md:w-1/2 text-center md:text-left">
             <h1 className="text-4xl font-bold text-gray-800 mb-2">¿Buscando lo que no existe?</h1>
             <h2 className="text-5xl font-extrabold text-red-500 mb-8">ERROR 500 DEL SERVIDOR</h2>
