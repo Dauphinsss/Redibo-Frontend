@@ -1,14 +1,21 @@
 import { Footer } from "@/components/ui/footer";
 import { Header } from "../registro/header";
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Términos y Condiciones",
+  description: "Términos y condiciones de uso del servicio REDIBO",
+};
+
 export default function TerminosYCondicionesPage() {
   return (
     <>
-    <Header />
+      
+      <Header />
       <main className="container mx-auto py-12 px-4">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold mb-6">Términos y Condiciones</h1>
-
           <div className="prose max-w-none">
             <h2 className="text-2xl font-semibold mt-8 mb-4">
               1. ACEPTACIÓN DE TÉRMINOS

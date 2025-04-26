@@ -97,7 +97,7 @@ export default function CompleteRegisterForm() {
       } else {
         router.push("/");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error(" Error al completar registro con Google:", error);
       toast.error("Ocurrió un error al registrar tu perfil.");
     }

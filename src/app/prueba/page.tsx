@@ -9,7 +9,13 @@ import CompleteGoogleProfileForm from "@/components/forms/CompleteGoogleProfileF
 export default function PopupHandler() {
   const { data: session, status } = useSession();
   const [estado, setEstado] = useState<"cargando" | "nuevo" | "registrado">("cargando");
-  const [perfil, setPerfil] = useState<any>(null); // Guarda los datos devueltos del backend
+  interface Perfil {
+    id: string;
+    perfil_completo: boolean;
+    // Agrega más propiedades si es necesario
+  }
+
+  const [perfil, setPerfil] = useState<Perfil | null>(null); // Guarda los datos devueltos del backend
 
   // Paso 1: iniciar sesión con Google apenas se monta
   useEffect(() => {
@@ -55,7 +61,7 @@ export default function PopupHandler() {
       <div className="p-8 max-w-lg mx-auto">
         <h2 className="text-xl font-bold mb-4 text-center">Completa tu perfil para continuar</h2>
         <CompleteGoogleProfileForm
-          userId={perfil.id}
+          userId={parseInt(perfil.id, 10)}
           nombre={session.user.name || ""}
           correo={session.user.email || ""}
           onSuccess={(token) => {

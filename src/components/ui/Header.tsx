@@ -85,6 +85,7 @@ export default function Header() {
                         <Button
                           variant="default"
                           className="w-full justify-start mb-2"
+                          disabled={true}
                         >
                           <LogIn className="mr-2 h-4 w-4" />
                           Iniciar sesión
@@ -156,12 +157,15 @@ export default function Header() {
             </DropdownMenu>
           ) : (
             <>
-              <Link href="/login" className="text-sm font-medium">
+              
+                <Button variant="ghost" className="hidden md:inline-flex" disabled>
+                  <LogIn className="mr-2 h-4 w-4" />
                 Iniciar Sesión
-              </Link>
+                </Button>
+              
               <Link href="/registro">
                 <Button variant="default">
-                  <UserPlus className="mr-2 h-4 w-4" />
+                  
                   Registrarse
                 </Button>
               </Link>

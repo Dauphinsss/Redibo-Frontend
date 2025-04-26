@@ -10,13 +10,8 @@ export const isUnderage = (birthdateString: string, edadMinima: number = 18): bo
 
   const today = new Date();
   const birthDate = new Date(birthdateString);
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const m = today.getMonth() - birthDate.getMonth();
-  const d = today.getDate() - birthDate.getDate();
+  const minAgeDate = new Date(birthDate);
+  minAgeDate.setFullYear(minAgeDate.getFullYear() + edadMinima);
 
-  if (m < 0 || (m === 0 && d < 0)) {
-    age--;
-  }
-
-  return age < edadMinima;
+  return today < minAgeDate;
 };

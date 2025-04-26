@@ -83,6 +83,57 @@ export default function Form() {
     setShowPassword(false);
   };
 
+  const [hasPushedState, setHasPushedState] = useState(false);
+
+  useEffect(() => {
+    if (!hasPushedState) {
+      window.history.pushState(null, "", window.location.href);
+      setHasPushedState(true);
+    }
+  }, [hasPushedState]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isFormDirty) {
+        const message =
+          "¿Estás seguro que deseas salir? Los cambios no guardados se perderán.";
+        e.preventDefault();
+        e.returnValue = message;
+        return message;
+      }
+    };
+
+    const fechData = async () => {
+      try {
+        const { data } = await axios.get<Ciudad[]>(`${API_URL}/api/ciudades`);
+        setCiudades(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching cities:", error);
+      }
+    };
+    fechData();
+
+    const handlePopState = () => {
+      if (isFormDirty) {
+        setShowExitWarning(true); // Mostrar el modal de advertencia
+        // Volver a agregar el estado al historial para evitar retroceso inmediato
+        window.history.pushState(null, "", window.location.href);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("popstate", handlePopState);
+
+    // Elimina esta línea para evitar estados adicionales
+    // window.history.pushState(null, "", window.location.href);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [isFormDirty]);
+
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isFormDirty) {
@@ -113,8 +164,6 @@ export default function Form() {
           )
         ) {
           window.history.back();
-        } else {
-          window.history.pushState(null, "", window.location.href);
         }
       }
     };
@@ -155,13 +204,65 @@ export default function Form() {
     setPasswordTouched(true);
     setPhoneTouched(true);
 
-    if (!acceptTerms) {
-      toast.error("Debes aceptar los términos y condiciones.");
+    if (password !== confirmPassword) {
+      toast.error("Las contraseñas no coinciden.");
       return;
     }
 
-    if (!birthdate || !gender || !city || !phone) {
-      toast.error("Por favor, complete todos los campos requeridos.");
+    if (
+      !name ||
+      name.length < 3 ||
+      name.length > 50 ||
+      !/^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$/.test(name)
+    ) {
+      toast.error("Por favor, ingrese un nombre válido.");
+      return;
+    }
+
+    if (
+      !email ||
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(email) ||
+      email.includes("..") ||
+      email.startsWith(".") ||
+      email.endsWith(".")
+    ) {
+      toast.error("Por favor, ingrese un correo electrónico válido.");
+      return;
+    }
+
+    if (!phone || phone.length !== 8) {
+      toast.error("El teléfono debe tener exactamente 8 números.");
+      return;
+    }
+
+    if (!birthdate || isUnderage(birthdate) || birthdate > today) {
+      toast.error("Por favor, ingrese una fecha de nacimiento válida.");
+      return;
+    }
+
+    if (!gender) {
+      toast.error("Por favor, seleccione su género.");
+      return;
+    }
+
+    if (!city) {
+      toast.error("Por favor, seleccione una ciudad.");
+      return;
+    }
+
+    if (
+      !password ||
+      password.length < 8 ||
+      !/[A-Z]/.test(password) ||
+      !/[0-9]/.test(password) ||
+      !/[^A-Za-z0-9]/.test(password)
+    ) {
+      toast.error("Por favor, ingrese una contraseña válida.");
+      return;
+    }
+
+    if (!acceptTerms) {
+      toast.error("Debes aceptar los términos y condiciones.");
       return;
     }
 
@@ -179,13 +280,14 @@ export default function Form() {
     console.log(usuario);
 
     try {
-      const user = userType === "HOST" 
-        ? "Propietario" 
-        : userType === "RENTER" 
-        ? "Arrendatario" 
-        : userType === "DRIVER" 
-        ? "Conductor" 
-        : "";
+      const user =
+        userType === "HOST"
+          ? "Propietario"
+          : userType === "RENTER"
+          ? "Arrendatario"
+          : userType === "DRIVER"
+          ? "Conductor"
+          : "";
       const response = await axios.post(`${API_URL}/api/registro`, usuario);
       console.log(response.data);
       toast.success(`Gracias por registrarse como ${user}.`);
@@ -232,7 +334,7 @@ export default function Form() {
       case "RENTER":
         return "Complete sus datos como persona que se renta vehículos y acepte nuestros términos y condiciones.";
       case "DRIVER":
-        return "Complete sus datos como conductor y acepte nuestros términos y condiciones.";
+        return "Complete sus datos como conductor y acepte nuestnombreos términos y condiciones.";
       default:
         return "Seleccione el tipo de usuario para continuar con el registro.";
     }
@@ -344,7 +446,7 @@ export default function Form() {
                         type="button"
                         variant="outline"
                         onClick={() => {
-                          setShowExitWarning(false);
+                          setShowExitWarning(false); // Cerrar el modal
                         }}
                       >
                         Cancelar
@@ -352,8 +454,9 @@ export default function Form() {
                       <Button
                         type="button"
                         onClick={() => {
-                          setShowExitWarning(false);
-                          resetar();
+                          setShowExitWarning(false); // Cerrar el modal
+                          resetar(); // Restablecer el formulario
+                          window.history.back(); // Permitir el retroceso
                         }}
                       >
                         Salir
@@ -370,40 +473,42 @@ export default function Form() {
                     id="name"
                     value={name}
                     maxLength={50}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => setName(e.target.value.trimStart())}
                     onBlur={() => setNameTouched(true)}
                     placeholder="Ingrese su nombre"
                     className={
                       nameTouched &&
                       (name.length < 3 ||
                         name.length > 50 ||
-                        !/^[a-zA-Z\s]+$/.test(name))
+                        !/^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$/.test(name.trim()))
                         ? "border-red-500"
                         : ""
                     }
                   />
                   {nameTouched && (
                     <>
-                      {name.length < 3 && (
+                      {name.trim().length < 3 && (
                         <p className="text-sm text-red-500">
-                          Debe tener al menos 3 caracteres
+                          El nombre debe tener al menos 3 caracteres
                         </p>
                       )}
-                      {name.length > 50 && (
+                      {name.trim().length > 50 && (
                         <p className="text-sm text-red-500">
                           Debe tener menos de 50 caracteres
                         </p>
                       )}
-                      {!/^[a-zA-Z\s]+$/.test(name) && name.length > 0 && (
-                        <p className="text-sm text-red-500">
-                          No debe contener caracteres especiales
-                        </p>
-                      )}
+                      {!/^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$/.test(name.trim()) &&
+                        name.trim().length > 0 && (
+                          <p className="text-sm text-red-500">
+                            No debe contener caracteres especiales
+                          </p>
+                        )}
                     </>
                   )}
                 </div>
               </div>
 
+              {/* Correo electrónico */}
               {/* Correo electrónico */}
               <div className="space-y-2">
                 <Label htmlFor="email">Correo electrónico *</Label>
@@ -418,7 +523,10 @@ export default function Form() {
                     className={
                       emailTouched &&
                       (!email ||
-                        !/^[^\s@]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email))
+                        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(
+                          email
+                        ) ||
+                        email.includes(".."))
                         ? "border-red-500"
                         : ""
                     }
@@ -431,7 +539,7 @@ export default function Form() {
                         </p>
                       )}
                       {email.length > 0 &&
-                        !/^[^\s@]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(
+                        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(
                           email
                         ) && (
                           <p className="text-sm text-red-500">
@@ -477,55 +585,74 @@ export default function Form() {
                     onBlur={() => setPhoneTouched(true)}
                     maxLength={8}
                     className={
-                      phoneTouched && phone.length !== 8 ? "border-red-500" : ""
+                      phoneTouched &&
+                      (!/^[467]\d{7}$/.test(phone) || phone.length !== 8)
+                        ? "border-red-500"
+                        : ""
                     }
                   />
-                  {phoneTouched && phone.length !== 8 && (
-                    <p className="text-sm text-red-500">
-                      El teléfono debe tener exactamente 8 números
-                    </p>
+                  {phoneTouched && (
+                    <>
+                      {phone.length !== 8 && (
+                        <p className="text-sm text-red-500">
+                          El teléfono debe tener exactamente 8 números
+                        </p>
+                      )}
+                      {!/^[467]\d{7}$/.test(phone) && phone.length === 8 && (
+                        <p className="text-sm text-red-500">
+                          El teléfono debe comenzar con 4, 6 o 7
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
 
               {/* Fecha */}
-                <div className="space-y-2">
+              <div className="space-y-2">
                 <Label htmlFor="birthdate">Fecha de nacimiento *</Label>
                 <div className="flex flex-col gap-2">
                   <Input
-                  id="birthdate"
-                  type="date"
-                  value={birthdate}
-                  max={today}
-                  onChange={(e) => setBirthdate(e.target.value)}
-                  onBlur={() => setBirthdateTouched(true)}
-                  className={
-                    (!birthdate && birthdateTouched) ||
-                    (birthdate &&
-                    (isUnderage(birthdate) || birthdate > today))
-                    ? "border-red-500"
-                    : ""
-                  }
+                    id="birthdate"
+                    type="date"
+                    value={birthdate}
+                    max={today}
+                    min="1895-01-01"
+                    onChange={(e) => setBirthdate(e.target.value)}
+                    onBlur={() => setBirthdateTouched(true)}
+                    className={
+                      (!birthdate && birthdateTouched) ||
+                      (birthdate &&
+                        (isUnderage(birthdate) ||
+                          birthdate > today ||
+                          birthdate < "1895-01-01"))
+                        ? "border-red-500"
+                        : ""
+                    }
                   />
                   {birthdateTouched && (
-                  <>
-                    {!birthdate ? (
-                    <p className="text-sm text-red-500">
-                      Debes seleccionar tu fecha de nacimiento
-                    </p>
-                    ) : birthdate > today ? (
-                    <p className="text-sm text-red-500">
-                      La fecha no puede ser futura
-                    </p>
-                    ) : isUnderage(birthdate) ? (
-                    <p className="text-sm text-red-500">
-                      Debes tener al menos 18 años para continuar
-                    </p>
-                    ) : null}
-                  </>
+                    <>
+                      {!birthdate ? (
+                        <p className="text-sm text-red-500">
+                          Debes seleccionar tu fecha de nacimiento
+                        </p>
+                      ) : birthdate > today ? (
+                        <p className="text-sm text-red-500">
+                          La fecha no puede ser futura
+                        </p>
+                      ) : birthdate < "1895-01-01" ? (
+                        <p className="text-sm text-red-500">
+                          Ingrese una fecha válida
+                        </p>
+                      ) : isUnderage(birthdate) ? (
+                        <p className="text-sm text-red-500">
+                          Debes tener al menos 18 años para continuar
+                        </p>
+                      ) : null}
+                    </>
                   )}
                 </div>
-                </div>
+              </div>
 
               {/* Género */}
               <div className="space-y-2">
@@ -596,68 +723,74 @@ export default function Form() {
               </div>
 
               {/* Contraseña */}
-              <div className="space-y-2 relative">
+                <div className="space-y-2 relative">
                 <Label htmlFor="password">Contraseña *</Label>
                 <div className="flex items-center gap-2 relative">
                   <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    maxLength={20}
-                    onChange={(e) => {
-                      const newPassword = e.target.value;
-                      if (newPassword.length <= 20) {
-                        setPassword(newPassword);
-                        if (confirmPassword.length > 0) {
-                          setPasswordError(newPassword !== confirmPassword);
-                        }
-                      }
-                    }}
-                    onBlur={() => setPasswordTouched(true)}
-                    placeholder="Ingrese su contraseña"
-                    className={`pr-10 ${
-                      passwordTouched &&
-                      (password.length < 8 || !isPasswordStrong(password))
-                        ? "border-red-500"
-                        : ""
-                    }`}
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  maxLength={20}
+                  onChange={(e) => {
+                    const newPassword = e.target.value;
+                    if (newPassword.length <= 20) {
+                    setPassword(newPassword);
+                    if (confirmPassword.length > 0) {
+                      setPasswordError(newPassword !== confirmPassword);
+                    }
+                    }
+                  }}
+                  onBlur={() => setPasswordTouched(true)}
+                  placeholder="Ingrese su contraseña"
+                  className={`pr-10 ${
+                    passwordTouched &&
+                    (password.length === 0 ||
+                    password.length < 8 ||
+                    !isPasswordStrong(password))
+                    ? "border-red-500"
+                    : ""
+                  }`}
                   />
                   <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full hover:bg-transparent"
-                    onClick={() => setShowPassword(!showPassword)}
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-600" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-gray-600" />
-                    )}
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4 text-gray-600" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-600" />
+                  )}
                   </Button>
                 </div>
                 {passwordTouched && (
                   <div className="space-y-1">
-                    {password.length < 8 ? (
-                      <p className="text-sm text-red-500">
-                        Debe tener al menos 8 caracteres.
-                      </p>
-                    ) : !/[A-Z]/.test(password) ? (
-                      <p className="text-sm text-red-500">
-                        Debe contener al menos una letra mayúscula
-                      </p>
-                    ) : !/[0-9]/.test(password) ? (
-                      <p className="text-sm text-red-500">
-                        Debe contener al menos un número
-                      </p>
-                    ) : !/[^A-Za-z0-9]/.test(password) ? (
-                      <p className="text-sm text-red-500">
-                        Debe contener al menos un carácter especial
-                      </p>
-                    ) : null}
+                  {password.length === 0 ? (
+                    <p className="text-sm text-red-500">
+                    La contraseña es obligatoria.
+                    </p>
+                  ) : password.length < 8 ? (
+                    <p className="text-sm text-red-500">
+                    La contraseña debe tener al menos 8 caracteres
+                    </p>
+                  ) : !/[A-Z]/.test(password) ? (
+                    <p className="text-sm text-red-500">
+                    Debe contener al menos una letra mayúscula
+                    </p>
+                  ) : !/[0-9]/.test(password) ? (
+                    <p className="text-sm text-red-500">
+                    Debe contener al menos un número
+                    </p>
+                  ) : !/[^A-Za-z0-9]/.test(password) ? (
+                    <p className="text-sm text-red-500">
+                    Debe contener al menos un carácter especial
+                    </p>
+                  ) : null}
                   </div>
                 )}
-              </div>
+                </div>
 
               <div className="space-y-2 relative">
                 <Label htmlFor="confirm-password">Repetir contraseña *</Label>
@@ -692,7 +825,7 @@ export default function Form() {
                 </div>
                 {passwordTouched && !confirmPassword && (
                   <p className="text-sm text-red-500">
-                    Este campo es obligatorio
+                    Debe confirmar su contraseña
                   </p>
                 )}
                 {passwordError && confirmPassword && (
@@ -739,7 +872,7 @@ export default function Form() {
               >
                 Volver
               </Button>
-              <Button type="submit" disabled={!acceptTerms || passwordError}>
+              <Button type="submit" disabled={!acceptTerms}>
                 Crear cuenta
               </Button>
             </CardFooter>
@@ -758,6 +891,7 @@ export default function Form() {
               type="button"
               variant="outline"
               className="w-full flex items-center justify-center gap-2"
+              disabled
             >
               <img
                 src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -769,9 +903,7 @@ export default function Form() {
 
             <p className="text-sm text-gray-600">
               ¿Ya tienes una cuenta?{" "}
-              <a href="/login" className="text-black-600 hover:underline">
-                Iniciar sesión
-              </a>
+              <a className="text-black-600 hover:underline">Iniciar sesión</a>
             </p>
           </CardFooter>
         </Card>

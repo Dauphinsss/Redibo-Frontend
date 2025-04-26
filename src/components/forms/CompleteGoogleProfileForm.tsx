@@ -59,8 +59,12 @@ export default function CompleteGoogleProfileForm({
       } else {
         toast.error("No se recibió token");
       }
-    } catch (err: any) {
-      toast.error(err.response?.data?.error || "Error al completar perfil");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err) && err.response?.data?.error) {
+        toast.error(err.response.data.error);
+      } else {
+        toast.error("Error al completar perfil");
+      }
     }
   };
 

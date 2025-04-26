@@ -32,6 +32,7 @@ export function LoginForm() {
         toast.success("Inicio de sesión exitoso");
       }
     } catch (error) {
+      console.error("Error al iniciar sesión:", error);
       toast.error("Error al iniciar sesión");
     } finally {
       setIsLoading(false);

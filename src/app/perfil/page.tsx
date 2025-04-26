@@ -2,7 +2,6 @@
 
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
-import { JWT } from "next-auth/jwt";
 
 interface ExtendedSession extends Session {
   accessToken?: string;
