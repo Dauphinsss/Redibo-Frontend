@@ -47,12 +47,12 @@ export function useAutos(cantidadPorLote = 8) {
                 const autoTexto = `${auto.marca} ${auto.modelo}`;
                 const textoNormalizado = normalizarTexto(autoTexto).replace(/[^\p{L}\p{N}\s.\-\/]/gu, "").replace(/\s+/g, " ").trim();
                 const palabrasBusqueda = query.split(" ");
-                //return palabrasBusqueda.every(palabra => textoNormalizado.includes(palabra));
-                return palabrasBusqueda.every(palabra =>
+                return palabrasBusqueda.every(palabra => textoNormalizado.includes(palabra));
+                /*return palabrasBusqueda.every(palabra =>
                   textoNormalizado.split(" ").some(palabraTexto =>
                       palabraTexto.startsWith(palabra)
                   )
-              );
+              );*/
             });
             resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
         }
