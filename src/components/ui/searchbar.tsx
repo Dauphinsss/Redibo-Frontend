@@ -63,7 +63,7 @@ const SearchBar = () => {
             setSavedSearches(updatedSearches);
 
             localStorage.setItem("savedSearches", JSON.stringify(updatedSearches));
-            sessionStorage.setItem("restoreSearch", searchTerm.toLowerCase());
+            sessionStorage.setItem("restoreSearch", searchTerm);
             router.push(`/searchMock?query=${encodeURIComponent(searchTerm)}`);
             setIsClicked(false);
         }
