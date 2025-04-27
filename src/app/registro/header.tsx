@@ -8,7 +8,7 @@ export function Header() {
         <Link href="/" className="text-2xl font-bold" translate="no">
           REDIBO
         </Link>
-        <nav className="flex items-center gap-4">
+        <nav className="flex items-center gap-2">
           <Link href="/" className="text-sm font-medium hover:underline">
             Inicio
           </Link>
@@ -16,15 +16,10 @@ export function Header() {
             href="/registro"
             className="text-sm font-medium hover:underline"
           >
-            Registro
+            <Button variant={"outline"}>Registro</Button>
           </Link>
           <Button variant={"default"} disabled>
-            <Link
-              href="/login"
-             
-            >
-              Iniciar Sesión
-            </Link>
+            <Link href="/login">Iniciar Sesión</Link>
           </Button>
         </nav>
       </div>

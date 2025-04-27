@@ -1,8 +1,11 @@
-import React from 'react';
-import Form from './form';
-import { Footer } from '@/components/ui/footer';
-import { Header } from './header';
-import { Toaster } from '@/components/ui/sonner';
+import React from "react";
+import Form from "./form";
+import { Footer } from "@/components/ui/footer";
+import { Header } from "./header";
+import { Toaster } from "@/components/ui/sonner";
+import { metadata } from "../layout";
+
+metadata.title = "Registro";
 
 const RegistroPage: React.FC = () => {
   return (

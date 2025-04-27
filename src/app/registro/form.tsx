@@ -47,14 +47,11 @@ export default function Form() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [phoneTouched, setPhoneTouched] = useState(false);
   const [ciudades, setCiudades] = useState<Ciudad[]>([]);
-  //const [passwordError, setPasswordError] = useState(false);
   const [isFormDirty, setIsFormDirty] = useState(false);
   const [showExitWarning, setShowExitWarning] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  // Evitar la selección de fechas futuras
   const today = new Date().toISOString().split("T")[0];
 
   const resetar = () => {
@@ -83,102 +80,6 @@ export default function Form() {
     setShowPassword(false);
   };
 
-  const [hasPushedState, setHasPushedState] = useState(false);
-
-  useEffect(() => {
-    if (!hasPushedState) {
-      window.history.pushState(null, "", window.location.href);
-      setHasPushedState(true);
-    }
-  }, [hasPushedState]);
-
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isFormDirty) {
-        const message =
-          "¿Estás seguro que deseas salir? Los cambios no guardados se perderán.";
-        e.preventDefault();
-        e.returnValue = message;
-        return message;
-      }
-    };
-
-    const fechData = async () => {
-      try {
-        const { data } = await axios.get<Ciudad[]>(`${API_URL}/api/ciudades`);
-        setCiudades(data);
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching cities:", error);
-      }
-    };
-    fechData();
-
-    const handlePopState = () => {
-      if (isFormDirty) {
-        setShowExitWarning(true); // Mostrar el modal de advertencia
-        // Volver a agregar el estado al historial para evitar retroceso inmediato
-        window.history.pushState(null, "", window.location.href);
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("popstate", handlePopState);
-
-    // Elimina esta línea para evitar estados adicionales
-    // window.history.pushState(null, "", window.location.href);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, [isFormDirty]);
-
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isFormDirty) {
-        const message =
-          "¿Estás seguro que deseas salir? Los cambios no guardados se perderán.";
-        e.preventDefault();
-        e.returnValue = message;
-        return message;
-      }
-    };
-
-    const fechData = async () => {
-      try {
-        const { data } = await axios.get<Ciudad[]>(`${API_URL}/api/ciudades`);
-        setCiudades(data);
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching cities:", error);
-      }
-    };
-    fechData();
-
-    const handlePopState = () => {
-      if (isFormDirty) {
-        if (
-          window.confirm(
-            "¿Estás seguro que deseas salir? Los cambios no guardados se perderán."
-          )
-        ) {
-          window.history.back();
-        }
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("popstate", handlePopState);
-
-    // Add state to browser history when component mounts
-    window.history.pushState(null, "", window.location.href);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, [isFormDirty]);
 
   const handleFormChange = () => {
     if (!isFormDirty) {
@@ -193,6 +94,22 @@ export default function Form() {
   const [cityTouched, setCityTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+
+  useEffect(() => {
+    const fetchCiudades = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/ciudades`);
+        setCiudades(response.data);
+      } catch (error) {
+        console.error("Error fetching cities:", error);
+      }
+    };
+
+    fetchCiudades();
+
+  })
+  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -446,7 +363,8 @@ export default function Form() {
                         type="button"
                         variant="outline"
                         onClick={() => {
-                          setShowExitWarning(false); // Cerrar el modal
+                          setShowExitWarning(false);
+                          setUserType(null);
                         }}
                       >
                         Cancelar
@@ -456,7 +374,6 @@ export default function Form() {
                         onClick={() => {
                           setShowExitWarning(false); // Cerrar el modal
                           resetar(); // Restablecer el formulario
-                          window.history.back(); // Permitir el retroceso
                         }}
                       >
                         Salir
@@ -723,74 +640,74 @@ export default function Form() {
               </div>
 
               {/* Contraseña */}
-                <div className="space-y-2 relative">
+              <div className="space-y-2 relative">
                 <Label htmlFor="password">Contraseña *</Label>
                 <div className="flex items-center gap-2 relative">
                   <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  maxLength={20}
-                  onChange={(e) => {
-                    const newPassword = e.target.value;
-                    if (newPassword.length <= 20) {
-                    setPassword(newPassword);
-                    if (confirmPassword.length > 0) {
-                      setPasswordError(newPassword !== confirmPassword);
-                    }
-                    }
-                  }}
-                  onBlur={() => setPasswordTouched(true)}
-                  placeholder="Ingrese su contraseña"
-                  className={`pr-10 ${
-                    passwordTouched &&
-                    (password.length === 0 ||
-                    password.length < 8 ||
-                    !isPasswordStrong(password))
-                    ? "border-red-500"
-                    : ""
-                  }`}
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    maxLength={20}
+                    onChange={(e) => {
+                      const newPassword = e.target.value;
+                      if (newPassword.length <= 20) {
+                        setPassword(newPassword);
+                        if (confirmPassword.length > 0) {
+                          setPasswordError(newPassword !== confirmPassword);
+                        }
+                      }
+                    }}
+                    onBlur={() => setPasswordTouched(true)}
+                    placeholder="Ingrese su contraseña"
+                    className={`pr-10 ${
+                      passwordTouched &&
+                      (password.length === 0 ||
+                        password.length < 8 ||
+                        !isPasswordStrong(password))
+                        ? "border-red-500"
+                        : ""
+                    }`}
                   />
                   <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
                   >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-gray-600" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-gray-600" />
-                  )}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-gray-600" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-gray-600" />
+                    )}
                   </Button>
                 </div>
                 {passwordTouched && (
                   <div className="space-y-1">
-                  {password.length === 0 ? (
-                    <p className="text-sm text-red-500">
-                    La contraseña es obligatoria.
-                    </p>
-                  ) : password.length < 8 ? (
-                    <p className="text-sm text-red-500">
-                    La contraseña debe tener al menos 8 caracteres
-                    </p>
-                  ) : !/[A-Z]/.test(password) ? (
-                    <p className="text-sm text-red-500">
-                    Debe contener al menos una letra mayúscula
-                    </p>
-                  ) : !/[0-9]/.test(password) ? (
-                    <p className="text-sm text-red-500">
-                    Debe contener al menos un número
-                    </p>
-                  ) : !/[^A-Za-z0-9]/.test(password) ? (
-                    <p className="text-sm text-red-500">
-                    Debe contener al menos un carácter especial
-                    </p>
-                  ) : null}
+                    {password.length === 0 ? (
+                      <p className="text-sm text-red-500">
+                        La contraseña es obligatoria.
+                      </p>
+                    ) : password.length < 8 ? (
+                      <p className="text-sm text-red-500">
+                        La contraseña debe tener al menos 8 caracteres
+                      </p>
+                    ) : !/[A-Z]/.test(password) ? (
+                      <p className="text-sm text-red-500">
+                        Debe contener al menos una letra mayúscula
+                      </p>
+                    ) : !/[0-9]/.test(password) ? (
+                      <p className="text-sm text-red-500">
+                        Debe contener al menos un número
+                      </p>
+                    ) : !/[^A-Za-z0-9]/.test(password) ? (
+                      <p className="text-sm text-red-500">
+                        Debe contener al menos un carácter especial
+                      </p>
+                    ) : null}
                   </div>
                 )}
-                </div>
+              </div>
 
               <div className="space-y-2 relative">
                 <Label htmlFor="confirm-password">Repetir contraseña *</Label>
