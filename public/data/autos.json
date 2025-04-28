@@ -1,0 +1,455 @@
+[
+  {
+    "id": "1",
+    "nombre": "Toyota Cruze",
+    "marca": "Toyota",
+    "asientos": 5,
+    "puertas": 5,
+    "transmision": "Manual",
+    "combustibles": [
+      "Electrico"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Laura Vega",
+    "calificacion": 4.7,
+    "ubicacion": "Santa Cruz",
+    "precioOficial": "$112",
+    "precioDescuento": "$64",
+    "precioPorDia": "$71"
+  },
+  {
+    "id": "2",
+    "nombre": "Chevrolet Corolla",
+    "marca": "Chevrolet",
+    "asientos": 4,
+    "puertas": 2,
+    "transmision": "Manual",
+    "combustibles": [
+      "Gasolina",
+      "GNV"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Andrea Ortiz",
+    "calificacion": 4.4,
+    "ubicacion": "La Paz",
+    "precioOficial": "$71",
+    "precioDescuento": "$61",
+    "precioPorDia": "$55"
+  },
+  {
+    "id": "3",
+    "nombre": "Ford Corolla",
+    "marca": "Ford",
+    "asientos": 5,
+    "puertas": 2,
+    "transmision": "Automatica",
+    "combustibles": [
+      "Gasolina",
+      "GNV"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Carlos Rojas",
+    "calificacion": 4.0,
+    "ubicacion": "Santa Cruz",
+    "precioOficial": "$118",
+    "precioDescuento": "$66",
+    "precioPorDia": "$80"
+  },
+  {
+    "id": "4",
+    "nombre": "Audi Elantra",
+    "marca": "Audi",
+    "asientos": 4,
+    "puertas": 4,
+    "transmision": "Manual",
+    "combustibles": [
+      "Diesel"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Andrea Ortiz",
+    "calificacion": 4.7,
+    "ubicacion": "La Paz",
+    "precioOficial": "$110",
+    "precioDescuento": "$75",
+    "precioPorDia": "$62"
+  },
+  {
+    "id": "5",
+    "nombre": "Nissan Jetta",
+    "marca": "Nissan",
+    "asientos": 7,
+    "puertas": 5,
+    "transmision": "Automatica",
+    "combustibles": [
+      "Gasolina"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Juan Perez",
+    "calificacion": 4.3,
+    "ubicacion": "Santa Cruz",
+    "precioOficial": "$81",
+    "precioDescuento": "$80",
+    "precioPorDia": "$77"
+  },
+  {
+    "id": "6",
+    "nombre": "Audi Elantra",
+    "marca": "Audi",
+    "asientos": 7,
+    "puertas": 5,
+    "transmision": "Automatica",
+    "combustibles": [
+      "Hibrido"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Carlos Rojas",
+    "calificacion": 4.3,
+    "ubicacion": "Cochabamba",
+    "precioOficial": "$93",
+    "precioDescuento": "$66",
+    "precioPorDia": "$50"
+  },
+  {
+    "id": "7",
+    "nombre": "Ford 3",
+    "marca": "Ford",
+    "asientos": 7,
+    "puertas": 4,
+    "transmision": "Automatica",
+    "combustibles": [
+      "Hibrido"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Juan Perez",
+    "calificacion": 3.9,
+    "ubicacion": "La Paz",
+    "precioOficial": "$106",
+    "precioDescuento": "$77",
+    "precioPorDia": "$76"
+  },
+  {
+    "id": "8",
+    "nombre": "Audi Focus",
+    "marca": "Audi",
+    "asientos": 5,
+    "puertas": 5,
+    "transmision": "Manual",
+    "combustibles": [
+      "Gasolina"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Juan Perez",
+    "calificacion": 4.3,
+    "ubicacion": "La Paz",
+    "precioOficial": "$110",
+    "precioDescuento": "$83",
+    "precioPorDia": "$53"
+  },
+  {
+    "id": "9",
+    "nombre": "Chevrolet Elantra",
+    "marca": "Chevrolet",
+    "asientos": 7,
+    "puertas": 4,
+    "transmision": "Automatica",
+    "combustibles": [
+      "Gasolina",
+      "GNV"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Laura Vega",
+    "calificacion": 4.6,
+    "ubicacion": "La Paz",
+    "precioOficial": "$76",
+    "precioDescuento": "$76",
+    "precioPorDia": "$50"
+  },
+  {
+    "id": "10",
+    "nombre": "Ford Cruze",
+    "marca": "Ford",
+    "asientos": 5,
+    "puertas": 2,
+    "transmision": "Automatica",
+    "combustibles": [
+      "Gasolina"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Maria Garcia",
+    "calificacion": 3.7,
+    "ubicacion": "Santa Cruz",
+    "precioOficial": "$89",
+    "precioDescuento": "$89",
+    "precioPorDia": "$56"
+  },
+  {
+    "id": "11",
+    "nombre": "Volkswagen Jetta",
+    "marca": "Volkswagen",
+    "asientos": 4,
+    "puertas": 4,
+    "transmision": "Manual",
+    "combustibles": [
+      "Hibrido"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Juan Perez",
+    "calificacion": 4.3,
+    "ubicacion": "Santa Cruz",
+    "precioOficial": "$110",
+    "precioDescuento": "$74",
+    "precioPorDia": "$56"
+  },
+  {
+    "id": "12",
+    "nombre": "Hyundai 3",
+    "marca": "Hyundai",
+    "asientos": 4,
+    "puertas": 2,
+    "transmision": "Manual",
+    "combustibles": [
+      "Gasolina"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Andrea Ortiz",
+    "calificacion": 3.6,
+    "ubicacion": "Santa Cruz",
+    "precioOficial": "$74",
+    "precioDescuento": "$89",
+    "precioPorDia": "$56"
+  },
+  {
+    "id": "13",
+    "nombre": "Kia Focus",
+    "marca": "Kia",
+    "asientos": 7,
+    "puertas": 4,
+    "transmision": "Manual",
+    "combustibles": [
+      "Gasolina"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Carlos Rojas",
+    "calificacion": 3.7,
+    "ubicacion": "La Paz",
+    "precioOficial": "$75",
+    "precioDescuento": "$73",
+    "precioPorDia": "$58"
+  },
+  {
+    "id": "14",
+    "nombre": "Toyota Corolla",
+    "marca": "Toyota",
+    "asientos": 7,
+    "puertas": 4,
+    "transmision": "Autom\u00e1tica",
+    "combustibles": [
+      "Electrico"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Carlos Rojas",
+    "calificacion": 4.7,
+    "ubicacion": "Cochabamba",
+    "precioOficial": "$98",
+    "precioDescuento": "$67",
+    "precioPorDia": "$67"
+  },
+  {
+    "id": "15",
+    "nombre": "BMW Corolla",
+    "marca": "BMW",
+    "asientos": 5,
+    "puertas": 2,
+    "transmision": "Manual",
+    "combustibles": [
+      "Gasolina"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Laura Vega",
+    "calificacion": 4.4,
+    "ubicacion": "Cochabamba",
+    "precioOficial": "$74",
+    "precioDescuento": "$81",
+    "precioPorDia": "$75"
+  },
+  {
+    "id": "16",
+    "nombre": "Audi Jetta",
+    "marca": "Audi",
+    "asientos": 5,
+    "puertas": 2,
+    "transmision": "Automatica",
+    "combustibles": [
+      "Diesel"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Juan Perez",
+    "calificacion": 4.8,
+    "ubicacion": "La Paz",
+    "precioOficial": "$91",
+    "precioDescuento": "$80",
+    "precioPorDia": "$62"
+  },
+  {
+    "id": "17",
+    "nombre": "Toyota A3",
+    "marca": "Toyota",
+    "asientos": 4,
+    "puertas": 5,
+    "transmision": "Manual",
+    "combustibles": [
+      "Gasolina"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Laura Vega",
+    "calificacion": 3.5,
+    "ubicacion": "Cochabamba",
+    "precioOficial": "$103",
+    "precioDescuento": "$74",
+    "precioPorDia": "$72"
+  },
+  {
+    "id": "18",
+    "nombre": "Ford Jetta",
+    "marca": "Ford",
+    "asientos": 4,
+    "puertas": 2,
+    "transmision": "Automatica",
+    "combustibles": [
+      "Hibrido"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Juan Perez",
+    "calificacion": 4.0,
+    "ubicacion": "Cochabamba",
+    "precioOficial": "$113",
+    "precioDescuento": "$87",
+    "precioPorDia": "$63"
+  },
+  {
+    "id": "19",
+    "nombre": "Hyundai 3",
+    "marca": "Hyundai",
+    "asientos": 5,
+    "puertas": 5,
+    "transmision": "Automatica",
+    "combustibles": [
+      "Diesel"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Maria Garcia",
+    "calificacion": 3.8,
+    "ubicacion": "La Paz",
+    "precioOficial": "$106",
+    "precioDescuento": "$72",
+    "precioPorDia": "$57"
+  },
+  {
+    "id": "20",
+    "nombre": "Toyota 3",
+    "marca": "Toyota",
+    "asientos": 7,
+    "puertas": 5,
+    "transmision": "Manual",
+    "combustibles": [
+      "Diesel"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Andrea Ortiz",
+    "calificacion": 4.4,
+    "ubicacion": "Cochabamba",
+    "precioOficial": "$103",
+    "precioDescuento": "$74",
+    "precioPorDia": "$62"
+  },
+  {
+    "id": "21",
+    "nombre": "Chevrolet Elantra",
+    "marca": "Chevrolet",
+    "asientos": 5,
+    "puertas": 2,
+    "transmision": "Manual",
+    "combustibles": [
+      "Electrico"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Maria Garcia",
+    "calificacion": 4.4,
+    "ubicacion": "Santa Cruz",
+    "precioOficial": "$82",
+    "precioDescuento": "$66",
+    "precioPorDia": "$77"
+  },
+  {
+    "id": "22",
+    "nombre": "Chevrolet 320i",
+    "marca": "Chevrolet",
+    "asientos": 7,
+    "puertas": 4,
+    "transmision": "Automatica",
+    "combustibles": [
+      "Diesel"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Laura Vega",
+    "calificacion": 4.8,
+    "ubicacion": "La Paz",
+    "precioOficial": "$101",
+    "precioDescuento": "$71",
+    "precioPorDia": "$80"
+  },
+  {
+    "id": "23",
+    "nombre": "Volkswagen Elantra",
+    "marca": "Volkswagen",
+    "asientos": 5,
+    "puertas": 4,
+    "transmision": "Manual",
+    "combustibles": [
+      "Hibrido"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Maria Garcia",
+    "calificacion": 4.2,
+    "ubicacion": "La Paz",
+    "precioOficial": "$114",
+    "precioDescuento": "$70",
+    "precioPorDia": "$68"
+  },
+  {
+    "id": "24",
+    "nombre": "Mazda 3",
+    "marca": "Mazda",
+    "asientos": 5,
+    "puertas": 5,
+    "transmision": "Automatica",
+    "combustibles": [
+      "Gasolina"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Juan Perez",
+    "calificacion": 4.8,
+    "ubicacion": "Santa Cruz",
+    "precioOficial": "$81",
+    "precioDescuento": "$80",
+    "precioPorDia": "$73"
+  },
+  {
+    "id": "25",
+    "nombre": "Kia 320i",
+    "marca": "Kia",
+    "asientos": 5,
+    "puertas": 4,
+    "transmision": "Automatica",
+    "combustibles": [
+      "Diesel"
+    ],
+    "estado": "Disponible",
+    "nombreHost": "Maria Garcia",
+    "calificacion": 4.2,
+    "ubicacion": "Santa Cruz",
+    "precioOficial": "$91",
+    "precioDescuento": "$79",
+    "precioPorDia": "$75"
+  }
+]

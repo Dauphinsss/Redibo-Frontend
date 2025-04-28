@@ -42,8 +42,8 @@ export default function Header() {
                 <Link href="/" className="text-sm font-medium">
                   Inicio
                 </Link>
-                <Link href="/homeBuscador_Recode" className="text-sm font-medium">
-                  Buscar
+                <Link href="/productos" className="text-sm font-medium">
+                  Productos
                 </Link>
                 <Link href="/acerca" className="text-sm font-medium">
                   Acerca de
@@ -56,6 +56,7 @@ export default function Header() {
                     <>
                       <div className="flex items-center gap-2 mb-4">
                         <Avatar className="h-8 w-8">
+                          
                           <AvatarFallback>US</AvatarFallback>
                         </Avatar>
                         <div className="text-sm font-medium">Usuario</div>
@@ -94,22 +95,6 @@ export default function Header() {
           </Sheet>
         </div>
 
-        {/* Desktop navigation */}
-        <nav className="hidden md:flex justify-center items-center gap-6">
-          <Link href="/" className="text-sm font-medium">
-            Inicio
-          </Link>
-          <Link href="/homeBuscador_Recode" className="text-sm font-medium">
-            Buscar
-          </Link>
-          <Link href="/acerca" className="text-sm font-medium">
-            Acerca de
-          </Link>
-          <Link href="/contacto" className="text-sm font-medium">
-            Contacto
-          </Link>
-        </nav>
-
         {/* Auth section - desktop */}
         <div className="hidden md:flex items-center gap-4">
           {isLoggedIn ? (
@@ -141,9 +126,10 @@ export default function Header() {
                 <LogIn className="mr-2 h-4 w-4" />
                 Iniciar sesión
               </Button>
-              <Link href="/registro" className="text-sm font-medium">
-                <Button variant="default">Registrarse</Button>
-              </Link>
+              <Button variant="default">
+                <UserPlus className="mr-2 h-4 w-4" />
+                Registrarse
+              </Button>
             </>
           )}
         </div>
