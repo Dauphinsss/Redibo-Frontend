@@ -34,7 +34,7 @@ export default function ReservationConfirmedMessage({
   } = useReservationTimer(48 * 60 * 60 * 1000);
 
   const vehicle = {
-    id: 9,
+    id: 1,
     marca: "Toyota",
     modelo: "Corolla 2021",
     precio: "Bs. 500",
