@@ -1,0 +1,40 @@
+.container {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+  }
+  
+  .buttonContainer {
+    text-align: center;
+  }
+  
+  .whatsappBtn {
+    background-color: #25D366;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    text-decoration: none;
+  }
+  
+  .whatsappBtn:hover {
+    background-color: #0a5b51;
+    transform: scale(1.03);
+  }
+  
+  .icon {
+    margin-right: 8px;
+    font-size: 20px;
+  }
