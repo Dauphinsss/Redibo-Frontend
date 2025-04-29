@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import { MagnifyingGlassIcon,XMarkIcon } from "@heroicons/react/24/solid"; // XMarkIcon, Aqui se agrego el icono de eliminar
 
 interface SearchBarProps {
   placeholder: string;
@@ -15,6 +15,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [sugerencia, setSugerencia] = useState("");
+
+  //Aqui agregamos los atributos y variables necesarias para el historial
+  const [historial, setHistorial] = useState<string[]>([]);
+  const [mostrarHistorial, setMostrarHistorial] = useState(false);
 
   // Mostrar el botón si hay texto
   useEffect(() => {
@@ -55,6 +59,38 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
     return () => clearTimeout(timer); 
   }, [busqueda, obtenerSugerencia]);
 
+  //Agregado para el historial
+  const handleFocus = () => {
+    if (busqueda.trim() === "") {
+      setMostrarHistorial(true);
+    }
+  };
+  //Agregado para el historial
+  const handleBlur = () => {
+    setTimeout(() => {
+      setMostrarHistorial(false);
+    }, 150);
+  };
+  //Agregado para el historial
+  const handleDeleteHistorial = (item: string) => {
+    setHistorial((prev) => prev.filter((i) => i !== item));
+  };
+  //Agregado para el historial
+  const handleSelectHistorial = (item: string) => {
+    setBusqueda(item);
+    onFiltrar(item);
+    setMostrarHistorial(false);
+  };
+  //Agregado para el historial
+  const agregarAHistorial = (valor: string) => {
+    if (!valor.trim()) return;
+    setHistorial((prev) => {
+      const nuevo = valor.trim();
+      const sinDuplicados = prev.filter((item) => item !== nuevo);
+      return [nuevo, ...sinDuplicados].slice(0, 8); // máximo 10 entradas
+    });
+  };
+
   return (
     <div className="relative w-full max-w-md">
       <input
@@ -64,8 +100,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         value={busqueda}
         maxLength={50}
         onChange={(e) => setBusqueda(e.target.value)}
-        onFocus={() => setMostrarBoton(false)}
-        onBlur={() => setMostrarBoton(true)}
+        //onFocus={() => setMostrarBoton(false)}
+        //onBlur={() => setMostrarBoton(true)}
+        //Se cambio por 
+        ref={inputRef}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
 
         onKeyDown={(e) => {
           if ((e.key === "ArrowRight" || e.key === "Tab") && sugerencia) {
@@ -89,8 +129,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         
             if (nuevaBusqueda === sugerencia) {
               setSugerencia("");
-            }
+            } 
+          }else if (e.key === "Enter") { //En este else se agrego para que se aniadan con un enter al historial
+            agregarAHistorial(busqueda);
+            setMostrarHistorial(false);
           }
+
         }}
         className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[11px] md:text-base lg:text-lg"
       />
@@ -116,6 +160,32 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
           </span>
         </div>
       )}
+
+      {/**Aqui es el funcionamiento del historial  */}
+      {mostrarHistorial && historial.length > 0 && (
+        <ul className="absolute z-10 w-full bg-white border mt-1 rounded-md shadow-md max-h-60 overflow-y-auto">
+          {historial.map((item, index) => (
+            <li
+              key={index}
+              className="px-4 py-2 flex justify-between items-center hover:bg-gray-100 text-sm text-gray-500"
+            >
+              <span
+                className="cursor-pointer w-full text-left"
+                onClick={() => handleSelectHistorial(item)} 
+              >
+                {item}
+              </span>
+              <button //Boton de eliminar del historial 
+                className="ml-2 text-gray-400 hover:text-black"
+                onClick={() => handleDeleteHistorial(item)}
+              >
+                <XMarkIcon className="h-4 w-4" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
     </div>
   );
 };
