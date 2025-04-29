@@ -1,5 +1,7 @@
 'use client';
 
+import { useMemo, useState } from "react";
+import { X, Map } from "lucide-react";
 import { useAutos } from '@/hooks/useAutos_hook_Recode';
 import SearchBar from '@/components/recodeComponentes/seccionOrdenarMasResultados/RecodeSearchBar';
 import HeaderBusquedaRecode from '@/components/recodeComponentes/seccionOrdenarMasResultados/HeaderBusquedaRecode';
@@ -7,7 +9,6 @@ import ResultadosAutos from '@/components/recodeComponentes/seccionOrdenarMasRes
 import Header from '@/components/ui/Header';
 
 import dynamic from "next/dynamic";
-import { useMemo } from "react";
 
 export default function Home() {
   const {
@@ -24,7 +25,9 @@ export default function Home() {
     obtenerSugerencia,
   } = useAutos(8);
 
-  const Map = useMemo(() => dynamic(
+  const [showMap, setShowMap] = useState(false);
+
+  const ViewMap = useMemo(() => dynamic(
     () => import('@/components/map/'),
     {
       loading: () => <p>A map is loading</p>,
@@ -74,12 +77,43 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Columna derecha: mapa (solo en desktop) */}
-          <div className="hidden lg:flex lg:w-1/3 h-[700px] bg-gray-100 rounded shadow-inner items-center justify-center text-gray-500">
-            <Map posix={[4.79029, -75.69003]} />
+          <div className="hidden lg:block lg:w-1/3">
+            <div className="sticky top-20 h-[690px] bg-gray-100 rounded shadow-inner">
+              <ViewMap posix={[4.79029, -75.69003]} />
+            </div>
           </div>
         </div>
       </main>
+
+      <div className="fixed bottom-0 right-6 z-50  lg:hidden">
+        <button
+          onClick={() => setShowMap(true)}
+          className="bg-black  text-white p-3 rounded-full shadow-lg mb-6"
+        >
+          <Map size={24} />
+        </button>
+      </div>
+
+      {showMap && (
+        <div className="fixed inset-0 bg-white bg-opacity-70 z-50 flex items-center justify-center lg:hidden">
+          <div className="relative w-full h-full bg-white rounded-t-xl overflow-hidden">
+
+            <div className="w-full flex justify-center pt-8 pb-2">
+              <button
+                className="absolute top-0.5 right-4 p-2 bg-white rounded-full shadow-md z-50"
+                onClick={() => setShowMap(false)}
+              >
+                <X size={20} className="text-black" />
+              </button>
+            </div>
+
+            <div className="w-full h-full">
+              <ViewMap posix={[4.79029, -75.69003]} />
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
