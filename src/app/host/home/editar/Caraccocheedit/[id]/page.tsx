@@ -26,7 +26,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-const API_URL = "http://localhost:4000/api";
+const API_URL = "https://redibo-backend-sprinteros1.onrender.com/api";
 
 // Opciones predefinidas que coinciden con el esquema de la base de datos
 const ASIENTOS_OPTIONS = [2, 4, 5, 7, 9].map(num => ({
@@ -128,24 +128,21 @@ const CaracteristicasPage: React.FC = () => {
           soat: carData.soat || false
         });
   
-      } catch (err: any) {
-        console.error("Error completo:", err);
-        console.error("URL solicitada:", err.config?.url);
-        const errorMsg = err.response?.data?.message || err.message || "No se pudieron cargar las características del vehículo";
+      } catch (err: unknown) {
+        const error = err as Error & { config?: { url?: string }, response?: { data?: { message?: string } } };
+        console.error("Error completo:", error);
+        console.error("URL solicitada:", error.config?.url);
+        const errorMsg = error.response?.data?.message || error.message || "No se pudieron cargar las características del vehículo";
         setError(errorMsg);
       } finally {
         setIsLoading(false);
-      }
+      }      
     };
   
     fetchCaracteristicas();
   }, [vehiculoId]);
 
   // Validación en tiempo real cuando cambian los valores
-  useEffect(() => {
-    validateForm();
-  }, [formData]);
-
   const validateForm = () => {
     const errors: ValidationErrors = {};
     
@@ -179,6 +176,9 @@ const CaracteristicasPage: React.FC = () => {
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
+  useEffect(() => {
+    validateForm();
+  }, [formData]);
 
   const handleCombustibleChange = (id: string) => {
     setTouchedFields({...touchedFields, combustibles: true});
@@ -264,27 +264,32 @@ const CaracteristicasPage: React.FC = () => {
       console.log(`Intentando actualizar: ${API_URL}/vehiculo/${vehiculoId}/caracteristicas`);
   
       // Actualizar características usando la ruta correcta
-      const response = await axios.put(`${API_URL}/vehiculo/${vehiculoId}/caracteristicas`, caracteristicasData);
-      
+      await axios.put(`${API_URL}/vehiculo/${vehiculoId}/caracteristicas`, caracteristicasData);
+
       
       // Redirigir después de un breve retraso
       setTimeout(() => router.push("/host/pages"), 1500);
-    } catch (err: any) {
-      console.error("Error completo al guardar:", err);
-      console.error("URL solicitada para guardar:", err.config?.url);
-      console.error("Datos enviados:", err.config?.data);
-      
-      // Extraer mensaje de error detallado si está disponible
-      const errorMessage = 
-        err.response?.data?.mensaje || 
-        err.response?.data?.error ||
-        err.response?.data?.message || 
-        err.message || 
-        "Error al guardar las características";
-      
-      setError(errorMessage);
-    } finally {
-      setIsSaving(false);
+     } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const errorMessage = 
+          err.response?.data?.mensaje || 
+          err.response?.data?.error ||
+          err.response?.data?.message || 
+          err.message || 
+          "Error al guardar las características";
+    
+        console.error("Error completo al guardar:", err);
+        console.error("URL solicitada para guardar:", err.config?.url);
+        console.error("Datos enviados:", err.config?.data);
+    
+        setError(errorMessage);
+      } else if (err instanceof Error) {
+        console.error("Error desconocido:", err);
+        setError(err.message);
+      } else {
+        console.error("Error no identificado:", err);
+        setError("Ocurrió un error inesperado");
+      }
     }
   };
 

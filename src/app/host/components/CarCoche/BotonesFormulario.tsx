@@ -1,18 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
-import { useRouter } from "next/navigation";
 
 interface BotonesFormularioProps {
   isFormValid: boolean;
@@ -23,7 +11,6 @@ export default function BotonesFormulario({
   isFormValid,
   onNext,
 }: BotonesFormularioProps) {
-  const router = useRouter();
 
   return (
     // ⬇ Contenedor ajustado para mover el botón más a la derecha

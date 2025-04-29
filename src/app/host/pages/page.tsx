@@ -36,7 +36,7 @@ export default function ViewCarsPage() {
   const [cars, setCars] = useState<Car[]>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [skip, setSkip] = useState<number>(0);
-  const [total, setTotal] = useState<number>(0);
+  //const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
   const [carImages, setCarImages] = useState<{ [key: number]: Image[] }>({});
@@ -46,7 +46,7 @@ export default function ViewCarsPage() {
       try {
         const result = await getCars({ skip: 0, take: 10, hostId: 1 });
         setCars(result.data);
-        setTotal(result.total);
+        //setTotal(result.total);
         setHasMore(result.data.length > 0 && result.data.length < result.total);
         setSkip(result.data.length);
       } catch (error) {
@@ -94,7 +94,7 @@ export default function ViewCarsPage() {
   const handleDelete = async (carId: number) => {
     try {
       // Llamada a la API para eliminar el vehículo
-      await axios.delete(`http://localhost:4000/api/vehiculo/${carId}`); 
+      await axios.delete(`https://redibo-backend-sprinteros1.onrender.com/api/vehiculo/${carId}`); 
       // Una vez eliminado correctamente, actualizamos el estado local
       setCars((prev) => prev.filter((car) => car.id !== carId));
       // Opcional: Mostrar mensaje de éxito

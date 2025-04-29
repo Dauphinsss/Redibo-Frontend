@@ -18,7 +18,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-const API_URL = "http://localhost:4000/api";
+const API_URL = "https://redibo-backend-sprinteros1.onrender.com/api";
 
 // Lista de características disponibles con nombres exactos
 const CARACTERISTICAS_OPTIONS = [
@@ -72,9 +72,10 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
             
           setSelectedItems(itemsSeleccionados);
         }
-      } catch (err: any) {
-        console.error("Error loading features:", err);
-        setError(`Error al cargar: ${err.response?.data?.message || err.message || "Error desconocido"}`);
+      } catch (err: unknown) {
+        const error = err as Error & { response?: { data?: { message?: string } } };
+        console.error("Error loading features:", error);
+        setError(`Error al cargar: ${error.response?.data?.message || error.message || "Error desconocido"}`);      
       } finally {
         setIsLoading(false);
       }
@@ -148,7 +149,8 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
 
       // CORRECCIÓN: Enviar objeto con la propiedad nuevasCaracteristicasAdicionales
       // CORRECCIÓN: Usar PUT en lugar de POST para coincidir con la ruta
-      const response = await axios.put(
+     
+      await axios.put(
         `${API_URL}/vehiculo/${vehiculoId}/caracteristicas-adicionales`, 
         { 
           nuevasCaracteristicasAdicionales: caracteristicasParaEnviar 
@@ -159,23 +161,17 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
           },
         }
       );
+      
 
       setSuccessMessage("Características guardadas correctamente");
       
       // Redirigir después de un breve retraso
       setTimeout(() => router.push("/host/pages"), 1500);
-    } catch (err: any) {
-      console.error("Error completo:", err);
-      
-      // Extraer mensaje de error detallado si está disponible
-      const errorMessage = 
-        err.response?.data?.mensaje || 
-        err.response?.data?.error || 
-        err.message || 
-        "Error al guardar los cambios";
-      
-      setError(errorMessage);
-    } finally {
+    } catch (err: unknown) {
+      const error = err as Error & { response?: { data?: { message?: string } } };
+      console.error("Error completo:", error);
+    }
+     finally {
       setIsSaving(false);
     }
   };

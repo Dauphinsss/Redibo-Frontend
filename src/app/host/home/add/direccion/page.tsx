@@ -14,7 +14,7 @@ import CampoNumCasa from "../../../components/Direccion/CampoNumCasa";
 import BotonesFormulario from "../../../components/Direccion/BotonesFormulario";
 
 // Definimos la constante API_URL aquí
-const API_BASE_URL = "http://localhost:4000/api";
+const API_BASE_URL = "https://redibo-backend-sprinteros1.onrender.com/api";
 
 export default function AddDireccion() {
   const router = useRouter();

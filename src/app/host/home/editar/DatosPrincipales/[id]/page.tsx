@@ -26,7 +26,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-const API_URL = "http://localhost:4000/api";
+const API_URL = "https://redibo-backend-sprinteros1.onrender.com/api";
 
 interface CarFormData {
   brand: string;
@@ -95,14 +95,15 @@ export default function DatosPrincipales() {
         
         setFieldErrors(initialErrors);
         
-      } catch (err) {
+      } catch {
         try {
           const [marcaResp, modeloResp, anioResp, vimResp, placaResp] = await Promise.all([
-            axios.get(`${API_URL}/vehiculo/${carId}/marca`).catch(e => ({ data: "" })),
-            axios.get(`${API_URL}/vehiculo/${carId}/modelo`).catch(e => ({ data: "" })),
-            axios.get(`${API_URL}/vehiculo/${carId}/anio`).catch(e => ({ data: "" })),
-            axios.get(`${API_URL}/vehiculo/${carId}/vim`).catch(e => ({ data: "" })),
-            axios.get(`${API_URL}/vehiculo/${carId}/placa`).catch(e => ({ data: "" })),
+            axios.get(`${API_URL}/vehiculo/${carId}/marca`).catch(() => ({ data: "" })),
+            axios.get(`${API_URL}/vehiculo/${carId}/modelo`).catch(() => ({ data: "" })),
+            axios.get(`${API_URL}/vehiculo/${carId}/anio`).catch(() => ({ data: "" })),
+            axios.get(`${API_URL}/vehiculo/${carId}/vim`).catch(() => ({ data: "" })),
+            axios.get(`${API_URL}/vehiculo/${carId}/placa`).catch(() => ({ data: "" })),
+            
           ]);
 
           const initialData = {
@@ -125,7 +126,7 @@ export default function DatosPrincipales() {
           
           setFieldErrors(initialErrors);
           
-        } catch (err2) {
+        } catch {
           setGeneralError("Error al cargar los datos del vehículo");
         }
       } finally {
@@ -256,11 +257,16 @@ export default function DatosPrincipales() {
       } else {
         setGeneralError("No se pudieron guardar los cambios.");
       }
-    } catch (err: any) {
-      setGeneralError(err.response?.data?.mensaje || "Error al guardar. Verifique la conexión.");
-    } finally {
-      setIsSaving(false);
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setGeneralError(err.response?.data?.mensaje || "Error al guardar. Verifique la conexión.");
+      } else if (err instanceof Error) {
+        setGeneralError(err.message);
+      } else {
+        setGeneralError("Error inesperado al guardar.");
+      }
     }
+    
   };
 
   const handleCancel = () => {

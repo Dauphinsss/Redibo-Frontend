@@ -1,7 +1,7 @@
 "use client";
 import React, { useCallback, ChangeEvent, memo } from "react";
 import { useFormContext } from "../../home/add/context/FormContext";
-
+import { useMemo } from 'react';
 export type FeatureKey = 
   | "airConditioning"
   | "bluetooth"
@@ -63,7 +63,7 @@ CaracteristicaCheckbox.displayName = "CaracteristicaCheckbox";
 
 const ListaCaracteristicas: React.FC = () => {
   const { formData, updateCaracteristicasAdicionales } = useFormContext();
-  const currentExtraIds = formData.caracteristicasAdicionales.extraIds ?? [];
+  const currentExtraIds = useMemo(() => formData.caracteristicasAdicionales.extraIds ?? [], [formData.caracteristicasAdicionales.extraIds]);
 
 
   const handleCheckboxChange = useCallback(

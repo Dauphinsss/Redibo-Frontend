@@ -13,7 +13,7 @@ interface Car {
 
 export default function CarListView() {
   // Datos simulados
-  const [cars, setCars] = useState<Car[]>([
+  const [cars] = useState<Car[]>([
     { id: 1, brand: "Toyota", model: "Corolla", year: 2020, price: 50, status: "Disponible" },
     { id: 2, brand: "Honda", model: "Civic", year: 2019, price: 45, status: "En uso" },
     { id: 3, brand: "Ford", model: "Focus", year: 2021, price: 55, status: "Disponible" },

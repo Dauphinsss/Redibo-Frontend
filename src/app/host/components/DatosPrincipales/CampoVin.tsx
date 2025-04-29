@@ -35,6 +35,7 @@ function validateVin(vin: string): string {
   }
 
   // 4) Dígito de verificación (posición 9)
+  /*
   const transliteration: Record<string, number> = {
     A: 1, B: 2, C: 3, D: 4, E: 5, F: 6, G: 7, H: 8,
     J: 1, K: 2, L: 3, M: 4, N: 5, P: 7, R: 9,
@@ -58,6 +59,7 @@ function validateVin(vin: string): string {
   }
 
   // Si todo pasa
+  */
   return "";
 }
 

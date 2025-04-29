@@ -3,7 +3,7 @@ import axios, { AxiosInstance, AxiosError } from "axios";
 import { getDevToken, getToken } from "./authService";
 
 const API: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v2",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://redibo-backend-sprinteros1.onrender.com/api/v2",
 });
 
 API.interceptors.request.use(
@@ -103,7 +103,7 @@ export interface FullCarPayload {
 
 export interface CreateFullCarResponse {
   success: boolean;
-  data: any;
+  data: Record<string, unknown>;
   message?: string;
 }
 
@@ -114,18 +114,17 @@ export async function createFullCar(
     // Primera petición
     const response = await API.post<CreateFullCarResponse>("/cars/full", payload);
     return response.data;
-  } catch (err: any) {
+  } catch (err: unknown) {
     const axiosErr = err as AxiosError;
+  
     if (axiosErr.response?.status === 403) {
-      // 1) Token inválido/expirado
       localStorage.removeItem("token");
-      // 2) Forzar obtención de uno nuevo
       await getDevToken();
-      // 3) Reintentar la petición original
       const retry = await API.post<CreateFullCarResponse>("/cars/full", payload);
       return retry.data;
     }
-    // Si no es 403, propagamos el error
-    throw err;
+  
+    throw err; // no olvides relanzarlo si no es 403
   }
+  
 }

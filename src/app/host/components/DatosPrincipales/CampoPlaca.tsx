@@ -10,7 +10,7 @@ interface CampoPlacaProps {
 
 export default function CampoPlaca({ placa, onPlacaChange, placaError, setPlacaError }: CampoPlacaProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.toUpperCase();
+    const value = e.target.value.toUpperCase();  // <-- Aquí corregido
     let newValue = "";
     let hasLetters = false;
     let letterCount = 0;

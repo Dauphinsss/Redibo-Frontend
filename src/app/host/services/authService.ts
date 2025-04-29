@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const TOKEN_KEY = "token";
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v2";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://redibo-backend-sprinteros1.onrender.com/api/v2";
 const DEV_TOKEN_ENDPOINT = `${API_BASE}/cars/dev-token`;
 
 /**

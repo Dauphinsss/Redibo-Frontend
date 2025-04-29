@@ -189,8 +189,12 @@ export function FormProvider({ children }: { children: ReactNode }) {
       } else {
         setSubmitError(result.message || "Error al crear el carro");
       }
-    } catch (err: any) {
-      setSubmitError(err.message || "Error desconocido");
+    } catch (err) {
+      if (err instanceof Error) {
+        setSubmitError(err.message || "Error desconocido");
+      } else {
+        setSubmitError("Error desconocido");
+      }
     } finally {
       setIsSubmitting(false);
     }
