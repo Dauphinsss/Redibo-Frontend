@@ -25,7 +25,7 @@ export function useReservationTimer(duration: number) {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [confirmed]);
+  }, [confirmed, timeLeft]);
 
   useEffect(() => {
     if (confirmed && timeLeft === 0) {
@@ -39,7 +39,7 @@ export function useReservationTimer(duration: number) {
 
       return () => clearTimeout(timer);
     }
-  }, [timeLeft]);
+  }, [timeLeft, confirmed]);
 
   const startTimer = () => {
     setTimeLeft(duration);

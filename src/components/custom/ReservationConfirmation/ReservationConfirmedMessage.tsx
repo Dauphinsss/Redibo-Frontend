@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import ReservationDialog from "./ReservationDialog";
-import { FloatingTimer } from "./FloatingTimer";
 import { AutoCancelNotification } from "./AutoCancelNotification";
 import { useReservationTimer } from "./hooks/useReservationTimer";
 
