@@ -3,6 +3,7 @@ import { CarouselItem } from '../ui/carousel';
 import { Card, CardContent } from '../ui/card';
 import { Car } from '@/types/apitypes';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 type CarrucelItemProps = {
   car: Car
@@ -20,7 +21,14 @@ function CarrucelItem({ car }: CarrucelItemProps) {
       <div className="p-1 ">
         <Card className='p-0 rounded-t-2xl bg-black border-0'>
           <CardContent className="flex flex-col items-center justify-items-start p-0 text-white">
-            <img src={car.imagenes} alt="" className='h-40 w-full rounded-t-2xl' />
+            <div className="relative w-full h-40">
+              <Image
+                src={car.imagenes}
+                alt={`${car.marca} ${car.modelo}`}
+                fill
+                className="object-cover rounded-t-2xl"
+              />
+            </div>
             <div className='w-full flex justify-between items-center'>
               <span className='text-2xl font-bold px-2'>{car.marca}</span>
               <span className='text-ms font-bold opacity-60 px-2'>{car.marca} {car.anio}</span>
