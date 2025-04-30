@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, XCircle, CheckCircle } from "lucide-react";
+import { CalendarIcon, XCircle } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -13,10 +13,9 @@ import { es } from "date-fns/locale";
 import ReservationConfirmedMessage from "./ReservationConfirmedMessage";
 import { useFakeAuth } from "./hooks/useFakeAuth";
 import { useState } from "react";
-import { AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export default function ProvisionalBooking() {
-  const { user, login, logout } = useFakeAuth(); //hooks loggin
+  const { user, login } = useFakeAuth(); //hooks loggin
   const [pickupDate, setPickupDate] = useState<Date | undefined>(undefined);
   const [returnDate, setReturnDate] = useState<Date | undefined>(undefined);
 

@@ -5,16 +5,13 @@ import {
   AlertDialogHeader,
   AlertDialogFooter,
   AlertDialogTitle,
-  AlertDialogDescription,
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle, DollarSign } from "lucide-react";
-import { format } from "date-fns";
+import { Loader2, CheckCircle } from "lucide-react";
 import React, { useState } from "react";
 import { SuccessModal } from "./SuccessNotification"
-import { X } from "lucide-react";
 import axiosInstance from "@/api/axios";
 import axios from "axios";
 

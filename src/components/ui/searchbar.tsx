@@ -3,7 +3,7 @@
 import './../../styles/searchbar.css';
 import React, { useRef, useEffect, useState } from "react";
 import { FaSearch } from 'react-icons/fa';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 let canClose = true;
 
@@ -17,10 +17,7 @@ const SearchBar = () => {
   const savedSearchesRef = useRef<HTMLDivElement>(null);
 
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const query = searchParams.get('query');
   const isSearchPage = pathname === "/searchMock";
-  const hasSetQuery = useRef(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -52,7 +49,7 @@ const SearchBar = () => {
       document.removeEventListener('click', handleClickOutside);
     }
 
-  }, [searchTerm]);
+  }, [isSearchPage, searchTerm]);
 
   const handleButtonClick = () => {
     if (!searchTerm.trim()) return;
