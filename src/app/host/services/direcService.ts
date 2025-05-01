@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Define la URL base para las peticiones
-const API_URL = "https://redibo-backend-sprinteros1.onrender.com/api";
+const API_URL = "http://localhost:4000/api/v1";
 
 interface BackendCountry {
   id: number;

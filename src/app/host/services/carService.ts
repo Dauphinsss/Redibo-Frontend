@@ -3,7 +3,7 @@ import axios, { AxiosInstance, AxiosError } from "axios";
 import { getDevToken, getToken } from "./authService";
 
 const API: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://redibo-backend-sprinteros1.onrender.com/api/v2",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v2",
 });
 
 API.interceptors.request.use(

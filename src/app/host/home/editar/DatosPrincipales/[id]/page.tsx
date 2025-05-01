@@ -26,7 +26,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-const API_URL = "https://redibo-backend-sprinteros1.onrender.com/api";
+const API_URL = "http://localhost:4000/api/v1";
 
 interface CarFormData {
   brand: string;

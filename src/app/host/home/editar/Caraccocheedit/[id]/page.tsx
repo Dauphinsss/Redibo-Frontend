@@ -26,7 +26,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-const API_URL = "https://redibo-backend-sprinteros1.onrender.com/api";
+const API_URL = "http://localhost:4000/api/v1";
 
 // Opciones predefinidas que coinciden con el esquema de la base de datos
 const ASIENTOS_OPTIONS = [2, 4, 5, 7, 9].map(num => ({
