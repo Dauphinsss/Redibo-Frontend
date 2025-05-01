@@ -86,6 +86,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
   };
   //Agregado para el historial
   const handleBlur = () => {
+    if (busqueda.trim()) {
+      agregarAHistorial(busqueda);
+    }
     setTimeout(() => {
       setMostrarHistorial(false);
     }, 150);
