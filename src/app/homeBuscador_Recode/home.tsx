@@ -64,7 +64,7 @@ export default function Home() {
                     </div>
 
                     {/* Columna derecha: mapa (solo en desktop) */}
-                    <aside className="hidden lg:flex lg:w-1/3 h-[300px] bg-gray-100 rounded shadow-inner items-center justify-center text-gray-500">
+                    <aside className="hidden lg:flex lg:w-1/3 h-[300px] bg-black-100 rounded shadow-inner items-center justify-center text-gray-500">
                         RecodeMapView próximamente
                     </aside>
                 </div>
