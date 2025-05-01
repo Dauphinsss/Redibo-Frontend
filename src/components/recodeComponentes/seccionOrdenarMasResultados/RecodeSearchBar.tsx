@@ -45,6 +45,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
       setSugerencia("");
       return;
     }
+
+    sessionStorage.setItem("ultimaBusqueda", busqueda);
+
     const timer = setTimeout(() => {
       const sugerido = obtenerSugerencia(busqueda);
       if (
@@ -59,27 +62,59 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
     return () => clearTimeout(timer); 
   }, [busqueda, obtenerSugerencia]);
 
+    // useEffect para guardar el historial en LocalStorage
+    useEffect(() => {
+      if (historial.length > 0) {
+        localStorage.setItem("historialBusqueda", JSON.stringify(historial));
+      }
+    }, [historial]);
+    
+    useEffect(() => {
+      const guardado = localStorage.getItem("historialBusqueda");
+      if (guardado) setHistorial(JSON.parse(guardado));
+
+      const guardada = sessionStorage.getItem("ultimaBusqueda");
+      if (guardada) {
+        setBusqueda(guardada);
+        onFiltrar(guardada);
+      }
+    }, []);
+
   //Agregado para el historial
   const handleFocus = () => {
-    if (busqueda.trim() === "") {
-      setMostrarHistorial(true);
-    }
+    setMostrarHistorial(true);
   };
   //Agregado para el historial
   const handleBlur = () => {
+    if (busqueda.trim()) {
+      agregarAHistorial(busqueda);
+    }
     setTimeout(() => {
       setMostrarHistorial(false);
     }, 150);
   };
   //Agregado para el historial
   const handleDeleteHistorial = (item: string) => {
-    setHistorial((prev) => prev.filter((i) => i !== item));
+    setHistorial((prev) => {
+      const nuevoHistorial = prev.filter((i) => i !== item);
+      if (nuevoHistorial.length === 0) {
+        localStorage.removeItem("historialBusqueda");
+      }
+      return nuevoHistorial;
+    });
   };
+  
   //Agregado para el historial
   const handleSelectHistorial = (item: string) => {
     setBusqueda(item);
     onFiltrar(item);
     setMostrarHistorial(false);
+
+    // Reordenar para que suba como más reciente
+    setHistorial((prev) => {
+      const sinDuplicados = prev.filter((i) => i !== item);
+      return [item, ...sinDuplicados].slice(0, 8);
+    })
   };
   //Agregado para el historial
   const agregarAHistorial = (valor: string) => {
@@ -130,11 +165,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
             if (nuevaBusqueda === sugerencia) {
               setSugerencia("");
             } 
-          }else if (e.key === "Enter") { //En este else se agrego para que se aniadan con un enter al historial
+          } else if (e.key === "Enter") { //En este else se agrego para que se aniadan con un enter al historial
             agregarAHistorial(busqueda);
             setMostrarHistorial(false);
+            inputRef.current?.blur();
           }
-
         }}
         className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[11px] md:text-base lg:text-lg"
       />
@@ -162,30 +197,36 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
       )}
 
       {/**Aqui es el funcionamiento del historial  */}
-      {mostrarHistorial && historial.length > 0 && (
+      {mostrarHistorial && (
         <ul className="absolute z-10 w-full bg-white border mt-1 rounded-md shadow-md max-h-60 overflow-y-auto">
-          {historial.map((item, index) => (
+          {historial.length > 0 ? (
+            historial.map((item, index) => (
             <li
-              key={index}
-              className="px-4 py-2 flex justify-between items-center hover:bg-gray-100 text-sm text-gray-500"
-            >
+                key={index}
+                className="px-4 py-2 flex justify-between items-center hover:bg-gray-100 text-sm text-gray-500"
+              >
               <span
                 className="cursor-pointer w-full text-left"
                 onClick={() => handleSelectHistorial(item)} 
               >
                 {item}
               </span>
-              <button //Boton de eliminar del historial 
+              <button
                 className="ml-2 text-gray-400 hover:text-black"
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={() => handleDeleteHistorial(item)}
               >
                 <XMarkIcon className="h-4 w-4" />
               </button>
             </li>
-          ))}
-        </ul>
+          ))
+        ) : (
+        <li className="px-4 py-2 text-center text-sm text-gray-400">
+          No hay búsquedas guardadas.
+        </li>
       )}
-
+      </ul>
+    )}
     </div>
   );
 };
