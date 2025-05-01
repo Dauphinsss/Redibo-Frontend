@@ -6,6 +6,7 @@ import { LatLngExpression, LatLngTuple } from "leaflet"
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
+import MapPunto from "../mapPunto";
 
 interface MapProps {
   posix: LatLngExpression | LatLngTuple,
@@ -33,6 +34,7 @@ const Map = (Map: MapProps) => {
       <Marker position={posix} draggable={false}>
         <Popup>Hey ! I study here</Popup>
       </Marker>
+      <MapPunto/>
     </MapContainer>
   );
 }
