@@ -2,7 +2,6 @@
 'use client';
 import Carrucel from "@/components/custom/Carrucel";
 import Header from "@/components/ui/Header";
-import SearchBar from "@/components/ui/searchbar";
 
 export default function Home() {
 

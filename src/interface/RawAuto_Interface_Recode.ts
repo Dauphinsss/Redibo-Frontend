@@ -28,5 +28,9 @@ export interface RawAuto_Interface_Recode {
         data: string;
         id_carro: number;
     }[];
-    caracteristicasAdicionalesCarro: any[];
+    caracteristicasAdicionalesCarro: {
+        caracteristicas_adicionales?: {
+            nombre: string;
+        };
+    }[];
 }
