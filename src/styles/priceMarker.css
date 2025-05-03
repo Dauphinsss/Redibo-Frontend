@@ -1,0 +1,13 @@
+.price-marker {
+  background-color: #000;
+  color: white;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  font-size: 14px;
+  text-align: center;
+  white-space: nowrap;
+  transform: translateY(-100%);
+  cursor: pointer;
+}

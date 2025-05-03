@@ -10,6 +10,8 @@ import Header from '@/components/ui/Header';
 
 import dynamic from "next/dynamic";
 
+import autosData from "@/data/ubicaciones.json";
+
 export default function Home() {
   const {
     autos,
@@ -41,49 +43,45 @@ export default function Home() {
       <div className="sticky top-0 z-50 bg-white shadow">
         <Header />
       </div>
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="flex flex-col lg:flex-row">
 
-        {/* Buscador */}
-        <section className="mb-8 flex flex-col items-center text-center">
-          <SearchBar
-            placeholder="Buscar por modelo, marca"
-            onFiltrar={filtrarAutos}
-            obtenerSugerencia={obtenerSugerencia}
-          />
-          {/* <div className="mt-6">RecodeCarousel aquí (opcional)</div> */}
-        </section>
+        <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {/* Buscador */}
+          <section className="mb-8 flex flex-col items-center text-center">
+            <SearchBar
+              placeholder="Buscar por modelo, marca"
+              onFiltrar={filtrarAutos}
+              obtenerSugerencia={obtenerSugerencia}
+            />
+            {/* <div className="mt-6">RecodeCarousel aquí (opcional)</div> */}
+          </section>
 
-        {/* Contenido principal */}
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Columna izquierda: lista */}
-          <div className="flex-1 max-w-full">
-            <div className="w-full max-w-4xl mx-auto">
-              <HeaderBusquedaRecode
-                autosTotales={autos}
-                autosFiltrados={autosFiltrados}
-                autosMostrados={autosActuales}
-                ordenSeleccionado={ordenSeleccionado}
-                setOrdenSeleccionado={setOrdenSeleccionado}
-                setAutosFiltrados={setAutosFiltrados}
-              />
+          <div className="w-full max-w-4xl mx-auto">
+            <HeaderBusquedaRecode
+              autosTotales={autos}
+              autosFiltrados={autosFiltrados}
+              autosMostrados={autosActuales}
+              ordenSeleccionado={ordenSeleccionado}
+              setOrdenSeleccionado={setOrdenSeleccionado}
+              setAutosFiltrados={setAutosFiltrados}
+            />
 
-              <ResultadosAutos
-                cargando={cargando}
-                autosActuales={autosActuales}
-                autosFiltrados={autosFiltrados}
-                autosVisibles={autosVisibles}
-                mostrarMasAutos={mostrarMasAutos}
-              />
-            </div>
+            <ResultadosAutos
+              cargando={cargando}
+              autosActuales={autosActuales}
+              autosFiltrados={autosFiltrados}
+              autosVisibles={autosVisibles}
+              mostrarMasAutos={mostrarMasAutos}
+            />
           </div>
+        </main>
 
-          <div className="hidden lg:block lg:w-1/3">
-            <div className="sticky top-20 h-[690px] bg-gray-100 rounded shadow-inner">
-              <ViewMap posix={[4.79029, -75.69003]} />
-            </div>
+        <div className="hidden lg:block lg:w-[40%]">
+          <div className="sticky top-[64px] h-[calc(100vh-64px)] bg-gray-100 rounded shadow-inner">
+            <ViewMap posix={[-17.39438, -66.16018]} autos={autosData} />
           </div>
         </div>
-      </main>
+      </div>
 
       <div className="fixed bottom-0 right-6 z-50  lg:hidden">
         <button
@@ -108,7 +106,7 @@ export default function Home() {
             </div>
 
             <div className="w-full h-full">
-              <ViewMap posix={[4.79029, -75.69003]} />
+              <ViewMap posix={[-17.39438, -66.16018]} autos={autosData} />
             </div>
           </div>
         </div>

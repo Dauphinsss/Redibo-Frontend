@@ -1,0 +1,200 @@
+[
+  {
+    "id": 1,
+    "marca": "Toyota",
+    "modelo": "Corolla",
+    "anio": 2020,
+    "precio": 200,
+    "latitud": -17.38046,
+    "longitud": -66.22868
+  },
+  {
+    "id": 2,
+    "marca": "Honda",
+    "modelo": "Civic",
+    "anio": 2019,
+    "precio": 180,
+    "latitud": -17.38603,
+    "longitud": -66.21700
+  },
+  {
+    "id": 3,
+    "marca": "Ford",
+    "modelo": "Focus",
+    "anio": 2021,
+    "precio": 220,
+    "latitud": -17.37161,
+    "longitud": -66.12602
+  },
+  {
+    "id": 4,
+    "marca": "Chevrolet",
+    "modelo": "Malibu",
+    "anio": 2018,
+    "precio": 160,
+    "latitud": -17.40667,
+    "longitud": -66.04774
+  },
+  {
+    "id": 5,
+    "marca": "Nissan",
+    "modelo": "Altima",
+    "anio": 2022,
+    "precio": 240,
+    "latitud": -17.39930,
+    "longitud": -66.27794
+  },
+  {
+    "id": 6,
+    "marca": "Hyundai",
+    "modelo": "Elantra",
+    "anio": 2023,
+    "precio": 260,
+    "latitud": -19.58935,
+    "longitud": -65.75414
+  },
+  {
+    "id": 7,
+    "marca": "Kia",
+    "modelo": "Forte",
+    "anio": 2020,
+    "precio": 200,
+    "latitud": -19.58474,
+    "longitud": -65.74678
+  },
+  {
+    "id": 8,
+    "marca": "Mazda",
+    "modelo": "3",
+    "anio": 2019,
+    "precio": 180,
+    "latitud": -17.96645,
+    "longitud": -67.11350
+  },
+  {
+    "id": 9,
+    "marca": "Volkswagen",
+    "modelo": "Jetta",
+    "anio": 2021,
+    "precio": 220,
+    "latitud": -17.96592,
+    "longitud": -67.10398
+  },
+  {
+    "id": 10,
+    "marca": "Subaru",
+    "modelo": "Impreza",
+    "anio": 2018,
+    "precio": 160,
+    "latitud": -16.49520,
+    "longitud": -68.12410
+  },
+  {
+    "id": 11,
+    "marca": "Chrysler",
+    "modelo": "300",
+    "anio": 2022,
+    "precio": 240,
+    "latitud": -16.50290,
+    "longitud": -68.11146
+  },
+  {
+    "id": 12,
+    "marca": "Dodge",
+    "modelo": "Charger",
+    "anio": 2023,
+    "precio": 260,
+    "latitud": -11.04702,
+    "longitud": -68.77832
+  },
+  {
+    "id": 13,
+    "marca": "Jeep",
+    "modelo": "Cherokee",
+    "anio": 2020,
+    "precio": 200,
+    "latitud": -11.02494,
+    "longitud": -68.75686
+  },
+  {
+    "id": 14,
+    "marca": "Ram",
+    "modelo": "1500",
+    "anio": 2019,
+    "precio": 180,
+    "latitud": -14.828800,
+    "longitud": -64.894964
+  },
+  {
+    "id": 15,
+    "marca": "Buick",
+    "modelo": "Enclave",
+    "anio": 2021,
+    "precio": 220,
+    "latitud": -14.84031,
+    "longitud": -64.90607
+  },
+  {
+    "id": 16,
+    "marca": "GMC",
+    "modelo": "Sierra",
+    "anio": 2018,
+    "precio": 160,
+    "latitud": -17.78465,
+    "longitud": -63.17407
+  },
+  {
+    "id": 17,
+    "marca": "Cadillac",
+    "modelo": "Escalade",
+    "anio": 2022,
+    "precio": 240,
+    "latitud": -17.80214,
+    "longitud": -63.15493
+  },
+  {
+    "id": 18,
+    "marca": "Tesla",
+    "modelo": "Model S",
+    "anio": 2023,
+    "precio": 260,
+    "latitud": -17.799025,
+    "longitud": -63.200870
+  },
+  {
+    "id": 19,
+    "marca": "Porsche",
+    "modelo": "911",
+    "anio": 2020,
+    "precio": 200,
+    "latitud": -19.04610,
+    "longitud": -65.25975
+  },
+  {
+    "id": 20,
+    "marca": "Lexus",
+    "modelo": "RX",
+    "anio": 2019,
+    "precio": 180,
+    "latitud": -19.04938,
+    "longitud": -65.24261
+  },
+  {
+    "id": 21,
+    "marca": "Infiniti",
+    "modelo": "QX80",
+    "anio": 2021,
+    "precio": 220,
+    "latitud": -21.53377,
+    "longitud": -64.72951
+  },
+  {
+    "id": 22,
+    "marca": "Land Rover",
+    "modelo": "Range Rover",
+    "anio": 2018,
+    "precio": 160,
+    "latitud": -21.53042,
+    "longitud": -64.70952
+  }
+]

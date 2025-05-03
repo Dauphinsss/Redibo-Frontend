@@ -1,40 +1,63 @@
 "use client"
 
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
-import { LatLngExpression, LatLngTuple } from "leaflet"
+import L, { DivIcon, LatLngExpression, LatLngTuple } from "leaflet"
 
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 import MapPunto from "../mapPunto";
+import { Auto } from "@/interface/map";
+import "@/styles/priceMarker.css"
+
 
 interface MapProps {
   posix: LatLngExpression | LatLngTuple,
   zoom?: number,
+  autos?: Auto[],
 }
 
 const defaults = {
   zoom: 12,
 }
 
-const Map = (Map: MapProps) => {
-  const { zoom = defaults.zoom, posix } = Map;
-
+const Map = ({ zoom = defaults.zoom, posix, autos = [] }: MapProps) => {
   return (
     <MapContainer
       center={posix}
       zoom={zoom}
-      scrollWheelZoom={false}
+      scrollWheelZoom={true}
       style={{ height: "100%", width: "100%" }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={posix} draggable={false}>
-        <Popup>Hey ! I study here</Popup>
-      </Marker>
-      <MapPunto/>
+      {autos.map((auto) => {
+        const customIcon: DivIcon = L.divIcon({
+          html: `<div class="price-marker">$${auto.precio}</div>`,
+          className: "",
+          iconSize: [50, 30],
+          iconAnchor: [25, 30],
+        });
+
+        return (
+          <Marker key={auto.id} position={[auto.latitud, auto.longitud]} icon={customIcon}>
+            <Popup>
+              <div className="text-sm space-y-1">
+                <div><strong>Marca:</strong> {auto.marca}</div>
+                <div><strong>Modelo:</strong> {auto.modelo}</div>
+                <div><strong>Año:</strong> {auto.anio}</div>
+                <div><strong>Precio:</strong> ${auto.precio} / día</div>
+                <button className="mt-2 px-2 py-1 bg-black text-white rounded hover:bg-gray-800">
+                  Ver detalles
+                </button>
+              </div>
+            </Popup>
+          </Marker>
+        );
+      })}
+      <MapPunto />
     </MapContainer>
   );
 }
