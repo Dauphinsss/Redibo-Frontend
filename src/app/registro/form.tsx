@@ -211,7 +211,10 @@ export default function Form() {
       resetar();
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        toast.error(` ${error.response?.data.error}`);
+        const errorMessage = error.response?.data?.error || "Error al registrar el usuario";
+        toast.error(errorMessage);
+      } else {
+        toast.error("Error al registrar el usuario");
       }
       console.error("Error al registrar el usuario:", error);
     }
@@ -257,6 +260,38 @@ export default function Form() {
     }
   };
 
+  const GoogleSection = (
+    <div className="flex flex-col items-center gap-2 w-full">
+      <div className="relative w-full text-center flex items-center justify-center mb-2">
+        <hr className="flex-grow border-gray-300" />
+        <span className="mx-4 text-gray-500 text-sm whitespace-nowrap">O CONTINÚA CON</span>
+        <hr className="flex-grow border-gray-300" />
+      </div>
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full max-w-xs h-10 text-sm font-semibold flex items-center justify-center gap-2 rounded-lg shadow-sm border border-gray-300 bg-white hover:bg-gray-50"
+        style={{ minWidth: 220 }}
+        onClick={() => {
+          window.location.href = `${API_URL}/api/auth/google`;
+        }}
+      >
+        <img
+          src="https://www.svgrepo.com/show/475656/google-color.svg"
+          alt="Google"
+          className="w-4 h-4"
+        />
+        Iniciar sesión con Google
+      </Button>
+      <p className="text-sm text-gray-600 mt-2">
+        ¿Ya tienes una cuenta?{' '}
+        <a href="/login" className="text-black-600 hover:underline">
+          Iniciar sesión
+        </a>
+      </p>
+    </div>
+  );
+
   if (!userType) {
     return (
       <div className="flex items-center justify-center p-8 mt-auto">
@@ -271,7 +306,7 @@ export default function Form() {
           </CardHeader>
           <CardContent>
             <RadioGroup
-              className="space-y-2.5"
+              className="space-y-2.5 mt-6"
               onValueChange={(value) => setUserType(value as UserType)}
             >
               <div className="flex items-center space-x-2 rounded-md border p-4 cursor-pointer hover:bg-muted">
@@ -312,7 +347,8 @@ export default function Form() {
               </div>
             </RadioGroup>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex flex-col gap-4 pt-0 border-t mt-4">
+            {GoogleSection}
             <Button
               variant="outline"
               className="w-full"
