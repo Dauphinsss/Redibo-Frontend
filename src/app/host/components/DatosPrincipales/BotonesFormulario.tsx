@@ -51,6 +51,7 @@ export default function BotonesFormulario({ isFormValid, onNext }: BotonesFormul
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      {/* Botón Siguiente */}
       <Button
         variant="default"
         className="w-full sm:w-48 h-12 text-lg font-semibold text-white bg-gray-800 transition-transform duration-200 ease-in-out transform hover:scale-105 hover:bg-gray-900"

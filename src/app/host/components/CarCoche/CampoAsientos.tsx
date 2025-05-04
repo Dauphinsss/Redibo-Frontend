@@ -25,7 +25,7 @@ export default function CampoAsientos({
       if (numValue <= 0) {
         setError("Debe ser mayor a 0");
       } else if (numValue > 240) {
-        setError("Máximo 240 asientos");
+        setError("La cantidad máxima de asientos es 240");
       } else {
         setError("");
       }
