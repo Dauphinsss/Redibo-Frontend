@@ -4,54 +4,58 @@ import { useState, useEffect } from "react";
 import { Car } from "@/app/host/types";
 import { getImagesByCarId } from "@/app/host/services/imageService";
 
-// Nuevo tipo de imagen para el frontend
 export interface CarImage {
   id: number;
-  src: string;  // src directo para usar en <img src="..." />
+  data: string;
+  width?: number;
+  height?: number;
 }
 
 export function useCarImages(cars: Car[]) {
   const [carImages, setCarImages] = useState<Record<number, CarImage[]>>({});
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    if (cars.length) {
-      loadImages();
-    }
-  }, [cars]);
+    let cancelled = false;
 
-  async function loadImages() {
-    setLoading(true);
-    setError(null);
+    async function loadImages() {
+      setLoading(true);
+      setError(null);
 
-    const imagesByCar: Record<number, CarImage[]> = {};
+      const imagesByCar: Record<number, CarImage[]> = {};
 
-    await Promise.all(
-      cars.map(async (car) => {
-        try {
-          const response = await getImagesByCarId(car.id);
+      await Promise.all(
+        cars.map(async (car) => {
+          try {
+            const response = await getImagesByCarId(car.id);
 
-          if (response.success) {
-            // Mapear cada imagen { id, url } ➔ { id, src }
-            imagesByCar[car.id] = response.data.map(img => ({
-              id: img.id,
-              src: img.url
-            }));
-          } else {
-            console.warn(`API devolvió success=false para carId=${car.id}`);
+            if (response.success) {
+              imagesByCar[car.id] = response.data.map(img => ({
+                id: img.id,
+                data: img.data,
+                width: img.width,
+                height: img.height,
+              }));
+            } else {
+              imagesByCar[car.id] = [];
+            }
+          } catch (err) {
             imagesByCar[car.id] = [];
+            if (!cancelled) setError(err as Error);
           }
-        } catch (err) {
-          console.error(`Error cargando imágenes para carId=${car.id}:`, err);
-          imagesByCar[car.id] = [];
-        }
-      })
-    );
+        })
+      );
 
-    setCarImages(imagesByCar);
-    setLoading(false);
-  }
+      if (!cancelled) {
+        setCarImages(imagesByCar);
+        setLoading(false);
+      }
+    }
+
+    if (cars.length) loadImages();
+    return () => { cancelled = true; };
+  }, [cars]);
 
   return {
     carImages,

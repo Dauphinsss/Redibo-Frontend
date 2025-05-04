@@ -1,32 +1,33 @@
 // src/app/host/components/CarList.tsx
+
 import InfiniteScroll from "react-infinite-scroll-component";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Plus } from "lucide-react";
 import { Car } from "@/app/host/types";
-import { CarImage, useCarImages } from "@/app/host/hooks/useCarImages";
+import { CarImage } from "@/app/host/hooks/useCarImages";
 import { CarCard } from "./CarCard";
 
 interface CarListProps {
   cars: Car[];
-  carImages: Record<number, CarImage[]>;  // Ahora usamos CarImage[]
+  carImages: Record<number, CarImage[]>;
   hasMore: boolean;
   fetchMoreData: () => Promise<void>;
   handleDelete: (carId: number) => Promise<void>;
 }
 
-export function CarList({ 
-  cars, 
-  carImages, 
-  hasMore, 
-  fetchMoreData, 
-  handleDelete 
+export function CarList({
+  cars,
+  carImages,
+  hasMore,
+  fetchMoreData,
+  handleDelete,
 }: CarListProps) {
   return (
     <div className="w-full max-w-5xl">
       <h1 className="text-4xl font-bold text-center my-8">Mis Carros</h1>
-      
+
       <div className="flex items-center justify-between w-full">
         <span className="text-lg font-medium order-1">Lista de carros</span>
         <Link href="/host/home/add/direccion" className="order-2">
@@ -49,7 +50,7 @@ export function CarList({
           <CarCard
             key={car.id}
             car={car}
-            images={carImages[car.id] || []}  // Imágenes tipadas como CarImage[]
+            images={carImages[car.id] || []}
             onDelete={handleDelete}
           />
         ))}

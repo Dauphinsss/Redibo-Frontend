@@ -1,6 +1,9 @@
-// src/services/carService.ts
+// src/app/host/services/carService.ts
+
 import axios, { AxiosInstance, AxiosError } from "axios";
 import { getDevToken, getToken } from "./authService";
+import { uploadImage, updateImage, deleteImage } from "./imageService";
+import type { Image } from "./imageService";
 
 const API: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v2",
@@ -18,18 +21,11 @@ API.interceptors.request.use(
       }
     } catch (err) {
       console.error("Error al obtener/inyectar token:", err);
-      // aquí podrías: localStorage.removeItem("token"),
-      // o seguir sin header (si tu backend lo permite para GET),
-      // pero **no** lanzar otra excepción
     }
     return config;
   },
-  (error) => {
-    // si el interceptor itself recibe un error inesperado
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
-
 
 export interface Car {
   id: number;
@@ -40,7 +36,7 @@ export interface Car {
   status: string;
   vin: string;
   plate: string;
-  image: string;
+  images?: Image[];
 }
 
 interface BackendCar {
@@ -60,7 +56,11 @@ interface GetCarsResponse {
   total: number;
 }
 
-export async function getCars({ skip = 0, take = 10, hostId = 1 } = {}): Promise<{ data: Car[]; total: number }> {
+export async function getCars({
+  skip = 0,
+  take = 10,
+  hostId = 1,
+} = {}): Promise<{ data: Car[]; total: number }> {
   const response = await API.get<GetCarsResponse>("/cars", {
     params: { hostId, start: skip, limit: take },
   });
@@ -73,12 +73,12 @@ export async function getCars({ skip = 0, take = 10, hostId = 1 } = {}): Promise
     status: b.estado,
     vin: b.vim,
     plate: b.placa,
-    image: "",
+    images: [],
   }));
   return { data: cars, total: response.data.total };
 }
 
-export interface FullCarPayload {
+export interface CreateFullCarPayload {
   id_provincia: number;
   calle: string;
   zona: string;
@@ -98,33 +98,59 @@ export interface FullCarPayload {
   num_mantenimientos: number;
   estado: string;
   descripcion?: string;
-  imagesBase64: string[];
 }
 
 export interface CreateFullCarResponse {
   success: boolean;
-  data: Record<string, unknown>;
+  data: {
+    id: number;
+    [key: string]: unknown;
+  };
   message?: string;
 }
 
 export async function createFullCar(
-  payload: FullCarPayload
+  payload: CreateFullCarPayload,
+  images: File[] = []
 ): Promise<CreateFullCarResponse> {
   try {
-    // Primera petición
-    const response = await API.post<CreateFullCarResponse>("/cars/full", payload);
-    return response.data;
+    const response = await API.post<CreateFullCarResponse>(
+      "/cars/full",
+      payload
+    );
+    const result = response.data;
+    if (result.success && result.data.id && images.length) {
+      const carId = result.data.id;
+      await Promise.all(images.map((file) => uploadImage(carId, file)));
+    }
+    return result;
   } catch (err: unknown) {
     const axiosErr = err as AxiosError;
-  
     if (axiosErr.response?.status === 403) {
       localStorage.removeItem("token");
       await getDevToken();
-      const retry = await API.post<CreateFullCarResponse>("/cars/full", payload);
-      return retry.data;
+      const retry = await API.post<CreateFullCarResponse>(
+        "/cars/full",
+        payload
+      );
+      const result = retry.data;
+      if (result.success && result.data.id && images.length) {
+        const carId = result.data.id;
+        await Promise.all(images.map((file) => uploadImage(carId, file)));
+      }
+      return result;
     }
-  
-    throw err; // no olvides relanzarlo si no es 403
+    throw err;
   }
-  
+}
+
+export async function replaceCarImage(
+  imageId: number,
+  file: File
+): Promise<Image> {
+  return updateImage(imageId, file);
+}
+
+export async function removeCarImage(imageId: number): Promise<void> {
+  return deleteImage(imageId);
 }

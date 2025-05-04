@@ -1,4 +1,5 @@
 // src/app/host/components/CarCard.tsx
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,15 +16,35 @@ interface CarCardProps {
 }
 
 export function CarCard({ car, images, onDelete }: CarCardProps) {
+  const image = images[1]; // Primera imagen como portada
+  const aspectRatio = image && image.width && image.height
+    ? image.width / image.height
+    : 1.5; // Valor por defecto
+
   return (
-    <Card className="flex flex-col md:flex-row shadow-lg border border-gray-200 hover:shadow-xl transition-shadow overflow-hidden">
+    <Card className="flex flex-col md:flex-row shadow-lg border hover:shadow-xl transition-shadow overflow-hidden">
       <CardHeader className="p-0 md:w-1/3">
-        {images && images.length > 0 ? (
-          <img
-            src={images[0].src}
-            alt={`Foto del carro ${car.id}`}
-            style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-          />
+        {image ? (
+          <div
+            className="w-full"
+            style={{
+              aspectRatio: `${aspectRatio}`,
+              overflow: "hidden",
+              backgroundColor: "#f3f3f3",
+            }}
+          >
+          {image.data ? (
+            <img
+              src={image.data}
+              alt={`Foto del carro ${car.id}`}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+              <span>Sin imagen</span>
+            </div>
+          )}
+          </div>
         ) : (
           <div className="flex items-center justify-center w-full h-48 md:h-full bg-gray-200">
             <p>No image available</p>
@@ -52,15 +73,14 @@ export function CarCard({ car, images, onDelete }: CarCardProps) {
 
         <div className="flex flex-col gap-2">
           <EditCarDropdown carId={car.id} />
-
-          <DeleteCarDialog 
-            car={car} 
-            onDelete={() => onDelete(car.id)} 
+          <DeleteCarDialog
+            car={car}
+            onDelete={() => onDelete(car.id)}
             trigger={
               <Button variant="destructive" className="w-full gap-2">
                 <Trash2 size={18} /> Eliminar
               </Button>
-            } 
+            }
           />
         </div>
       </CardContent>
