@@ -123,11 +123,11 @@ export default function ProvisionalBooking() {
         </Popover>
       </div>
       <div className="w-full flex justify-center mt-6">
-        <ReservationConfirmedMessage
+       {/*} <ReservationConfirmedMessage
           user={user}
           pickupDate={pickupDate}
           returnDate={returnDate}
-        />
+        />*/}
       </div>
       {/*<Button variant="destructive" onClick={logout} className="mt-4">Cerrar sesión</Button>*/}
     </div>

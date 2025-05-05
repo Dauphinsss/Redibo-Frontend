@@ -11,9 +11,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle } from "lucide-react";
 import React, { useState } from "react";
-import { SuccessModal } from "./SuccessNotification"
+import { SuccessModal } from "./SuccessNotification";
 import axiosInstance from "@/api/axios";
 import axios from "axios";
+import { useUserProfile } from "./hooks/useProfile";
 
 interface ReservationDialogProps {
   showDialog: boolean;
@@ -23,13 +24,6 @@ interface ReservationDialogProps {
   handleConfirm: () => void;
   confirmed: boolean;
   handleCancelReservation: () => void;
-  user: {
-    id: number;
-    nombre: string;
-    ciudad: string;
-    correo: string;
-    telefono: number;
-  };
   vehicle: {
     id: number;
     marca: string;
@@ -40,6 +34,9 @@ interface ReservationDialogProps {
   returnDate?: Date;
   timeLeft: number;
   formatTime: (ms: number, detailed?: boolean) => string;
+  id: string;
+  marca: string;
+  modelo: string;
 }
 
 export default function ReservationDialog({
@@ -50,14 +47,20 @@ export default function ReservationDialog({
   handleConfirm,
   confirmed,
   handleCancelReservation,
-  user,
   vehicle,
   timeLeft,
   formatTime,
   pickupDate,
   returnDate,
+  id,
+  marca,
+  modelo,
 }: ReservationDialogProps) {
   const [reservaId, setReservaId] = useState<number | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const profile = useUserProfile();
+  if (!profile) return <div>Cargando datos del usuario...</div>;
 
   const crearReserva = async (
     userId: number,
@@ -80,39 +83,32 @@ export default function ReservationDialog({
         estado,
       });
 
-      const data = await response.data;
+      const data = response.data;
       console.log("✔ Reserva creada correctamente:", data);
-      //alert(data.error || "Reserva creada exitosamente");
-
-      setReservaId(data.id); // <- asegúrate de que setReservaId esté definido en tu componente
-
+      setReservaId(data.id);
       return true;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const backendError = error.response?.data?.error || "Error al crear la reserva";
         alert(backendError);
+      } else {
+        alert("Error de red al intentar crear la reserva");
       }
-      //console.error(" Error de red:", error);
-      alert("Error de red al intentar crear la reserva");
       return false;
     }
   };
 
-  //cambia el estao de la reserva
   const actualizarEstadoReserva = async (
     id: number,
     nuevoEstado: string
   ): Promise<boolean> => {
     try {
-      const response = await axiosInstance.patch(`/api/reservations/${id}/state`,
-        {
-          estado: nuevoEstado,
-        }
-      );
+      const response = await axiosInstance.patch(`/api/reservations/${id}/state`, {
+        estado: nuevoEstado,
+      });
 
       const data = response.data;
-
-      console.log(" Estado actualizado:", data);
+      console.log("Estado actualizado:", data);
       alert(`Estado actualizado a: ${data.estado}`);
       return true;
     } catch (error) {
@@ -120,13 +116,12 @@ export default function ReservationDialog({
         const backendError = error.response?.data?.error || "Error al actualizar el estado";
         alert(backendError);
       } else {
-        console.error(" Error de red al actualizar estado:", error);
+        console.error("Error de red al actualizar estado:", error);
         alert("Error de red al actualizar el estado");
       }
       return false;
     }
   };
-  const [showSuccessModal, setShowSuccessModal] = useState(false);//para la notificacion de que si se reservo
 
   return (
     <>
@@ -142,7 +137,7 @@ export default function ReservationDialog({
           >
             {loading ? (
               <Loader2 className="animate-spin" />
-            ) : (// boton de reservar ojo
+            ) : (
               <>
                 <CheckCircle className="w-4 h-4 mr-2 text-green-600" />
                 Reservar
@@ -159,31 +154,24 @@ export default function ReservationDialog({
 
             <div className="text-sm space-y-2 mt-2 ml-10">
               <div>
-                <strong>Nombre:</strong> {user.nombre}
+                <strong>Nombre:</strong> {profile.nombre}
                 <br />
-                <strong>Ciudad:</strong> {user.ciudad}
+                <strong>Ciudad:</strong> {profile.ciudad.nombre}
                 <br />
-                <strong>Correo:</strong> {user.correo}
+                <strong>Correo:</strong> {profile.correo}
                 <br />
-                <strong>Teléfono:</strong> {user.telefono}
+                <strong>Teléfono:</strong> {profile.telefono}
               </div>
               <div className="pt-2">
-                <strong>Vehículo:</strong> {vehicle.marca} {vehicle.modelo}
+                <strong>Vehículo:</strong> {marca} {modelo}
                 <br />
                 <strong>Precio:</strong> {vehicle.precio}
-                {/*<br />
-              <strong>Recogida:</strong>{" "}
-              {pickupDate
-                ? format(pickupDate, "dd/MM/yyyy")
-                : "No seleccionada"}*/}
               </div>
             </div>
           </AlertDialogHeader>
 
           <div className="border border-[#000000] rounded-lg py-4 mt-4 text-center">
-            <p className="text-sm text-gray-600 mb-1">
-              Tiempo restante para pagar
-            </p>
+            <p className="text-sm text-gray-600 mb-1">Tiempo restante para pagar</p>
             <p className="text-4xl font-bold">
               {confirmed
                 ? timeLeft > 0
@@ -197,42 +185,32 @@ export default function ReservationDialog({
           </div>
 
           <p className="text-xs text-red-500 mt-4">
-            Si no realiza el pago en ese plazo, la reserva será cancelada
-            automáticamente.
+            Si no realiza el pago en ese plazo, la reserva será cancelada automáticamente.
           </p>
 
           <AlertDialogFooter className="mt-4 justify-between flex-row-reverse">
             {confirmed ? (
               <>
-                {/* Izquierda: Pagar */}
                 <Button
                   onClick={async () => {
                     if (reservaId) {
-                      const success = await actualizarEstadoReserva(
-                        reservaId,
-                        "confirmado"
-                      );
+                      const success = await actualizarEstadoReserva(reservaId, "confirmado");
                       if (success) {
-                        handleCancelReservation(); //el que reinicia todo
+                        handleCancelReservation();
                       }
-
                     }
                   }}
                   className="bg-[#11295B] text-[#E4D5C1] hover:bg-[#2f487a] font-medium"
                 >
-                  {/*<DollarSign className="w-4 h-4 mr-2" />*/}
                   Pagar
                 </Button>
-                {/* Derecha: Cancelar reserva */}
+
                 <Button
                   onClick={async () => {
                     if (reservaId) {
-                      const success = await actualizarEstadoReserva(
-                        reservaId,
-                        "cancelado"
-                      );
+                      const success = await actualizarEstadoReserva(reservaId, "cancelado");
                       if (success) {
-                        handleCancelReservation(); //el que reinicia todo 
+                        handleCancelReservation();
                       }
                     }
                   }}
@@ -240,28 +218,25 @@ export default function ReservationDialog({
                 >
                   Cancelar
                 </Button>
-                {/* Derecha: Cancelar */}
+
                 <AlertDialogCancel className="bg-white text-black hover:bg-gray-200 font-medium">
                   Cerrar
                 </AlertDialogCancel>
               </>
             ) : (
               <>
-                {/* Izquierda: Aceptar */}
-
                 <AlertDialogAction
                   onClick={async () => {
                     const success = await crearReserva(
-                      user.id,
-                      vehicle.id,
+                      profile.id,
+                      Number(id),
                       pickupDate,
                       returnDate,
                       "pendiente"
                     );
-
                     if (success) {
-                      setShowSuccessModal(true);//mi notificacio de reserva exitosa
-                      handleConfirm(); //  función para iniciar el reloj
+                      setShowSuccessModal(true);
+                      handleConfirm();
                     }
                   }}
                   className="bg-[#11295B] text-[#E4D5C1] hover:bg-[#2f487a] font-medium"
@@ -269,7 +244,6 @@ export default function ReservationDialog({
                   Aceptar
                 </AlertDialogAction>
 
-                {/* Derecha: Cancelar */}
                 <AlertDialogCancel className="bg-white text-black hover:bg-gray-200 font-medium">
                   Cerrar
                 </AlertDialogCancel>
