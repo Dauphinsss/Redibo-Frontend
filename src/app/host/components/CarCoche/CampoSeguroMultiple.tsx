@@ -18,7 +18,7 @@ interface Seguro {
 
 interface SeguroAdicional extends Seguro {
   fechaInicio: string;
-  fechaFin?: string;
+  fechaFin: string; // Cambiado a obligatorio
 }
 
 interface CampoSeguroMultipleProps {
@@ -40,6 +40,7 @@ export default function CampoSeguroMultiple({
 }: CampoSeguroMultipleProps) {
   const [seguros, setSeguros] = useState<Seguro[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [dateErrors, setDateErrors] = useState<Record<number, string>>({});
 
   // Función para convertir string a Date
   const parseDate = (dateString: string | undefined): Date | undefined => {
@@ -74,29 +75,77 @@ export default function CampoSeguroMultiple({
     fetchSeguros();
   }, [apiUrl, endpointPrefix, setError]);
 
+  // Validar fechas
+  const validateDates = (seguro: SeguroAdicional): boolean => {
+    if (!seguro.fechaInicio || !seguro.fechaFin) {
+      setDateErrors(prev => ({
+        ...prev,
+        [seguro.id]: "Ambas fechas son obligatorias"
+      }));
+      return false;
+    }
+    
+    const inicio = new Date(seguro.fechaInicio);
+    const fin = new Date(seguro.fechaFin);
+    
+    if (fin <= inicio) {
+      setDateErrors(prev => ({
+        ...prev,
+        [seguro.id]: "La fecha fin debe ser posterior a la fecha inicio"
+      }));
+      return false;
+    }
+    
+    setDateErrors(prev => {
+      const newErrors = {...prev};
+      delete newErrors[seguro.id];
+      return newErrors;
+    });
+    return true;
+  };
+
   // Handlers
   const handleAddSeguro = (seguro: Seguro) => {
     if (!seleccionados.some(s => s.id === seguro.id)) {
+      const today = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(today.getDate() + 1);
+      
       const nuevoSeguro: SeguroAdicional = {
         ...seguro,
-        fechaInicio: new Date().toISOString(),
-        fechaFin: undefined
+        fechaInicio: today.toISOString(),
+        fechaFin: tomorrow.toISOString() // Establecer fecha fin por defecto (1 día después)
       };
+      
       onChange([...seleccionados, nuevoSeguro]);
     }
   };
 
   const handleRemoveSeguro = (id: number) => {
     onChange(seleccionados.filter(s => s.id !== id));
+    setDateErrors(prev => {
+      const newErrors = {...prev};
+      delete newErrors[id];
+      return newErrors;
+    });
   };
 
   const handleDateChange = (id: number, field: 'fechaInicio' | 'fechaFin', date: Date | undefined) => {
-    onChange(seleccionados.map(seguro => 
+    if (!date) return; // No permitir fechas indefinidas
+    
+    const updated = seleccionados.map(seguro => 
       seguro.id === id ? { 
         ...seguro, 
-        [field]: date?.toISOString() 
+        [field]: date.toISOString(),
+        // Si cambiamos la fecha inicio, asegurarnos que la fecha fin sea posterior
+        ...(field === 'fechaInicio' && seguro.fechaFin && new Date(seguro.fechaFin) <= date ? {
+          fechaFin: new Date(date.getTime() + 86400000).toISOString() // +1 día
+        } : {})
       } : seguro
-    ));
+    );
+    
+    onChange(updated);
+    validateDates(updated.find(s => s.id === id)!);
   };
 
   return (
@@ -151,7 +200,7 @@ export default function CampoSeguroMultiple({
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm">Fecha Inicio</Label>
+                  <Label className="text-sm">Fecha Inicio*</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -174,13 +223,12 @@ export default function CampoSeguroMultiple({
                 </div>
                 
                 <div className="space-y-2">
-                  <Label className="text-sm">Fecha Fin (opcional)</Label>
+                  <Label className="text-sm">Fecha Fin*</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant={"outline"}
                         className="w-full justify-start text-left font-normal"
-                        disabled={!seguro.fechaInicio}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {seguro.fechaFin ? format(parseDate(seguro.fechaFin)!, "PPP") : <span>Seleccione fecha</span>}
@@ -190,12 +238,15 @@ export default function CampoSeguroMultiple({
                       <Calendar
                         mode="single"
                         selected={parseDate(seguro.fechaFin)}
-                        onSelect={(date) => handleDateChange(seguro.id, 'fechaFin', date || undefined)}
+                        onSelect={(date) => handleDateChange(seguro.id, 'fechaFin', date || new Date(new Date(seguro.fechaInicio).getTime() + 86400000))}
                         initialFocus
-                        fromDate={parseDate(seguro.fechaInicio)}
+                        fromDate={new Date(new Date(seguro.fechaInicio).getTime() + 86400000)} // +1 día
                       />
                     </PopoverContent>
                   </Popover>
+                  {dateErrors[seguro.id] && (
+                    <p className="text-red-500 text-xs">{dateErrors[seguro.id]}</p>
+                  )}
                 </div>
               </div>
             </div>

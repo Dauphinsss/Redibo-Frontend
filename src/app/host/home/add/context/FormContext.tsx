@@ -95,16 +95,16 @@ const initialFormData: FormData = {
   },
   datosPrincipales: { 
     vim: "", 
-    año: new Date().getFullYear(), 
+    año: 0, 
     marca: "", 
     modelo: "", 
     placa: "" 
   },
   caracteristicas: { 
     combustibleIds: [], 
-    asientos: 5, 
-    puertas: 4, 
-    transmicion: "automatica", 
+    asientos: 0, 
+    puertas: 0, 
+    transmicion: "manual", 
     soat: false,
     segurosAdicionales: []
   },
