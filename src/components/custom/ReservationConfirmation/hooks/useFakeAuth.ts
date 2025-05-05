@@ -14,7 +14,7 @@ export function useFakeAuth() {
   const login = () => {
     // Simulao que el usuario se loguea y recibe un id
     const fakeUser = {
-      id: 2,         // id usuario
+      id: 77,         // id usuario
       nombre: "Cinthia Montaño Fuentes",  // nombre usuario
       ciudad: "Cochabamba",
       correo: "cinthia.mont@gmail.com",
