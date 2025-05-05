@@ -2,7 +2,7 @@ import React from 'react'
 import { CarouselItem } from '../ui/carousel';
 import { Card, CardContent } from '../ui/card';
 import { Car } from '@/types/apitypes';
-
+import Image from 'next/image';
 
 type CarrucelItemProps = {
   car: Car
@@ -16,9 +16,10 @@ function CarrucelItem({ car }: CarrucelItemProps) {
         <Card className='p-0 rounded-t-2xl bg-black border-0'>
           <CardContent className="flex flex-col items-center justify-items-start p-0 text-white">
             <div className="relative w-full h-40">
-              <img
+              <Image
                 src={car.imagenes}
                 alt={`${car.marca} ${car.modelo}`}
+                fill
                 className="object-cover rounded-t-2xl"
               />
             </div>
