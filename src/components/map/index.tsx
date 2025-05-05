@@ -9,6 +9,8 @@ import "leaflet-defaulticon-compatibility";
 import MapPunto from "../mapPunto";
 import { Auto } from "@/interface/map";
 import "@/styles/priceMarker.css"
+import { useState } from "react";
+import { estaDentroDelRadio } from "./filtroGPS";
 
 
 interface MapProps {
@@ -20,8 +22,14 @@ interface MapProps {
 const defaults = {
   zoom: 12,
 }
-
 const Map = ({ zoom = defaults.zoom, posix, autos = [] }: MapProps) => {
+  const [punto, setpunto] = useState({altitud:0,longitud:0})
+  const actualizarPunto=(longitud:number,altitud:number)=>{
+    setpunto({
+      longitud,
+      altitud
+    })
+  }
   return (
     <MapContainer
       center={posix}
@@ -34,30 +42,34 @@ const Map = ({ zoom = defaults.zoom, posix, autos = [] }: MapProps) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {autos.map((auto) => {
-        const customIcon: DivIcon = L.divIcon({
-          html: `<div class="price-marker">$${auto.precio}</div>`,
-          className: "",
-          iconSize: [50, 30],
-          iconAnchor: [25, 30],
-        });
-
-        return (
-          <Marker key={auto.id} position={[auto.latitud, auto.longitud]} icon={customIcon}>
-            <Popup>
-              <div className="text-sm space-y-1">
-                <div><strong>Marca:</strong> {auto.marca}</div>
-                <div><strong>Modelo:</strong> {auto.modelo}</div>
-                <div><strong>Año:</strong> {auto.anio}</div>
-                <div><strong>Precio:</strong> ${auto.precio} / día</div>
-                <button className="mt-2 px-2 py-1 bg-black text-white rounded hover:bg-gray-800">
-                  Ver detalles
-                </button>
-              </div>
-            </Popup>
-          </Marker>
-        );
+        const sinFiltro = punto.altitud === 0 && punto.longitud === 0;
+        const dentroDelRadio = estaDentroDelRadio(punto.altitud, punto.longitud, auto.latitud, auto.longitud, 3000);
+        if (sinFiltro || dentroDelRadio) {
+          const customIcon: DivIcon = L.divIcon({
+            html: `<div class="price-marker">$${auto.precio}</div>`,
+            className: "",
+            iconSize: [50, 30],
+            iconAnchor: [25, 30],
+          });
+  
+          return (
+            <Marker key={auto.id} position={[auto.latitud, auto.longitud]} icon={customIcon}>
+              <Popup>
+                <div className="text-sm space-y-1">
+                  <div><strong>Marca:</strong> {auto.marca}</div>
+                  <div><strong>Modelo:</strong> {auto.modelo}</div>
+                  <div><strong>Año:</strong> {auto.anio}</div>
+                  <div><strong>Precio:</strong> ${auto.precio} / día</div>
+                  <button className="mt-2 px-2 py-1 bg-black text-white rounded hover:bg-gray-800">
+                    Ver detalles
+                  </button>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        }
       })}
-      <MapPunto />
+      <MapPunto actualizarPunto={actualizarPunto}/>
     </MapContainer>
   );
 }
