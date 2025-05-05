@@ -7,35 +7,37 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+/// CAMBIO AÑADI ESTO 
+import { loginUser, loginWithGoogle } from '@/lib/auth';
+import { useAuth } from '@/context/authContext';
 
+
+
+//CAMBIO DE TODA LA FUNCION 
 export function LoginForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { login } = useAuth();
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
+  // Corregir el tipo del parámetro e
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
+    e.preventDefault(); // Evitar para que se recargue la página
     try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        toast.error("Credenciales incorrectas");
+      const data = await loginUser(email, password);
+      login(data);
+      //router.push('/profile');////redirecciona a profile
+      const redirectUrl = localStorage.getItem("redirectAfterLogin");
+      console.log("➡️ Redirigiendo a:", redirectUrl);
+      localStorage.removeItem("redirectAfterLogin");
+      //localStorage.setItem("redirectAfterLogin", window.location.href);
+      if (redirectUrl) {
+        router.push(redirectUrl);
       } else {
-        router.push("/");
-        toast.success("Inicio de sesión exitoso");
+        router.push("/"); // o cualquier ruta por defecto que prefieras
       }
-    } catch (error) {
-      console.error("Error al iniciar sesión:", error);
-      toast.error("Error al iniciar sesión");
-    } finally {
-      setIsLoading(false);
+    } catch (err) {
+      alert('Credenciales inválidas');
     }
   };
 
@@ -76,8 +78,8 @@ export function LoginForm() {
           />
         </div>
 
-        <Button type="submit" className="w-full h-10" disabled={isLoading}>
-          {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
+        <Button type="submit" className="w-full h-10" /*disabled={isLoading}*/>
+          {/*isLoading ? "Iniciando sesión..." : */"Iniciar sesión"}
         </Button>
       </form>
 
