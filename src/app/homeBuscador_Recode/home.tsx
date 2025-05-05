@@ -8,6 +8,7 @@ import HeaderBusquedaRecode from '@/components/recodeComponentes/seccionOrdenarM
 import ResultadosAutos from '@/components/recodeComponentes/seccionOrdenarMasResultados/ResultadosAutos_Recode';
 import Header from '@/components/ui/Header';
 
+import DateRangeFilter from '@/components/filtrofechas_7-bits/DateRangeFilter'
 import dynamic from "next/dynamic";
 
 import autosData from "@/data/ubicaciones.json";
@@ -27,6 +28,9 @@ export default function Home() {
     obtenerSugerencia,
   } = useAutos(8);
 
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaFin, setFechaFin] = useState("");
+
   const [showMap, setShowMap] = useState(false);
 
   const ViewMap = useMemo(() => dynamic(
@@ -44,7 +48,6 @@ export default function Home() {
         <Header />
       </div>
       <div className="flex flex-col lg:flex-row">
-
         <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Buscador */}
           <section className="mb-8 flex flex-col items-center text-center">
@@ -55,6 +58,16 @@ export default function Home() {
             />
             {/* <div className="mt-6">RecodeCarousel aquí (opcional)</div> */}
           </section>
+
+          {/* Filtro de Fechas */}
+          <div className="flex flex-col md:flex-row items-center justify-start gap-4 mb-4 w-full">
+            <DateRangeFilter
+              fechaInicio={fechaInicio}
+              fechaFin={fechaFin}
+              setFechaInicio={setFechaInicio}
+              setFechaFin={setFechaFin}
+            />
+          </div>
 
           <div className="w-full max-w-4xl mx-auto">
             <HeaderBusquedaRecode
