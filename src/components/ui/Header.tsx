@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 // Definimos las props que el componente puede recibir
@@ -97,17 +97,12 @@ export default function Header({
                 >
                   Inicio
                 </Link>
-<<<<<<< HEAD
                 <Link
                   href="/productos"
                   className={getLinkClassName("text-sm font-medium")}
                   {...linkDisabledAttrs}
                 >
                   Productos
-=======
-                <Link href="/homeBuscador_Recode" className="text-sm font-medium">
-                  Buscar
->>>>>>> recode
                 </Link>
                 <Link
                   href="/acerca"
@@ -191,17 +186,12 @@ export default function Header({
            >
             Inicio
           </Link>
-<<<<<<< HEAD
           <Link
             href="/productos"
             className={getLinkClassName("text-sm font-medium")}
             {...linkDisabledAttrs}
           >
             Productos
-=======
-          <Link href="/homeBuscador_Recode" className="text-sm font-medium">
-            Buscar
->>>>>>> recode
           </Link>
           <Link
             href="/acerca"
