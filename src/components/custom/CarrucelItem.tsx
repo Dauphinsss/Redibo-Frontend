@@ -2,19 +2,13 @@ import React from 'react'
 import { CarouselItem } from '../ui/carousel';
 import { Card, CardContent } from '../ui/card';
 import { Car } from '@/types/apitypes';
-import { useRouter } from 'next/router';
-import Image from 'next/image';
+
 
 type CarrucelItemProps = {
   car: Car
 }
 
 function CarrucelItem({ car }: CarrucelItemProps) {
-  const router = useRouter();
-
-  const handlReservationClick = () => {
-    router.push('/nodisponible')
-  }
 
   return (
     <CarouselItem className="pl-1 sm:basis-1/2 md:basis-1/3 lg:basis-1/3 xl:basis-1/4">
@@ -22,10 +16,9 @@ function CarrucelItem({ car }: CarrucelItemProps) {
         <Card className='p-0 rounded-t-2xl bg-black border-0'>
           <CardContent className="flex flex-col items-center justify-items-start p-0 text-white">
             <div className="relative w-full h-40">
-              <Image
+              <img
                 src={car.imagenes}
                 alt={`${car.marca} ${car.modelo}`}
-                fill
                 className="object-cover rounded-t-2xl"
               />
             </div>
@@ -40,7 +33,6 @@ function CarrucelItem({ car }: CarrucelItemProps) {
             </div>
             <button
               className='text-black bg-white px-9 py-1 rounded-sm m-2 font-bold'
-              onClick={handlReservationClick}
             >
               Reservar
             </button>
