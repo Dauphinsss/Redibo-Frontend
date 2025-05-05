@@ -1,37 +1,38 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 
-interface DateRangeFilterProps {
+interface Props {
     fechaInicio: string;
     fechaFin: string;
     setFechaInicio: (fecha: string) => void;
     setFechaFin: (fecha: string) => void;
 }
 
-const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
+const DateRangeFilter: React.FC<Props> = ({
     fechaInicio,
     fechaFin,
     setFechaInicio,
     setFechaFin,
 }) => {
     return (
-        <div className="flex flex-col sm:flex-row gap-4">
-            <div>
-                <label className="text-sm font-medium text-gray-600">Fecha Inicio</label>
+        <div className="flex gap-2">
+            <div className="flex flex-col">
+                <label className="text-xs font-bold">Fecha Inicio</label>
                 <input
                     type="date"
                     value={fechaInicio}
                     onChange={(e) => setFechaInicio(e.target.value)}
-                    className="border border-gray-300 rounded-md p-2 w-full"
+                    className="border px-2 py-1 rounded w-[140px] text-sm"
                 />
             </div>
 
-            <div>
-                <label className="text-sm font-medium text-gray-600">Fecha Fin</label>
+            <div className="flex flex-col">
+                <label className="text-xs font-bold">Fecha Fin</label>
                 <input
                     type="date"
                     value={fechaFin}
-                    onChange={(e) => setFechaFin}
-                    className="border border-gray-300 rounded-md p-2 w-full"
+                    onChange={(e) => setFechaFin(e.target.value)}
+                    className="border px-2 py-1 rounded w-[140px] text-sm"
                 />
             </div>
         </div>
