@@ -4,6 +4,7 @@ import Formulario from '@/components/recodeComponentes/cobertura/FormularioRecod
 import TablaCobertura from '@/components/recodeComponentes/cobertura/TablaRecode';
 import PopupCobertura from '@/components/recodeComponentes/cobertura/AñadirRecode';
 import { Coverage } from '@/interface/CoberturaForm_Interface_Recode';
+import BotonSiguiente from '@/components/recodeComponentes/cobertura/BotonSiguiente';
 
 function CoberturaAutoPage() {
   const [hasInsurance, setHasInsurance] = useState<boolean | null>(null);
@@ -66,6 +67,9 @@ function CoberturaAutoPage() {
           onSave={handleSaveCoverage}
         />
       )}
+      <div className="w-full py-4 flex justify-center border-t mt-6">
+        <BotonSiguiente to="/condicionUsoAuto" />
+      </div>
     </div>
   );
 }

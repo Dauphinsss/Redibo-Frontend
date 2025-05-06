@@ -33,11 +33,11 @@ function TablaCobertura({ coverages, onRemove, onAddClick }: TablaCoberturaProps
             {coverages.length > 0 ? (
               coverages.map((coverage, index) => (
                 <tr key={index}>
-                  <td className="px-4 py-4">{coverage.name}</td>
-                  <td className="px-4 py-4">{coverage.description}</td>
-                  <td className="px-4 py-4">{coverage.validity}</td>
-                  <td className="px-4 py-4">BOB.{coverage.amount}</td>
-                  <td className="px-4 py-4">
+                  <td className="px-4 py-4 text-center">{coverage.name}</td>
+                  <td className="px-4 py-4 text-center">{coverage.description}</td>
+                  <td className="px-4 py-4 text-center">{coverage.validity}</td>
+                  <td className="px-4 py-4 text-center">BOB.{coverage.amount}</td>
+                  <td className="px-4 py-4 text-center">
                     <button onClick={() => onRemove(index)} className="text-red-500 hover:underline">
                       – Quitar
                     </button>
