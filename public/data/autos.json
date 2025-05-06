@@ -13,6 +13,8 @@
     "nombreHost": "Laura Vega",
     "calificacion": 4.7,
     "ubicacion": "Santa Cruz",
+    "latitud":-15.7267,
+    "longitud":-63.3,
     "precioOficial": "$112",
     "precioDescuento": "$64",
     "precioPorDia": "$71"
@@ -32,6 +34,8 @@
     "nombreHost": "Andrea Ortiz",
     "calificacion": 4.4,
     "ubicacion": "La Paz",
+    "latitud":-14.7133,
+    "longitud":-68.4867,
     "precioOficial": "$71",
     "precioDescuento": "$61",
     "precioPorDia": "$55"
@@ -51,6 +55,8 @@
     "nombreHost": "Carlos Rojas",
     "calificacion": 4.0,
     "ubicacion": "Santa Cruz",
+    "latitud":-20.0171,
+    "longitud":-63.5875,
     "precioOficial": "$118",
     "precioDescuento": "$66",
     "precioPorDia": "$80"
@@ -69,6 +75,8 @@
     "nombreHost": "Andrea Ortiz",
     "calificacion": 4.7,
     "ubicacion": "La Paz",
+    "latitud":-17.5147,
+    "longitud":-69.333,
     "precioOficial": "$110",
     "precioDescuento": "$75",
     "precioPorDia": "$62"
@@ -87,6 +95,8 @@
     "nombreHost": "Juan Perez",
     "calificacion": 4.3,
     "ubicacion": "Santa Cruz",
+    "latitud":-16.157222,
+    "longitud":-62.041667,
     "precioOficial": "$81",
     "precioDescuento": "$80",
     "precioPorDia": "$77"
@@ -105,6 +115,8 @@
     "nombreHost": "Carlos Rojas",
     "calificacion": 4.3,
     "ubicacion": "Cochabamba",
+    "latitud":-17.480833,
+    "longitud":-66.116944,
     "precioOficial": "$93",
     "precioDescuento": "$66",
     "precioPorDia": "$50"
@@ -123,6 +135,8 @@
     "nombreHost": "Juan Perez",
     "calificacion": 3.9,
     "ubicacion": "La Paz",
+    "latitud":-16.1422,
+    "longitud":-69.0174,
     "precioOficial": "$106",
     "precioDescuento": "$77",
     "precioPorDia": "$76"
@@ -141,6 +155,8 @@
     "nombreHost": "Juan Perez",
     "calificacion": 4.3,
     "ubicacion": "La Paz",
+    "latitud":-16.2122,
+    "longitud":-69.1174,
     "precioOficial": "$110",
     "precioDescuento": "$83",
     "precioPorDia": "$53"
@@ -160,6 +176,8 @@
     "nombreHost": "Laura Vega",
     "calificacion": 4.6,
     "ubicacion": "La Paz",
+    "latitud":-16.1622,
+    "longitud":-69.0574,
     "precioOficial": "$76",
     "precioDescuento": "$76",
     "precioPorDia": "$50"
@@ -178,6 +196,8 @@
     "nombreHost": "Maria Garcia",
     "calificacion": 3.7,
     "ubicacion": "Santa Cruz",
+    "latitud":-16.313889,
+    "longitud":-61.144722,
     "precioOficial": "$89",
     "precioDescuento": "$89",
     "precioPorDia": "$56"
@@ -196,6 +216,8 @@
     "nombreHost": "Juan Perez",
     "calificacion": 4.3,
     "ubicacion": "Santa Cruz",
+    "latitud":-16.2947,
+    "longitud":-62.3704,
     "precioOficial": "$110",
     "precioDescuento": "$74",
     "precioPorDia": "$56"
@@ -214,6 +236,8 @@
     "nombreHost": "Andrea Ortiz",
     "calificacion": 3.6,
     "ubicacion": "Santa Cruz",
+    "latitud":-16.2247,
+    "longitud":-62.5004,
     "precioOficial": "$74",
     "precioDescuento": "$89",
     "precioPorDia": "$56"
@@ -232,6 +256,8 @@
     "nombreHost": "Carlos Rojas",
     "calificacion": 3.7,
     "ubicacion": "La Paz",
+    "latitud":-16.2022,
+    "longitud":-69.0374,
     "precioOficial": "$75",
     "precioDescuento": "$73",
     "precioPorDia": "$58"
@@ -250,6 +276,8 @@
     "nombreHost": "Carlos Rojas",
     "calificacion": 4.7,
     "ubicacion": "Cochabamba",
+    "latitud":-16.949444,
+    "longitud":-65.17,
     "precioOficial": "$98",
     "precioDescuento": "$67",
     "precioPorDia": "$67"
@@ -268,6 +296,8 @@
     "nombreHost": "Laura Vega",
     "calificacion": 4.4,
     "ubicacion": "Cochabamba",
+    "latitud":-16.979444,
+    "longitud":-65.145,
     "precioOficial": "$74",
     "precioDescuento": "$81",
     "precioPorDia": "$75"
@@ -286,6 +316,8 @@
     "nombreHost": "Juan Perez",
     "calificacion": 4.8,
     "ubicacion": "La Paz",
+    "latitud":-14.6333,
+    "longitud":-68.4967,
     "precioOficial": "$91",
     "precioDescuento": "$80",
     "precioPorDia": "$62"
@@ -304,6 +336,8 @@
     "nombreHost": "Laura Vega",
     "calificacion": 3.5,
     "ubicacion": "Cochabamba",
+    "latitud":-17.450833,
+    "longitud":-66.196944,
     "precioOficial": "$103",
     "precioDescuento": "$74",
     "precioPorDia": "$72"
@@ -322,6 +356,8 @@
     "nombreHost": "Juan Perez",
     "calificacion": 4.0,
     "ubicacion": "Cochabamba",
+    "latitud":-17.350833,
+    "longitud":-66.166944,
     "precioOficial": "$113",
     "precioDescuento": "$87",
     "precioPorDia": "$63"
@@ -340,6 +376,8 @@
     "nombreHost": "Maria Garcia",
     "calificacion": 3.8,
     "ubicacion": "La Paz",
+    "latitud":-16.1822,
+    "longitud":-69.0474,
     "precioOficial": "$106",
     "precioDescuento": "$72",
     "precioPorDia": "$57"
@@ -358,6 +396,8 @@
     "nombreHost": "Andrea Ortiz",
     "calificacion": 4.4,
     "ubicacion": "Cochabamba",
+    "latitud":-17.430533,
+    "longitud":-66.196144,
     "precioOficial": "$103",
     "precioDescuento": "$74",
     "precioPorDia": "$62"
@@ -376,6 +416,8 @@
     "nombreHost": "Maria Garcia",
     "calificacion": 4.4,
     "ubicacion": "Santa Cruz",
+    "latitud":-18.398888,
+    "longitud":-59.725833,
     "precioOficial": "$82",
     "precioDescuento": "$66",
     "precioPorDia": "$77"
@@ -394,6 +436,8 @@
     "nombreHost": "Laura Vega",
     "calificacion": 4.8,
     "ubicacion": "La Paz",
+    "latitud":-16.543333,
+    "longitud":-68.199222,
     "precioOficial": "$101",
     "precioDescuento": "$71",
     "precioPorDia": "$80"
@@ -412,6 +456,8 @@
     "nombreHost": "Maria Garcia",
     "calificacion": 4.2,
     "ubicacion": "La Paz",
+    "latitud":-16.563333,
+    "longitud":-68.187222,
     "precioOficial": "$114",
     "precioDescuento": "$70",
     "precioPorDia": "$68"
@@ -430,6 +476,8 @@
     "nombreHost": "Juan Perez",
     "calificacion": 4.8,
     "ubicacion": "Santa Cruz",
+    "latitud":-17.664722,
+    "longitud":-63.155278,
     "precioOficial": "$81",
     "precioDescuento": "$80",
     "precioPorDia": "$73"
@@ -448,6 +496,8 @@
     "nombreHost": "Maria Garcia",
     "calificacion": 4.2,
     "ubicacion": "Santa Cruz",
+    "latitud":-17.624722,
+    "longitud":-63.125278,
     "precioOficial": "$91",
     "precioDescuento": "$79",
     "precioPorDia": "$75"

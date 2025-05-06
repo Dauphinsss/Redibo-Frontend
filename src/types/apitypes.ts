@@ -6,3 +6,10 @@ export type Car = {
   imagenes: string
   veces_alquilado: number
 }
+
+export type Aeropuerto = {
+  nombre: string
+  latitud: number
+  longitud: number
+  id_ciudad: number
+}
