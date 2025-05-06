@@ -53,6 +53,48 @@ export default function SidebarFiltros({ mostrar, onCerrar }: Props) {
             </div>
           )}
         </div>
+
+        {/* Características del coche */}
+        <div className="border rounded shadow-sm">
+          <button
+            onClick={() => toggle('caracteristicasCoche')}
+            className="w-full text-left px-4 py-2 bg-gray-100 font-semibold hover:bg-gray-200"
+          >
+            Características del coche
+          </button>
+          {abierto.caracteristicasCoche && (
+            <div className="p-4 space-y-4">
+
+              {/* Asientos */}
+              <div>
+                <p className="font-semibold">Asientos</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {[2, 4, 5, 7].map((n) => (
+                    <label key={n} className="flex items-center gap-2">
+                      <input type="checkbox" className="form-checkbox" />
+                      {n}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Número de puertas */}
+              <div>
+                <p className="font-semibold">Número de puertas</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {[2, 3, 4, 5].map((n) => (
+                    <label key={n} className="flex items-center gap-2">
+                      <input type="checkbox" className="form-checkbox" />
+                      {n}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
