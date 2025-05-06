@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { API_URL } from "@/utils/bakend";
 import axios from "axios";
+import Link from "next/link";
 
 // Componente de carga
 function LoadingSpinner() {
@@ -99,6 +100,12 @@ function LoginFormContent() {
           />
         </div>
 
+        <div className="flex justify-end">
+          <Link href="/recuperar-contrasena" className="text-sm text-primary hover:underline">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
+
         <Button type="submit" className="w-full h-10" disabled={isLoading}>
           {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
         </Button>
@@ -129,7 +136,7 @@ function LoginFormContent() {
       <p className="text-sm text-center mt-8 text-muted-foreground">
         ¿No tienes una cuenta?{" "}
         <a href="/registro" className="text-primary hover:underline">
-          Regístrate
+          Registrarse
         </a>
       </p>
     </div>

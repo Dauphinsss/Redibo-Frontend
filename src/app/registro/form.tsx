@@ -107,7 +107,7 @@ export default function Form() {
 
     fetchCiudades();
 
-  })
+  }, []);
   
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -205,7 +205,7 @@ export default function Form() {
           : userType === "DRIVER"
           ? "Conductor"
           : "";
-      const response = await axios.post(`${API_URL}/api/registro`, usuario);
+      const response = await axios.post(`http://localhost:4000/api/registro`, usuario);
       console.log(response.data);
       toast.success(`Gracias por registrarse como ${user}.`);
       resetar();
