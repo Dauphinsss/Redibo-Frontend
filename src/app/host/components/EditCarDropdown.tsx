@@ -44,8 +44,7 @@ export function EditCarDropdown({ carId }: EditCarDropdownProps) {
           Características adicionales
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => router.push(`/host/home/editar/imagenes/${carId}`)}
-          disabled
+          onClick={() => router.push(`/host/home/editar/CarIma/${carId}`)}
         >
           Imágenes del coche
         </DropdownMenuItem>
