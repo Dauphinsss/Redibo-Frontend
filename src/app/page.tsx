@@ -6,6 +6,7 @@ import { z } from "zod";
 import { format } from "date-fns";
 import { es } from "date-fns/locale"; // Importar locale español
 import { CalendarIcon, Search } from "lucide-react";
+import Carrucel from "@/components/custom/Carrucel";
 import Header from "@/components/ui/Header";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -66,7 +67,6 @@ export default function Home() {
         <p className="mt-4 text-lg">
           Tu tienda en línea para rentar autos.
         </p>
-
         <Form {...form}>
           <form 
             onSubmit={form.handleSubmit(onSubmit)} 
@@ -188,6 +188,9 @@ export default function Home() {
             </div>
           </form>
         </Form>
+        <div className="mt-8 w-full max-w-7xl flex justify-center">
+          <Carrucel />
+        </div>
       </main>
     </div>
   );

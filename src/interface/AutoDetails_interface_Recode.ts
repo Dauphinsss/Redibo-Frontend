@@ -17,4 +17,4 @@ export interface AutoDetails_interface_Recode {
     combustibles: string[];
     imagenes: { id: number; data: string }[];
     caracteristicasAdicionales: string[];
-}
+}  

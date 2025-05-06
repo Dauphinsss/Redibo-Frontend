@@ -4,28 +4,33 @@ export interface RawAuto_Interface_Recode {
     marca: string;
     asientos: number;
     puertas: number;
-    transmision: string;
+    transmicion: string;
     precio_por_dia: number;
-    combustiblecarro: {
-        tipocombustible?: {
-            tipo_de_combustible: string;
+    CombustibleCarro: {
+        TipoCombustible: {
+            tipoDeCombustible: string;
         };
     }[];
     estado: string;
-    usuario_rol?: {
-        usuario?: {
-        nombre?: string;
-        };
+    Usuario: {
+        nombre: string;
     };
-    direccion?: {
-        calle?: string;
-        provincia?: {
-            ciudad?: {
-                nombre?: string;
+    Direccion: {
+        calle: string;
+        Provincia: {
+            Ciudad: {
+            nombre: string;
             };
         };
     };
-    imagen?: {
-        data?: string;
+    Imagen: {
+        id: number;
+        data: string;
+        id_carro: number;
     }[];
-}  
+    caracteristicasAdicionalesCarro: {
+        caracteristicas_adicionales?: {
+            nombre: string;
+        };
+    }[];
+}

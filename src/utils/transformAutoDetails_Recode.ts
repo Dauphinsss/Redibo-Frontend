@@ -7,26 +7,25 @@ export const transformAutoDetails_Recode = (
     marca: item.marca,
     modelo: item.modelo,
     placa: item.placa,
-    anio: item.anio,
+    anio: item.a_o,
     asientos: item.asientos,
     puertas: item.puertas,
     soat: item.soat,
-    precio: Number(item.precio_por_dia),
+    precio: item.precio_por_dia,
     descripcion: item.descripcion,
-    transmision: item.transmision,
-    calle: item.direccion?.calle || "",
-    zona: item.direccion?.zona || "",
-    ciudad: item.direccion?.provincia?.ciudad?.nombre || "",
-    provincia: item.direccion?.provincia?.nombre || "",
-    nombreHost: item.usuario_rol?.usuario?.nombre || "",
+    transmision: item.transmicion,
+    calle: item.Direccion?.calle || "",
+    zona: item.Direccion?.zona || "",
+    ciudad: item.Direccion?.Provincia?.Ciudad?.nombre || "",
+    provincia: item.Direccion?.Provincia?.nombre || "",
+    nombreHost: item.Usuario?.nombre || "",
     combustibles:
-        item.combustiblecarro?.map(
-        (c) => c.tipocombustible?.tipo_de_combustible
-        ).filter(Boolean) as string[] || [],
-    imagenes:
-        item.imagen?.map(({ id, data }) => ({ id, data })) || [],
+        item.CombustibleCarro?.map(
+        (c) => c?.TipoCombustible?.tipoDeCombustible
+        ).filter((c): c is string => typeof c === "string") || [],
+    imagenes: item.Imagen?.map(({ id, data }) => ({ id, data })) || [],
     caracteristicasAdicionales:
-        item.caracteristicasadicionalescarro?.map(
+        item.caracteristicasAdicionalesCarro?.map(
         (c) => c.caracteristicas_adicionales?.nombre
-        ) || [],
+        ).filter((nombre): nombre is string => typeof nombre === "string") || [],
 });
