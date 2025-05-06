@@ -7,7 +7,7 @@ import SearchBar from '@/components/recodeComponentes/seccionOrdenarMasResultado
 import HeaderBusquedaRecode from '@/components/recodeComponentes/seccionOrdenarMasResultados/HeaderBusquedaRecode';
 import ResultadosAutos from '@/components/recodeComponentes/seccionOrdenarMasResultados/ResultadosAutos_Recode';
 import Header from '@/components/ui/Header';
-
+import DevueltasRecode from "@/components/recodeComponentes/condicionesDeUsoAuto/condicionesDevueltas/Devueltas_Recode";
 import dynamic from "next/dynamic";
 
 export default function Home() {
@@ -37,7 +37,7 @@ export default function Home() {
 
   return (
     <div className="relative">
-
+      
       <div className="sticky top-0 z-50 bg-white shadow">
         <Header />
       </div>
