@@ -1,6 +1,8 @@
 import CondicionesUsoAutoHome from '@/app/condicionUsoAuto/CondicionesUsoAutoHome';
 import { notFound } from 'next/navigation';
 import DevueltasRecode from '@/components/recodeComponentes/condicionesDeUsoAuto/condicionesDevueltas/Devueltas_Recode';
+import Header from '@/components/ui/Header';
+
 
 
 export default function Page() {
