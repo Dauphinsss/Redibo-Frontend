@@ -133,12 +133,8 @@ export default function Header({
                     <>
                       <div className="flex items-center gap-2 mb-4">
                         <Avatar className="h-8 w-8">
-<<<<<<< HEAD
                            {/* Considerar añadir AvatarImage si se tienen datos */}
                           <AvatarFallback>US</AvatarFallback> {/* TODO: Hacer dinámico */}
-=======
-                          <AvatarFallback>US</AvatarFallback>
->>>>>>> origin/recode
                         </Avatar>
                         <div className="text-sm font-medium">Usuario</div> {/* TODO: Hacer dinámico */}
                       </div>
@@ -266,7 +262,6 @@ export default function Header({
                 <LogIn className="mr-2 h-4 w-4" />
                 Iniciar sesión
               </Button>
-<<<<<<< HEAD
               <Button
                 variant="default"
                 // onClick={() => { /* TODO: Navegar a página de registro */ }}
@@ -275,11 +270,6 @@ export default function Header({
                 <UserPlus className="mr-2 h-4 w-4" />
                 Registrarse
               </Button>
-=======
-              <Link href="/registro" className="text-sm font-medium">
-                <Button variant="default">Registrarse</Button>
-              </Link>
->>>>>>> origin/recode
             </>
           )}
         </div>
