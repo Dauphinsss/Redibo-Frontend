@@ -49,7 +49,7 @@ export default function Home() {
         {/* Botón para abrir sidebar, ahora en la izquierda */}
         <button
           onClick={() => setMostrarSidebar((prev) => !prev)}
-          className="fixed top-24 left-4 z-50 bg-blue-600 text-white px-4 py-2 rounded shadow-lg hover:bg-blue-700 transition"
+          className="fixed top-24 left-4 z-50 bg-black text-white px-4 py-2 rounded shadow-lg hover:bg-neutral-800 transition"
         >
           Filtros
         </button>
