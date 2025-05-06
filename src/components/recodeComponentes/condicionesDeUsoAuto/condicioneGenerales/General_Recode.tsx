@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import RadioGroup_Recode from "./RadioGroup_Recode";
+import RadioGroup_Recode from "../RadioGroup_Recode";
 
 function GeneralRecode() {
     const [respuestas, setRespuestas] = useState({

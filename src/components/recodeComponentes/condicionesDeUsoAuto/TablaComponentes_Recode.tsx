@@ -1,7 +1,7 @@
 import React, { memo, useState } from "react";
 import General_Recode from "./condicioneGenerales/General_Recode";
-import Entrada_Recode from "./condionesEntrada/Entrada_Recode";
-import Devueltas_Recode from "./condicionesDevueltas/Devueltas_Recode";
+import Entrada_Recode from "./condionesEntrada/Entrega_Recode";
+import Devueltas_Recode from "./condicionesDevueltas/Devolucion_Recode";
 
 type Tab = "generales" | "entrega" | "devolucion";
 

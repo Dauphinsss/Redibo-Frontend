@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, memo } from 'react';
-import RadioGroup_Recode from '@/components/recodeComponentes/condicionesDeUsoAuto/condicioneGenerales/RadioGroup_Recode';
+import RadioGroup_Recode from '@/components/recodeComponentes/condicionesDeUsoAuto/RadioGroup_Recode';
 import Herramientas_Recode from '@/components/recodeComponentes/condicionesDeUsoAuto/condionesEntrada/Herramientas_Recode';
 
 interface Herramienta {
