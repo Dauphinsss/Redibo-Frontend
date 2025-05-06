@@ -11,6 +11,8 @@ export function useAutos(cantidadPorLote = 8) {
     const [cargando, setCargando] = useState(true);
     const [ordenSeleccionado, setOrdenSeleccionado] = useState('Recomendación');
     const [textoBusqueda, setTextoBusqueda] = useState('');
+    const [fechaFiltroInicio, setFechaFiltroInicio] = useState("");
+    const [fechaFiltroFin, setFechaFiltroFin] = useState("");
 
     const fetchAutos = async () => {
         try {
@@ -59,6 +61,30 @@ export function useAutos(cantidadPorLote = 8) {
             resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
         }
 
+        {/* Filtro de fechas */}
+        if (fechaFiltroInicio || fechaFiltroFin) {
+          resultado = resultado.filter(auto => {
+            const desde = new Date(auto.disponible_desde);
+            const hasta = new Date(auto.disponible_hasta);
+            console.log("Desde:", desde, "Hasta:", hasta);
+            console.log("Fecha Inicio:", fechaFiltroInicio, "Fecha Fin:", fechaFiltroFin);
+
+            if (fechaFiltroInicio && fechaFiltroFin) {
+              const inicio = new Date(fechaFiltroInicio);
+              const fin = new Date (fechaFiltroFin);
+              return desde <= inicio && hasta >= fin;
+            } else if (fechaFiltroInicio) {
+              const inicio = new Date(fechaFiltroInicio);
+              return desde <= inicio;
+            } else if (fechaFiltroFin) {
+              const fin = new Date(fechaFiltroFin);
+              return hasta >= fin;
+            }
+
+            return true;
+          });
+        }
+
         switch (ordenSeleccionado) {
             case 'Modelo Ascendente':
                 resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
@@ -75,7 +101,7 @@ export function useAutos(cantidadPorLote = 8) {
         }
 
         setAutosFiltrados(resultado);
-    }, [autos, textoBusqueda, ordenSeleccionado]);
+    }, [autos, textoBusqueda, ordenSeleccionado, fechaFiltroInicio, fechaFiltroFin]);
 
     useEffect(() => {
         filtrarYOrdenarAutos();
@@ -142,7 +168,11 @@ export function useAutos(cantidadPorLote = 8) {
         setAutosFiltrados,
         mostrarMasAutos,
         cargando,
-        filtrarAutos: setTextoBusqueda,
+        filtrarAutos: (termino: string, fechaInicio?: string, fechaFin?: string) => {
+          setTextoBusqueda(termino);
+          setFechaFiltroInicio(fechaInicio || "");
+          setFechaFiltroFin(fechaFin || "");
+        },
         obtenerSugerencia
     };
 }

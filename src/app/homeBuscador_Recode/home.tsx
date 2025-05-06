@@ -63,7 +63,10 @@ export default function Home() {
           <section className="mb-8 flex flex-col items-center text-center">
             <SearchBar
               placeholder="Buscar por modelo, marca"
-              onFiltrar={handleFiltrar}
+              onFiltrar={(query) => {
+                setBusqueda(query);
+                filtrarAutos(query, fechaInicio, fechaFin);
+              }}
               obtenerSugerencia={obtenerSugerencia}
             />
             {/* <div className="mt-6">RecodeCarousel aquí (opcional)</div> */}
@@ -75,8 +78,15 @@ export default function Home() {
               searchTerm={busqueda}
               fechaInicio={fechaInicio}
               fechaFin={fechaFin}
-              setFechaInicio={setFechaInicio}
-              setFechaFin={setFechaFin}
+              setFechaInicio={(fecha) => {
+                setFechaInicio(fecha);
+                filtrarAutos(busqueda, fecha, fechaFin); 
+              }}
+              setFechaFin={(fecha) => {
+                setFechaFin(fecha);
+                filtrarAutos(busqueda, fechaInicio, fecha)
+              }}
+              onAplicarFiltro={(inicio, fin) => filtrarAutos(busqueda, inicio, fin)}
             />
           </div>
 

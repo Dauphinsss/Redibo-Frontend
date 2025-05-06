@@ -16,6 +16,7 @@ const CarCardDisponibilidad: React.FC<DisponibilidadProps> = ({
     const formato = (fecha: string) => {
         const date = new Date(fecha);
         return date.toLocaleDateString("es-BO", { 
+            timeZone: "UTC",
             day: "2-digit",
             month: "2-digit", 
             year: "numeric",

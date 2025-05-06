@@ -6,6 +6,7 @@ interface Props {
     fechaFin: string;
     setFechaInicio: (fecha: string) => void;
     setFechaFin: (fecha: string) => void;
+    onAplicarFiltro: (inicio: string, fin: string) => void;
 }
 
 const DateRangeFilter: React.FC<Props> = ({
