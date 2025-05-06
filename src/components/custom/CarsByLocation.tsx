@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CarsByLocation = ({ latitude, longitude }: any) => {
-  const [data, setData] = useState([]);
+const CarsByLocation = ({ latitude, longitude }: any) => {  
+  const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const haversineDistance = (lat1: any, lon1: any, lat2: any, lon2: any) => {
     const R = 6371; // Earth radius in kilometers
     const toRad = (value: number) => (value * Math.PI) / 180;
@@ -27,8 +24,6 @@ const CarsByLocation = ({ latitude, longitude }: any) => {
         }
         const json = await response.json();
         setData(json);
-      } catch {
-        //setError(e);
       } finally {
         setLoading(false);
       }
@@ -39,22 +34,19 @@ const CarsByLocation = ({ latitude, longitude }: any) => {
   if (loading) {
     return <p>Loading data...</p>;
   }
-
-  /*if (error) {
-    return <p>Error</p>;
-  }*/
-
-  return (    
+ 
+  let count = 0;
+  return (<div>
   <ul className="max-w-xl divide-y divide-gray-200 dark:divide-gray-700">
     {data.map((item:any, i:number) => {
-      const distance =  haversineDistance(latitude, longitude, item.latitud, item.longitud);   
-     
+      const distance =  haversineDistance(latitude, longitude, item.latitud, item.longitud);      
       if(distance <10){
+        count++;
         return(
       <li key={i} className="pb-3 sm:pb-4">
         <div className="flex items-center space-x-4 rtl:space-x-reverse">
          <div className="shrink-0">
-            <img className="w-16 h-16 rounded-sm" src="https://placehold.co/64" alt="imagen auto" />
+            <img className="w-16 h-16 rounded-sm mt-2" src="https://placehold.co/64" alt="imagen auto" />
          </div>
          <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-gray-900 truncate dark:text-white">
@@ -69,17 +61,18 @@ const CarsByLocation = ({ latitude, longitude }: any) => {
          </div>
          <div className="inline-flex items-center text-base font-semibold text-gray-900">
             {item.precioOficial}
-            
          </div>
-         <button type="button" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-xs rounded-lg text-xs px-3 py-2 me-2 mb-2">
+         <button type="button" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-xs rounded-lg text-xs px-3 py-2 me-2 mb-2 mt-4">
           Ver Detalles</button>
       </div>        
-      </li>)
-      }  
-    }    
-    )}
-  </ul>
-  );
+      </li>)   
+      }       
+    }        
+    )}    
+  </ul>  
+  {count == 0 ?<p>No hay vehiculos cercanos</p>:<p></p>}  
+  </div>    
+  );  
 };
 
 export default CarsByLocation;

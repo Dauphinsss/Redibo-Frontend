@@ -1,13 +1,8 @@
 "use client"
-//import React from 'react'
 import { useState, useEffect } from 'react';
-
-//import {useAirports } from '@/api/queries/useAirports'
 import { Button } from "@/components/ui/button"
 import CarsByLocation from '@/components/custom/CarsByLocation';
-
 export default function Page() {  
-  //const { data: content = [], isLoading, isError } = useAirports();
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);  
   let [selectedValue, setSelectedValue] = useState('0');
@@ -17,21 +12,9 @@ export default function Page() {
     const index = parseInt(selectedValue);    
     const lat = data[index].latitude;
     setSelectedLatitude(lat);
-    const long = data[index].longitude;
-    setSelectedLongitude(long);    
-    
-  }
-  /*const cities = new Map([
-    [1, "Beni"],
-    [2, "Chuquisaca"],
-    [3, "Cochabamba"],
-    [4, "La Paz"],
-    [5, "Oruro"],
-    [6, "Pando"],
-    [7, "Potosí"],
-    [8, "Santa Cruz"],
-    [9, "Tarija"]
-  ]);*/
+    const lon = data[index].longitude;
+    setSelectedLongitude(lon);        
+  }  
   useEffect(() => {
     async function fetchData() {
       try {
@@ -41,8 +24,6 @@ export default function Page() {
         }
         const json = await response.json();
         setData(json);
-      } catch (e) {
-        //setError(e);
       } finally {
         setLoading(false);
       }
@@ -53,11 +34,7 @@ export default function Page() {
   if (loading) {
     return <p>Loading data...</p>;
   }
-
-  /*if (error) {
-    return <p>Error</p>;
-  }*/
-
+  
   return (
     <div className="max-w-xl mx-auto pt-4">
         <h1 className="text-center text-2xl mb-4 font-semibold">Filtar Por Aeropuerto</h1>
@@ -78,7 +55,6 @@ export default function Page() {
       </div>
       <p className="mb-4 font-semibold">Resultados</p>
       <CarsByLocation latitude={selectedLatitude} longitude={selectedLongitude}></CarsByLocation>
-
     </div>
   );
 }
