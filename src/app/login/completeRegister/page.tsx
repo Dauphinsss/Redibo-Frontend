@@ -190,11 +190,11 @@ export default function CompleteRegisterForm() {
       toast.success("✅ Registro exitoso. Bienvenido/a a REDIBO.");
       // Guardar en localStorage
       localStorage.setItem("nombre", response.data.usuario.nombre);
-      localStorage.setItem("correo", response.data.usuario.correo);
-      localStorage.setItem("telefono", response.data.usuario.telefono);
-      localStorage.setItem("fecha_nacimiento", response.data.usuario.fecha_nacimiento);
-      localStorage.setItem("genero", response.data.usuario.genero);
-      localStorage.setItem("ciudad", response.data.usuario.ciudad);
+      // localStorage.setItem("correo", response.data.usuario.correo);
+      // localStorage.setItem("telefono", response.data.usuario.telefono);
+      // localStorage.setItem("fecha_nacimiento", response.data.usuario.fecha_nacimiento);
+      // localStorage.setItem("genero", response.data.usuario.genero);
+      // localStorage.setItem("ciudad", response.data.usuario.ciudad);
       localStorage.setItem("foto", response.data.usuario.foto || "default.jpg");
       localStorage.setItem("auth_token", response.data.token);
       // Cerrar el popup y notificar a la ventana principal

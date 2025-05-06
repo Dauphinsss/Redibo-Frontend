@@ -1,173 +1,125 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Header from "@/components/ui/Header";
-import { Footer } from "@/components/ui/footer";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { toast } from "sonner";
+"use client"
 
-interface UserProfile {
-  nombre: string;
-  correo: string;
-  fecha_nacimiento: string;
-  genero: string;
-  ciudad: string;
-  telefono: string;
-  foto: string;
-}
+import { useState } from "react"
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar"
+import { ProfileHeader } from "./profile-header"
+import { PersonalInfo } from "./personal-info"
+import { PaymentInfo } from "./payment-info"
+import { DriverInfo } from "./driver-info"
+import { CreditCard, User, Star, StarHalf, Car, CarFront } from "lucide-react"
+import { SteeringWheel } from "./steering-wheel-icon"
+import Header from "@/components/ui/Header"
+import { Footer } from "@/components/ui/footer"
+import { useRouter } from "next/navigation"
 
 export default function ProfilePage() {
-  const router = useRouter();
-  const [userData, setUserData] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState<"personal" | "payments" | "driver">("payments")
+  const router = useRouter()
 
-  useEffect(() => {
-    const handleDataFromURL = () => {
-      try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const encodedData = urlParams.get('data');
-        const token = urlParams.get('token');
-
-        if (encodedData && token) {
-          const decodedData = JSON.parse(atob(encodedData));
-          
-          // Guardar en localStorage
-          Object.entries(decodedData).forEach(([key, value]) => {
-            localStorage.setItem(key, String(value));
-          });
-          localStorage.setItem("auth_token", token);
-
-          // Limpiar parámetros de la URL
-          window.history.replaceState({}, document.title, "/perfil");
-        }
-      } catch (error) {
-        console.error("Error procesando datos de URL:", error);
-        toast.error("Error al procesar datos de autenticación");
-      }
-    };
-
-    const loadFromLocalStorage = () => {
-      try {
-        const authToken = localStorage.getItem("auth_token");
-        
-        if (!authToken) {
-          toast.error("No autenticado");
-          router.push("/login");
-          return;
-        }
-
-        const profileData: UserProfile = {
-          nombre: localStorage.getItem("nombre") || "",
-          correo: localStorage.getItem("correo") || "",
-          fecha_nacimiento: localStorage.getItem("fecha_nacimiento") || "",
-          genero: localStorage.getItem("genero") || "",
-          ciudad: localStorage.getItem("ciudad") || "",
-          telefono: localStorage.getItem("telefono") || "",
-          foto: localStorage.getItem("foto") || "default.jpg"
-        };
-
-        if (profileData.nombre) {
-          setUserData(profileData);
-        }
-      } catch (error) {
-        console.error("Error cargando datos:", error);
-        toast.error("Error al cargar el perfil");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Primero procesar datos de URL si existen
-    handleDataFromURL();
-    
-    // Luego cargar datos de localStorage
-    loadFromLocalStorage();
-  }, [router]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Card className="w-full max-w-lg">
-          <CardContent className="p-6">
-            <p className="text-center">Cargando perfil...</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
+  const renderContent = () => {
+    switch (activeSection) {
+      case "personal":
+        return <PersonalInfo />
+      case "payments":
+        return <PaymentInfo />
+      case "driver":
+        return <DriverInfo />
+      default:
+        return <PersonalInfo />
+    }
   }
-
-  if (!userData) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Card className="w-full max-w-lg">
-          <CardContent className="p-6">
-            <p className="text-center">Por favor inicia sesión primero</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  const userImage = userData.foto;
-  const userName = userData.nombre;
-  const userInitial = userName.charAt(0);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen w-full max-w-full overflow-hidden m-0 p-0">
       <Header />
-      <main className="flex justify-center flex-1 min-h-[calc(100vh-64px)] p-4">
-        <Card className="w-full max-w-lg">
-          <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <Avatar className="h-24 w-24">
-                {userImage ? (
-                  <img 
-                    src={userImage} 
-                    alt="Profile" 
-                    className="h-full w-full object-cover rounded-full"
-                  />
-                ) : (
-                  <AvatarFallback className="text-2xl">{userInitial}</AvatarFallback>
-                )}
-              </Avatar>
+      <div className="flex-1">
+        <div className="px-4 md:px-6">
+          <ProfileHeader />
+        </div>
+
+        <div className="mt-8 w-full m-0 p-0">
+          <SidebarProvider>
+            <div className="flex flex-col md:flex-row w-full m-0 p-0">
+              <div className="w-64 md:w-72 shrink-0 md:border-r-2 md:border-black">
+                <Sidebar side="left" collapsible="none" className="md:sticky md:top-8 md:self-start">
+                  <SidebarContent>
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          onClick={() => setActiveSection("personal")}
+                          isActive={activeSection === "personal"}
+                          className="justify-start border-2 border-gray-200 hover:border-black shadow-sm rounded-lg transition-all duration-200 hover:shadow-md px-2 py-1 text-sm"
+                        >
+                          <div className="p-2 mr-3">
+                            <User className="h-5 w-5 text-black" />
+                          </div>
+                          <span className="font-medium">Información Personal</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          onClick={() => setActiveSection("payments")}
+                          isActive={activeSection === "payments"}
+                          className="justify-start border-2 border-gray-200 hover:border-black shadow-sm rounded-lg transition-all duration-200 hover:shadow-md px-2 py-1 text-sm"
+                        >
+                          <div className="p-2 mr-3">
+                            <CreditCard className="h-5 w-5 text-black" />
+                          </div>
+                          <span className="font-medium">Tarjetas</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          onClick={() => setActiveSection("driver")}
+                          isActive={activeSection === "driver"}
+                          className="justify-start border-2 border-gray-200 hover:border-black shadow-sm rounded-lg transition-all duration-200 hover:shadow-md px-2 py-1 text-sm"
+                        >
+                          <div className="p-2 mr-3">
+                            <SteeringWheel className="h-5 w-5 text-black" />
+                          </div>
+                          <span className="font-medium">Conductor</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          className="justify-start border-2 border-gray-200 hover:border-black shadow-sm rounded-lg transition-all duration-200 hover:shadow-md px-2 py-1 text-sm"
+                        >
+                          <div className="p-2 mr-3">
+                            <Star className="h-5 w-5 text-black" />
+                          </div>
+                          <span className="font-medium">Calificaciones</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          className="justify-start border-2 border-gray-200 hover:border-black shadow-sm rounded-lg transition-all duration-200 hover:shadow-md px-2 py-1 text-sm"
+                        >
+                          <div className="p-2 mr-3">
+                            <Car className="h-5 w-5 text-black" />
+                          </div>
+                          <span className="font-medium">Vehículos</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarContent>
+                </Sidebar>
+              </div>
+
+              <main className="flex-1 min-h-[500px] bg-white p-0 w-full">
+                <div className="p-9 w-full m-0">{renderContent()}</div>
+              </main>
             </div>
-            <CardTitle className="text-2xl mb-2">{userName}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Correo</p>
-                <p className="font-medium">{userData.correo}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Teléfono</p>
-                <p className="font-medium">{userData.telefono}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Fecha de Nacimiento</p>
-                <p className="font-medium">
-                  {new Date(userData.fecha_nacimiento).toLocaleDateString()}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Género</p>
-                <p className="font-medium">{userData.genero}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Ciudad</p>
-                <p className="font-medium">{userData.ciudad}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </main>
+          </SidebarProvider>
+        </div>
+      </div>
       <Footer />
     </div>
-  );
+  )
 }

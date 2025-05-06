@@ -86,7 +86,7 @@ export default function Header() {
                 <div className="mt-4 border-t pt-4">
                 {user ? (
                     <>
-                      <Link href="/profile">
+                      <Link href="/perfil">
                         <div className="flex items-center gap-2 mb-4 hover:bg-accent hover:text-accent-foreground rounded-md p-2 cursor-pointer">
                           <Avatar className="h-8 w-8">
                             {user.foto && user.foto !== "default.jpg" ? (
@@ -170,7 +170,7 @@ export default function Header() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <Link href="/profile">
+                <Link href="/perfil">
                     <DropdownMenuItem>
                       <User className="mr-2 h-4 w-4" />
                       <span>Mi perfil</span>

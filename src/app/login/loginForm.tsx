@@ -43,13 +43,13 @@ function LoginFormContent() {
 
       const { usuario, token } = response.data;
       localStorage.setItem("nombre", usuario.nombre);
-      localStorage.setItem("correo", usuario.correo);
-      localStorage.setItem("telefono", usuario.telefono || "");
-      localStorage.setItem("fecha_nacimiento", usuario.fecha_nacimiento || "");
-      localStorage.setItem("genero", usuario.genero || "");
-      localStorage.setItem("ciudad", usuario.ciudad || "");
+      // localStorage.setItem("correo", usuario.correo);
+      // localStorage.setItem("telefono", usuario.telefono || "");
+      // localStorage.setItem("fecha_nacimiento", usuario.fecha_nacimiento || "");
+      // localStorage.setItem("genero", usuario.genero || "");
+      // localStorage.setItem("ciudad", usuario.ciudad || "");
       localStorage.setItem("foto", usuario.foto || "default.jpg");
-      localStorage.setItem("rol", usuario.roles || "");
+      // localStorage.setItem("rol", usuario.roles || "");
       localStorage.setItem("auth_token", token);
 
       router.push("/");
@@ -162,13 +162,13 @@ export function LoginForm() {
           );
           // Guardar en localStorage
           localStorage.setItem("nombre", userData.nombre);
-          localStorage.setItem("correo", userData.correo);
-          localStorage.setItem("telefono", userData.telefono || "");
-          localStorage.setItem("fecha_nacimiento", userData.fecha_nacimiento || "");
-          localStorage.setItem("genero", userData.genero || "");
-          localStorage.setItem("ciudad", userData.ciudad || "");
+          // localStorage.setItem("correo", userData.correo);
+          // localStorage.setItem("telefono", userData.telefono || "");
+          // localStorage.setItem("fecha_nacimiento", userData.fecha_nacimiento || "");
+          // localStorage.setItem("genero", userData.genero || "");
+          // localStorage.setItem("ciudad", userData.ciudad || "");
           localStorage.setItem("foto", userData.foto || "default.jpg");
-          localStorage.setItem("rol", userData.roles || "");
+          // localStorage.setItem("rol", userData.roles || "");
           localStorage.setItem("auth_token", urlToken);
 
           // Limpiar URL
