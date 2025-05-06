@@ -23,7 +23,7 @@ function RadioGroup_Recode({ value, onChange, name }: SioNoProps){
                     checked:bg-blue-600 checked:border-blue-600
                     `}
                 />
-                <span className="text-xl font-bold capitalize">{opcion}</span>
+                <span className="text-base font-medium capitalize">{opcion}</span>
                 </label>
             ))}
         </div>
