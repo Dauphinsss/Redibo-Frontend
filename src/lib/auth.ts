@@ -2,6 +2,7 @@
 import api from './api';
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const loginUser = async (email: string, password: string): Promise<any> => {
   const res = await api.post('/auth/login', {
     correo: email,

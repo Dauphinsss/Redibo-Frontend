@@ -8,7 +8,6 @@ import CarCardSpecs from "./CarCardSpecsRecode";
 import CarCardHost from "./CarCardHostRecode";
 import CarCardUbicacion from "./CarCardUbicacionRecode";
 import CarCardPrice from "./CarCardPriceRecode";
-import CarCardDisponibilidad from "./CarCardDisponibilidad7-bits";
 
 export type RecodeCarCardProps = Auto;
 
@@ -63,14 +62,14 @@ function RecodeCarCard(props: Auto) {
 
       <div className="flex flex-col items-start">
         {/* Precio */}
-          <CarCardPrice
+        <CarCardPrice
           id={idAuto}
           precioOficial={precioOficial}
           precioDescuento={precioDescuento}
-          precioPorDia={precioPorDia} 
-          disponible_desde={disponible_desde} 
-          disponible_hasta={disponible_hasta}        
-          />
+          precioPorDia={precioPorDia}
+          disponible_desde={disponible_desde}
+          disponible_hasta={disponible_hasta}
+        />
       </div>
     </div>
   );
