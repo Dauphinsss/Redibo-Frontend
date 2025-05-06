@@ -1,11 +1,13 @@
 // lib/auth.js
 import api from './api';
 
+
 export const loginUser = async (email: string, password: string): Promise<any> => {
   const res = await api.post('/auth/login', {
     correo: email,
     contrasena: password,
   });
+  console.log(res.data);
   return res.data;
 };
 

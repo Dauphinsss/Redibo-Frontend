@@ -1,14 +1,13 @@
-import { number } from 'framer-motion';
-import { LatLng, LatLngExpression, LatLngTuple } from 'leaflet'
+import { LatLng } from 'leaflet'
 import React, { useState } from 'react'
-import { Marker, useMapEvents,Popup, CircleMarker, Circle } from 'react-leaflet'
+import { Marker, useMapEvents, Circle } from 'react-leaflet'
 
 interface HijoProps {
-  actualizarPunto: (longitud:number,altitud:number) => void;
+  actualizarPunto: (longitud: number, altitud: number) => void;
 }
 
-const index: React.FC<HijoProps> = ({actualizarPunto})=>{
-  const [position, setPosition] = useState<LatLng|null>(null)
+const MapPunto: React.FC<HijoProps> = ({ actualizarPunto }) => {
+  const [position, setPosition] = useState<LatLng | null>(null)
   const map = useMapEvents({
     click(e) {
       const { lat, lng } = e.latlng;
@@ -18,19 +17,19 @@ const index: React.FC<HijoProps> = ({actualizarPunto})=>{
     },
   })
 
-const fillBlueOptions = { fillColor: 'blue' }
+  const fillBlueOptions = { fillColor: 'blue' }
   return (
     <>
       {
         position && (
-        <div>
-          <Circle center={position} pathOptions={fillBlueOptions} radius={3000} />
-          <Marker position={position} draggable={false}></Marker>
-        </div>
+          <div>
+            <Circle center={position} pathOptions={fillBlueOptions} radius={3000} />
+            <Marker position={position} draggable={false}></Marker>
+          </div>
         )
       }
     </>
   )
 }
 
-export default index
+export default MapPunto

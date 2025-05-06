@@ -10,7 +10,6 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import ReservationConfirmedMessage from "./ReservationConfirmedMessage";
 import { useFakeAuth } from "./hooks/useFakeAuth";
 import { useState } from "react";
 
@@ -123,7 +122,7 @@ export default function ProvisionalBooking() {
         </Popover>
       </div>
       <div className="w-full flex justify-center mt-6">
-       {/*} <ReservationConfirmedMessage
+        {/*} <ReservationConfirmedMessage
           user={user}
           pickupDate={pickupDate}
           returnDate={returnDate}

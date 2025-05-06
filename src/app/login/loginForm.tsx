@@ -5,10 +5,9 @@ import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 /// CAMBIO AÑADI ESTO 
-import { loginUser, loginWithGoogle } from '@/lib/auth';
+import { loginUser } from '@/lib/auth';
 import { useAuth } from '@/context/authContext';
 
 
@@ -36,7 +35,7 @@ export function LoginForm() {
       } else {
         router.push("/"); // o cualquier ruta por defecto que prefieras
       }
-    } catch (err) {
+    } catch {
       alert('Credenciales inválidas');
     }
   };
@@ -52,13 +51,13 @@ export function LoginForm() {
           <Label htmlFor="email" className="text-sm font-medium">
             Correo electrónico
           </Label>
-          <Input 
-            id="email" 
-            type="email" 
+          <Input
+            id="email"
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="correo@ejemplo.com" 
-            className="h-10 px-4" 
+            placeholder="correo@ejemplo.com"
+            className="h-10 px-4"
             required
           />
         </div>
@@ -67,13 +66,13 @@ export function LoginForm() {
           <Label htmlFor="password" className="text-sm font-medium">
             Contraseña
           </Label>
-          <Input 
-            id="password" 
-            type="password" 
+          <Input
+            id="password"
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Ingrese su contraseña" 
-            className="h-10 px-4" 
+            placeholder="Ingrese su contraseña"
+            className="h-10 px-4"
             required
           />
         </div>
