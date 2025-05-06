@@ -1,54 +1,73 @@
-import { useState } from 'react';
-import Header from '@/components/ui/Header';
-import InsuranceForm from '@/components/InsuranceForm';
-import CoverageTable from '@/components/CoverageTable';
-import CoverageModal from '@/components/CoverageModal';
+'use client';
+import React, { useState, useEffect } from 'react';
+import Formulario from '@/components/recodeComponentes/cobertura/FormularioRecode';
+import TablaCobertura from '@/components/recodeComponentes/cobertura/TablaRecode';
+import PopupCobertura from '@/components/recodeComponentes/cobertura/AñadirRecode';
+import { Coverage } from '@/interface/CoberturaForm_Interface_Recode';
 
-export default function CoberturaAutoPage() {
-  const [hasInsurance, setHasInsurance] = useState(null);
-  const [insuranceCompany, setInsuranceCompany] = useState('');
-  const [validity, setValidity] = useState('');
-  const [coverages, setCoverages] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [newCoverage, setNewCoverage] = useState({ name: '', description: '', amount: '', validity: '' });
+function CoberturaAutoPage() {
+  const [hasInsurance, setHasInsurance] = useState<boolean | null>(null);
+  const [insuranceCompany, setInsuranceCompany] = useState<string>('');
+  const [validity, setValidity] = useState<string>('');
+  const [coverages, setCoverages] = useState<Coverage[]>([]);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [newCoverage, setNewCoverage] = useState<Coverage>({
+    name: '',
+    description: '',
+    amount: '',
+    validity: '',
+  });
 
-  const handleSaveCoverage = async () => {
+  useEffect(() => {
+    const data = localStorage.getItem('coverages');
+    if (data) setCoverages(JSON.parse(data));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('coverages', JSON.stringify(coverages));
+  }, [coverages]);
+
+  const handleSaveCoverage = () => {
     if (!newCoverage.name || !newCoverage.amount) return;
-
-    const coverageToSave = { ...newCoverage, validity: validity || 'Sin fecha' };
-
-    // Simulación de inserción a base de datos
-    try {
-      const response = await fetch('/api/coberturas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(coverageToSave)
-      });
-
-      if (response.ok) {
-        const saved = await response.json();
-        setCoverages([...coverages, saved]); // o usar coverageToSave si no regresa nada
-      } else {
-        console.error('Error al guardar cobertura');
-      }
-    } catch (error) {
-      console.error('Error de red:', error);
-    }
-
+    const updated = [...coverages, { ...newCoverage, validity: validity || 'Sin fecha' }];
+    setCoverages(updated);
     setNewCoverage({ name: '', description: '', amount: '', validity: '' });
     setShowModal(false);
   };
 
+  const handleRemoveCoverage = (index: number) => {
+    const updated = [...coverages];
+    updated.splice(index, 1);
+    setCoverages(updated);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        <Header />
-        <main className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <InsuranceForm {...{ hasInsurance, setHasInsurance, insuranceCompany, setInsuranceCompany, validity, setValidity }} />
-          <CoverageTable coverages={coverages} setShowModal={setShowModal} />
-        </main>
+      <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm overflow-hidden">
+        <Formulario
+          hasInsurance={hasInsurance}
+          insuranceCompany={insuranceCompany}
+          validity={validity}
+          setHasInsurance={setHasInsurance}
+          setInsuranceCompany={setInsuranceCompany}
+          setValidity={setValidity}
+        />
+        <TablaCobertura
+          coverages={coverages}
+          onRemove={handleRemoveCoverage}
+          onAddClick={() => setShowModal(true)}
+        />
       </div>
-      <CoverageModal {...{ showModal, setShowModal, newCoverage, setNewCoverage, handleSaveCoverage }} />
+      {showModal && (
+        <PopupCobertura
+          newCoverage={newCoverage}
+          setNewCoverage={setNewCoverage}
+          onClose={() => setShowModal(false)}
+          onSave={handleSaveCoverage}
+        />
+      )}
     </div>
   );
 }
+
+export default CoberturaAutoPage;
