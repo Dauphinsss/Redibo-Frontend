@@ -1,4 +1,4 @@
-// components/recodeComponentes/condicionesDeUsoAuto/condicioneGenerales/RadioGroup_Recode.tsx
+import { memo } from "react";
 
 interface SioNoProps {
     value: string;
@@ -6,7 +6,7 @@ interface SioNoProps {
     name: string;
 }
 
-const RadioGroup_Recode: React.FC<SioNoProps> = ({ value, onChange, name }) => {
+function RadioGroup_Recode({ value, onChange, name }: SioNoProps){
     return (
         <div className="flex space-x-8 items-center">
             {["si", "no"].map((opcion) => (
@@ -30,4 +30,4 @@ const RadioGroup_Recode: React.FC<SioNoProps> = ({ value, onChange, name }) => {
     );
 };
 
-export default RadioGroup_Recode;  
+export default memo(RadioGroup_Recode);

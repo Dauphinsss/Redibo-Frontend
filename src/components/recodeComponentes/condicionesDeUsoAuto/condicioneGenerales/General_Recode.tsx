@@ -1,6 +1,6 @@
-import React from 'react';
+import { memo } from "react";
 
-const GeneralRecode: React.FC = () => {
+function GeneralRecode(){
     return (
         <div>
             <h1>Condiciones Generales</h1>
@@ -11,4 +11,4 @@ const GeneralRecode: React.FC = () => {
     );
 };
 
-export default GeneralRecode;
+export default memo(GeneralRecode);
