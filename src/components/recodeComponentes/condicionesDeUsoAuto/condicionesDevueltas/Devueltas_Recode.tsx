@@ -1,72 +1,43 @@
 "use client";
-import React, { useState } from 'react';
-import RadioGroup_Recode from '../condicioneGenerales/RadioGroup_Recode';
 
-function DevueltasRecode() {
-    const [limpioInt, setLimpioInt] = useState("si");
-    const [limpioExt, setLimpioExt] = useState("si");
-    const [rayones, setRayones] = useState("si");
-    const [devuelto, setDevuelto] = useState("si");
-    const [danios, setDanios] = useState("si");
-    const [combustible, setCombustible] = useState("si");
+import React, { useState, memo } from 'react';
+import RadioGroup_Recode from '@/components/recodeComponentes/condicionesDeUsoAuto/condicioneGenerales/RadioGroup_Recode';
+
+function Devueltas_Recode(){
+    const [respuestas, setRespuestas] = useState({
+        interior_limpio: "no",
+        exterior_limpio: "no",
+        rayones: "no",
+        herramientas_devueltas: "no",
+        danios: "no",
+        combustible_igual: "si",
+    });
+
+    const handleChange = (campo: keyof typeof respuestas, valor: string) => {
+        setRespuestas((prev) => ({ ...prev, [campo]: valor }));
+    };
 
     return (
-        <div className="min-h-screen bg-[#ffffff] font-sans px-10 py-6">
-
-            <button className="flex items-center text-white bg-black px-3 py-1 rounded mb-4">
-                <span className="mr-2">←</span> Volver
-            </button>
-
-            <h2 className="text-xl font-semibold mb-4">Condiciones de uso del auto</h2>
-
-            {/* Contenedor unificado */}
-            <div className="w-[800px] border-2 border-black bg-white">
-
-                <div className="flex border-b border-black">
-                    <button className="w-1/3 px-6 py-2 border-r border-black">Condiciones generales</button>
-                    <button className="w-1/3 px-6 py-2 border-r border-black">Entrega del auto</button>
-                    <button className="w-1/3 px-6 py-2 bg-black text-white">Devolución del auto</button>
+        <div className="space-y-4 px-4 py-4 bg-white rounded-lg shadow">
+            {[
+                { label: "Interior limpio", key: "interior_limpio" },
+                { label: "Exterior limpio", key: "exterior_limpio" },
+                { label: "Tiene rayones", key: "rayones" },
+                { label: "Herramientas devueltas", key: "herramientas_devueltas" },
+                { label: "Cobrar daños adicionales presentes", key: "danios" },
+                { label: "Nivel de combustible igual al entregado", key: "combustible_igual" },
+            ].map(({ label, key }) => (
+                <div key={key} className="flex items-center justify-between gap-10">
+                <span className="font-semibold">{label}:</span>
+                <RadioGroup_Recode
+                    value={respuestas[key as keyof typeof respuestas]}
+                    onChange={(v) => handleChange(key as keyof typeof respuestas, v)}
+                    name={key}
+                />
                 </div>
-
-                <div className="px-10 py-8 grid gap-6">
-                    <div className="grid grid-cols-2 items-center">
-                        <span className="text-base font-semibold">Interior limpio:</span>
-                        <RadioGroup_Recode value={limpioInt} onChange={setLimpioInt} name="Interior" />
-                    </div>
-
-                    <div className="grid grid-cols-2 items-center">
-                        <span className="text-base font-semibold">Exterior limpio:</span>
-                        <RadioGroup_Recode value={limpioExt} onChange={setLimpioExt} name="Exterior" />
-                    </div>
-
-                    <div className="grid grid-cols-2 items-center">
-                        <span className="text-base font-semibold">Tiene rayones:</span>
-                        <RadioGroup_Recode value={rayones} onChange={setRayones} name="Rayones" />
-                    </div>
-
-                    <div className="grid grid-cols-2 items-center">
-                        <span className="text-base font-semibold">Herramientas devueltas:</span>
-                        <RadioGroup_Recode value={devuelto} onChange={setDevuelto} name="Devuelto" />
-                    </div>
-
-                    <div className="grid grid-cols-2 items-center">
-                        <span className="text-base font-semibold">Cobrar daños adicionales presentes:</span>
-                        <RadioGroup_Recode value={danios} onChange={setDanios} name="Danios" />
-                    </div>
-
-                    <div className="grid grid-cols-2 items-center">
-                        <span className="text-base font-semibold">Nivel de combustible igual al entregado:</span>
-                        <RadioGroup_Recode value={combustible} onChange={setCombustible} name="Combustible" />
-                    </div>
-
-                </div>
-                
-            </div>
-            <div className="w-[800px] flex justify-end mt-4">
-                <button className="bg-black text-white px-6 py-2 rounded">Siguiente</button>
-            </div>
+            ))}
         </div>
     );
-}
+};
 
-export default DevueltasRecode;
+export default memo(Devueltas_Recode);
