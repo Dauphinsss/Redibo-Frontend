@@ -8,7 +8,7 @@ import Reserva from '@/components/recodeComponentes/detailsCar/RecodeReserva'
 import { getCarById } from '@/service/services_Recode'
 import NotFound from '@/app/not-found'
 import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode'
-import CalificaionRecode from '@/components/recodeComponentes/calificacionAuto/calificacionRecode'
+import CalificaionRecode from '@/components/recodeComponentes/CalificacionAuto/calificacionRecode'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -17,6 +17,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   if (!autoData) NotFound();
 
   const auto = transformAutoDetails_Recode(autoData);
+  const randomAverage = Number((Math.random() * (5 - 3) + 3).toFixed(1));
+  const randomTotal = Math.floor(Math.random() * 200) + 50;
+  const randomRatings = Array.from({ length: 5 }, () => Math.floor(Math.random() * 100));
+
 
   return (
     <>
@@ -39,16 +43,16 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <DescriHost
               nombreHost={auto.nombreHost}
               calificacion={4.5}
-              numAuto={1} 
+              numAuto={1}  
               telefono={auto.telefonoHost}
             />
-            <div className="mt-6"  >
-                <CalificaionRecode 
-                  promedio={4.0} 
-                  total={150.2} 
-                  porcentajes={[80, 60, 40, 20, 10]}
-                />
-            </div >
+             <div className="mt-6"  >
+            <CalificaionRecode 
+             promedio={randomAverage} 
+             total={randomTotal} 
+             porcentajes={randomRatings}
+            />
+             </div >
           </div>
           
           <div className="lg:w-1/3">
