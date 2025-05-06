@@ -23,10 +23,10 @@ export function PaymentInfo() {
                 <div className="text-white text-2xl font-bold tracking-wider">Visa Empresarial</div>
 
                 {/* Número de tarjeta */}
-                <div className="text-white tracking-wider text-2xl font-mono mt-8">4000 1234 5678 9010</div>
+                <div className="text-white tracking-wider text-2xl font-mono mt-8">**** **** **** 9010</div>
 
                 <div className="flex flex-col mt-4">
-                  <div className="text-sm text-white">VÁLIDO HASTA 12/20</div>
+                  <div className="text-sm text-white">VÁLIDO HASTA 12/25</div>
                   <div className="text-white text-lg mt-1">C. ARIAS</div>
                   <div className="text-white text-lg">NOMBRE DE EMPRESA</div>
                 </div>

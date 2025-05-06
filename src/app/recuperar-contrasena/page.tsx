@@ -1,4 +1,3 @@
-// Archivo: src/app/recuperar-contrasena/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -10,6 +9,7 @@ import { API_URL } from "@/utils/bakend";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react"; // Importar iconos
 
 export function LoginForm()  {
   const [email, setEmail] = useState("");
@@ -18,7 +18,28 @@ export function LoginForm()  {
   const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""]);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
   const router = useRouter();
+
+  // Función para validar la fortaleza de la contraseña
+  const isPasswordStrong = (password: string) => {
+    return (
+      password.length >= 8 &&
+      /[A-Z]/.test(password) &&
+      /[0-9]/.test(password) &&
+      /[^A-Za-z0-9]/.test(password)
+    );
+  };
+
+  // Manejar cambio en confirmación de contraseña
+  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setConfirmPassword(value);
+    setPasswordError(newPassword !== value);
+  };
 
   // Maneja el envío del correo para solicitar código
   const handleRequestCode = async (e: React.FormEvent) => {
@@ -103,14 +124,15 @@ export function LoginForm()  {
     e.preventDefault();
     setIsLoading(true);
 
-    if (newPassword !== confirmPassword) {
-      toast.error("Las contraseñas no coinciden");
+    // Validar requisitos de contraseña
+    if (!isPasswordStrong(newPassword)) {
+      toast.error("La contraseña no cumple con los requisitos de seguridad");
       setIsLoading(false);
       return;
     }
 
-    if (newPassword.length < 8) {
-      toast.error("La contraseña debe tener al menos 8 caracteres");
+    if (newPassword !== confirmPassword) {
+      toast.error("Las contraseñas no coinciden");
       setIsLoading(false);
       return;
     }
@@ -132,7 +154,13 @@ export function LoginForm()  {
     } catch (error: any) {
       console.error("Error al cambiar contraseña:", error);
       const errorMessage = error.response?.data?.error || "Error al cambiar la contraseña";
-      toast.error(errorMessage);
+      
+      // Mostrar mensaje específico si la contraseña es igual a la actual
+      if (error.response?.data?.error === "La nueva contraseña no puede ser igual a la actual") {
+        toast.error("La nueva contraseña no puede ser igual a la actual");
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -216,36 +244,121 @@ export function LoginForm()  {
   // Renderizar paso de nueva contraseña
   const renderNewPasswordStep = () => (
     <form onSubmit={handleResetPassword} className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
+      <div className="space-y-2 relative">
         <Label htmlFor="new-password" className="text-sm font-medium">
           Nueva contraseña
         </Label>
-        <Input
-          id="new-password"
-          type="password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          placeholder="Ingrese su nueva contraseña"
-          className="h-10 px-4"
-          required
-          minLength={8}
-        />
+        <div className="flex items-center gap-2 relative">
+          <Input
+            id="new-password"
+            type={showPassword ? "text" : "password"}
+            value={newPassword}
+            maxLength={20}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value.length <= 20) {
+                setNewPassword(value);
+                if (confirmPassword.length > 0) {
+                  setPasswordError(value !== confirmPassword);
+                }
+              }
+            }}
+            onBlur={() => setPasswordTouched(true)}
+            placeholder="Ingrese su nueva contraseña"
+            className={`h-10 px-4 pr-10 ${
+              passwordTouched &&
+              (newPassword.length === 0 ||
+                !isPasswordStrong(newPassword))
+                ? "border-red-500"
+                : ""
+            }`}
+            required
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full hover:bg-transparent"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? (
+              <EyeOff className="h-4 w-4 text-gray-600" />
+            ) : (
+              <Eye className="h-4 w-4 text-gray-600" />
+            )}
+          </Button>
+        </div>
+        {passwordTouched && (
+          <div className="space-y-1">
+            {newPassword.length === 0 ? (
+              <p className="text-sm text-red-500">
+                La contraseña es obligatoria.
+              </p>
+            ) : newPassword.length < 8 ? (
+              <p className="text-sm text-red-500">
+                La contraseña debe tener al menos 8 caracteres
+              </p>
+            ) : !/[A-Z]/.test(newPassword) ? (
+              <p className="text-sm text-red-500">
+                Debe contener al menos una letra mayúscula
+              </p>
+            ) : !/[0-9]/.test(newPassword) ? (
+              <p className="text-sm text-red-500">
+                Debe contener al menos un número
+              </p>
+            ) : !/[^A-Za-z0-9]/.test(newPassword) ? (
+              <p className="text-sm text-red-500">
+                Debe contener al menos un carácter especial
+              </p>
+            ) : null}
+          </div>
+        )}
       </div>
 
-      <div className="flex flex-col gap-1">
+      <div className="space-y-2 relative">
         <Label htmlFor="confirm-password" className="text-sm font-medium">
           Confirmar contraseña
         </Label>
-        <Input
-          id="confirm-password"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="Confirme su nueva contraseña"
-          className="h-10 px-4"
-          required
-          minLength={8}
-        />
+        <div className="flex items-center gap-2 relative">
+          <Input
+            id="confirm-password"
+            type={showConfirmPassword ? "text" : "password"}
+            value={confirmPassword}
+            maxLength={20}
+            onChange={handleConfirmPasswordChange}
+            onBlur={() => setPasswordTouched(true)}
+            placeholder="Confirme su nueva contraseña"
+            className={`h-10 px-4 pr-10 ${
+              passwordError || (passwordTouched && !confirmPassword)
+                ? "border-red-500"
+                : ""
+            }`}
+            required
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full hover:bg-transparent"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            {showConfirmPassword ? (
+              <EyeOff className="h-4 w-4 text-gray-600" />
+            ) : (
+              <Eye className="h-4 w-4 text-gray-600" />
+            )}
+          </Button>
+        </div>
+        {passwordTouched && !confirmPassword && (
+          <p className="text-sm text-red-500">
+            Debe confirmar su contraseña
+          </p>
+        )}
+        {passwordError && confirmPassword && (
+          <p className="text-sm text-red-500">
+            Las contraseñas no coinciden
+          </p>
+        )}
       </div>
 
       <Button type="submit" className="w-full h-10" disabled={isLoading}>

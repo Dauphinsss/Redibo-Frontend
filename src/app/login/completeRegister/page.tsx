@@ -340,7 +340,7 @@ export default function CompleteRegisterForm() {
             {/*{errores.terms && <p className="text-sm text-red-500 mt-1">{errores.terms}</p>} */}
           </CardContent>
 
-          <CardFooter>
+          <CardFooter className="flex justify-between pt-6">
             <Button
               ref={btnRef}
               type="submit"
