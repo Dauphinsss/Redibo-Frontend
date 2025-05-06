@@ -8,6 +8,7 @@ import Reserva from '@/components/recodeComponentes/detailsCar/RecodeReserva'
 import { getCarById } from '@/service/services_Recode'
 import NotFound from '@/app/not-found'
 import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode'
+import CalificaionRecode from '@/components/recodeComponentes/calificacionAuto/calificacionRecode'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -38,9 +39,17 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <DescriHost
               nombreHost={auto.nombreHost}
               calificacion={4.5}
-              numAuto={1}
+              numAuto={1}  
             />
+             <div className="mt-6"  >
+            <CalificaionRecode 
+             promedio={4.0} 
+             total={150.2} 
+             porcentajes={[80, 60, 40, 20, 10]}
+            />
+             </div >
           </div>
+          
           <div className="lg:w-1/3">
             <div className="sticky top-4 flex flex-col gap-4">
               <InfoDestacable
@@ -52,6 +61,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               <Reserva precio={auto.precio} />
             </div>
           </div>
+          
+
         </div>
       </main>
     </>
