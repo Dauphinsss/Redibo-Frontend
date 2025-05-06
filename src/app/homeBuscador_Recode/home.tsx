@@ -7,6 +7,9 @@ import SearchBar from '@/components/recodeComponentes/seccionOrdenarMasResultado
 import HeaderBusquedaRecode from '@/components/recodeComponentes/seccionOrdenarMasResultados/HeaderBusquedaRecode';
 import ResultadosAutos from '@/components/recodeComponentes/seccionOrdenarMasResultados/ResultadosAutos_Recode';
 import Header from '@/components/ui/Header';
+import { ButtonPrecio } from '@/components/filtros/buttonPrecio';
+import { ButtonCalif } from '@/components/filtros/buttonCalif';
+import { ButtonViajes } from '@/components/filtros/buttonViajes';
 
 import dynamic from "next/dynamic";
 
@@ -23,7 +26,11 @@ export default function Home() {
     cargando,
     filtrarAutos,
     obtenerSugerencia,
-  } = useAutos(8);
+    aplicarFiltroPrecio,
+    aplicarFiltroViajes,
+    aplicarFiltroCalificacion,
+    filtrosAplicados
+  } = useAutos();
 
   const [showMap, setShowMap] = useState(false);
 
@@ -34,6 +41,18 @@ export default function Home() {
       ssr: false,
     }
   ), []);
+
+  const handleFiltroPrecio = (min: number, max: number) => {
+    aplicarFiltroPrecio(min, max);
+  };
+
+  const handleFiltroViajes = (minViajes: number) => {
+    aplicarFiltroViajes(minViajes);
+  };
+
+  const handleFiltroCalificacion = (minCalificacion: number) => {
+    aplicarFiltroCalificacion(minCalificacion);
+  };
 
   return (
     <div className="relative">
@@ -50,7 +69,6 @@ export default function Home() {
             onFiltrar={filtrarAutos}
             obtenerSugerencia={obtenerSugerencia}
           />
-          {/* <div className="mt-6">RecodeCarousel aquí (opcional)</div> */}
         </section>
 
         {/* Contenido principal */}
@@ -58,6 +76,13 @@ export default function Home() {
           {/* Columna izquierda: lista */}
           <div className="flex-1 max-w-full">
             <div className="w-full max-w-4xl mx-auto">
+              {/* Filtros */}
+              <div className="mb-6 flex flex-wrap gap-4">
+                <ButtonPrecio onFilterChange={handleFiltroPrecio} />
+                <ButtonCalif onFilterChange={handleFiltroCalificacion} />
+                <ButtonViajes onFilterChange={handleFiltroViajes} />
+              </div>
+
               <HeaderBusquedaRecode
                 autosTotales={autos}
                 autosFiltrados={autosFiltrados}
