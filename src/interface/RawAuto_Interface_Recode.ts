@@ -28,4 +28,6 @@ export interface RawAuto_Interface_Recode {
     imagen?: {
         data?: string;
     }[];
+    disponible_desde?: string;
+    disponible_hasta?: string;
 }  

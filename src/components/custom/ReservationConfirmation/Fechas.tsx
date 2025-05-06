@@ -51,9 +51,9 @@ export default function ElegirFechas({ onChange }: ElegirFechasProps) {
             onSelect={(date) => {
               setPickupDate(date);
               if (date) {
-                const fechaFormateada = format(date, "dd '/' MMMM '/' yyyy", {
-                  locale: es,
-                });
+                //const fechaFormateada = format(date, "dd '/' MMMM '/' yyyy", {
+                //  locale: es,
+                //});
                 onChange({ pickupDate: date, returnDate });///cambiao
               }
             }}
@@ -98,9 +98,9 @@ export default function ElegirFechas({ onChange }: ElegirFechasProps) {
             onSelect={(date) => {
               setReturnDate(date);
               if (date) {
-                const fechaFormateada = format(date, "dd '/' MMMM '/' yyyy", {
-                  locale: es,
-                });
+                //const fechaFormateada = format(date, "dd '/' MMMM '/' yyyy", {
+                //  locale: es,
+                //});
                 onChange({ pickupDate, returnDate: date });
               }
             }}

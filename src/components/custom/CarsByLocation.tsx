@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react';
 
-const CarsByLocation = ({latitude, longitude}:any) => {  
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CarsByLocation = ({ latitude, longitude }: any) => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);  
-  const haversineDistance = (lat1:any, lon1:any, lat2:any, lon2:any) => {
+  const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const haversineDistance = (lat1: any, lon1: any, lat2: any, lon2: any) => {
     const R = 6371; // Earth radius in kilometers
-    const toRad = (value:number) => (value * Math.PI) / 180;
+    const toRad = (value: number) => (value * Math.PI) / 180;
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-              Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));  
-    const distance = Math.round(( (R * c) + Number.EPSILON) * 100) / 100;
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = Math.round(((R * c) + Number.EPSILON) * 100) / 100;
     return distance;
   };
 
@@ -25,7 +27,7 @@ const CarsByLocation = ({latitude, longitude}:any) => {
         }
         const json = await response.json();
         setData(json);
-      } catch (e) {
+      } catch {
         //setError(e);
       } finally {
         setLoading(false);

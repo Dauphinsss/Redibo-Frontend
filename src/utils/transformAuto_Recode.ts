@@ -1,4 +1,4 @@
-import { RawAuto_Interface_Recode as RawAuto} from "@/interface/RawAuto_Interface_Recode";
+import { RawAuto_Interface_Recode as RawAuto } from "@/interface/RawAuto_Interface_Recode";
 import { AutoCard_Interfaces_Recode as AutoCard } from "@/interface/AutoCard_Interface_Recode";
 
 export const transformAuto = (item: RawAuto): AutoCard => ({
@@ -21,5 +21,7 @@ export const transformAuto = (item: RawAuto): AutoCard => ({
     precioOficial: Number(item.precio_por_dia),
     precioDescuento: Number(item.precio_por_dia),
     precioPorDia: Number(item.precio_por_dia),
+    disponible_desde: item.disponible_desde || "No disponible",
+    disponible_hasta: item.disponible_hasta || "No disponible",
     imagenURL: item.imagen?.[0]?.data || "",
 });

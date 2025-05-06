@@ -74,11 +74,11 @@ export default function Page() {
           </select>
           <Button variant="default"
           onClick={handleClick}
-          >Buscar</Button>
-        </div>
-        <p className="mb-4 font-semibold">Resultados</p>
-        <CarsByLocation latitude={selectedLatitude} longitude={selectedLongitude}></CarsByLocation>
+        >Buscar</Button>
+      </div>
+      <p className="mb-4 font-semibold">Resultados</p>
+      <CarsByLocation latitude={selectedLatitude} longitude={selectedLongitude}></CarsByLocation>
 
-  </div>
+    </div>
   );
 }

@@ -8,16 +8,19 @@ interface Props {
   onCancelar: () => void;
   pickupDate?: Date;
   returnDate?: Date;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: any;
   id: string;
-  modelo:string;
-  marca:string;
+  modelo: string;
+  marca: string;
 }
 
 const ConfirmacionReservaOpciones: React.FC<Props> = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onReservarSinPagar,
   onPagarCompleto,
   onCancelar,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   user,
   pickupDate,
   returnDate,
@@ -32,7 +35,7 @@ const ConfirmacionReservaOpciones: React.FC<Props> = ({
         <p>El anfitrión ha aceptado tu solicitud de reserva. Elige cómo deseas continuar:</p>
 
         <div className="mt-6 flex flex-col gap-4">
-        <ReservationConfirmedMessage
+          <ReservationConfirmedMessage
             //user={user}
             pickupDate={pickupDate}
             returnDate={returnDate}
