@@ -125,7 +125,7 @@ export default function SidebarFiltros({ mostrar, onCerrar }: Props) {
           </button>
           {abierto.caracteristicasAdicionales && (
             <div className="p-4 space-y-2">
-              {["Aire acondicionado, Bluetooth" ,"GPS","Portabicicletas","Soporte para esquís",].map((carac) => (
+              {["Aire acondicionado, Bluetooth" ,"GPS","Portabicicletas","Soporte para esquís","Pantalla táctil","Sillas para bebé","Cámara de reversa","Asientos de cuero"].map((carac) => (
                 <label key={carac} className="flex items-center gap-2">
                   <input type="checkbox" className="form-checkbox" />
                   {carac}
