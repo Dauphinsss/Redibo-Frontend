@@ -24,7 +24,7 @@ import { Ciudad } from "@/utils/types";
 import { isUnderage } from "../../../lib/utils";
 import Link from "next/link";
 
-type UserType = "HOST" | "RENTER" | "DRIVER";
+type UserType = "HOST" | "RENTER";
 
 export default function CompleteRegisterForm() {
   const router = useRouter();
@@ -306,10 +306,6 @@ export default function CompleteRegisterForm() {
                 <div className="flex items-center gap-2">
                   <RadioGroupItem value="RENTER" id="renter" />
                   <Label htmlFor="renter">Arrendatario</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="DRIVER" id="driver" />
-                  <Label htmlFor="driver">Conductor</Label>
                 </div>
               </RadioGroup>
               {errores.rol && <p className="text-sm text-red-500 mt-1">{errores.rol}</p>}

@@ -32,7 +32,7 @@ import { API_URL } from "@/utils/bakend";
 import { Ciudad } from "@/utils/types";
 import Link from "next/link";
 
-type UserType = "HOST" | "RENTER" | "DRIVER" | null;
+type UserType = "HOST" | "RENTER" | null;
 
 export default function Form() {
   const [phone, setPhone] = useState("");
@@ -202,8 +202,6 @@ export default function Form() {
           ? "Propietario"
           : userType === "RENTER"
           ? "Arrendatario"
-          : userType === "DRIVER"
-          ? "Conductor"
           : "";
       const response = await axios.post(`${API_URL}/api/registro`, usuario);
       console.log(response.data);
@@ -240,8 +238,6 @@ export default function Form() {
         return "Registrar Propietario";
       case "RENTER":
         return "Registrar Arrendatario";
-      case "DRIVER":
-        return "Registrar Conductor";
       default:
         return "Registro";
     }
@@ -253,8 +249,6 @@ export default function Form() {
         return "Complete sus datos como propietario de vehículos para renta y acepte nuestros términos y condiciones.";
       case "RENTER":
         return "Complete sus datos como persona que se renta vehículos y acepte nuestros términos y condiciones.";
-      case "DRIVER":
-        return "Complete sus datos como conductor y acepte nuestnombreos términos y condiciones.";
       default:
         return "Seleccione el tipo de usuario para continuar con el registro.";
     }
@@ -329,18 +323,6 @@ export default function Form() {
                     <p className="font-medium">Arrendatario</p>
                     <p className="text-sm text-muted-foreground">
                       Registrarse como persona que se renta vehículos
-                    </p>
-                  </div>
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2 rounded-md border p-4 cursor-pointer hover:bg-muted">
-                <RadioGroupItem value="DRIVER" id="conductor" />
-                <Label htmlFor="conductor" className="flex items-center">
-                  <CarIcon className="mr-2 h-5 w-5" />
-                  <div>
-                    <p className="font-medium">Conductor</p>
-                    <p className="text-sm text-muted-foreground">
-                      Registrarse como conductor de vehículos
                     </p>
                   </div>
                 </Label>
