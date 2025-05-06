@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, memo } from 'react';
-import RadioGroup_Recode from '@/components/recodeComponentes/condicionesDeUsoAuto/condicioneGenerales/RadioGroup_Recode';
+import RadioGroup_Recode from '@/components/recodeComponentes/condicionesDeUsoAuto/RadioGroup_Recode';
 
 function Devueltas_Recode(){
     const [respuestas, setRespuestas] = useState({
