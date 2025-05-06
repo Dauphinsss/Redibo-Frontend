@@ -191,6 +191,13 @@ export default function Header({
             className={getLinkClassName("text-sm font-medium")}
             {...linkDisabledAttrs}
           >
+            Busqueda
+          </Link>
+          <Link
+            href="/homeBuscador_Recode"
+            className={getLinkClassName("text-sm font-medium")}
+            {...linkDisabledAttrs}
+          >
             Productos
           </Link>
           <Link
