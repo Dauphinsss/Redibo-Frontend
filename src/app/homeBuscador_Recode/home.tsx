@@ -29,6 +29,7 @@ export default function Home() {
 
   const startDate = '2025-07-17';
   const endDate = '2025-07-27';
+  const [busqueda, setBusqueda] = useState("");
 
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
@@ -42,6 +43,11 @@ export default function Home() {
       ssr: false,
     }
   ), []);
+
+  const handleFiltrar = (query: string) => {
+    setBusqueda(query);
+    filtrarAutos(query);
+  };
 
   const { data: carsMap, isLoading: loadingMap } = useCarsMap(startDate, endDate);
 
@@ -57,7 +63,7 @@ export default function Home() {
           <section className="mb-8 flex flex-col items-center text-center">
             <SearchBar
               placeholder="Buscar por modelo, marca"
-              onFiltrar={filtrarAutos}
+              onFiltrar={handleFiltrar}
               obtenerSugerencia={obtenerSugerencia}
             />
             {/* <div className="mt-6">RecodeCarousel aquí (opcional)</div> */}
@@ -66,6 +72,7 @@ export default function Home() {
           {/* Filtro de Fechas */}
           <div className="flex flex-col md:flex-row items-center justify-start gap-4 mb-4 w-full">
             <DateRangeFilter
+              searchTerm={busqueda}
               fechaInicio={fechaInicio}
               fechaFin={fechaFin}
               setFechaInicio={setFechaInicio}
