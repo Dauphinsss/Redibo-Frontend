@@ -32,7 +32,7 @@ import { API_URL } from "@/utils/bakend";
 import { Ciudad } from "@/utils/types";
 import Link from "next/link";
 
-type UserType = "HOST" | "RENTER" | "DRIVER" | null;
+type UserType = "HOST" | "RENTER" | null;
 
 export default function Form() {
   const [phone, setPhone] = useState("");
@@ -202,8 +202,6 @@ export default function Form() {
           ? "Propietario"
           : userType === "RENTER"
           ? "Arrendatario"
-          : userType === "DRIVER"
-          ? "Conductor"
           : "";
       const response = await axios.post(`http://localhost:4000/api/registro`, usuario);
       console.log(response.data);
@@ -240,8 +238,6 @@ export default function Form() {
         return "Registrar Propietario";
       case "RENTER":
         return "Registrar Arrendatario";
-      case "DRIVER":
-        return "Registrar Conductor";
       default:
         return "Registro";
     }
@@ -253,8 +249,6 @@ export default function Form() {
         return "Complete sus datos como propietario de vehículos para renta y acepte nuestros términos y condiciones.";
       case "RENTER":
         return "Complete sus datos como persona que se renta vehículos y acepte nuestros términos y condiciones.";
-      case "DRIVER":
-        return "Complete sus datos como conductor y acepte nuestnombreos términos y condiciones.";
       default:
         return "Seleccione el tipo de usuario para continuar con el registro.";
     }
@@ -329,18 +323,6 @@ export default function Form() {
                     <p className="font-medium">Arrendatario</p>
                     <p className="text-sm text-muted-foreground">
                       Registrarse como persona que se renta vehículos
-                    </p>
-                  </div>
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2 rounded-md border p-4 cursor-pointer hover:bg-muted">
-                <RadioGroupItem value="DRIVER" id="conductor" />
-                <Label htmlFor="conductor" className="flex items-center">
-                  <CarIcon className="mr-2 h-5 w-5" />
-                  <div>
-                    <p className="font-medium">Conductor</p>
-                    <p className="text-sm text-muted-foreground">
-                      Registrarse como conductor de vehículos
                     </p>
                   </div>
                 </Label>
@@ -836,27 +818,17 @@ export default function Form() {
             <div className="relative w-full text-center">
               <hr className="border-gray-300" />
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-3 text-gray-500 text-sm">
-                O CONTINÚA CON
+             
               </span>
             </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full flex items-center justify-center gap-2"
-              disabled
-            >
-              <img
-                src="https://www.svgrepo.com/show/475656/google-color.svg"
-                alt="Google"
-                className="w-5 h-5"
-              />
-              Iniciar sesión con Google
-            </Button>
+           
 
             <p className="text-sm text-gray-600">
               ¿Ya tienes una cuenta?{" "}
-              <a className="text-black-600 hover:underline">Iniciar sesión</a>
+              <a href="/login" className="text-primary hover:underline">
+              Iniciar sesion
+              </a>
             </p>
           </CardFooter>
         </Card>
