@@ -1,24 +1,20 @@
+import Link from 'next/link';
 import { FaUserCircle, FaStar, FaCar, FaWhatsapp } from 'react-icons/fa';
 interface DescriHostProps {
   nombreHost: string;
   calificacion: number;
   numAuto: number;
-  telefono: string;
+  telefono: string
 }
 
 export default function DescriHost({ 
   nombreHost, 
   calificacion, 
-  numAuto,
-  telefono 
+  numAuto, 
+  telefono
 }: DescriHostProps) {
   const mensaje = `Hola ${nombreHost}, estoy interesado en tu auto publicado en ReCode.`;
 
-  const handleWhatsApp = () => {
-    const link = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
-    window.open(link, "_blank");
-  };
-  
   return (
     <section className="w-full border border-gray-200 rounded-lg p-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -39,12 +35,18 @@ export default function DescriHost({
             </div>
           </div>
         </div>
-        <button
-          onClick={handleWhatsApp}
-          className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+        <Link
+          href={`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`}
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          <FaWhatsapp /> Contáctalo
-        </button>
+          <button
+            type="button"
+            className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-neutral-500 transition"
+          >
+            <FaWhatsapp /> Contáctalo
+          </button>
+        </Link>
       </div>
     </section>
   );

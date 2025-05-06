@@ -39,8 +39,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <DescriHost
               nombreHost={auto.nombreHost}
               calificacion={4.5}
-              numAuto={1}
-              telefono={auto.telefonoHost}  
+              numAuto={1} 
+              telefono={auto.telefonoHost}
             />
             <div className="mt-6"  >
                 <CalificaionRecode 
