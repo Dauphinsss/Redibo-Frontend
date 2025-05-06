@@ -1,13 +1,21 @@
 "use client";
 
-import React, { useState, memo } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import RadioGroup_Recode from '@/components/recodeComponentes/condicionesDeUsoAuto/condicioneGenerales/RadioGroup_Recode';
 import Herramientas_Recode from '@/components/recodeComponentes/condicionesDeUsoAuto/condionesEntrada/Herramientas_Recode';
+
+interface Herramienta {
+    id: number;
+    nombre: string;
+    cantidad: number;
+}
 
 function Entrada_Recode() {
     const [mostrarHerramientas, setMostrarHerramientas] = useState(false);
 
     const [estadoCombustible, setEstadoCombustible] = useState("");
+    const [herramientasGuardadas, setHerramientasGuardadas] = useState<Herramienta[]>([]);
+
     const [respuestas, setRespuestas] = useState({
         exteriorLimpio: "si",
         interiorLimpio: "si",
@@ -25,23 +33,28 @@ function Entrada_Recode() {
         }
     };
 
+    useEffect(() => {
+        if (!mostrarHerramientas) {
+        const data = localStorage.getItem("herramientas_recode");
+        if (data) {
+            setHerramientasGuardadas(JSON.parse(data));
+        } else {
+            setHerramientasGuardadas([]);
+        }
+        }
+    }, [mostrarHerramientas]);
+
+    // Si está en modo herramientas, mostrar ese componente
     if (mostrarHerramientas) {
         return (
-            <div className="space-y-4 px-4 py-4 bg-white rounded-lg shadow">
-                <button
-                    onClick={() => setMostrarHerramientas(false)}
-                    className="mb-4 bg-black text-white px-4 py-2 rounded"
-                >
-                    Volver
-                </button>
-                <Herramientas_Recode />
-            </div>
+        <div className="space-y-4 px-4 py-4 bg-white rounded-lg shadow">
+            <Herramientas_Recode onVolver={() => setMostrarHerramientas(false)} />
+        </div>
         );
     }
 
     return (
         <div className="space-y-4 px-4 py-4 bg-white rounded-lg shadow">
-        {/* Estado del combustible */}
             <div className="flex items-center justify-between gap-10">
                 <label htmlFor="estadoCombustible" className="font-semibold">
                     Estado del combustible:
@@ -59,7 +72,6 @@ function Entrada_Recode() {
                 </select>
             </div>
 
-            {/* Radio buttons */}
             {[
                 { label: "Exterior limpio", key: "exteriorLimpio" },
                 { label: "Interior limpio", key: "interiorLimpio" },
@@ -78,7 +90,6 @@ function Entrada_Recode() {
                 </div>
             ))}
 
-            {/* Botón para entrar a herramientas */}
             {respuestas.herramientas === "si" && (
                 <div className="flex justify-end">
                     <button
@@ -87,6 +98,20 @@ function Entrada_Recode() {
                     >
                         Herramientas
                     </button>
+                </div>
+            )}
+
+            {/* Mostrar herramientas guardadas */}
+            {herramientasGuardadas.length > 0 && (
+                <div className="mt-6">
+                    <h3 className="font-bold mb-2">Herramientas registradas:</h3>
+                    <ul className="list-disc list-inside text-sm text-gray-700">
+                        {herramientasGuardadas.map((h) => (
+                        <li key={h.id}>
+                            {h.nombre} (x{h.cantidad})
+                        </li>
+                        ))}
+                    </ul>
                 </div>
             )}
         </div>
