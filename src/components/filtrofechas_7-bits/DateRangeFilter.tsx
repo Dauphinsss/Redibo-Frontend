@@ -19,6 +19,7 @@ const DateRangeFilter: React.FC<Props> = ({
                 <label className="text-xs font-bold">Fecha Inicio</label>
                 <input
                     type="date"
+                    min={new Date().toISOString().split("T")[0]}
                     value={fechaInicio}
                     onChange={(e) => setFechaInicio(e.target.value)}
                     className="border px-2 py-1 rounded w-[140px] text-sm"
@@ -29,6 +30,7 @@ const DateRangeFilter: React.FC<Props> = ({
                 <label className="text-xs font-bold">Fecha Fin</label>
                 <input
                     type="date"
+                    min={new Date().toISOString().split("T")[0]}
                     value={fechaFin}
                     onChange={(e) => setFechaFin(e.target.value)}
                     className="border px-2 py-1 rounded w-[140px] text-sm"
