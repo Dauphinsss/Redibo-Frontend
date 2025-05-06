@@ -16,6 +16,8 @@ export function useAutos(cantidadPorLote = 8) {
         try {
         setCargando(true);
         const rawData: RawAuto[] = await getAllCars();
+        console.log("Raw autos:", rawData);
+        
         const transformed = rawData.map(transformAuto);
         setAutos(transformed);
         setAutosFiltrados(transformed);

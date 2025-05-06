@@ -8,6 +8,7 @@ import CarCardSpecs from "./CarCardSpecsRecode";
 import CarCardHost from "./CarCardHostRecode";
 import CarCardUbicacion from "./CarCardUbicacionRecode";
 import CarCardPrice from "./CarCardPriceRecode";
+import CarCardDisponibilidad from "./CarCardDisponibilidad7-bits";
 
 export type RecodeCarCardProps = Auto;
 
@@ -29,6 +30,8 @@ function RecodeCarCard(props: Auto) {
     precioDescuento,
     precioPorDia,
     imagenURL,
+    disponible_desde,
+    disponible_hasta,
   } = props;
 
   const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(combustibles[0]);
@@ -58,13 +61,17 @@ function RecodeCarCard(props: Auto) {
         </div>
       </div>
 
-      {/* Precio */}
-      <CarCardPrice
-        id={idAuto}
-        precioOficial={precioOficial}
-        precioDescuento={precioDescuento}
-        precioPorDia={precioPorDia}
-      />
+      <div className="flex flex-col items-start">
+        {/* Precio */}
+          <CarCardPrice
+          id={idAuto}
+          precioOficial={precioOficial}
+          precioDescuento={precioDescuento}
+          precioPorDia={precioPorDia} 
+          disponible_desde={disponible_desde} 
+          disponible_hasta={disponible_hasta}        
+          />
+      </div>
     </div>
   );
 }
