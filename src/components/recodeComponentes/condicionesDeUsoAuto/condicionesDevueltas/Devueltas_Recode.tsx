@@ -5,11 +5,11 @@ import RadioGroup_Recode from '@/components/recodeComponentes/condicionesDeUsoAu
 
 function Devueltas_Recode(){
     const [respuestas, setRespuestas] = useState({
-        interior_limpio: "no",
-        exterior_limpio: "no",
-        rayones: "no",
-        herramientas_devueltas: "no",
-        danios: "no",
+        interior_limpio: "si",
+        exterior_limpio: "si",
+        rayones: "si",
+        herramientas_devueltas: "si",
+        danios: "si",
         combustible_igual: "si",
     });
 

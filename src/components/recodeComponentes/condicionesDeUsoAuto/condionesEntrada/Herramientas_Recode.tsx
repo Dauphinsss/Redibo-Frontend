@@ -1,4 +1,6 @@
-import React, { memo, useState } from "react";
+"use client";
+
+import React, { memo, useState, useEffect } from "react";
 
 interface Herramienta {
     id: number;
@@ -12,13 +14,29 @@ function Herramientas_Recode() {
     const [herramientas, setHerramientas] = useState<Herramienta[]>([]);
     const [nextId, setNextId] = useState(1);
 
+    // Cargar desde localStorage al montar
+    useEffect(() => {
+        const almacenadas = localStorage.getItem("herramientas_recode");
+        if (almacenadas) {
+        const parseadas: Herramienta[] = JSON.parse(almacenadas);
+        setHerramientas(parseadas);
+        const maxId = parseadas.reduce((max, h) => Math.max(max, h.id), 0);
+        setNextId(maxId + 1);
+        }
+    }, []);
+
+    // Guardar en localStorage al cambiar
+    useEffect(() => {
+        localStorage.setItem("herramientas_recode", JSON.stringify(herramientas));
+    }, [herramientas]);
+
     const handleAgregar = () => {
         if (nombre.trim() === "" || cantidad === "" || cantidad < 1) return;
 
         const nueva: Herramienta = {
-            id: nextId,
-            nombre,
-            cantidad: Number(cantidad),
+        id: nextId,
+        nombre,
+        cantidad: Number(cantidad),
         };
 
         setHerramientas((prev) => [...prev, nueva]);
@@ -30,6 +48,7 @@ function Herramientas_Recode() {
     const handleBorrarTodo = () => {
         setHerramientas([]);
         setNextId(1);
+        localStorage.removeItem("herramientas_recode");
     };
 
     return (
@@ -80,32 +99,32 @@ function Herramientas_Recode() {
 
             <div className="overflow-x-auto">
                 <table className="w-full border border-black rounded">
-                    <thead>
-                        <tr className="bg-gray-100 text-left">
-                        <th className="border border-black px-2 py-1 w-16">Id</th>
-                        <th className="border border-black px-2 py-1">Nombre</th>
-                        <th className="border border-black px-2 py-1 w-32">Cantidad</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {herramientas.map((h) => (
-                        <tr key={h.id}>
-                            <td className="border border-black px-2 py-1">{h.id}</td>
-                            <td className="border border-black px-2 py-1">{h.nombre}</td>
-                            <td className="border border-black px-2 py-1">{h.cantidad}</td>
-                        </tr>
-                        ))}
-                        {herramientas.length === 0 && (
-                        <tr>
-                            <td
-                            colSpan={3}
-                            className="text-center text-gray-500 py-2 border border-black"
-                            >
-                            No hay herramientas registradas.
-                            </td>
-                        </tr>
-                        )}
-                    </tbody>
+                <thead>
+                    <tr className="bg-gray-100 text-left">
+                    <th className="border border-black px-2 py-1 w-16">Id</th>
+                    <th className="border border-black px-2 py-1">Nombre</th>
+                    <th className="border border-black px-2 py-1 w-32">Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {herramientas.map((h) => (
+                    <tr key={h.id}>
+                        <td className="border border-black px-2 py-1">{h.id}</td>
+                        <td className="border border-black px-2 py-1">{h.nombre}</td>
+                        <td className="border border-black px-2 py-1">{h.cantidad}</td>
+                    </tr>
+                    ))}
+                    {herramientas.length === 0 && (
+                    <tr>
+                        <td
+                        colSpan={3}
+                        className="text-center text-gray-500 py-2 border border-black"
+                        >
+                        No hay herramientas registradas.
+                        </td>
+                    </tr>
+                    )}
+                </tbody>
                 </table>
             </div>
         </div>
