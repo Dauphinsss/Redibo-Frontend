@@ -27,8 +27,8 @@ export default function InputImagen() {
     descripcion: ""
   });
 
-  const [main, setMain] = useState<File | string | null>(finalizacion.imagenes[2] || null);
-  const [sec1, setSec1] = useState<File | string | null>(finalizacion.imagenes[1] || null);
+  const [main, setMain] = useState<File | string | null>(finalizacion.imagenes[1] || null);
+  const [sec1, setSec1] = useState<File | string | null>(finalizacion.imagenes[2] || null);
   const [sec2, setSec2] = useState<File | string | null>(finalizacion.imagenes[3] || null);
   const [mantenimientos, setMantenimientos] = useState(finalizacion.num_mantenimientos.toString());
   const [precio, setPrecio] = useState(finalizacion.precio_por_dia.toString());

@@ -16,7 +16,7 @@ interface CarCardProps {
 }
 
 export function CarCard({ car, images, onDelete }: CarCardProps) {
-  const image = images[1]; // Primera imagen como portada tiene que estar (1,2 o 3)  no va desde 0
+  const image = images[0]; // Primera imagen como portada tiene que estar (1,2 o 3)  no va desde 0
   const aspectRatio = image && image.width && image.height
     ? image.width / image.height
     : 1.5; // Valor por defecto

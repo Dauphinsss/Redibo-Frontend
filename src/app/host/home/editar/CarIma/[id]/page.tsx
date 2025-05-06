@@ -61,15 +61,15 @@ export default function EditarCarroImagen() {
       const imagesResp = await getImagesByCarId(carId);
       const images = imagesResp.data || [];
 
-      setMain(images[1]?.data || null);
-      setSec1(images[2]?.data || null);
-      setSec2(images[0]?.data || null);
-      refImagesId.current = [images[1]?.id, images[2]?.id, images[0]?.id];
+      setMain(images[0]?.data || null);
+      setSec1(images[1]?.data || null);
+      setSec2(images[2]?.data || null);
+      refImagesId.current = [images[0]?.id, images[1]?.id, images[2]?.id];
 
       refOriginal.current = {
-        main: images[1]?.data || null,
-        sec1: images[2]?.data || null,
-        sec2: images[0]?.data || null,
+        main: images[0]?.data || null,
+        sec1: images[1]?.data || null,
+        sec2: images[2]?.data || null,
       };
 
       setMantenimientos(carData?.num_mantenimientos?.toString() || "");
