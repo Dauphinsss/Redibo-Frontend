@@ -38,17 +38,27 @@ export default function Home() {
   ), []);
 
   return (
-    <div className="relative">
-
+    <div className="relative overflow-x-hidden">
       {/* Sidebar fijo a la izquierda */}
       <SidebarFiltros mostrar={mostrarSidebar} onCerrar={() => setMostrarSidebar(false)} />
 
-      <div className="transition-transform duration-300">
-        <div className="sticky top-0 z-50 bg-white shadow">
+      {/* Contenido principal que se desplazará */}
+      <div
+        className={`transition-transform duration-300 ${mostrarSidebar ? 'translate-x-64' : ''}`}
+      >
+        {/* Botón para abrir sidebar, ahora en la izquierda */}
+        <button
+          onClick={() => setMostrarSidebar((prev) => !prev)}
+          className="fixed top-24 left-4 z-50 bg-blue-600 text-white px-4 py-2 rounded shadow-lg hover:bg-blue-700 transition"
+        >
+          Filtros avanzados
+        </button>
+
+        <div className="sticky top-0 z-40 bg-white shadow">
           <Header />
         </div>
-        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
+        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Buscador */}
           <section className="mb-8 flex flex-col items-center text-center">
             <SearchBar
@@ -92,16 +102,6 @@ export default function Home() {
         </main>
       </div>
 
-      {/* Botón para abrir el sidebar */}
-      <div className="fixed top-24 left-4 z-50">
-        <button
-          onClick={() => setMostrarSidebar((prev) => !prev)}
-          className="bg-blue-600 text-white px-4 py-2 rounded shadow-lg hover:bg-blue-700 transition"
-        >
-          Filtros avanzados
-        </button>
-      </div>
-
       {/* Botón de mapa para móviles */}
       <div className="fixed bottom-0 right-6 z-50 lg:hidden">
         <button
@@ -130,7 +130,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
