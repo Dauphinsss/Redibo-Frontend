@@ -39,15 +39,16 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <DescriHost
               nombreHost={auto.nombreHost}
               calificacion={4.5}
-              numAuto={1}  
+              numAuto={1}
+              telefono={auto.telefonoHost}  
             />
-             <div className="mt-6"  >
-            <CalificaionRecode 
-             promedio={4.0} 
-             total={150.2} 
-             porcentajes={[80, 60, 40, 20, 10]}
-            />
-             </div >
+            <div className="mt-6"  >
+                <CalificaionRecode 
+                  promedio={4.0} 
+                  total={150.2} 
+                  porcentajes={[80, 60, 40, 20, 10]}
+                />
+            </div >
           </div>
           
           <div className="lg:w-1/3">

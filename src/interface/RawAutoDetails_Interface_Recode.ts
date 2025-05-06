@@ -22,6 +22,7 @@ export interface RawAutoDetails_Interface_Recode {
     };
     Usuario: {
         nombre: string;
+        telefono: string;
     };
     CombustibleCarro: {
         TipoCombustible: {

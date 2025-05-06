@@ -14,6 +14,7 @@ export interface AutoDetails_interface_Recode {
     ciudad: string;
     provincia: string;
     nombreHost: string;
+    telefonoHost: string;
     combustibles: string[];
     imagenes: { id: number; data: string }[];
     caracteristicasAdicionales: string[];

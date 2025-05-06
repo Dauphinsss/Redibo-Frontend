@@ -19,6 +19,7 @@ export const transformAutoDetails_Recode = (
     ciudad: item.Direccion?.Provincia?.Ciudad?.nombre || "",
     provincia: item.Direccion?.Provincia?.nombre || "",
     nombreHost: item.Usuario?.nombre || "",
+    telefonoHost: item.Usuario?.telefono || "",
     combustibles:
         item.CombustibleCarro?.map(
         (c) => c?.TipoCombustible?.tipoDeCombustible

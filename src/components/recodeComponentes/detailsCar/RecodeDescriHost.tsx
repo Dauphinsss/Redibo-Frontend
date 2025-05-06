@@ -3,13 +3,22 @@ interface DescriHostProps {
   nombreHost: string;
   calificacion: number;
   numAuto: number;
+  telefono: string;
 }
 
 export default function DescriHost({ 
   nombreHost, 
   calificacion, 
-  numAuto 
+  numAuto,
+  telefono 
 }: DescriHostProps) {
+  const mensaje = `Hola ${nombreHost}, estoy interesado en tu auto publicado en ReCode.`;
+
+  const handleWhatsApp = () => {
+    const link = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
+    window.open(link, "_blank");
+  };
+  
   return (
     <section className="w-full border border-gray-200 rounded-lg p-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -30,7 +39,10 @@ export default function DescriHost({
             </div>
           </div>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-gray-300 text-white rounded-lg hover:bg-gray-800 transition">
+        <button
+          onClick={handleWhatsApp}
+          className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+        >
           <FaWhatsapp /> Contáctalo
         </button>
       </div>
