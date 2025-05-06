@@ -7,6 +7,7 @@ export default function CondicionesUsoAutoHome() {
 
     return (
         <div className="p-4">
+            <DevueltasRecode></DevueltasRecode>
         </div>
     );
 }

@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from 'react';
 import RadioGroup_Recode from '../condicioneGenerales/RadioGroup_Recode';
-import { Filter } from 'lucide-react';
 
 function DevueltasRecode() {
     const [limpioInt, setLimpioInt] = useState("si");
@@ -29,12 +28,6 @@ function DevueltasRecode() {
                 </div>
 
                 <div className="px-10 py-8 grid gap-6">
-
-                    <div className="grid grid-cols-2 items-center">
-                    <span className="text-base font-semibold">Estado de combustible:</span>
-                    <Filter>Seleccionar estado</Filter>
-                    </div>
-                    
                     <div className="grid grid-cols-2 items-center">
                         <span className="text-base font-semibold">Interior limpio:</span>
                         <RadioGroup_Recode value={limpioInt} onChange={setLimpioInt} name="Interior" />
