@@ -836,27 +836,17 @@ export default function Form() {
             <div className="relative w-full text-center">
               <hr className="border-gray-300" />
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-3 text-gray-500 text-sm">
-                O CONTINÚA CON
+             
               </span>
             </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full flex items-center justify-center gap-2"
-              disabled
-            >
-              <img
-                src="https://www.svgrepo.com/show/475656/google-color.svg"
-                alt="Google"
-                className="w-5 h-5"
-              />
-              Iniciar sesión con Google
-            </Button>
+           
 
             <p className="text-sm text-gray-600">
               ¿Ya tienes una cuenta?{" "}
-              <a className="text-black-600 hover:underline">Iniciar sesión</a>
+              <a href="/login" className="text-primary hover:underline">
+              Iniciar sesion
+              </a>
             </p>
           </CardFooter>
         </Card>

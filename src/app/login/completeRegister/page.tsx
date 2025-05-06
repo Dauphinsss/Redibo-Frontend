@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import axios, { AxiosResponse } from "axios";
 import { toast } from "sonner";
 import { API_URL } from "@/utils/bakend";
+
 import {
   Card,
   CardContent,
@@ -14,6 +15,9 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import {
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -229,16 +233,16 @@ export default function CompleteRegisterForm() {
 
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
-            <div>
+            <div className="space-y-2">
               <Label>Nombre completo</Label>
               <Input value={nombre || ""} disabled />
             </div>
-            <div>
+            <div className="space-y-2">
               <Label>Correo</Label>
               <Input value={correo || ""} disabled />
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Label>Teléfono *</Label>
               <Input
                 value={telefono}
@@ -249,7 +253,7 @@ export default function CompleteRegisterForm() {
               {errores.telefono && <p className="text-sm text-red-500 mt-1">{errores.telefono}</p>}
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Label>Fecha de nacimiento *</Label>
               <Input
                 type="date"
@@ -260,26 +264,26 @@ export default function CompleteRegisterForm() {
               {errores.fechaNacimiento && <p className="text-sm text-red-500 mt-1">{errores.fechaNacimiento}</p>}
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Label>Género *</Label>
               <RadioGroup value={genero} onValueChange={handleGeneroChange} className="flex gap-4">
-  <div className="flex items-center gap-2">
-  <RadioGroupItem value="MASCULINO" id="masc" />
-    <Label htmlFor="masc">Masculino</Label>
-  </div>
-  <div className="flex items-center gap-2">
-  <RadioGroupItem value="FEMENINO" id="fem" />
-    <Label htmlFor="fem">Femenino</Label>
-  </div>
-  <div className="flex items-center gap-2">
-  <RadioGroupItem value="OTRO" id="otro" />
-    <Label htmlFor="otro">Otro</Label>
-  </div>
-</RadioGroup>
+            <div className="flex items-center gap-4">
+            <RadioGroupItem value="MASCULINO" id="masc" />
+              <Label htmlFor="masc">Masculino</Label>
+            </div>
+            <div className="flex items-center gap-4">
+            <RadioGroupItem value="FEMENINO" id="fem" />
+              <Label htmlFor="fem">Femenino</Label>
+            </div>
+            <div className="flex items-center gap-4">
+            <RadioGroupItem value="OTRO" id="otro" />
+              <Label htmlFor="otro">Otro</Label>
+            </div>
+          </RadioGroup>
               {errores.genero && <p className="text-sm text-red-500 mt-1">{errores.genero}</p>}
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Label>Ciudad *</Label>
               <select
                 value={ciudad}
@@ -296,7 +300,7 @@ export default function CompleteRegisterForm() {
               {ciudadTouched && errores.ciudad && <p className="text-sm text-red-500 mt-1">{errores.ciudad}</p>}
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Label>Rol *</Label>
               <RadioGroup value={rol || ""} onValueChange={handleRolChange} className="flex gap-4">
                 <div className="flex items-center gap-2">
@@ -315,20 +319,29 @@ export default function CompleteRegisterForm() {
               {errores.rol && <p className="text-sm text-red-500 mt-1">{errores.rol}</p>}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div>
+                <Link href="/terminos-y-condiciones ">
+                  <Button
+                    variant="link"
+                    className="font-normal -ml-2"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.open("/terminos-y-condiciones", "_blank");
+                    }}
+                  >
+                    Leer términos y condiciones{" "}
+                    <ChevronRight className="-ml-1" />
+                  </Button>
+                </Link>
+              </div>
+
+            <div className="flex items-center gap-4">
               <Checkbox id="terms" checked={acceptTerms} onCheckedChange={handleTermsChange} />
               <Label htmlFor="terms" className="text-sm">
-                He leído y acepto los
-                <button
-                  type="button"
-                  className="underline ml-1 text-blue-600 hover:text-blue-800"
-                  onClick={() => window.open("/terminos-y-condiciones", "_blank")}
-                >
-                  Leer términos y condiciones
-                </button>
+                He leído y acepto los terminos y condiciones
               </Label>
             </div>
-            {errores.terms && <p className="text-sm text-red-500 mt-1">{errores.terms}</p>}
+            {/*{errores.terms && <p className="text-sm text-red-500 mt-1">{errores.terms}</p>} */}
           </CardContent>
 
           <CardFooter>
