@@ -1,4 +1,4 @@
-export interface Auto {
+export interface AutoMap {
   id: number;
   marca: string;
   modelo: string;

@@ -7,7 +7,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 import MapPunto from "../mapPunto";
-import { Auto } from "@/interface/map";
+import { AutoMap } from "@/interface/map";
 import "@/styles/priceMarker.css"
 import { useState } from "react";
 import { estaDentroDelRadio } from "./filtroGPS";
@@ -16,15 +16,15 @@ import { estaDentroDelRadio } from "./filtroGPS";
 interface MapProps {
   posix: LatLngExpression | LatLngTuple,
   zoom?: number,
-  autos?: Auto[],
+  autos?: AutoMap[],
 }
 
 const defaults = {
   zoom: 12,
 }
 const Map = ({ zoom = defaults.zoom, posix, autos = [] }: MapProps) => {
-  const [punto, setpunto] = useState({altitud:0,longitud:0})
-  const actualizarPunto=(longitud:number,altitud:number)=>{
+  const [punto, setpunto] = useState({ altitud: 0, longitud: 0 })
+  const actualizarPunto = (longitud: number, altitud: number) => {
     setpunto({
       longitud,
       altitud
@@ -51,7 +51,7 @@ const Map = ({ zoom = defaults.zoom, posix, autos = [] }: MapProps) => {
             iconSize: [50, 30],
             iconAnchor: [25, 30],
           });
-  
+
           return (
             <Marker key={auto.id} position={[auto.latitud, auto.longitud]} icon={customIcon}>
               <Popup>
@@ -69,7 +69,7 @@ const Map = ({ zoom = defaults.zoom, posix, autos = [] }: MapProps) => {
           );
         }
       })}
-      <MapPunto actualizarPunto={actualizarPunto}/>
+      <MapPunto actualizarPunto={actualizarPunto} />
     </MapContainer>
   );
 }
