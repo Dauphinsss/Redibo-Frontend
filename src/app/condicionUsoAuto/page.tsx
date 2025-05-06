@@ -1,12 +1,13 @@
-import React from 'react';
+import CondicionesUsoAutoHome from '@/app/condicionUsoAuto/CondicionesUsoAutoHome';
+import { notFound } from 'next/navigation';
 
-const CondicionUsoAutoPage: React.FC = () => {
-    return (
-        <div>
-            <h1>Condiciones de Uso del Auto</h1>
-            <p>Bienvenido a la página de condiciones de uso del auto.</p>
-        </div>
-    );
-};
 
-export default CondicionUsoAutoPage;
+
+export default function Page() {
+    const mostrarpagina = true;
+    if(!mostrarpagina) {
+    return notFound();
+    }
+
+    return <CondicionesUsoAutoHome />;
+}
