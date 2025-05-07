@@ -130,7 +130,8 @@ export default function Form() {
       !name ||
       name.length < 3 ||
       name.length > 50 ||
-      !/^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$/.test(name)
+      !/^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$/.test(name) ||
+      name.trim().split(/\s+/).length < 2
     ) {
       toast.error("Por favor, ingrese un nombre válido.");
       return;
@@ -408,7 +409,7 @@ export default function Form() {
                     id="name"
                     value={name}
                     maxLength={50}
-                    onChange={(e) => setName(e.target.value.trimStart())}
+                    onChange={(e) => setName(e.target.value)}
                     onBlur={() => setNameTouched(true)}
                     placeholder="Ingrese su nombre"
                     className={
@@ -438,6 +439,11 @@ export default function Form() {
                             No debe contener caracteres especiales
                           </p>
                         )}
+                        {!name.trim().includes(" ") && name.trim().length >= 3 && (
+                                  <p className="text-sm text-red-500">
+                                    Debe ingresar al menos nombre y apellido
+                                  </p>
+                                )}
                     </>
                   )}
                 </div>
