@@ -41,7 +41,16 @@ export function PersonalInfo() {
           }
         })
 
-        setUserData(response.data)
+        // Formatear la fecha antes de guardarla en el estado
+        const formattedData = {
+          ...response.data,
+          fecha_nacimiento: response.data.fecha_nacimiento ? 
+            new Date(response.data.fecha_nacimiento).toISOString().split('T')[0] : 
+            ''
+        }
+
+        setUserData(formattedData)
+        console.log("Datos del usuario:", formattedData) // Para debug
       } catch (error) {
         console.error("Error al obtener el perfil:", error)
       } finally {
