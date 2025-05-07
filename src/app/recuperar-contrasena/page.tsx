@@ -144,12 +144,15 @@ export function LoginForm()  {
         codigo: verificationCode.join(""),
         nuevaContrasena: newPassword
       });
-
+      console.log("Respuesta del backend:", response.data);
+      localStorage.setItem("auth_token", response.data.token); // Guardar el nuevo token
+      localStorage.setItem("nombre", response.data.nombre); // Guardar el nombre del usuario
+      localStorage.setItem("foto", response.data.foto || "default.jpg"); // Guardar la foto del usuario
       toast.success("Contraseña actualizada correctamente");
       
       // Redireccionar al login después de un breve retraso
       setTimeout(() => {
-        router.push("/login");
+        router.push("/");
       }, 1500);
     } catch (error: any) {
       console.error("Error al cambiar contraseña:", error);
