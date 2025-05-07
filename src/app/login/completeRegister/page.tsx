@@ -89,6 +89,8 @@ export default function CompleteRegisterForm() {
   useEffect(() => {
     let nuevosErrores: { [key: string]: string } = {};
     if (telefono && telefono.length !== 8) nuevosErrores.telefono = "El teléfono debe tener exactamente 8 números";
+      else if (telefono && !/^[467]/.test(telefono))
+        nuevosErrores.telefono = "El teléfono debe comenzar con 4, 6 o 7";
     if (fechaNacimiento && isUnderage(fechaNacimiento)) nuevosErrores.fechaNacimiento = "Debes ser mayor de 18 años.";
     if (ciudadTouched && ciudad === 0) nuevosErrores.ciudad = "Debes seleccionar una ciudad";
     setErrores((prev) => ({ ...prev, ...nuevosErrores }));
@@ -100,10 +102,14 @@ export default function CompleteRegisterForm() {
     setTelefono(value);
     setErrores((prev) => {
       const newErr = { ...prev };
-      if (value.length === 8) delete newErr.telefono;
-      else newErr.telefono = value ? "El teléfono debe tener exactamente 8 números" : "El teléfono es obligatorio.";
-      return newErr;
-    });
+      if (value.length === 8 && /^[467]/.test(value)) delete newErr.telefono;
+        else newErr.telefono = value
+        ? value.length !== 8
+        ? "El teléfono debe tener exactamente 8 números"
+          : "El teléfono debe comenzar con 4, 6 o 7"
+          : "El teléfono es obligatorio.";
+    return newErr;
+  });
   };
   const handleFechaNacimientoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
