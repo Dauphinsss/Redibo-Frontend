@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react"; // Importar iconos
 
-export function LoginForm()  {
+export function LoginForm() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<"email" | "code" | "new-password">("email");
@@ -22,7 +22,37 @@ export function LoginForm()  {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [resendDisabled, setResendDisabled] = useState(true);
+  const [resendTimer, setResendTimer] = useState(30);
   const router = useRouter();
+
+  // Efecto para manejar el temporizador
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setResendDisabled(false);
+    }
+  }, [resendTimer]);
+
+  // Maneja el reenvío del código
+  const handleResendCode = async () => {
+    setResendDisabled(true);
+    setResendTimer(90); // Temporizador de 90 segundos después del reenvío
+
+    try {
+      await axios.post(`${API_URL}/api/auth/request-recovery-code`, {
+        correo: email,
+      });
+      toast.success("Código reenviado. Revisa tu correo electrónico.");
+    } catch (error: any) {
+      console.error("Error al reenviar código:", error);
+      const errorMessage =
+        error.response?.data?.error || "Error al reenviar el código de verificación";
+      toast.error(errorMessage);
+    }
+  };
 
   // Función para validar la fortaleza de la contraseña
   const isPasswordStrong = (password: string) => {
@@ -230,6 +260,19 @@ export function LoginForm()  {
 
       <Button type="submit" className="w-full h-10" disabled={isLoading}>
         {isLoading ? "Verificando..." : "Verificar código"}
+      </Button>
+
+      <Button
+        type="button"
+        className={`w-full h-10 ${
+          resendDisabled ? "bg-gray-300 text-gray-500 cursor-not-allowed" : ""
+        }`}
+        disabled={resendDisabled}
+        onClick={handleResendCode}
+      >
+        {resendDisabled
+          ? `Reintentar envío de código en: ${resendTimer}s`
+          : "Reenviar código"}
       </Button>
 
       <div className="text-center">
