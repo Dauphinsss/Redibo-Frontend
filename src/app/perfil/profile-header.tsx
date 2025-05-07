@@ -1,7 +1,8 @@
 "use client"
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { MoreHorizontal, User, Car, Home, SteeringWheel } from "lucide-react"
+import { toast } from "sonner";
+import { MoreHorizontal, User, Car, Home } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import axios from "axios"
 import { API_URL } from "@/utils/bakend"
@@ -26,9 +27,9 @@ const RoleIcon = ({ role }: { role: string }) => {
     case 'HOST':
       return <Home className="h-5 w-5 text-blue-600" aria-label="Propietario" />
     case 'RENTER':
-      return <Car className="h-5 w-5 text-green-600" aria-label="Arrendatario" />
+      return <User className="h-5 w-5 text-green-600" aria-label="Arrendatario" />
     case 'DRIVER':
-      return <SteeringWheel className="h-5 w-5 text-purple-600" aria-label="Conductor" />
+      return <Car className="h-5 w-5 text-purple-600" aria-label="Conductor" />
     default:
       return null
   }
@@ -54,6 +55,7 @@ export function ProfileHeader() {
           }
         })
 
+        console.log("Roles del usuario:", response.data.roles)
         setUserData(response.data)
       } catch (error) {
         console.error("Error al obtener el perfil:", error)
@@ -64,6 +66,35 @@ export function ProfileHeader() {
 
     fetchUserProfile()
   }, [])
+
+  const handleAddRole = async (nuevoRol: string) => {
+    try {
+      const token = localStorage.getItem("auth_token")
+      if (!token) {
+        console.error("Token no encontrado.")
+        return
+      }
+
+      const response = await axios.post(`${API_URL}/api/add-rol`,
+        { rol: nuevoRol },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+
+      console.log("Rol agregado:", response.data.roles)
+      toast.success("Rol agregado exitosamente.")
+      // Refrescar los roles localmente
+      setUserData((prev) =>
+        prev ? { ...prev, roles: [...prev.roles, nuevoRol] } : prev
+      )
+    } catch (error: any) {
+      console.error("Error al agregar rol:", error.response?.data || error.message)
+      alert(error.response?.data?.error || "Error al agregar el rol.")
+    }
+  }
 
   if (loading) {
     return <div>Cargando perfil...</div>
@@ -87,7 +118,24 @@ export function ProfileHeader() {
             <User size={64} className="text-gray-400" />
           )}
         </div>
-        <div className="absolute -bottom-2 -right-2">
+      </div>
+  
+      <div className="text-center md:text-left">
+        <h1 className="text-2xl font-bold">{userData?.nombre || "Usuario"}</h1>
+  
+        {userData?.roles && userData.roles.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 mt-2">
+            {userData.roles.map((rol, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full"
+              >
+                <RoleIcon role={rol} />
+                <span className="text-sm font-medium">{rol}</span>
+              </div>
+            ))}
+  
+          {userData?.roles.length < 3 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="bg-black text-white rounded-full p-2 hover:bg-gray-800 transition-colors">
@@ -95,29 +143,23 @@ export function ProfileHeader() {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {userData?.roles && userData.roles.map((rol, index) => (
-                <DropdownMenuItem key={index} className="flex items-center gap-2">
-                  <RoleIcon role={rol} />
-                  {rol}
-                </DropdownMenuItem>
-              ))}
+              {["HOST", "RENTER", "DRIVER"]
+                .filter((rol) => !userData.roles.includes(rol))
+                .map((rol) => (
+                  <DropdownMenuItem
+                    key={rol}
+                    onClick={() => handleAddRole(rol)}
+                  >
+                    Conviértete en {rol}
+                  </DropdownMenuItem>
+                ))}
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-      </div>
+        )}
 
-      <div className="text-center md:text-left">
-        <h1 className="text-2xl font-bold">{userData?.nombre || "Usuario"}</h1>
-        {userData?.roles && userData.roles.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2 mt-2">
-            {userData.roles.map((rol, index) => (
-              <div key={index} className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
-                <RoleIcon role={rol} />
-                <span className="text-sm font-medium">{rol}</span>
-              </div>
-            ))}
           </div>
         )}
+  
         {userData?.ciudad && (
           <p className="text-sm text-gray-600 mt-2">
             Ciudad: {userData.ciudad.nombre}
@@ -126,4 +168,5 @@ export function ProfileHeader() {
       </div>
     </div>
   )
+  
 }
