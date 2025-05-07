@@ -5,7 +5,7 @@ import InfoDestacable from '@/components/recodeComponentes/detailsCar/RecodeInfo
 import DescriHost from '@/components/recodeComponentes/detailsCar/RecodeDescriHost'
 import DescripcionAuto from '@/components/recodeComponentes/detailsCar/RecodeDescripcionAuto'
 import Reserva from '@/components/recodeComponentes/detailsCar/RecodeReserva'
-import { getCarById } from '@/service/services_Recode'
+import { getCarById , getCarRatings } from '@/service/services_Recode'
 import NotFound from '@/app/not-found'
 import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode'
 import CalificaionRecode from '@/components/recodeComponentes/CalificacionAuto/calificacionRecode'
@@ -13,13 +13,19 @@ import CalificaionRecode from '@/components/recodeComponentes/CalificacionAuto/c
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const autoData = await getCarById(id);
-
+  
   if (!autoData) NotFound();
 
   const auto = transformAutoDetails_Recode(autoData);
-  const randomAverage = Number((Math.random() * (5 - 3) + 3).toFixed(1));
-  const randomTotal = Math.floor(Math.random() * 200) + 50;
-  const randomRatings = Array.from({ length: 5 }, () => Math.floor(Math.random() * 100));
+  const calificaciones = await getCarRatings(id);
+const promedioCalificacion = calificaciones.length
+  ? Number((calificaciones.reduce((sum, val) => sum + val, 0) / calificaciones.length).toFixed(1))
+  : 0;
+  const totalCalificaciones = calificaciones.length;
+const porcentajeCalificaciones = Array.from({ length: 5 }, (_, i) => {
+  const count = calificaciones.filter(c => c === i + 1).length;
+  return totalCalificaciones ? (count / totalCalificaciones) * 100 : 0;
+});
 
 
   return (
@@ -48,9 +54,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             />
              <div className="mt-6"  >
             <CalificaionRecode 
-             promedio={randomAverage} 
-             total={randomTotal} 
-             porcentajes={randomRatings}
+             promedio={promedioCalificacion} 
+             total={totalCalificaciones} 
+             porcentajes={porcentajeCalificaciones}
             />
              </div >
           </div>
