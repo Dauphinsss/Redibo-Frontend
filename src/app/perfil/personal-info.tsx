@@ -1,135 +1,164 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Edit, Save } from "lucide-react"
+import axios from "axios"
+import { API_URL } from "@/utils/bakend"
 
-interface FormData {
-  fullName: string
-  email: string
-  phone: string
-}
-
-interface FormErrors {
-  fullName?: string
-  email?: string
-  phone?: string
+interface UserProfile {
+  id: number;
+  nombre: string;
+  correo: string;
+  telefono: string;
+  fecha_nacimiento: string;
+  genero: string;
+  ciudad: {
+    id: number;
+    nombre: string;
+  };
+  roles: string[];
 }
 
 export function PersonalInfo() {
+  const [userData, setUserData] = useState<UserProfile | null>(null)
+  const [loading, setLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
-  const [formData, setFormData] = useState<FormData>({
-    fullName: "Juan Pérez",
-    email: "juan.perez@ejemplo.com",
-    phone: "+34 612 345 678",
-  })
-  const [errors, setErrors] = useState<FormErrors>({})
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {}
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const authToken = localStorage.getItem("auth_token")
+        if (!authToken) {
+          console.error("No se encontró el token de autenticación")
+          return
+        }
 
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "El nombre completo es obligatorio"
+        const response = await axios.get<UserProfile>(`${API_URL}/api/perfil`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          }
+        })
+
+        setUserData(response.data)
+      } catch (error) {
+        console.error("Error al obtener el perfil:", error)
+      } finally {
+        setLoading(false)
+      }
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = "El correo electrónico es obligatorio"
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      newErrors.email = "El formato del correo electrónico no es válido"
-    }
+    fetchUserProfile()
+  }, [])
 
-    if (!formData.phone.trim()) {
-      newErrors.phone = "El número de teléfono es obligatorio"
-    } else if (!/^\+?[0-9\s]{8,15}$/.test(formData.phone)) {
-      newErrors.phone = "El formato del número de teléfono no es válido"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (validateForm()) {
-      setIsEditing(false)
-      // Aquí iría la lógica para guardar los cambios en el servidor
-    }
+  if (loading) {
+    return <div>Cargando información personal...</div>
   }
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Información Personal</h2>
-      <p className="text-gray-500 mb-6">Gestiona tu información personal y configuración de cuenta</p>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-semibold mb-4">Información Personal</h2>
+        <p className="text-gray-500 mb-6">
+          Gestiona tu información personal y configuración de cuenta
+        </p>
 
-      <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
-        <div className="space-y-4">
-          <div className="grid gap-2">
-            <Label htmlFor="fullName">Nombre Completo</Label>
+        <div className="grid gap-6">
+          <div>
+            <Label htmlFor="nombre">Nombre Completo</Label>
             <Input
-              id="fullName"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              disabled={!isEditing}
-              className={errors.fullName ? "border-red-500" : ""}
+              id="nombre"
+              value={userData?.nombre || ""}
+              readOnly={!isEditing}
+              className="mt-1"
             />
-            {errors.fullName && <p className="text-sm text-red-500">{errors.fullName}</p>}
           </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="email">Correo Electrónico</Label>
+          <div>
+            <Label htmlFor="correo">Correo Electrónico</Label>
             <Input
-              id="email"
-              name="email"
+              id="correo"
               type="email"
-              value={formData.email}
-              onChange={handleChange}
-              disabled={!isEditing}
-              className={errors.email ? "border-red-500" : ""}
+              value={userData?.correo || ""}
+              readOnly={!isEditing}
+              className="mt-1"
             />
-            {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
           </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="phone">Número de Teléfono</Label>
+          <div>
+            <Label htmlFor="telefono">Número de Teléfono</Label>
             <Input
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              disabled={!isEditing}
-              className={errors.phone ? "border-red-500" : ""}
+              id="telefono"
+              value={userData?.telefono || ""}
+              readOnly={!isEditing}
+              className="mt-1"
             />
-            {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
+          </div>
+
+          <div>
+            <Label htmlFor="fecha_nacimiento">Fecha de Nacimiento</Label>
+            <Input
+              id="fecha_nacimiento"
+              type="date"
+              value={userData?.fecha_nacimiento || ""}
+              readOnly={!isEditing}
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="genero">Género</Label>
+            <Input
+              id="genero"
+              value={userData?.genero || ""}
+              readOnly={!isEditing}
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="ciudad">Ciudad</Label>
+            <Input
+              id="ciudad"
+              value={userData?.ciudad?.nombre || ""}
+              readOnly={!isEditing}
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="roles">Roles</Label>
+            <Input
+              id="roles"
+              value={userData?.roles?.join(", ") || ""}
+              readOnly
+              className="mt-1"
+            />
           </div>
         </div>
 
-        <div className="flex justify-end">
-          {isEditing ? (
-            <Button type="submit" className="bg-black hover:bg-gray-800 text-white flex items-center gap-2">
-              <Save size={16} />
-              Guardar Cambios
-            </Button>
-          ) : (
+        <div className="mt-6 flex justify-end">
+          <Button
+            variant="outline"
+            onClick={() => setIsEditing(!isEditing)}
+            className="w-full md:w-auto"
+          >
+            {isEditing ? "Cancelar" : "Editar Información"}
+          </Button>
+          {isEditing && (
             <Button
-              type="button"
-              disabled
-              className="bg-gray-300 text-gray-500 cursor-not-allowed flex items-center gap-2"
+              className="ml-4 w-full md:w-auto"
+              onClick={() => {
+                // Aquí iría la lógica para guardar los cambios
+                setIsEditing(false)
+              }}
             >
-              <Edit size={16} />
-              Editar Información
+              Guardar Cambios
             </Button>
           )}
         </div>
-      </form>
+      </div>
     </div>
   )
 }
