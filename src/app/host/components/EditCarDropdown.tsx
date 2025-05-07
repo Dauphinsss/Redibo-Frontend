@@ -46,7 +46,7 @@ export function EditCarDropdown({ carId }: EditCarDropdownProps) {
         <DropdownMenuItem
           onClick={() => router.push(`/host/home/editar/CarIma/${carId}`)}
         >
-          Imágenes del coche
+          Imágenes del coche y precio
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
