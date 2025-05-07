@@ -13,15 +13,16 @@ import { ProfileHeader } from "./profile-header"
 import { PersonalInfo } from "./personal-info"
 import { PaymentInfo } from "./payment-info"
 import { DriverInfo } from "./driver-info"
-import { CreditCard, User, Star, StarHalf, Car, CarFront } from "lucide-react"
+import { RatingsInfo } from "./ratings-info"
+import { CreditCard, User, Star, Car } from "lucide-react"
 import { SteeringWheel } from "./steering-wheel-icon"
 import Header from "@/components/ui/Header"
 import { Footer } from "@/components/ui/footer"
-import { useRouter } from "next/navigation"
+
+type SectionType = "personal" | "payments" | "driver" | "ratings" | "vehicles";
 
 export default function ProfilePage() {
-  const [activeSection, setActiveSection] = useState<"personal" | "payments" | "driver">("payments")
-  const router = useRouter()
+  const [activeSection, setActiveSection] = useState<SectionType>("personal")
 
   const renderContent = () => {
     switch (activeSection) {
@@ -31,6 +32,10 @@ export default function ProfilePage() {
         return <PaymentInfo />
       case "driver":
         return <DriverInfo />
+      case "ratings":
+        return <RatingsInfo />
+      case "vehicles":
+        return <div>Sección de vehículos en desarrollo</div>
       default:
         return <PersonalInfo />
     }
@@ -89,6 +94,8 @@ export default function ProfilePage() {
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton
+                          onClick={() => setActiveSection("ratings")}
+                          isActive={activeSection === "ratings"}
                           className="justify-start border-2 border-gray-200 hover:border-black shadow-sm rounded-lg transition-all duration-200 hover:shadow-md px-2 py-1 text-sm"
                         >
                           <div className="p-2 mr-3">
@@ -99,6 +106,8 @@ export default function ProfilePage() {
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton
+                          onClick={() => setActiveSection("vehicles")}
+                          isActive={activeSection === "vehicles"}
                           className="justify-start border-2 border-gray-200 hover:border-black shadow-sm rounded-lg transition-all duration-200 hover:shadow-md px-2 py-1 text-sm"
                         >
                           <div className="p-2 mr-3">
