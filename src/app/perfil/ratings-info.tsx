@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Star } from "lucide-react"
 import axios from "axios"
 import { API_URL } from "@/utils/bakend"
+import { useRouter } from "next/navigation"
 
 interface UserProfile {
   roles: string[];
@@ -13,6 +14,7 @@ interface UserProfile {
 export function RatingsInfo() {
   const [userData, setUserData] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -40,65 +42,55 @@ export function RatingsInfo() {
     fetchUserProfile()
   }, [])
 
+  const roles = userData?.roles || []
+
+  const showCalificarPropietario = roles.includes("RENTER")
+  const showCalificarArrendatario = roles.includes("HOST") || roles.includes("DRIVER")
+  const showCalificarVehiculo = roles.includes("RENTER") || roles.includes("DRIVER")
+
   if (loading) {
     return <div>Cargando calificaciones...</div>
   }
-
-  const showRenterButtons = userData?.roles?.includes("RENTER")
-  const showHostButtons = userData?.roles?.includes("HOST")
-
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-semibold mb-4">Calificaciones</h2>
-        <p className="text-gray-500 mb-6">
-          Califica tu experiencia con otros usuarios y vehículos
-        </p>
-
-        <div className="grid gap-4">
-          {showRenterButtons && (
-            <>
-              <Button
-                variant="outline"
-                className="flex items-center gap-2 w-full md:w-auto"
-                onClick={() => {
-                  // Implementar lógica de calificación
-                  console.log("Calificar propietario")
-                }}
-              >
-                <Star className="h-4 w-4" />
-                Calificar Propietario
-              </Button>
-
-              <Button
-                variant="outline"
-                className="flex items-center gap-2 w-full md:w-auto"
-                onClick={() => {
-                  // Implementar lógica de calificación
-                  console.log("Calificar vehículo")
-                }}
-              >
-                <Star className="h-4 w-4" />
-                Calificar Vehículo
-              </Button>
-            </>
-          )}
-
-          {showHostButtons && (
-            <Button
-              variant="outline"
-              className="flex items-center gap-2 w-full md:w-auto"
-              onClick={() => {
-                // Implementar lógica de calificación
-                console.log("Calificar arrendatario")
-              }}
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Calificaciones</h2>
+  
+      <div className="flex flex-col items-center space-y-6">
+        {/* Fila superior: Propietario y Arrendatario */}
+        <div className="flex justify-center gap-10">
+          {showCalificarPropietario && (
+            <div
+              className="w-64 h-40 bg-blue-600 text-white rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
+              onClick={() => router.push("/calificaciones/calificacionesAlHost")}
             >
-              <Star className="h-4 w-4" />
-              Calificar Arrendatario
-            </Button>
+              <Star className="mx-auto mb-3 h-10 w-10" />
+              <p className="text-lg font-semibold">Calificar Propietario</p>
+            </div>
+          )}
+  
+          {showCalificarArrendatario && (
+            <div
+              className="w-64 h-40 bg-orange-600 text-white rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
+              onClick={() => router.push("/calificaciones/calificacionesAlRenter")}
+            >
+              <Star className="mx-auto mb-3 h-10 w-10" />
+              <p className="text-lg font-semibold">Calificar Arrendatario</p>
+            </div>
           )}
         </div>
+  
+        {/* Fila inferior: Vehículo */}
+        {showCalificarVehiculo && (
+          <div
+            className="w-64 h-40 bg-red-600 text-white rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
+            onClick={() => router.push("/calificaciones/calificacionesAlVehiculo")}
+          >
+            <Star className="mx-auto mb-3 h-10 w-10" />
+            <p className="text-lg font-semibold">Calificar Vehículo</p>
+          </div>
+        )}
       </div>
     </div>
   )
+  
 }
