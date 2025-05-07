@@ -171,11 +171,7 @@ export function ProfileHeader() {
           </div>
         )}
   
-        {userData?.ciudad && (
-          <p className="text-sm text-gray-600 mt-2">
-            Ciudad: {userData.ciudad.nombre}
-          </p>
-        )}
+        
       </div>
   
       {/* 🔽 MODAL DE CONFIRMACIÓN 🔽 */}

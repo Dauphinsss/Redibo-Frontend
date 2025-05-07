@@ -136,15 +136,7 @@ export function PersonalInfo() {
             />
           </div>
 
-          <div>
-            <Label htmlFor="roles">Roles</Label>
-            <Input
-              id="roles"
-              value={userData?.roles?.join(", ") || ""}
-              readOnly
-              className="mt-1"
-            />
-          </div>
+          
         </div>
 
         <div className="mt-6 flex justify-end">
