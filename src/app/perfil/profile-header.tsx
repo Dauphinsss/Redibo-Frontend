@@ -22,6 +22,8 @@ interface UserProfile {
   roles: string[];
 }
 
+
+
 const RoleIcon = ({ role }: { role: string }) => {
   switch (role) {
     case 'HOST':
@@ -39,6 +41,8 @@ export function ProfileHeader() {
   const [userData, setUserData] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [imageError, setImageError] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [rolSeleccionado, setRolSeleccionado] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -100,6 +104,11 @@ export function ProfileHeader() {
     return <div>Cargando perfil...</div>
   }
 
+  
+
+  
+  
+
   return (
     <div className="flex flex-col md:flex-row items-center gap-6">
       <div className="relative">
@@ -135,28 +144,30 @@ export function ProfileHeader() {
               </div>
             ))}
   
-          {userData?.roles.length < 3 && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="bg-black text-white rounded-full p-2 hover:bg-gray-800 transition-colors">
-                <MoreHorizontal size={20} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {["HOST", "RENTER", "DRIVER"]
-                .filter((rol) => !userData.roles.includes(rol))
-                .map((rol) => (
-                  <DropdownMenuItem
-                    key={rol}
-                    onClick={() => handleAddRole(rol)}
-                  >
-                    Conviértete en {rol}
-                  </DropdownMenuItem>
-                ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-
+            {userData?.roles.length < 3 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="bg-black text-white rounded-full p-2 hover:bg-gray-800 transition-colors">
+                    <MoreHorizontal size={20} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {["HOST", "RENTER", "DRIVER"]
+                    .filter((rol) => !userData.roles.includes(rol))
+                    .map((rol) => (
+                      <DropdownMenuItem
+                        key={rol}
+                        onClick={() => {
+                          setRolSeleccionado(rol)
+                          setModalOpen(true)
+                        }}
+                      >
+                        Conviértete en {rol}
+                      </DropdownMenuItem>
+                    ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         )}
   
@@ -166,7 +177,46 @@ export function ProfileHeader() {
           </p>
         )}
       </div>
+  
+      {/* 🔽 MODAL DE CONFIRMACIÓN 🔽 */}
+      {modalOpen && rolSeleccionado && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md pointer-events-auto">
+          
+            <h2 className="text-xl font-semibold mb-2">
+              ¿Estás seguro que deseas registrarte como {rolSeleccionado}?
+            </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Esta acción añadirá el rol a tu perfil.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                onClick={() => {
+                  setModalOpen(false)
+                  setRolSeleccionado(null)
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                className="px-4 py-2 rounded-md bg-black text-white hover:bg-gray-800"
+                onClick={() => {
+                  handleAddRole(rolSeleccionado)
+                  setModalOpen(false)
+                  setRolSeleccionado(null)
+                }}
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* 🔼 FIN MODAL 🔼 */}
+  
     </div>
   )
+  
   
 }
