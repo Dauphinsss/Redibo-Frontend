@@ -106,11 +106,13 @@ export default function InputImagen() {
   return (
     <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
       <Link href="/host/home/add/caradicional" passHref>
-        <Button variant="secondary" className="self-start mb-4">
-          <ChevronLeft className="h-3 w-3 mr-1" /> Volver
+        <Button
+          variant="secondary"
+          className="self-start mb-2 text-2xl px-2 py-1 transition-colors duration-200 hover:bg-zinc-200 hover:text-zinc-900"
+        >
+          <ChevronLeft className="h-9 w-9 mr-2" /> Volver
         </Button>
       </Link>
-
       <h1 className="text-4xl font-bold mb-6">Cargar Imágenes de tu vehículo:</h1>
       <p className="font-medium mb-4">
         Debe seleccionar exactamente tres imágenes: <span className="text-red-600">*</span>

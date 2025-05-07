@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -63,8 +62,8 @@ export default function Header({
   };
 
   return (
-    <header className="border-b w-full"> {/* Añadido w-full para asegurar ancho completo */}
-      <div className=" flex h-16 items-center justify-between px-4 md:px-6">
+    <header className="border-b w-full fixed top-0 left-0 bg-white z-50">
+      <div className="flex h-16 items-center justify-between px-4 md:px-6">
         {/* --- Logo (Siempre Activo) --- */}
         <div className="flex items-center gap-2">
           <Link

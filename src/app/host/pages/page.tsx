@@ -49,7 +49,7 @@ export default function ViewCarsPage() {
   };
 
   return (
-    <div className="p-6 flex flex-col items-center min-h-screen bg-gray-100">
+    <div className="p-6 flex flex-col items-center min-h-screen bg-gray-100 pt-24">
       <Header forceLoggedInView={true} disableInteractions={true} />
 
       {imagesLoading && (
