@@ -8,25 +8,24 @@ interface Props {
   onCancelar: () => void;
   pickupDate?: Date;
   returnDate?: Date;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  user: any;
+  //user: any;
   id: string;
-  modelo: string;
-  marca: string;
+  modelo:string;
+  marca:string;
+  precio:number;
 }
-
+console.log("estamos en ConfirmationHost")
 const ConfirmacionReservaOpciones: React.FC<Props> = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onReservarSinPagar,
   onPagarCompleto,
   onCancelar,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  user,
+  //user,
   pickupDate,
   returnDate,
   id,
   marca,
-  modelo
+  modelo,
+  precio
 }) => {
   return (
     <div className="fixed inset-0 bg-[rgba(0,0,0,0.3)] flex items-center justify-center z-50">
@@ -35,13 +34,14 @@ const ConfirmacionReservaOpciones: React.FC<Props> = ({
         <p>El anfitrión ha aceptado tu solicitud de reserva. Elige cómo deseas continuar:</p>
 
         <div className="mt-6 flex flex-col gap-4">
-          <ReservationConfirmedMessage
+        <ReservationConfirmedMessage
             //user={user}
             pickupDate={pickupDate}
             returnDate={returnDate}
             id={id}
             marca={marca}
             modelo={modelo}
+            precio = {precio}
           />
           <button
             onClick={onPagarCompleto}

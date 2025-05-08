@@ -24,12 +24,6 @@ interface ReservationDialogProps {
   handleConfirm: () => void;
   confirmed: boolean;
   handleCancelReservation: () => void;
-  vehicle: {
-    id: number;
-    marca: string;
-    modelo: string;
-    precio: string;
-  };
   pickupDate?: Date;
   returnDate?: Date;
   timeLeft: number;
@@ -37,6 +31,7 @@ interface ReservationDialogProps {
   id: string;
   marca: string;
   modelo: string;
+  precio: number;
 }
 
 export default function ReservationDialog({
@@ -47,7 +42,6 @@ export default function ReservationDialog({
   handleConfirm,
   confirmed,
   handleCancelReservation,
-  vehicle,
   timeLeft,
   formatTime,
   pickupDate,
@@ -55,13 +49,14 @@ export default function ReservationDialog({
   id,
   marca,
   modelo,
+  precio,
 }: ReservationDialogProps) {
   const [reservaId, setReservaId] = useState<number | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const profile = useUserProfile();
   if (!profile) return <div>Cargando datos del usuario...</div>;
-
+  console.log("estamos en ReservationDialog", profile);
   const crearReserva = async (
     userId: number,
     carId: number,
@@ -125,7 +120,7 @@ export default function ReservationDialog({
 
   return (
     <>
-      <SuccessModal show={showSuccessModal} onClose={() => setShowSuccessModal(false)} />
+      <SuccessModal show={showSuccessModal} onClose={() =>{ setShowSuccessModal(false); setShowDialog(true);} }/>
       <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
         <AlertDialogTrigger asChild>
           <Button
@@ -154,6 +149,7 @@ export default function ReservationDialog({
 
             <div className="text-sm space-y-2 mt-2 ml-10">
               <div>
+                <h3 className="font-bold text-base mb-1 text-[#11295B]">Datos del usuario</h3>
                 <strong>Nombre:</strong> {profile.nombre}
                 <br />
                 <strong>Ciudad:</strong> {profile.ciudad.nombre}
@@ -162,14 +158,16 @@ export default function ReservationDialog({
                 <br />
                 <strong>Teléfono:</strong> {profile.telefono}
               </div>
-              <div className="pt-2">
-                <strong>Vehículo:</strong> {marca} {modelo}
+              <div className="pt-0">
+                <h3 className="font-bold text-base mb-1 text-[#11295B]">Datos del vehículo</h3>
+                <strong>Vehículo:</strong> {modelo}
                 <br />
-                <strong>Precio:</strong> {vehicle.precio}
+                <strong>Marca:</strong> {marca}
+                <br />
+                <strong>Precio:</strong> {precio}
               </div>
             </div>
           </AlertDialogHeader>
-
           <div className="border border-[#000000] rounded-lg py-4 mt-4 text-center">
             <p className="text-sm text-gray-600 mb-1">Tiempo restante para pagar</p>
             <p className="text-4xl font-bold">
@@ -237,6 +235,7 @@ export default function ReservationDialog({
                     if (success) {
                       setShowSuccessModal(true);
                       handleConfirm();
+                     
                     }
                   }}
                   className="bg-[#11295B] text-[#E4D5C1] hover:bg-[#2f487a] font-medium"

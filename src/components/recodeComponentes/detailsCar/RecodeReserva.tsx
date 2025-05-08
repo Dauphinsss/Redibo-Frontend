@@ -18,9 +18,11 @@ import ElegirFechas from "@/components/custom/ReservationConfirmation/Fechas";
 import ConfirmacionReservaOpciones from "@/components/custom/ReservationConfirmation/ConfirmacionHost";
 import { useAuth } from "@/context/authContext";
 import { useRouter } from "next/navigation";
+//import ReservationConfirmedMessage from "@/components/custom/ReservationConfirmation/MostrarReserva";
 
 export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
   const [showModal, setShowModal] = useState(false);
+  const [showReservationDialog, setShowReservationDialog] = useState(false);//mostrarReserva
 
   // Suponiendo que puedes obtener la fecha actual o que el usuario la selecciona
   //const [fechaSeleccionada, setFechaSeleccionada] = useState<string>('');
@@ -33,6 +35,9 @@ export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
   console.log(":::: Usuario que se pasa a ConfirmacionReservaOpciones:", user); //
 
   const [showConfirmationOptions, setShowConfirmationOptions] = useState(false);
+  const [mostrarReserva, setMostrarReserva] = useState(false);
+
+
   const router = useRouter();
   console.log("Usuario en Reserva:", user); ///////
   return (
@@ -54,6 +59,8 @@ export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
       >
         Reserva
       </button>
+      
+
 
       {showModal && (
         <div className="fixed inset-0 bg-[rgba(0,0,0,0.3)] flex items-center justify-center z-50">
@@ -111,12 +118,13 @@ export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
 
       {showConfirmationOptions && (
         <ConfirmacionReservaOpciones
-          user={user}
+          //user={user}
           pickupDate={fechasSeleccionadas.pickupDate}
           returnDate={fechasSeleccionadas.returnDate}
           id={id}
           marca={marca}
           modelo={modelo}
+          precio={precio}
           onReservarSinPagar={() => {
             setShowConfirmationOptions(false);
             //alert("Reserva confirmada sin pago.");
@@ -128,6 +136,9 @@ export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
           onCancelar={() => setShowConfirmationOptions(false)}
         />
       )}
+
+     
+
     </div>
   );
 }
