@@ -60,7 +60,7 @@ export function RatingsInfo() {
         <div className="flex justify-center gap-10">
           {showCalificarPropietario && (
             <div
-              className="w-64 h-40 bg-blue-600 text-white rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
+              className="w-64 h-40 bg-black text-white hover:bg-gray-900 rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
               onClick={() => router.push("/calificaciones/calificacionesAlHost")}
             >
               <Star className="mx-auto mb-3 h-10 w-10" />
@@ -70,7 +70,7 @@ export function RatingsInfo() {
   
           {showCalificarArrendatario && (
             <div
-              className="w-64 h-40 bg-orange-600 text-white rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
+              className="w-64 h-40 bg-black text-white hover:bg-gray-900 text-white rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
               onClick={() => router.push("/calificaciones/calificacionesAlRenter")}
             >
               <Star className="mx-auto mb-3 h-10 w-10" />
@@ -82,7 +82,7 @@ export function RatingsInfo() {
         {/* Fila inferior: Vehículo */}
         {showCalificarVehiculo && (
           <div
-            className="w-64 h-40 bg-red-600 text-white rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
+            className="w-64 h-40 bg-black text-white hover:bg-gray-900 text-white rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
             onClick={() => router.push("/calificaciones/calificacionesAlVehiculo")}
           >
             <Star className="mx-auto mb-3 h-10 w-10" />
