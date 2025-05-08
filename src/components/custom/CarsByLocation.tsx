@@ -26,7 +26,7 @@ const CarsByLocation = ({ latitude, longitude }: any) => {
       <li key={i} className="pb-3 sm:pb-4">
         <div className="flex items-center space-x-4 rtl:space-x-reverse">
          <div className="shrink-0">
-            <img className="w-16 h-16 rounded-sm mt-2" src="https://placehold.co/64" alt="imagen auto" />
+            <img className="w-20 rounded-sm mt-2" src={item.imagenes[0]} alt="imagen auto" />
          </div>
          <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-gray-900 truncate dark:text-white">

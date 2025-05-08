@@ -20,7 +20,7 @@ export default function Page() {
      <Header />
     <div className="max-w-xl mx-auto pt-4">
         <h1 className="text-center text-2xl mb-4 font-semibold">Filtar Por Aeropuerto</h1>
-        <p className="mb-4 font-semibold">Seleccione un Aeropuerto</p>
+        <p className="mb-4 font-semibold">Seleccione un Aeropuerto y haga click en Buscar</p>
         <div className="flex gap-1 mb-4">
           <select id="aeropuertos" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 me-1"
           value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)}
