@@ -26,10 +26,8 @@ export default function Home() {
     cargando,
     filtrarAutos,
     obtenerSugerencia,
-    aplicarFiltroPrecio,
-    aplicarFiltroViajes,
-    aplicarFiltroCalificacion,
-    filtrosAplicados
+    filtrosCombustible,
+    setFiltrosCombustible, // Asegúrate de exponer esta función desde useAutos
   } = useAutos();
 
   const [showMap, setShowMap] = useState(false);
@@ -43,22 +41,14 @@ export default function Home() {
     }
   ), []);
 
-  const handleFiltroPrecio = (min: number, max: number) => {
-    aplicarFiltroPrecio(min, max);
-  };
-
-  const handleFiltroViajes = (minViajes: number) => {
-    aplicarFiltroViajes(minViajes);
-  };
-
-  const handleFiltroCalificacion = (minCalificacion: number) => {
-    aplicarFiltroCalificacion(minCalificacion);
-  };
-
   return (
     <div className="relative">
       {/* Sidebar de filtros */}
-      <SidebarFiltros mostrar={mostrarSidebar} onCerrar={() => setMostrarSidebar(false)} />
+      <SidebarFiltros
+        mostrar={mostrarSidebar}
+        onCerrar={() => setMostrarSidebar(false)}
+        setFiltrosCombustible={setFiltrosCombustible} // Pasar correctamente
+      />
 
       {/* Contenido principal que se desplazará */}
       <div
@@ -94,9 +84,9 @@ export default function Home() {
 
                 {/* Filtros por botones */}
                 <div className="mb-6 flex flex-wrap gap-4">
-                  <ButtonPrecio onFilterChange={handleFiltroPrecio} />
-                  <ButtonCalif onFilterChange={handleFiltroCalificacion} />
-                  <ButtonViajes onFilterChange={handleFiltroViajes} />
+                  <ButtonPrecio onFilterChange={(min, max) => console.log('Filtro precio:', min, max)} />
+                  <ButtonCalif onFilterChange={(min) => console.log('Filtro calificación:', min)} />
+                  <ButtonViajes onFilterChange={(min) => console.log('Filtro viajes:', min)} />
                 </div>
 
                 <HeaderBusquedaRecode

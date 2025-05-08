@@ -11,19 +11,21 @@ export function useAutos(cantidadPorLote = 8) {
     const [cargando, setCargando] = useState(true);
     const [ordenSeleccionado, setOrdenSeleccionado] = useState('Recomendación');
     const [textoBusqueda, setTextoBusqueda] = useState('');
+    const [filtrosCombustible, setFiltrosCombustible] = useState<string[]>([]); // Estado para los filtros de combustible
 
     const fetchAutos = async () => {
         try {
-        setCargando(true);
-        const rawData: RawAuto[] = await getAllCars();
-        const transformed = rawData.map(transformAuto);
-        setAutos(transformed);
-        setAutosFiltrados(transformed);
+            setCargando(true);
+            const rawData: RawAuto[] = await getAllCars(); // obtiene los datos crudos de los autos
+            console.log('Datos crudos de autos:', rawData);
+            const transformed = rawData.map(transformAuto);
+            setAutos(transformed);
+            setAutosFiltrados(transformed);
         } catch (error) {
-        console.error('Error al cargar los autos:', error);
-        alert('No se pudo cargar los autos. Intenta de nuevo más tarde.');
+            console.error('Error al cargar los autos:', error);
+            alert('No se pudo cargar los autos. Intenta de nuevo más tarde.');
         } finally {
-        setCargando(false);
+            setCargando(false);
         }
     };
 
@@ -41,22 +43,33 @@ export function useAutos(cantidadPorLote = 8) {
     const filtrarYOrdenarAutos = useCallback(() => {
         let resultado = [...autos];
 
+        // Filtro por texto de búsqueda (marca o modelo)
         if (textoBusqueda.trim()) {
-        const query =normalizarTexto(textoBusqueda.trim());
+            console.log("Texto de búsqueda:", textoBusqueda);
+            const query = normalizarTexto(textoBusqueda.trim());
             resultado = resultado.filter(auto => {
                 const autoTexto = `${auto.marca} ${auto.modelo}`;
-                const textoNormalizado = normalizarTexto(autoTexto).replace(/[^\p{L}\p{N}\s.\-\/]/gu, "").replace(/\s+/g, " ").trim();
+                const textoNormalizado = normalizarTexto(autoTexto)
+                    .replace(/[^\p{L}\p{N}\s.\-\/]/gu, "")
+                    .replace(/\s+/g, " ")
+                    .trim();
                 const palabrasBusqueda = query.split(" ");
                 return palabrasBusqueda.every(palabra => textoNormalizado.includes(palabra));
-                /*return palabrasBusqueda.every(palabra =>
-                  textoNormalizado.split(" ").some(palabraTexto =>
-                      palabraTexto.startsWith(palabra)
-                  )
-              );*/
             });
-            resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
         }
 
+        // Filtro por tipo de combustible
+        if (filtrosCombustible.length > 0) {
+            console.log("Aplicando filtro de combustible:", filtrosCombustible);
+            resultado = resultado.filter(auto => {
+                console.log("Combustibles del auto:", auto.combustibles);
+                return auto.combustibles.some(combustible =>
+                    filtrosCombustible.includes(combustible)
+                );
+            });
+        }
+
+        // Ordenar resultados
         switch (ordenSeleccionado) {
             case 'Modelo Ascendente':
                 resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
@@ -73,12 +86,11 @@ export function useAutos(cantidadPorLote = 8) {
         }
 
         setAutosFiltrados(resultado);
-    }, [autos, textoBusqueda, ordenSeleccionado]);
+    }, [autos, textoBusqueda, filtrosCombustible, ordenSeleccionado]);
 
     useEffect(() => {
         filtrarYOrdenarAutos();
         setAutosVisibles(cantidadPorLote);
-
     }, [filtrarYOrdenarAutos, cantidadPorLote]);
 
     const autosActuales = useMemo(() => {
@@ -88,48 +100,48 @@ export function useAutos(cantidadPorLote = 8) {
     const mostrarMasAutos = () => {
         setAutosVisibles(prev => prev + cantidadPorLote);
     };
-    
+
     const obtenerSugerencia = (busqueda: string): string => {
-      if (!busqueda.trim()) return "";
-    
-      const normalizar = (t: string) =>
-        t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    
-      const textoSinEspaciosExtra = busqueda.replace(/\s+/g, " ").trimStart();
-      const normalizadoTexto = normalizar(textoSinEspaciosExtra);
-    
-      const match = autosFiltrados.find((auto) => {
-        const combinaciones = [
-          `${auto.marca} ${auto.modelo}`,
-          `${auto.modelo} ${auto.marca}`,
-        ];
-    
-        return combinaciones.some((combinado) => {
-          const combinadoNormalizado = normalizar(combinado)
-            .replace(/[^\p{L}\p{N}\s.\-\/]/gu, "")
-            .replace(/\s+/g, " ")
-            .trim();
-          return combinadoNormalizado.startsWith(normalizadoTexto);
+        if (!busqueda.trim()) return "";
+
+        const normalizar = (t: string) =>
+            t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+        const textoSinEspaciosExtra = busqueda.replace(/\s+/g, " ").trimStart();
+        const normalizadoTexto = normalizar(textoSinEspaciosExtra);
+
+        const match = autosFiltrados.find((auto) => {
+            const combinaciones = [
+                `${auto.marca} ${auto.modelo}`,
+                `${auto.modelo} ${auto.marca}`,
+            ];
+
+            return combinaciones.some((combinado) => {
+                const combinadoNormalizado = normalizar(combinado)
+                    .replace(/[^\p{L}\p{N}\s.\-\/]/gu, "")
+                    .replace(/\s+/g, " ")
+                    .trim();
+                return combinadoNormalizado.startsWith(normalizadoTexto);
+            });
         });
-      });
-    
-      if (!match) return "";
-    
-      const posiblesSugerencias = [
-        `${match.marca} ${match.modelo}`,
-        `${match.modelo} ${match.marca}`,
-      ];
-    
-      const sugerencia = posiblesSugerencias.find((s) => {
-        const sNormal = normalizar(s).replace(/\s+/g, " ").trim();
-        return sNormal.startsWith(normalizadoTexto);
-      }) || posiblesSugerencias[0];
-    
-      const diferencia = sugerencia.slice(textoSinEspaciosExtra.length);
-    
-      return busqueda + diferencia;
-    };    
-    
+
+        if (!match) return "";
+
+        const posiblesSugerencias = [
+            `${match.marca} ${match.modelo}`,
+            `${match.modelo} ${match.marca}`,
+        ];
+
+        const sugerencia = posiblesSugerencias.find((s) => {
+            const sNormal = normalizar(s).replace(/\s+/g, " ").trim();
+            return sNormal.startsWith(normalizadoTexto);
+        }) || posiblesSugerencias[0];
+
+        const diferencia = sugerencia.slice(textoSinEspaciosExtra.length);
+
+        return busqueda + diferencia;
+    };
+
     return {
         autos,
         autosFiltrados,
@@ -141,6 +153,8 @@ export function useAutos(cantidadPorLote = 8) {
         mostrarMasAutos,
         cargando,
         filtrarAutos: setTextoBusqueda,
-        obtenerSugerencia
+        filtrosCombustible,
+        setFiltrosCombustible, // Exponer el setter para los filtros de combustible
+        obtenerSugerencia,
     };
 }

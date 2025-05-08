@@ -5,9 +5,10 @@ import { useState } from 'react';
 type Props = {
   mostrar: boolean;
   onCerrar: () => void;
+  setFiltrosCombustible: React.Dispatch<React.SetStateAction<string[]>>; // Tipo correcto para la prop
 };
 
-export default function SidebarFiltros({ mostrar, onCerrar }: Props) {
+export default function SidebarFiltros({ mostrar, onCerrar, setFiltrosCombustible }: Props) {
   const [abierto, setAbierto] = useState({
     tipoCombustible: false,
     caracteristicasCoche: false,
@@ -15,8 +16,20 @@ export default function SidebarFiltros({ mostrar, onCerrar }: Props) {
     caracteristicasAdicionales: false,
   });
 
+  console.log('setFiltrosCombustible en SidebarFiltros:', setFiltrosCombustible);
+
   const toggle = (key: keyof typeof abierto) => {
     setAbierto((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleCheckboxChange = (tipo: string, isChecked: boolean) => {
+      setFiltrosCombustible((prev) => {
+          const nuevoEstado = isChecked
+              ? [...prev, tipo.toLowerCase()] // Normaliza a minúsculas
+              : prev.filter((f) => f !== tipo.toLowerCase());
+          console.log("Nuevo estado de filtrosCombustible:", nuevoEstado);
+          return [...new Set(nuevoEstado)];
+      });
   };
 
   return (
@@ -33,7 +46,6 @@ export default function SidebarFiltros({ mostrar, onCerrar }: Props) {
       </div>
 
       <div className="space-y-4 p-4 overflow-y-auto h-full">
-
         {/* Tipo de Combustible */}
         <div className="border rounded shadow-sm">
           <button
@@ -46,14 +58,17 @@ export default function SidebarFiltros({ mostrar, onCerrar }: Props) {
             <div className="p-4 space-y-2">
               {['Gasolina', 'GNV', 'Eléctrico', 'Diesel'].map((tipo) => (
                 <label key={tipo} className="flex items-center gap-2">
-                  <input type="checkbox" className="form-checkbox" />
+                  <input
+                    type="checkbox"
+                    className="form-checkbox"
+                    onChange={(e) => handleCheckboxChange(tipo, e.target.checked)}
+                  />
                   {tipo}
                 </label>
               ))}
             </div>
           )}
         </div>
-
         {/* Características del coche */}
         <div className="border rounded shadow-sm">
           <button
@@ -138,4 +153,7 @@ export default function SidebarFiltros({ mostrar, onCerrar }: Props) {
     </div>
   );
 }
+
+
+
 
