@@ -1,37 +1,38 @@
 import React, { memo, useState } from "react"
-import RadioGroup_Recode from "../RadioGroup_Recode"
 import SliderRangeDualRecode from "../SliderRangeDual_Recode"
 import SliderRangeSimple_Recode from "../SliderRangeSimple_Recode"
 
 function GeneralRecode() {
-    const [respuestas, setRespuestas] = useState({
-        no_fumar: "si",
-        mascotas: "si",
-        combustible: "si",
-        fuera_ciudad: "si",
-        multas: "si",
-        lugar_entrega: "si",
-        uso_comercial: "si"
+    // Estado para las condiciones: true = permitido, false = no permitido
+    const [respuestas, setRespuestas] = useState<Record<string, boolean>>({
+        fumar: false,
+        mascotas: false,
+        combustible: false,
+        fuera_ciudad: false,
+        multas: false,
+        lugar_entrega: false,
+        uso_comercial: false
     })
 
-    // Estado para el rango de edad (mín, máx)
+    // Estado para el rango de edad (mínimo, máximo)
     const [edadRango, setEdadRango] = useState<[number, number]>([18, 70])
     // Estado para el kilometraje máximo
     const [kmMax, setKmMax] = useState<number>(0)
 
-    const handleRadioChange = (campo: keyof typeof respuestas, valor: string) => {
-        setRespuestas(prev => ({ ...prev, [campo]: valor }))
+    // Alterna la condición al hacer click en el checkbox
+    const handleCheckboxChange = (key: string) => {
+        setRespuestas(prev => ({ ...prev, [key]: !prev[key] }))
     }
 
     return (
         <div className="space-y-6 px-4 py-4 bg-white rounded-lg shadow">
-            {/* Slider dual para edades */}
+            {/* Slider dual para seleccionar rango de edad */}
             <SliderRangeDualRecode
                 min={18}
                 max={70}
-                label="Edad mínima y maxima de los conductores"
+                label="Edad mínima y máxima de los conductores"
                 unit=" años"
-                onChange={(vals) => setEdadRango(vals)}
+                onChange={setEdadRango}
             />
 
             {/* Slider simple para kilometraje */}
@@ -59,9 +60,9 @@ function GeneralRecode() {
                 </div>
             </div>
 
-            {/* Grupo de radio buttons */}
+            {/* Lista de condiciones con checkbox */}
             {[
-                { label: "No fumar", key: "no_fumar" },
+                { label: "Fumar", key: "fumar" },
                 { label: "Mascotas permitidas", key: "mascotas" },
                 { label: "Devolver mismo combustible", key: "combustible" },
                 { label: "Uso fuera de la ciudad permitido", key: "fuera_ciudad" },
@@ -70,12 +71,15 @@ function GeneralRecode() {
                 { label: "Uso comercial permitido", key: "uso_comercial" }
             ].map(({ label, key }) => (
                 <div key={key} className="flex items-center justify-between">
-                    <span className="font-semibold">{label}:</span>
-                    <RadioGroup_Recode
-                        value={respuestas[key as keyof typeof respuestas]}
-                        onChange={(v) => handleRadioChange(key as keyof typeof respuestas, v)}
-                        name={key}
-                    />
+                    <label className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={respuestas[key]}
+                            onChange={() => handleCheckboxChange(key)}
+                            className="h-4 w-4 rounded border-gray-400"
+                        />
+                        <span className="font-semibold">{label}</span>
+                    </label>
                 </div>
             ))}
         </div>
