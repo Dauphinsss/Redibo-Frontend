@@ -76,8 +76,8 @@ function GeneralRecode() {
                             type="checkbox"
                             checked={respuestas[key]}
                             onChange={() => handleCheckboxChange(key)}
-                            className="h-4 w-4 rounded border-gray-400"
-                        />
+                            className="h-4 w-4 accent-black border-black rounded"
+                            />
                         <span className="font-semibold">{label}</span>
                     </label>
                 </div>
