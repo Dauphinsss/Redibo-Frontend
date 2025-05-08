@@ -88,12 +88,10 @@ export function ProfileHeader() {
         }
       )
 
-      console.log("Rol agregado:", response.data.roles)
-      toast.success("Rol agregado exitosamente.")
-      // Refrescar los roles localmente
-      setUserData((prev) =>
-        prev ? { ...prev, roles: [...prev.roles, nuevoRol] } : prev
-      )
+      //console.log("Rol agregado:", response.data.roles)
+      toast.success("Rol agregado exitosamente.")   
+      window.location.reload()
+
     } catch (error: any) {
       console.error("Error al agregar rol:", error.response?.data || error.message)
       alert(error.response?.data?.error || "Error al agregar el rol.")
