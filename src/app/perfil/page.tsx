@@ -1,6 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import { useEffect } from "react"
+import axios from "axios"
+import { API_URL } from "@/utils/bakend"
 import {
   SidebarProvider,
   Sidebar,
@@ -23,6 +26,26 @@ type SectionType = "personal" | "payments" | "driver" | "ratings" | "vehicles";
 
 export default function ProfilePage() {
   const [activeSection, setActiveSection] = useState<SectionType>("personal")
+  const [roles, setRoles] = useState<string[]>([])
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      const token = localStorage.getItem("auth_token")
+      if (!token) return
+  
+      try {
+        const res = await axios.get(`${API_URL}/api/perfil`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        setRoles(res.data.roles || [])
+      } catch (err) {
+        console.error("Error al obtener roles del usuario", err)
+      }
+    }
+  
+    fetchRoles()
+  }, [])
+  
 
   const renderContent = () => {
     switch (activeSection) {
@@ -80,6 +103,8 @@ export default function ProfilePage() {
                           <span className="font-medium">Tarjetas</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
+
+                      {roles.includes("DRIVER") && (
                       <SidebarMenuItem>
                         <SidebarMenuButton
                           onClick={() => setActiveSection("driver")}
@@ -92,6 +117,8 @@ export default function ProfilePage() {
                           <span className="font-medium">Conductor</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
+                    )}
+                    
                       <SidebarMenuItem>
                         <SidebarMenuButton
                           onClick={() => setActiveSection("ratings")}
