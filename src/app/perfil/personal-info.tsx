@@ -143,7 +143,8 @@ export function PersonalInfo() {
           <Button
             variant="outline"
             onClick={() => setIsEditing(!isEditing)}
-            className="w-full md:w-auto"
+            className="w-full md:w-auto bg-gray-200 text-gray-500 cursor-not-allowed"
+            disabled={true}
           >
             {isEditing ? "Cancelar" : "Editar Información"}
           </Button>
