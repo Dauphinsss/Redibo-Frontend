@@ -9,6 +9,7 @@ import { getCarById , getCarRatings } from '@/service/services_Recode'
 import NotFound from '@/app/not-found'
 import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode'
 import CalificaionRecode from '@/components/recodeComponentes/CalificacionAuto/calificacionRecode'
+import ComentarUsr from '@/components/recodeComponentes/comentarioUsuario/realizarComentario/comentarUsuario'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -52,13 +53,21 @@ const porcentajeCalificaciones = Array.from({ length: 5 }, (_, i) => {
               numAuto={1}  
               telefono={auto.telefonoHost}
             />
-             <div className="mt-6"  >
-            <CalificaionRecode 
-             promedio={promedioCalificacion} 
-             total={totalCalificaciones} 
-             porcentajes={porcentajeCalificaciones}
-            />
-             </div >
+            <div className="mt-6"  >
+              <CalificaionRecode 
+                promedio={promedioCalificacion} 
+                total={totalCalificaciones} 
+                porcentajes={porcentajeCalificaciones}
+              />
+            </div >
+
+            {/**Comentarios */}
+              <ComentarUsr
+                fotoUser={''}
+                palabraInput={'Realiza un comentario ...'}
+              ></ComentarUsr>
+            {/**hasta aqui se agrego modificacion */}
+
           </div>
           
           <div className="lg:w-1/3">
@@ -72,7 +81,6 @@ const porcentajeCalificaciones = Array.from({ length: 5 }, (_, i) => {
               <Reserva precio={auto.precio} />
             </div>
           </div>
-          
 
         </div>
       </main>
