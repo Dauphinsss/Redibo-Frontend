@@ -1,10 +1,9 @@
 "use client"
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import { Button } from "@/components/ui/button"
 import CarsByLocation from '@/components/custom/CarsByLocation';
-export default function Page() {  
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);  
+import data from "../../data/aeropuertos.json"
+export default function Page() {    
   let [selectedValue, setSelectedValue] = useState('0');
   let [selectedLatitude, setSelectedLatitude] = useState(0);
   let [selectedLongitude, setSelectedLongitude] = useState(0);
@@ -14,27 +13,7 @@ export default function Page() {
     setSelectedLatitude(lat);
     const lon = data[index].longitude;
     setSelectedLongitude(lon);        
-  }  
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch('/data/aeropuertos.json'); // Assuming data.json is in the public directory
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const json = await response.json();
-        setData(json);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return <p>Loading data...</p>;
-  }
-  
+  }    
   return (
     <div className="max-w-xl mx-auto pt-4">
         <h1 className="text-center text-2xl mb-4 font-semibold">Filtar Por Aeropuerto</h1>

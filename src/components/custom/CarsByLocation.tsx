@@ -1,9 +1,7 @@
-import { useState, useEffect } from 'react';
+import data from "../../data/autos.json"
 const CarsByLocation = ({ latitude, longitude }: any) => {  
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const haversineDistance = (lat1: any, lon1: any, lat2: any, lon2: any) => {
-    const R = 6371; // Earth radius in kilometers
+    const R = 6371; // Radio de la tierra en kilometros
     const toRad = (value: number) => (value * Math.PI) / 180;
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
@@ -13,28 +11,7 @@ const CarsByLocation = ({ latitude, longitude }: any) => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = Math.round(((R * c) + Number.EPSILON) * 100) / 100;
     return distance;
-  };
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch('/data/autos.json'); // Assuming data.json is in the public directory
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const json = await response.json();
-        setData(json);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return <p>Loading data...</p>;
-  }
- 
+  };  
   let count = 0;
   return (<div>
   <ul className="max-w-xl divide-y divide-gray-200 dark:divide-gray-700">
