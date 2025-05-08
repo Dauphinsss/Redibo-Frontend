@@ -17,6 +17,7 @@ import { PersonalInfo } from "./personal-info"
 import { PaymentInfo } from "./payment-info"
 import { DriverInfo } from "./driver-info"
 import { RatingsInfo } from "./ratings-info"
+import { VehiclesInfo } from "./vehicles-info"
 import { CreditCard, User, Star, Car } from "lucide-react"
 import { SteeringWheel } from "./steering-wheel-icon"
 import Header from "@/components/ui/Header"
@@ -58,7 +59,7 @@ export default function ProfilePage() {
       case "ratings":
         return <RatingsInfo />
       case "vehicles":
-        return <div>Sección de vehículos en desarrollo</div>
+        return <VehiclesInfo />
       default:
         return <PersonalInfo />
     }
