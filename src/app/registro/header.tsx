@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+
 import Link from "next/link";
 
 export function Header() {
@@ -12,15 +12,6 @@ export function Header() {
           <Link href="/" className="text-sm font-medium hover:underline">
             Inicio
           </Link>
-          <Link
-            href="/registro"
-            className="text-sm font-medium hover:underline"
-          >
-            <Button variant={"outline"}>Registro</Button>
-          </Link>
-          <Button>
-            <Link href="/login">Iniciar Sesión</Link>
-          </Button>
         </nav>
       </div>
     </header>
