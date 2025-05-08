@@ -49,7 +49,7 @@ export function VehiclesInfo() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 justify-center">
         {roles.includes("HOST") && (
           <div
-          className="ml-50 w-64 h-32 bg-gray-500 hover:bg-gray-600 text-white rounded-xl p-3 text-center shadow-md cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out ml-4"
+          className="ml-50 w-64 h-32 bg-black text-white hover:bg-gray-900 rounded-xl p-3 text-center shadow-md cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out ml-4"
 
             onClick={() => router.push("/vehicles/misVehicles")}
           >
@@ -60,7 +60,7 @@ export function VehiclesInfo() {
 
         {roles.includes("RENTER") && (
           <div
-          className="w-64 h-32 bg-gray-500 hover:bg-gray-600 text-white rounded-xl p-4 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
+          className="w-64 h-32 bg-black text-white hover:bg-gray-900 rounded-xl p-4 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
 
             onClick={() => router.push("/vehicles/vehiclesRentados")}
           >
