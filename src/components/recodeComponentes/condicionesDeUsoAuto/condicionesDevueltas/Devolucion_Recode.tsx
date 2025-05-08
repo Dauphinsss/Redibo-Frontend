@@ -15,12 +15,12 @@ const conditions: { label: string; key: string }[] = [
 function Devueltas_Recode() {
     // Estado booleano para cada condición (true = sí, false = no)
     const [respuestas, setRespuestas] = useState<Record<string, boolean>>({
-        interior_limpio: true,
-        exterior_limpio: true,
-        rayones: true,
-        herramientas_devueltas: true,
-        danios: true,
-        combustible_igual: true
+        interior_limpio: false,
+        exterior_limpio: false,
+        rayones: false,
+        herramientas_devueltas: false,
+        danios: false,
+        combustible_igual: false
     });
 
     // Alterna el valor booleano al hacer clic
