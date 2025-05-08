@@ -22,18 +22,18 @@ export default function HeaderBusquedaRecode({
     }: Props) {
     return (
         <div className="w-full px-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-x-6 gap-y-2 flex-wrap mb-6">
-        <p className="text-gray-600 text-sm sm:text-base">
-            Mostrando <span className="font-semibold">{autosMostrados.length}</span> de{' '}
-            <span className="font-semibold">{autosFiltrados.length}</span> resultados
-        </p>
-        <div className="w-full sm:w-auto">
-            <OrdenadorBusquedaRecode
-            autos={autosTotales}
-            ordenSeleccionado={ordenSeleccionado}
-            setOrdenSeleccionado={setOrdenSeleccionado}
-            setAutosFiltrados={setAutosFiltrados}
-            />
-        </div>
+            <p className="text-gray-600 text-sm sm:text-base">
+                Mostrando <span className="font-semibold">{autosMostrados.length}</span> de{' '}
+                <span className="font-semibold">{autosFiltrados.length}</span> resultados
+            </p>
+            <div className="w-full sm:w-auto">
+                <OrdenadorBusquedaRecode
+                autos={autosTotales}
+                ordenSeleccionado={ordenSeleccionado}
+                setOrdenSeleccionado={setOrdenSeleccionado}
+                setAutosFiltrados={setAutosFiltrados}
+                />
+            </div>
         </div>
     );
 }

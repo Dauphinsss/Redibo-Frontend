@@ -34,14 +34,14 @@ export default function ResultadosAutos({
         <RecodeCarList carCards={autosActuales} />
         {autosVisibles < autosFiltrados.length && (
             <div className="mt-6 flex justify-center">
-            <button
-                className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
-                onClick={mostrarMasAutos}
-            >
-                {autosVisibles + 8 < autosFiltrados.length
-                ? "Ver más resultados"
-                : "Ver todos los resultados"}
-            </button>
+                <button
+                    className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+                    onClick={mostrarMasAutos}
+                >
+                    {autosVisibles + 8 < autosFiltrados.length
+                    ? "Ver más resultados"
+                    : "Ver todos los resultados"}
+                </button>
             </div>
         )}
         </>
