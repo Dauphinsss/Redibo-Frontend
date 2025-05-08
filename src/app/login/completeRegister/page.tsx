@@ -53,25 +53,33 @@ export default function CompleteRegisterForm() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        // 1. Obtener datos del usuario desde el backend usando cookies
-        axios.defaults.withCredentials = true;
-        //const userResponse = await axios.get(`${API_URL}/api/auth/validateTokenCompleteRegister`);
-        const userResponse = await axios.get(`${API_URL}/api/auth/validateTokenCompleteRegister`,{
-          withCredentials: true 
+        // 1. Obtener el token desde la URL
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("token");
+
+        if (!token) {
+          throw new Error("Token no encontrado en la URL");
+        }
+
+        // 2. Realizar la petición al backend con el token
+        const userResponse = await axios.get(`${API_URL}/api/auth/validateTokenCompleteRegister`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Enviar el token en el encabezado
+          },
         });
-        console.log(userResponse, "\n",userResponse.data)
-        // 2. Establecer datos del usuario
+
+        console.log(userResponse, "\n", userResponse.data);
+
+        // 3. Establecer datos del usuario
         if (userResponse.data.success) {
           setNombre(userResponse.data.nombre);
           setCorreo(userResponse.data.email);
         } else {
           throw new Error("Datos de usuario no disponibles");
         }
-        // 3. Cargar ciudades
-        //const ciudadesResponse = await axios.get(`${API_URL}/api/ciudades`);
-        const ciudadesResponse = await axios.get(`${API_URL}/api/ciudades`, {
-          withCredentials: true // <--- Asegurar que se envíen credenciales
-        });
+
+        // 4. Cargar ciudades
+        const ciudadesResponse = await axios.get(`${API_URL}/api/ciudades`);
         setCiudades(ciudadesResponse.data);
         setIsLoading(false);
       } catch (error) {
