@@ -27,52 +27,55 @@ function SliderRangeDualRecode({
     }
 
     return (
-        <div className="p-2 rounded-xl w-full max-w-lg">
-            <h2 className="text-center text-xl font-semibold text-gray-800 mb-8">
-                {label}
-            </h2>
-            <div className="w-full py-6">
-                <Range
-                    values={values}
-                    step={step}
-                    min={min}
-                    max={max}
-                    onChange={handleChange}
-                    renderTrack={({ props, children }) => (
-                        <div
-                        {...props}
-                        ref={props.ref}
-                        className="h-2 w-full rounded-full"
-                        style={{
-                            background: getTrackBackground({
-                            values,
-                            colors: ['#e5e7eb', '#000000', '#e5e7eb'],
-                            min,
-                            max
-                            })
-                        }}
-                        >
-                        {children}
-                        </div>
-                    )}
-                    renderThumb={({ props, index }) => {
-                        const { key, ...rest } = props
-                        return (
+        <div className="flex flex-col items-center bg-white rounded-xl shadow-md w-full">
+            <div className="py-8 px-6 w-full">
+                <h2 className="text-center text-xl font-semibold text-gray-800 mb-8">
+                    {label}
+                </h2>
+                <div className="w-full py-6">
+                    <Range
+                        values={values}
+                        step={step}
+                        min={min}
+                        max={max}
+                        onChange={handleChange}
+                        renderTrack={({ props, children }) => (
                             <div
-                                key={key}
-                                {...rest}
-                                className="relative flex items-center justify-center"
+                            {...props}
+                            ref={props.ref}
+                            className="h-2 w-full rounded-full"
+                            style={{
+                                background: getTrackBackground({
+                                values,
+                                colors: ['#e5e7eb', '#000000', '#e5e7eb'],
+                                min,
+                                max
+                                })
+                            }}
                             >
-                                <div className="h-6 w-6 bg-white rounded-full border-2 border-black" />
-                                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black text-white text-sm font-medium rounded px-2 py-1 flex flex-col items-center">
-                                    <span>{values[index]}</span>
-                                    <span className="text-xs">{unit.trim()}</span>
-                                </div>
+                            {children}
                             </div>
-                        )
-                    }}
-                />
+                        )}
+                        renderThumb={({ props, index }) => {
+                            const { key, ...rest } = props
+                            return (
+                                <div
+                                    key={key}
+                                    {...rest}
+                                    className="relative flex items-center justify-center"
+                                >
+                                    <div className="h-6 w-6 bg-white rounded-full border-2 border-black" />
+                                    <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black text-white text-sm font-medium rounded px-2 py-1 flex flex-col items-center">
+                                        <span>{values[index]}</span>
+                                        <span className="text-xs">{unit.trim()}</span>
+                                    </div>
+                                </div>
+                            )
+                        }}
+                    />
+                </div>
             </div>
+            
         </div>
     )
 }

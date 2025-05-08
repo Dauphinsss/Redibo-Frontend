@@ -29,20 +29,21 @@ function Devueltas_Recode() {
     };
 
     return (
-        <div className="space-y-4 px-4 py-4 bg-white rounded-lg shadow">
-            {conditions.map(({ label, key }) => (
-                <div key={key} className="flex items-center justify-between">
-                    <label className="flex items-center space-x-2">
+        <div className="px-4 py-4 bg-white rounded-lg shadow">
+            {/* Grid responsive */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-4">
+                {conditions.map(({ label, key }) => (
+                    <label key={key} className="flex items-center space-x-2">
                         <input
                             type="checkbox"
                             checked={respuestas[key]}
                             onChange={() => handleToggle(key)}
                             className="h-4 w-4 accent-black border-black rounded"
                         />
-                            <span className="font-semibold">{label}</span>
+                        <span className="font-semibold">{label}</span>
                     </label>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
     );
 }

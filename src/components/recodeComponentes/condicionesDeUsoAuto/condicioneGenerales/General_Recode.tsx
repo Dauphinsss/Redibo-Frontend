@@ -1,9 +1,9 @@
-import React, { memo, useState } from "react"
-import SliderRangeDualRecode from "../SliderRangeDual_Recode"
-import SliderRangeSimple_Recode from "../SliderRangeSimple_Recode"
+import React, { memo, useState } from "react";
+import SliderRangeDualRecode from "../SliderRangeDual_Recode";
+import SliderRangeSimple_Recode from "../SliderRangeSimple_Recode";
 
 function GeneralRecode() {
-    // Estado para las condiciones: true = permitido, false = no permitido
+    // Condiciones: true = permitido
     const [respuestas, setRespuestas] = useState<Record<string, boolean>>({
         fumar: false,
         mascotas: false,
@@ -12,21 +12,19 @@ function GeneralRecode() {
         multas: false,
         lugar_entrega: false,
         uso_comercial: false
-    })
+    });
+    // Rango de edad (min, max)
+    const [edadRango, setEdadRango] = useState<[number, number]>([18, 70]);
+    // Kilometraje máximo
+    const [kmMax, setKmMax] = useState<number>(0);
 
-    // Estado para el rango de edad (mínimo, máximo)
-    const [edadRango, setEdadRango] = useState<[number, number]>([18, 70])
-    // Estado para el kilometraje máximo
-    const [kmMax, setKmMax] = useState<number>(0)
-
-    // Alterna la condición al hacer click en el checkbox
     const handleCheckboxChange = (key: string) => {
-        setRespuestas(prev => ({ ...prev, [key]: !prev[key] }))
-    }
+        setRespuestas(prev => ({ ...prev, [key]: !prev[key] }));
+    };
 
     return (
         <div className="space-y-6 px-4 py-4 bg-white rounded-lg shadow">
-            {/* Slider dual para seleccionar rango de edad */}
+            {/* Slider dual para rango de edad */}
             <SliderRangeDualRecode
                 min={18}
                 max={70}
@@ -44,8 +42,8 @@ function GeneralRecode() {
                 onChange={([km]) => setKmMax(km)}
             />
 
-            {/* Resumen de valores seleccionados */}
-            <div className="flex justify-between text-sm text-gray-700 px-2">
+            {/* Resumen de valores seleccionados: grid para ser responsivo */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-1 gap-x-4 text-sm text-gray-700 px-2">
                 <div className="flex items-center space-x-2">
                     <span className="text-lg">🧍</span>
                     <span>Desde: <strong>{edadRango[0]}</strong> años</span>
@@ -60,30 +58,30 @@ function GeneralRecode() {
                 </div>
             </div>
 
-            {/* Lista de condiciones con checkbox */}
-            {[
-                { label: "Fumar", key: "fumar" },
-                { label: "Mascotas permitidas", key: "mascotas" },
-                { label: "Devolver mismo combustible", key: "combustible" },
-                { label: "Uso fuera de la ciudad permitido", key: "fuera_ciudad" },
-                { label: "Multas por cuenta del conductor", key: "multas" },
-                { label: "Devolver auto en mismo lugar", key: "lugar_entrega" },
-                { label: "Uso comercial permitido", key: "uso_comercial" }
-            ].map(({ label, key }) => (
-                <div key={key} className="flex items-center justify-between">
-                    <label className="flex items-center space-x-2">
+            {/* Checkboxes en grid: 1 columna en mobile, 2 en lg */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-4">
+                {[
+                    { label: "Fumar", key: "fumar" },
+                    { label: "Mascotas permitidas", key: "mascotas" },
+                    { label: "Devolver mismo combustible", key: "combustible" },
+                    { label: "Uso fuera de la ciudad permitido", key: "fuera_ciudad" },
+                    { label: "Multas por cuenta del conductor", key: "multas" },
+                    { label: "Devolver auto en mismo lugar", key: "lugar_entrega" },
+                    { label: "Uso comercial permitido", key: "uso_comercial" }
+                ].map(({ label, key }) => (
+                    <label key={key} className="flex items-center space-x-2">
                         <input
                             type="checkbox"
                             checked={respuestas[key]}
                             onChange={() => handleCheckboxChange(key)}
                             className="h-4 w-4 accent-black border-black rounded"
-                            />
+                        />
                         <span className="font-semibold">{label}</span>
                     </label>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
-    )
+    );
 }
 
-export default memo(GeneralRecode)
+export default memo(GeneralRecode);
