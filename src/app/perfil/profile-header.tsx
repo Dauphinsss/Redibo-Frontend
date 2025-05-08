@@ -165,7 +165,7 @@ export function ProfileHeader() {
                       <DropdownMenuItem
                         key={rol}
                         onClick={() => {
-                          setRolSeleccionado(traduccionesRol[rol] || rol)
+                          setRolSeleccionado(rol)
                           setModalOpen(true)
                         }}
                       >
@@ -187,7 +187,7 @@ export function ProfileHeader() {
           <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md pointer-events-auto">
           
             <h2 className="text-xl font-semibold mb-2">
-              ¿Estás seguro que deseas registrarte como {rolSeleccionado}?
+              ¿Estás seguro que deseas registrarte como {traduccionesRol[rolSeleccionado]}?
             </h2>
             <p className="text-sm text-gray-600 mb-4">
               Esta acción añadirá el rol a tu perfil.

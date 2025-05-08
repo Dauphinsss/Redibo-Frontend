@@ -188,7 +188,7 @@ export default function CompleteRegisterForm() {
     const userData = {
       nombre: nombre || "",
       correo: correo || "",
-      fechaNacimiento, // ✅ ahora en snake_case
+      fechaNacimiento,
       genero,
       ciudad,
       telefono,
@@ -197,7 +197,7 @@ export default function CompleteRegisterForm() {
   
     try {
       console.log("🧪 Enviando al backend:", userData);
-      console.log("🧪 Clave fecha_nacimiento:", userData.fechaNacimiento,); // ✅ Este ya no fallará
+      console.log("🧪 Clave fecha_nacimiento:", userData.fechaNacimiento,);
   
       // Enviar al backend (registro real)
       const response = await axios.post(`${API_URL}/api/auth/complete-profile`, userData, {withCredentials:true});
@@ -205,7 +205,7 @@ export default function CompleteRegisterForm() {
         toast.error(response.data.error);
         return;
       }
-      toast.success("✅ Registro exitoso. Bienvenido/a a REDIBO.");
+      toast.success("Registro exitoso. Bienvenido/a a REDIBO.");
       // Guardar en localStorage
       localStorage.setItem("nombre", response.data.usuario.nombre);
       // localStorage.setItem("correo", response.data.usuario.correo);

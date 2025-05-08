@@ -80,7 +80,7 @@ export function PersonalInfo() {
               id="nombre"
               value={userData?.nombre || ""}
               readOnly={!isEditing}
-              className="mt-1"
+              className="mt-1 border-none bg-transparent shadow-none focus:outline-none focus:ring-0"
             />
           </div>
 
@@ -91,7 +91,7 @@ export function PersonalInfo() {
               type="email"
               value={userData?.correo || ""}
               readOnly={!isEditing}
-              className="mt-1"
+              className="mt-1 border-none bg-transparent shadow-none focus:outline-none focus:ring-0"
             />
           </div>
 
@@ -101,7 +101,7 @@ export function PersonalInfo() {
               id="telefono"
               value={userData?.telefono || ""}
               readOnly={!isEditing}
-              className="mt-1"
+              className="mt-1 border-none bg-transparent shadow-none focus:outline-none focus:ring-0"
             />
           </div>
 
@@ -112,7 +112,7 @@ export function PersonalInfo() {
               type="date"
               value={userData?.fecha_nacimiento || ""}
               readOnly={!isEditing}
-              className="mt-1"
+              className="mt-1 border-none bg-transparent shadow-none focus:outline-none focus:ring-0"
             />
           </div>
 
@@ -122,7 +122,7 @@ export function PersonalInfo() {
               id="genero"
               value={userData?.genero || ""}
               readOnly={!isEditing}
-              className="mt-1"
+              className="mt-1 border-none bg-transparent shadow-none focus:outline-none focus:ring-0"
             />
           </div>
 
@@ -132,7 +132,7 @@ export function PersonalInfo() {
               id="ciudad"
               value={userData?.ciudad?.nombre || ""}
               readOnly={!isEditing}
-              className="mt-1"
+              className="mt-1 border-none bg-transparent shadow-none focus:outline-none focus:ring-0"
             />
           </div>
 

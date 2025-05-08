@@ -13,7 +13,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "types": ["next-auth"], // ✅ Agregado aquí
+    "types": ["next-auth"],
     "plugins": [
       {
         "name": "next"
@@ -28,7 +28,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "types" // ✅ Incluye tus tipos personalizados
+    "types"
   ],
   "exclude": ["node_modules"]
 }
