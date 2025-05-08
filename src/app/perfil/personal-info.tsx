@@ -73,7 +73,7 @@ export function PersonalInfo() {
           Gestiona tu información personal y configuración de cuenta
         </p>
 
-        <div className="grid gap-6">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-6">
           <div>
             <Label htmlFor="nombre">Nombre Completo</Label>
             <Input
