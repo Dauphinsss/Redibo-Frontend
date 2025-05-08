@@ -2,6 +2,7 @@
 import { useState} from 'react';
 import { Button } from "@/components/ui/button"
 import CarsByLocation from '@/components/custom/CarsByLocation';
+import Header from "@/components/ui/Header";
 import data from "../../data/aeropuertos.json"
 export default function Page() {    
   let [selectedValue, setSelectedValue] = useState('0');
@@ -15,6 +16,8 @@ export default function Page() {
     setSelectedLongitude(lon);        
   }    
   return (
+    <div>
+     <Header />
     <div className="max-w-xl mx-auto pt-4">
         <h1 className="text-center text-2xl mb-4 font-semibold">Filtar Por Aeropuerto</h1>
         <p className="mb-4 font-semibold">Seleccione un Aeropuerto</p>
@@ -32,8 +35,9 @@ export default function Page() {
           onClick={handleClick}
         >Buscar</Button>
       </div>
-      <p className="mb-4 font-semibold">Resultados</p>
+      <p className="mb-4 font-semibold">Resultados</p><hr/>
       <CarsByLocation latitude={selectedLatitude} longitude={selectedLongitude}></CarsByLocation>
+    </div>
     </div>
   );
 }

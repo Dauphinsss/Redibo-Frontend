@@ -1,3 +1,6 @@
+import { GiCarDoor } from "react-icons/gi";
+import { IoPeople } from "react-icons/io5";
+import { TbManualGearboxFilled } from "react-icons/tb";
 import data from "../../data/autos.json"
 const CarsByLocation = ({ latitude, longitude }: any) => {  
   const haversineDistance = (lat1: any, lon1: any, lat2: any, lon2: any) => {
@@ -30,10 +33,10 @@ const CarsByLocation = ({ latitude, longitude }: any) => {
               {item.nombre}
             </p>
             <p className="text-sm text-gray-500 truncate">
-            Marca:{item.marca}  &#124; {item.calificacion} &#9733; &#124; distancia: ({distance} Km)
+            Marca:{item.marca}  &#124;  &#9733; {item.calificacion} &#124; distancia: ({distance} Km)
             </p>
-            <p className="text-sm text-gray-800 truncate">
-            Asientos:{item.asientos} &#124; puertas: {item.puertas} &#124; transmision: {item.transmision} 
+            <p className="inline-flex text-sm text-gray-800 truncate">
+            <IoPeople className="mt-1" />{item.asientos}  &#124; <GiCarDoor className="mt-1" />{item.puertas}  &#124; <TbManualGearboxFilled className="mt-1" /> {item.transmision} 
             </p>
          </div>
          <div className="inline-flex items-center text-base font-semibold text-gray-900">
