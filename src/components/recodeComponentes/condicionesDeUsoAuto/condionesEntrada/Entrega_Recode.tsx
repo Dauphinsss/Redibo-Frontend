@@ -1,34 +1,23 @@
 "use client";
 
-import React, { useState, memo } from 'react';
+import React, { memo } from 'react';
 import CustomDropdown_Recode, { Option } from '../CustomDropdown_Recode';
 
-function Entrada_Recode() {
-  // Placeholder + opciones reales
-  const placeholder: Option<string> = { value: "", label: "Seleccionar estado" };
-  const estados: Option<string>[] = [
-    placeholder,
-    { value: "lleno", label: "Lleno" },
-    { value: "medio", label: "Medio" },
-    { value: "vacio", label: "Vacío" }
-  ];
+export interface EntradaRecodeProps {
+  opciones: Option<string>[];
+  valorCombustible: Option<string>;
+  onChangeCombustible: (opt: Option<string>) => void;
+  respuestas: Record<string, boolean>;
+  onCheckboxChange: (key: string) => void;
+}
 
-  // Estado seleccionado empieza en placeholder
-  const [combustible, setCombustible] = useState<Option<string>>(placeholder);
-
-  // Condiciones como booleanos
-  const [respuestas, setRespuestas] = useState<Record<string, boolean>>({
-    exteriorLimpio: false,
-    interiorLimpio: false,
-    rayones: false,
-    llantas: false,
-    interiorSinDanios: false
-  });
-
-  const handleCheckboxChange = (key: string) => {
-    setRespuestas(prev => ({ ...prev, [key]: !prev[key] }));
-  };
-
+function Entrada_Recode({
+  opciones,
+  valorCombustible,
+  onChangeCombustible,
+  respuestas,
+  onCheckboxChange
+}: EntradaRecodeProps) {
   return (
     <div className="space-y-4 px-4 py-4 bg-white rounded-lg shadow">
       {/* Dropdown: columna en mobile, fila en md+ */}
@@ -38,9 +27,9 @@ function Entrada_Recode() {
         </label>
         <div className="w-full md:w-1/3">
           <CustomDropdown_Recode
-            options={estados}
-            value={combustible}
-            onChange={setCombustible}
+            options={opciones}
+            value={valorCombustible}
+            onChange={onChangeCombustible}
           />
         </div>
       </div>
@@ -58,7 +47,7 @@ function Entrada_Recode() {
             <input
               type="checkbox"
               checked={respuestas[key]}
-              onChange={() => handleCheckboxChange(key)}
+              onChange={() => onCheckboxChange(key)}
               className="h-4 w-4 accent-black border-black rounded"
             />
             <span className="font-semibold">{label}</span>
