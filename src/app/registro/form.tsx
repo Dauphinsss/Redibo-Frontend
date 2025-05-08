@@ -23,7 +23,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   UserIcon,
   HomeIcon,
-  CarIcon,
   ChevronRight,
   EyeOff,
   Eye,
@@ -204,10 +203,39 @@ export default function Form() {
           : userType === "RENTER"
           ? "Arrendatario"
           : "";
-      const response = await axios.post(`http://localhost:4000/api/registro`, usuario);
+
+      const response = await axios.post(`${API_URL}/api/registro`, usuario);
       console.log(response.data);
-      toast.success(`Gracias por registrarse como ${user}.`);
-      resetar();
+      if (response.data.error) {
+        toast.error(response.data.error);
+        return;
+      }
+      const loginResponse = await axios.post(`${API_URL}/api/auth/login`, {
+        "correo": usuario.correo,
+        "contrasena": usuario.contrasena
+      });
+      if (loginResponse.data.error) {
+        toast.error(loginResponse.data.error);
+        return;
+      }
+      const { usuario: usuarioLogueado, token } = loginResponse.data;
+      
+      const finalUser = usuarioLogueado || response.data.usuario;
+      const finalToken = token || response.data.token;
+
+      if (finalUser && finalToken) {
+        localStorage.setItem("nombre", finalUser.nombre);
+        localStorage.setItem("foto", finalUser.foto || "default.jpg");
+        localStorage.setItem("auth_token", finalToken);
+        
+        toast.success(`Registro exitoso como ${user}.`);
+        window.location.href = "/";
+      } else {
+        toast.success(`Gracias por registrarse como ${user}.`);
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1500);
+      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const errorMessage = error.response?.data?.error || "Error al registrar el usuario";

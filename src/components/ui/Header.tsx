@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/sheet";
 
 export default function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<{ nombre: string; foto: string } | null>(null);
   const router = useRouter();
 
@@ -42,13 +41,6 @@ export default function Header() {
     router.push("/");
   };
 
-  const handleLoginClick = () => {
-    const nombre = localStorage.getItem("nombre");
-    const foto = localStorage.getItem("foto");
-    if (nombre && foto) {
-      setUser({ nombre, foto });
-    }
-  };
 
   return (
     <header className="border-b">

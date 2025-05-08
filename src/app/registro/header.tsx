@@ -18,7 +18,7 @@ export function Header() {
           >
             <Button variant={"outline"}>Registro</Button>
           </Link>
-          <Button variant={"default"} disabled>
+          <Button>
             <Link href="/login">Iniciar Sesión</Link>
           </Button>
         </nav>

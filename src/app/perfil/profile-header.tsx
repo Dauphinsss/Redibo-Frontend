@@ -87,14 +87,17 @@ export function ProfileHeader() {
           }
         }
       )
-
+      if (response.data.error) {
+        toast.error(response.data.error);
+        return;
+      }
       //console.log("Rol agregado:", response.data.roles)
       toast.success("Rol agregado exitosamente.")   
       window.location.reload()
 
-    } catch (error: any) {
-      console.error("Error al agregar rol:", error.response?.data || error.message)
-      alert(error.response?.data?.error || "Error al agregar el rol.")
+    } catch (error: unknown) {
+      console.error("Error al agregar rol:", error)
+      alert("Error al agregar el rol.")
     }
   }
 
@@ -102,7 +105,11 @@ export function ProfileHeader() {
     return <div>Cargando perfil...</div>
   }
 
-  
+  const traduccionesRol: { [key: string]: string } = {
+    HOST: 'PROPIETARIO',
+    RENTER: 'ARRENDATARIO',
+    DRIVER: 'CONDUCTOR'
+  };
 
   
   
@@ -138,7 +145,9 @@ export function ProfileHeader() {
                 className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full"
               >
                 <RoleIcon role={rol} />
-                <span className="text-sm font-medium">{rol}</span>
+                <span className="text-sm font-medium">
+                  {traduccionesRol[rol] || rol}
+                </span>
               </div>
             ))}
   
@@ -156,11 +165,11 @@ export function ProfileHeader() {
                       <DropdownMenuItem
                         key={rol}
                         onClick={() => {
-                          setRolSeleccionado(rol)
+                          setRolSeleccionado(traduccionesRol[rol] || rol)
                           setModalOpen(true)
                         }}
                       >
-                        Conviértete en {rol}
+                        Conviértete en {traduccionesRol[rol] || rol}
                       </DropdownMenuItem>
                     ))}
                 </DropdownMenuContent>

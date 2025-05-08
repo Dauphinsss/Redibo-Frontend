@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
 import { Star } from "lucide-react"
 import axios from "axios"
 import { API_URL } from "@/utils/bakend"

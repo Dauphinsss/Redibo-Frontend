@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { createContext, useContext } from "react";
+import React, { createContext } from "react";
 import clsx from "clsx";
 
 // Contexto para el provider (puedes expandirlo si necesitas más lógica)
@@ -18,7 +18,6 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
 export function Sidebar({
   children,
   side = "left",
-  collapsible = "none",
   className = "",
 }: {
   children: React.ReactNode;

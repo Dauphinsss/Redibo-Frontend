@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import { API_URL } from "@/utils/bakend";
 import axios from "axios";
 import Link from "next/link";
-
 // Componente de carga
 function LoadingSpinner() {
   return (
@@ -54,9 +53,9 @@ function LoginFormContent() {
 
       router.push("/");
       toast.success("Inicio de sesión exitoso");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error al iniciar sesión:", error);
-      const errorMessage = error.response?.data?.error || "Error al iniciar sesión";
+      const errorMessage = "Error al iniciar sesión";
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -183,7 +182,7 @@ export function LoginForm() {
           setShouldShowForm(true);
         }
       } catch (error) {
-        console.log("No hay datos en URL o error al procesarlos");
+        console.log("No hay datos en URL o error al procesarlos" + error);
         setShouldShowForm(true);
       } finally {
         setIsProcessing(false);

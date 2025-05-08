@@ -3,7 +3,7 @@
 //import { useSession } from "next-auth/react";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { toast } from "sonner";
 import { API_URL } from "@/utils/bakend";
 
@@ -23,7 +23,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import InputErrorIcon from "@/components/ui/inputErrorIcon";
 import { Ciudad } from "@/utils/types";
 import { isUnderage } from "../../../lib/utils";
 import Link from "next/link";
@@ -76,6 +75,7 @@ export default function CompleteRegisterForm() {
         setCiudades(ciudadesResponse.data);
         setIsLoading(false);
       } catch (error) {
+        console.error("Error al cargar datos:", error);
         toast.error("Sesión inválida o expirada");
         router.push("/login");
       }
@@ -87,7 +87,7 @@ export default function CompleteRegisterForm() {
 
   // Validaciones en tiempo real
   useEffect(() => {
-    let nuevosErrores: { [key: string]: string } = {};
+    const nuevosErrores: { [key: string]: string } = {};
     if (telefono && telefono.length !== 8) nuevosErrores.telefono = "El teléfono debe tener exactamente 8 números";
       else if (telefono && !/^[467]/.test(telefono))
         nuevosErrores.telefono = "El teléfono debe comenzar con 4, 6 o 7";
@@ -163,7 +163,7 @@ export default function CompleteRegisterForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    let nuevosErrores: { [key: string]: string } = {};
+    const nuevosErrores: { [key: string]: string } = {};
     if (!telefono) nuevosErrores.telefono = "El teléfono es obligatorio.";
     else if (telefono.length !== 8) nuevosErrores.telefono = "El teléfono debe tener exactamente 8 números";
     if (!fechaNacimiento) nuevosErrores.fechaNacimiento = "La fecha de nacimiento es obligatoria.";
@@ -193,6 +193,10 @@ export default function CompleteRegisterForm() {
   
       // Enviar al backend (registro real)
       const response = await axios.post(`${API_URL}/api/auth/complete-profile`, userData, {withCredentials:true});
+      if (response.data.error) {
+        toast.error(response.data.error);
+        return;
+      }
       toast.success("✅ Registro exitoso. Bienvenido/a a REDIBO.");
       // Guardar en localStorage
       localStorage.setItem("nombre", response.data.usuario.nombre);
@@ -212,9 +216,9 @@ export default function CompleteRegisterForm() {
       } else {
         router.push("/");
       }
-    } catch (error: any) {
+    } catch (error: unknown ) {
       console.error("❌ Error al completar registro con Google:", error);
-      const mensajeError = error.response?.data?.error || error.message;
+      const mensajeError = "Error al completar el registro. Por favor, intenta nuevamente.";
       toast.error(mensajeError);
     } finally {
       setIsSubmitting(false);
