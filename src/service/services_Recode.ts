@@ -76,3 +76,9 @@ export const getCarsByPriceDesc = async () => {
         throw error;
     }
 };
+export async function getCarRatings(id: string): Promise<number[]> {
+    const response = await fetch(`https://search-car-backend.vercel.app/detailCar/${id}`);
+    if (!response.ok) return [];
+  
+    const data = await response.json();
+    return data.Calificacion.map((c: { calf_carro: number }) => c.calf_carro);}

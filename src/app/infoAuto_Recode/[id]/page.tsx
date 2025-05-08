@@ -5,18 +5,29 @@ import InfoDestacable from '@/components/recodeComponentes/detailsCar/RecodeInfo
 import DescriHost from '@/components/recodeComponentes/detailsCar/RecodeDescriHost'
 import DescripcionAuto from '@/components/recodeComponentes/detailsCar/RecodeDescripcionAuto'
 import Reserva from '@/components/recodeComponentes/detailsCar/RecodeReserva'
-import { getCarById } from '@/service/services_Recode'
+import { getCarById , getCarRatings } from '@/service/services_Recode'
 import NotFound from '@/app/not-found'
 import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode'
-import CalificaionRecode from '@/components/recodeComponentes/calificacionAuto/calificacionRecode'
+import CalificaionRecode from '@/components/recodeComponentes/CalificacionAuto/calificacionRecode'
+import ComentarUsr from '@/components/recodeComponentes/comentarioUsuario/realizarComentario/comentarUsuario'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const autoData = await getCarById(id);
-
+  
   if (!autoData) NotFound();
 
   const auto = transformAutoDetails_Recode(autoData);
+  const calificaciones = await getCarRatings(id);
+const promedioCalificacion = calificaciones.length
+  ? Number((calificaciones.reduce((sum, val) => sum + val, 0) / calificaciones.length).toFixed(1))
+  : 0;
+  const totalCalificaciones = calificaciones.length;
+const porcentajeCalificaciones = Array.from({ length: 5 }, (_, i) => {
+  const count = calificaciones.filter(c => c === i + 1).length;
+  return totalCalificaciones ? (count / totalCalificaciones) * 100 : 0;
+});
+
 
   return (
     <>
@@ -39,16 +50,24 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <DescriHost
               nombreHost={auto.nombreHost}
               calificacion={4.5}
-              numAuto={1} 
+              numAuto={1}  
               telefono={auto.telefonoHost}
             />
             <div className="mt-6"  >
-                <CalificaionRecode 
-                  promedio={4.0} 
-                  total={150.2} 
-                  porcentajes={[80, 60, 40, 20, 10]}
-                />
+              <CalificaionRecode 
+                promedio={promedioCalificacion} 
+                total={totalCalificaciones} 
+                porcentajes={porcentajeCalificaciones}
+              />
             </div >
+
+            {/**Comentarios */}
+              <ComentarUsr
+                fotoUser={''}
+                palabraInput={'Realiza un comentario ...'}
+              ></ComentarUsr>
+            {/**hasta aqui se agrego modificacion */}
+
           </div>
           
           <div className="lg:w-1/3">
@@ -62,7 +81,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               <Reserva precio={auto.precio} />
             </div>
           </div>
-          
 
         </div>
       </main>
