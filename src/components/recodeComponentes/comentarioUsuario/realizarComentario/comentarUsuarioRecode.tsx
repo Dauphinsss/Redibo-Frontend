@@ -1,7 +1,7 @@
 "use client";
 
 import { UserCircle } from "lucide-react";
-import FotoPerfilUsr from "./fotoPerfilUsr";
+import FotoPerfilUsr from "@/components/recodeComponentes/comentarioUsuario/realizarComentario/fotoPerfilUsrRecode";
 import { HiOutlinePaperAirplane } from "react-icons/hi";
 
 interface Props{
@@ -13,13 +13,12 @@ function ComentarUsr({fotoUser,palabraInput}:Props){
     return(
         <div className="flex items-center space-x-4 w-full border border-gray-200 rounded-lg p-4">
             {/**foto de perfil del usuario*/}
-            <div className="">
-                <FotoPerfilUsr 
-                    imagenUrl={fotoUser} 
-                    ancho={50} 
-                    alto={50}
-                ></FotoPerfilUsr>
-            </div>
+            <FotoPerfilUsr 
+                imagenUrl={fotoUser} 
+                ancho={50} 
+                alto={50}
+            ></FotoPerfilUsr>
+            
             <div className="flex-1">
                 <input 
                 type="text"

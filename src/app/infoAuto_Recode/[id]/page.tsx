@@ -8,8 +8,9 @@ import Reserva from '@/components/recodeComponentes/detailsCar/RecodeReserva'
 import { getCarById , getCarRatings } from '@/service/services_Recode'
 import NotFound from '@/app/not-found'
 import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode'
-import CalificaionRecode from '@/components/recodeComponentes/CalificacionAuto/calificacionRecode'
-import ComentarUsr from '@/components/recodeComponentes/comentarioUsuario/realizarComentario/comentarUsuario'
+import CalificaionRecode from "@/components/recodeComponentes/calificacionAuto/calificacionRecode"
+import ComentarUsr from "@/components/recodeComponentes/comentarioUsuario/realizarComentario/comentarUsuarioRecode"
+import VerComentario from '@/components/recodeComponentes/comentarioUsuario/verComentario/verComentarioRecode'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -66,6 +67,15 @@ const porcentajeCalificaciones = Array.from({ length: 5 }, (_, i) => {
                 fotoUser={''}
                 palabraInput={'Realiza un comentario ...'}
               ></ComentarUsr>
+
+            {/**Visualizar Comentarios */}
+            <VerComentario
+              nombreCompleto={""}
+              fotoUser={''}
+              fechaComentario={''}
+              comentario={''}
+              calificacionUsr={0}
+            ></VerComentario>
             {/**hasta aqui se agrego modificacion */}
 
           </div>

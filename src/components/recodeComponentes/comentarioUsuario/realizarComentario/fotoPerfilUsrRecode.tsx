@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { memo } from "react";
-import { FaUserCircle, FaStar, FaCar, FaWhatsapp } from 'react-icons/fa';
+import { FaUserCircle } from 'react-icons/fa';
 
 interface Props {
   imagenUrl: string;
