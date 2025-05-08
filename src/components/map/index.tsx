@@ -1,6 +1,6 @@
 "use client"
 
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
+import { MapContainer, TileLayer, Marker, Popup, Pane } from "react-leaflet"
 import L, { DivIcon, LatLngExpression, LatLngTuple } from "leaflet"
 
 import "leaflet/dist/leaflet.css";
@@ -31,6 +31,8 @@ const Map = ({ zoom = defaults.zoom, posix, autos = [] }: MapProps) => {
     })
   }
   return (
+    <>
+    <span className="">Longitud:{punto.longitud} Altitud:{punto.altitud}</span>
     <MapContainer
       center={posix}
       zoom={zoom}
@@ -71,6 +73,7 @@ const Map = ({ zoom = defaults.zoom, posix, autos = [] }: MapProps) => {
       })}
       <MapPunto actualizarPunto={actualizarPunto} />
     </MapContainer>
+    </>
   );
 }
 
