@@ -24,15 +24,22 @@ const defaults = {
 }
 const Map = ({ zoom = defaults.zoom, posix, autos = [] }: MapProps) => {
   const [punto, setpunto] = useState({ altitud: 0, longitud: 0 })
+  const [radio, setradio] = useState(3)
   const actualizarPunto = (longitud: number, altitud: number) => {
     setpunto({
       longitud,
       altitud
     })
   }
+  const handleChange = (e: { target: { value: any; }; }) => {
+    const km = e.target.value;
+    setradio(km);
+  };
   return (
     <>
-    <span className="">Longitud:{punto.longitud} Altitud:{punto.altitud}</span>
+    <label>Radio (m):</label>
+    <input type="number" value={radio} min={0} max={50} step={1} onChange={handleChange}/>
+    <span className="block">Longitud:{punto.longitud} Altitud:{punto.altitud}</span>
     <MapContainer
       center={posix}
       zoom={zoom}
@@ -45,7 +52,7 @@ const Map = ({ zoom = defaults.zoom, posix, autos = [] }: MapProps) => {
       />
       {autos.map((auto) => {
         const sinFiltro = punto.altitud === 0 && punto.longitud === 0;
-        const dentroDelRadio = estaDentroDelRadio(punto.altitud, punto.longitud, auto.latitud, auto.longitud, 3000);
+        const dentroDelRadio = estaDentroDelRadio(punto.altitud, punto.longitud, auto.latitud, auto.longitud, radio*1000);
         if (sinFiltro || dentroDelRadio) {
           const customIcon: DivIcon = L.divIcon({
             html: `<div class="price-marker">$${auto.precio}</div>`,
@@ -71,7 +78,7 @@ const Map = ({ zoom = defaults.zoom, posix, autos = [] }: MapProps) => {
           );
         }
       })}
-      <MapPunto actualizarPunto={actualizarPunto} />
+      <MapPunto actualizarPunto={actualizarPunto} radio={radio} />
     </MapContainer>
     </>
   );

@@ -4,9 +4,10 @@ import { Marker, useMapEvents, Circle } from 'react-leaflet'
 
 interface HijoProps {
   actualizarPunto: (longitud: number, altitud: number) => void;
+  radio: number
 }
 
-const MapPunto: React.FC<HijoProps> = ({ actualizarPunto }) => {
+const MapPunto: React.FC<HijoProps> = ({ actualizarPunto,radio }) => {
   const [position, setPosition] = useState<LatLng | null>(null)
   const map = useMapEvents({
     click(e) {
@@ -23,7 +24,7 @@ const MapPunto: React.FC<HijoProps> = ({ actualizarPunto }) => {
       {
         position && (
           <div>
-            <Circle center={position} pathOptions={fillBlueOptions} radius={3000} />
+            <Circle center={position} pathOptions={fillBlueOptions} radius={radio*1000} />
             <Marker position={position} draggable={false}></Marker>
           </div>
         )
