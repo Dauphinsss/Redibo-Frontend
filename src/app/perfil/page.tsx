@@ -76,7 +76,7 @@ export default function ProfilePage() {
         <div className="mt-8 w-full m-0 p-0">
           <SidebarProvider>
             <div className="flex flex-col md:flex-row w-full m-0 p-0">
-              <div className="w-64 md:w-72 shrink-0 md:border-r-2 md:border-black">
+              <div className="w-64 md:w-72 shrink-0 md:border-r-2 ">
                 <Sidebar side="left" collapsible="none" className="md:sticky md:top-8 md:self-start">
                   <SidebarContent>
                     <SidebarMenu>

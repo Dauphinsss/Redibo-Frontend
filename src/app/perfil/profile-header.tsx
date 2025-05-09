@@ -115,7 +115,7 @@ export function ProfileHeader() {
   
 
   return (
-    <div className="flex flex-col md:flex-row items-center gap-6">
+    <div className="flex flex-col md:flex-row items-center gap-6 p-4">
       <div className="relative">
         <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
           {userData?.foto && !imageError ? (
@@ -138,7 +138,7 @@ export function ProfileHeader() {
         <h1 className="text-2xl font-bold">{userData?.nombre || "Usuario"}</h1>
   
         {userData?.roles && userData.roles.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2 mt-2">
+          <div className="flex flex-wrap items-center gap-2 mt-2 justify-center">
             {userData.roles.map((rol, index) => (
               <div
                 key={index}

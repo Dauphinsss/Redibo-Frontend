@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import axios from "axios"
 import { API_URL } from "@/utils/bakend"
@@ -74,69 +73,39 @@ export function PersonalInfo() {
         </p>
 
         <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-          <div>
-            <Label htmlFor="nombre">Nombre Completo</Label>
-            <Input
-              id="nombre"
-              value={userData?.nombre || ""}
-              readOnly={!isEditing}
-              className="mt-1 border-none bg-transparent shadow-none focus:outline-none focus:ring-0"
-            />
+          <div className="grid col-span-2 md:col-span-1 gap-2">
+            <Label htmlFor="nombre" className="text-base">
+              Nombre Completo
+            </Label>
+            <a className="text-base">{userData?.nombre}</a>
           </div>
 
-          <div>
-            <Label htmlFor="correo">Correo Electrónico</Label>
-            <Input
-              id="correo"
-              type="email"
-              value={userData?.correo || ""}
-              readOnly={!isEditing}
-              className="mt-1 border-none bg-transparent shadow-none focus:outline-none focus:ring-0"
-            />
+          <div className="grid col-span-2 md:col-span-1 gap-2">
+            <Label htmlFor="correo" className="text-base">
+              Correo Electrónico
+            </Label>
+            <a className="text-base">{userData?.correo}</a>
           </div>
 
-          <div>
+          <div className="grid col-span-2 md:col-span-1 gap-2">
             <Label htmlFor="telefono">Número de Teléfono</Label>
-            <Input
-              id="telefono"
-              value={userData?.telefono || ""}
-              readOnly={!isEditing}
-              className="mt-1 border-none bg-transparent shadow-none focus:outline-none focus:ring-0"
-            />
+            <a className="text-base">{userData?.telefono}</a>
           </div>
 
-          <div>
+          <div className="grid col-span-2 md:col-span-1 gap-2">
             <Label htmlFor="fecha_nacimiento">Fecha de Nacimiento</Label>
-            <Input
-              id="fecha_nacimiento"
-              type="date"
-              value={userData?.fecha_nacimiento || ""}
-              readOnly={!isEditing}
-              className="mt-1 border-none bg-transparent shadow-none focus:outline-none focus:ring-0"
-            />
+            <a className="text-base">{userData?.fecha_nacimiento}</a>
           </div>
 
-          <div>
+          <div className="grid col-span-2 md:col-span-1 gap-2">
             <Label htmlFor="genero">Género</Label>
-            <Input
-              id="genero"
-              value={userData?.genero || ""}
-              readOnly={!isEditing}
-              className="mt-1 border-none bg-transparent shadow-none focus:outline-none focus:ring-0"
-            />
+            <a className="text-base">{userData?.genero}</a>
           </div>
 
-          <div>
+          <div className="grid col-span-2 md:col-span-1 gap-2">
             <Label htmlFor="ciudad">Ciudad</Label>
-            <Input
-              id="ciudad"
-              value={userData?.ciudad?.nombre || ""}
-              readOnly={!isEditing}
-              className="mt-1 border-none bg-transparent shadow-none focus:outline-none focus:ring-0"
-            />
+            <a className="text-base">{userData?.ciudad.nombre}</a>
           </div>
-
-          
         </div>
 
         <div className="mt-6 flex justify-end">
@@ -153,7 +122,7 @@ export function PersonalInfo() {
               className="ml-4 w-full md:w-auto"
               onClick={() => {
                 // Aquí iría la lógica para guardar los cambios
-                setIsEditing(false)
+                setIsEditing(false);
               }}
             >
               Guardar Cambios
@@ -162,5 +131,5 @@ export function PersonalInfo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
