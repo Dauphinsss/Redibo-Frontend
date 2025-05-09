@@ -60,7 +60,7 @@ export default function Home() {
         {/* Botón abrir sidebar */}
         <button
           onClick={() => setMostrarSidebar((prev) => !prev)}
-          className="absolute top-24 left-4 z-40 bg-black text-white px-4 py-2 rounded shadow-lg hover:bg-blue-700 transition"
+          className="absolute top-24 left-4 z-40 bg-black text-white px-4 py-2 rounded shadow-lg hover:bg-gray-700 transition"
         >
           Filtros
         </button>
