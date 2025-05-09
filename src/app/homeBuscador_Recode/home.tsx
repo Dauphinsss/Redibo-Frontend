@@ -9,6 +9,9 @@ import ResultadosAutos from '@/components/recodeComponentes/seccionOrdenarMasRes
 import Header from '@/components/ui/Header';
 import SidebarFiltros from '@/components/filtros/SidebarFiltros';
 import dynamic from "next/dynamic";
+import { ButtonPrecio } from '@/components/filtros/buttonPrecio';
+import { ButtonCalif } from '@/components/filtros/buttonCalif';
+import { ButtonViajes } from '@/components/filtros/buttonViajes';
 
 export default function Home() {
   const {
@@ -87,6 +90,10 @@ export default function Home() {
 
                 {/* Filtros por botones */}
                 <div className="mb-6 flex flex-wrap gap-4">
+                <ButtonPrecio onFilterChange={(min, max) => console.log('Filtro precio:', min, max)} />
+                <ButtonCalif onFilterChange={(min) => console.log('Filtro calificación:', min)} />
+                <ButtonViajes onFilterChange={(min) => console.log('Filtro viajes:', min)} />
+
                   {/* Puedes eliminar estos botones si no son necesarios */}
                 </div>
 
