@@ -7,7 +7,8 @@ type Props = {
   onCerrar: () => void;
   setFiltrosCombustible: React.Dispatch<React.SetStateAction<string[]>>;
   setFiltrosCaracteristicas: React.Dispatch<React.SetStateAction<{ asientos?: number; puertas?: number }>>;
-  setFiltrosTransmision: React.Dispatch<React.SetStateAction<string[]>>; // NUEVO
+  setFiltrosTransmision: React.Dispatch<React.SetStateAction<string[]>>;
+  filtrosTransmision: string[];
 };
 
 export default function SidebarFiltros({
@@ -16,6 +17,7 @@ export default function SidebarFiltros({
   setFiltrosCombustible,
   setFiltrosCaracteristicas,
   setFiltrosTransmision, 
+  filtrosTransmision,
 }: Props) {
   const [abierto, setAbierto] = useState({
     tipoCombustible: false,
@@ -37,14 +39,20 @@ export default function SidebarFiltros({
     });
   };
 
-  const handleTransmisionChange = (tipo: string, isChecked: boolean) => {
-    setFiltrosTransmision((prev) => {
-      const nuevoEstado = isChecked
-        ? [...prev, tipo.toLowerCase()]
-        : prev.filter((f) => f !== tipo.toLowerCase());
-      return [...new Set(nuevoEstado)];
-    });
-  };
+  const handleTransmisionChange = (tipo: string) => {
+  setFiltrosTransmision((prev) => {
+    const tipoLower = tipo.toLowerCase();
+    // Si ya está seleccionado, lo deselecciona
+    if (prev.includes(tipoLower)) {
+      return [];
+    }
+    // Si no está seleccionado, lo selecciona y deselecciona el otro
+    return [tipoLower];
+  });
+};
+
+
+
 
   const handleCaracteristicasChange = (
     key: 'asientos' | 'puertas',
@@ -157,7 +165,8 @@ export default function SidebarFiltros({
                   <input
                     type="checkbox"
                     className="form-checkbox"
-                    onChange={(e) => handleTransmisionChange(tipo, e.target.checked)}
+                    checked={filtrosTransmision.includes(tipo.toLowerCase())}
+                    onChange={(e) => handleTransmisionChange(tipo)}
                   />
                   {tipo}
                 </label>

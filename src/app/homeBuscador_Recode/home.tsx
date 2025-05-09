@@ -53,7 +53,8 @@ export default function Home() {
         onCerrar={() => setMostrarSidebar(false)}
         setFiltrosCombustible={setFiltrosCombustible} // Pasar correctamente
         setFiltrosCaracteristicas={setFiltrosCaracteristicas} // Pasar para manejar asientos y puertas
-        setFiltrosTransmision={setFiltrosTransmision} 
+        setFiltrosTransmision={setFiltrosTransmision}
+        filtrosTransmision={filtrosTransmision} 
       />
 
       {/* Contenido principal que se desplazará */}
