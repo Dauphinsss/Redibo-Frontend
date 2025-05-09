@@ -16,7 +16,8 @@ const CalificacionRecode = ({ calificaciones }: { calificaciones: number[] }) =>
             <div className="flex justify-between items-center">
                 <div className="text-center">
                     <h2 className="text-6xl">{total === 0 ? "0.0" : promedio.toFixed(1)}</h2>
-                    <p className="text-gray-600">{total === 0 ? "0 comentarios" : `${total} opiniones`}</p>
+                    
+                    <p className="text-gray-600">{total === 0  ? "0 comentarios" : `${total} opiniones`}</p>
                     {Array.from({ length: 5 }, (_, index) => (
                         <span
                             key={index}
@@ -36,7 +37,7 @@ const CalificacionRecode = ({ calificaciones }: { calificaciones: number[] }) =>
                                 <span className="w-8 text-right text-gray-700">{5 - index}</span>
                                 <div 
                                     className="flex-1 h-4 bg-gray-300 rounded-lg overflow-hidden ml-2 relative"
-                                    title={`${count} comentarios`} 
+                                    title={`${count} ${count === 1 ? "comentario" : "comentarios"}`} 
                                 >
                                     <div  
                                         className="h-full bg-black transition-width duration-300"
