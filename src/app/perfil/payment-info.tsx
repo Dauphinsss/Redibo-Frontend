@@ -1,7 +1,6 @@
 export function PaymentInfo() {
   return (
     <div className="w-full m-0 p-0">
-      <h2 className="text-2xl font-bold mb-6">Tarjetas</h2>
 
       {/* Eliminado el contenedor flex justify-end que podría estar causando el espacio */}
       <div className="w-full m-0 p-0 flex justify-center">
@@ -25,10 +24,10 @@ export function PaymentInfo() {
                 {/* Número de tarjeta */}
                 <div className="text-white tracking-wider text-2xl font-mono mt-8">**** **** **** 9010</div>
 
-                <div className="flex flex-col mt-4">
+                <div className="flex flex-col md:mt-4">
                   <div className="text-sm text-white">VÁLIDO HASTA 12/25</div>
-                  <div className="text-white text-lg mt-1">C. ARIAS</div>
-                  <div className="text-white text-lg">NOMBRE DE EMPRESA</div>
+                  <div className="text-white text-sm md:text-lg mt-1">C. ARIAS</div>
+                  <div className="text-white text-sm md:text-lg">NOMBRE DE EMPRESA</div>
                 </div>
 
                 <div className="absolute bottom-6 right-6 text-white text-3xl font-bold">VISA</div>

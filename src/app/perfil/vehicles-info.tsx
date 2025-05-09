@@ -44,12 +44,11 @@ export function VehiclesInfo() {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Sección de Vehículos</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 justify-center">
         {roles.includes("HOST") && (
           <div
-          className="ml-50 w-64 h-32 bg-black text-white hover:bg-gray-900 rounded-xl p-3 text-center shadow-md cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out ml-4"
+          className="ml-50 w-64 h-32 bg-black text-white hover:bg-gray-900 rounded-xl p-3 text-center shadow-md cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
 
             onClick={() => router.push("/vehicles/misVehicles")}
           >

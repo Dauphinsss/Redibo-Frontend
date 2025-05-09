@@ -52,7 +52,6 @@ export function RatingsInfo() {
   }
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Calificaciones</h2>
   
       <div className="flex flex-col items-center space-y-6">
         {/* Fila superior: Propietario y Arrendatario */}

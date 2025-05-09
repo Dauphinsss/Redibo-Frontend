@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import axios from "axios"
-import { API_URL } from "@/utils/bakend"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import axios from "axios";
+import { API_URL } from "@/utils/bakend";
 
 interface UserProfile {
   id: number;
@@ -21,57 +21,54 @@ interface UserProfile {
 }
 
 export function PersonalInfo() {
-  const [userData, setUserData] = useState<UserProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [isEditing, setIsEditing] = useState(false)
+  const [userData, setUserData] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const authToken = localStorage.getItem("auth_token")
+        const authToken = localStorage.getItem("auth_token");
         if (!authToken) {
-          console.error("No se encontró el token de autenticación")
-          return
+          console.error("No se encontró el token de autenticación");
+          return;
         }
 
         const response = await axios.get<UserProfile>(`${API_URL}/api/perfil`, {
           headers: {
-            Authorization: `Bearer ${authToken}`
-          }
-        })
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
 
         // Formatear la fecha antes de guardarla en el estado
         const formattedData = {
           ...response.data,
-          fecha_nacimiento: response.data.fecha_nacimiento ? 
-            new Date(response.data.fecha_nacimiento).toISOString().split('T')[0] : 
-            ''
-        }
+          fecha_nacimiento: response.data.fecha_nacimiento
+            ? new Date(response.data.fecha_nacimiento)
+                .toISOString()
+                .split("T")[0]
+            : "",
+        };
 
-        setUserData(formattedData)
-        console.log("Datos del usuario:", formattedData) // Para debug
+        setUserData(formattedData);
+        console.log("Datos del usuario:", formattedData); // Para debug
       } catch (error) {
-        console.error("Error al obtener el perfil:", error)
+        console.error("Error al obtener el perfil:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchUserProfile()
-  }, [])
+    fetchUserProfile();
+  }, []);
 
   if (loading) {
-    return <div>Cargando información personal...</div>
+    return <div>Cargando información personal...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold mb-4">Información Personal</h2>
-        <p className="text-gray-500 mb-6">
-          Gestiona tu información personal y configuración de cuenta
-        </p>
-
         <div className="grid grid-cols-2 gap-x-8 gap-y-6">
           <div className="grid col-span-2 md:col-span-1 gap-2">
             <Label htmlFor="nombre" className="text-base">

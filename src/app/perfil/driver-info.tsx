@@ -3,8 +3,6 @@ import { SteeringWheel } from "./steering-wheel-icon"
 export function DriverInfo() {
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Conductor</h2>
-
       <div className="flex justify-center mt-8">
         <div className="w-full max-w-md">
           <div className="border-2 border-gray-800 rounded-xl p-6 flex items-center justify-center">
