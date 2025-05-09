@@ -1,6 +1,10 @@
 import {apiAllCards,apiCarById, apiFormularioCondicionesUsoAuto} from "@/api/apis_Recode";
 import { CondicionesUsoPayload_Recode } from "@/interface/CondicionesUso_interface_Recode";
+import { CondicionesUsoResponse } from "@/interface/CondicionesUsoVisual_interface_Recode";
+
 import {RawAuto_Interface_Recode as RawAuto} from "@/interface/RawAuto_Interface_Recode"
+import { RawCondicionesUsoResponse } from "@/interface/RawCondiciones_Interface_Recode";
+import { transformCondiciones_Recode } from "@/utils/transformCondiciones_Recode";
 
 export const getAllCars = async (): Promise<RawAuto[]> => {
     try {
@@ -95,12 +99,12 @@ export const postCondicionesUso_Recode = async (payload: CondicionesUsoPayload_R
     
 };
 
-export const getCondicionesUso_Recode = async (id_carro: number): Promise<CondicionesUsoPayload_Recode> => {
-    try{
-        const res = await apiFormularioCondicionesUsoAuto.get(`/getCondition/${id_carro}`);
-        return res.data;
-    }catch (error) {
-        console.error("Error al obtener las condiciones de uso:", error);
-        throw new Error("No se pudo cargar las condiciones de uso. Intenta de nuevo más tarde.");
+export async function getCondicionesUsoVisual_Recode(id_carro: number): Promise<CondicionesUsoResponse | null> {
+    try {
+        const response = await apiCarById.get<RawCondicionesUsoResponse>(`/useConditon/${id_carro}`);
+        return transformCondiciones_Recode(response.data);
+    } catch (error) {
+        console.error("Error al obtener condiciones visuales:", error);
+        return null;
     }
-};
+}
