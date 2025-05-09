@@ -64,7 +64,7 @@ export default function SidebarFiltros({
       }`}
     >
       <div className="flex justify-between items-center px-4 py-3 border-b">
-        <h2 className="font-semibold text-lg">Filtros avanzados</h2>
+        <h2 className="font-semibold text-lg">Filtros</h2>
         <button onClick={onCerrar} className="text-xl font-bold hover:text-red-600">
           &times;
         </button>
