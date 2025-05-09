@@ -1,15 +1,22 @@
 "use client";
-import React from "react";
+import React, { useRef } from "react";
 
-import Header from "@/components/ui/Header"; // ajusta esta ruta según dónde esté
+import Header from "@/components/ui/Header";
 import TablaComponentes_Recode from "@/components/recodeComponentes/condicionesDeUsoAuto/TablaComponentes_Recode";
 import BotonVolver from "@/components/recodeComponentes/condicionesDeUsoAuto/BotonVolver";
 
 export default function CondicionesUsoAutoHome() {
+  const tablaRef = useRef<{ enviarFormulario: () => void }>(null);
+
+  const handleGuardar = () => {
+    if (tablaRef.current) {
+      tablaRef.current.enviarFormulario();
+    }
+  };
+
   return (
     <div className="flex flex-col justify-between gap-2">
-      
-      {/* Header global con navegación y login */}
+      {/* Header */}
       <div className="sticky top-0 z-50 bg-white shadow">
         <Header />
       </div>
@@ -21,10 +28,19 @@ export default function CondicionesUsoAutoHome() {
         </h2>
       </div>
 
-      {/* Contenido principal */}
+      {/* Formulario de condiciones */}
       <main>
-        {/* Tabla de condiciones */}
-        <TablaComponentes_Recode />
+        <TablaComponentes_Recode ref={tablaRef} id_carro={1} />
+
+        {/* Botón Guardar */}
+        <div className="w-full flex justify-center mt-4">
+          <button
+            onClick={handleGuardar}
+            className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition"
+          >
+            Guardar condiciones
+          </button>
+        </div>
 
         {/* Botón volver */}
         <div className="w-full py-4 flex justify-center border-t mt-6">
