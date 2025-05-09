@@ -15,7 +15,7 @@ export default function SidebarFiltros({
   onCerrar,
   setFiltrosCombustible,
   setFiltrosCaracteristicas,
-  setFiltrosTransmision, // NUEVO
+  setFiltrosTransmision, 
 }: Props) {
   const [abierto, setAbierto] = useState({
     tipoCombustible: false,
@@ -175,8 +175,10 @@ export default function SidebarFiltros({
             Características adicionales
           </button>
           {abierto.caracteristicasAdicionales && (
-            <div className="p-4 space-y-2">
-              {['GPS', 'Aire acondicionado'].map((carac) => (
+            <div className="p-4 space-y-2 max-h-38 overflow-y-auto">
+              {["Aire acondicionado", "Bluetooth", "GPS", "Portabicicletas", "Soporte para esquís",
+                "Pantalla táctil", "Sillas para bebé", "Cámara de reversa", "Asientos de cuero",
+                "Sistema antirrobo", "Toldo o rack de techo", "Vidrios polarizados", "Sistema de sonido"].map((carac) => (
                 <label key={carac} className="flex items-center gap-2">
                   <input type="checkbox" className="form-checkbox" />
                   {carac}
