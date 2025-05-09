@@ -17,29 +17,21 @@ interface MapProps {
   posix: LatLngExpression | LatLngTuple,
   zoom?: number,
   autos?: AutoMap[],
+  radio: number
 }
 
 const defaults = {
   zoom: 12,
 }
-const Map = ({ zoom = defaults.zoom, posix, autos = [] }: MapProps) => {
+const Map = ({ zoom = defaults.zoom, posix, autos = [] , radio}: MapProps) => {
   const [punto, setpunto] = useState({ altitud: 0, longitud: 0 })
-  const [radio, setradio] = useState(3)
   const actualizarPunto = (longitud: number, altitud: number) => {
     setpunto({
       longitud,
       altitud
     })
   }
-  const handleChange = (e: { target: { value: any; }; }) => {
-    const km = e.target.value;
-    setradio(km);
-  };
   return (
-    <>
-    <label>Radio (m):</label>
-    <input type="number" value={radio} min={0} max={50} step={1} onChange={handleChange}/>
-    <span className="block">Longitud:{punto.longitud} Altitud:{punto.altitud}</span>
     <MapContainer
       center={posix}
       zoom={zoom}
@@ -80,7 +72,6 @@ const Map = ({ zoom = defaults.zoom, posix, autos = [] }: MapProps) => {
       })}
       <MapPunto actualizarPunto={actualizarPunto} radio={radio} />
     </MapContainer>
-    </>
   );
 }
 

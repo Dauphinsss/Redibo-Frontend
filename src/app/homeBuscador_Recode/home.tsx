@@ -50,7 +50,10 @@ export default function Home() {
   };
 
   const { data: carsMap, isLoading: loadingMap } = useCarsMap(startDate, endDate);
-
+  const [radio, setradio] = useState(3)
+  const increment = () => setradio(prev => prev + 1);
+  const decrement = () => setradio(prev => prev - 1);
+  const reset = () => setradio(0);
   return (
     <div className="relative">
 
@@ -91,6 +94,12 @@ export default function Home() {
           </div>
 
           <div className="w-full max-w-4xl mx-auto">
+            <div style={{ textAlign: 'center', background: '#7FFFD4'}}>
+              <h2>Contador: {radio  }</h2>
+              <button onClick={decrement}>-</button>
+              <button onClick={reset}>Reset</button>
+              <button onClick={increment}>+</button>
+            </div>
             <HeaderBusquedaRecode
               autosTotales={autos}
               autosFiltrados={autosFiltrados}
@@ -113,7 +122,7 @@ export default function Home() {
         <div className="hidden lg:block lg:w-[40%]">
           <div className="sticky top-[64px] h-[calc(100vh-64px)] bg-gray-100 rounded shadow-inner">
             {!loadingMap &&
-              <ViewMap posix={[-17.39438, -66.16018]} autos={carsMap} />
+              <ViewMap posix={[-17.39438, -66.16018]} autos={carsMap} radio={radio} />
             }
           </div>
         </div>
@@ -143,7 +152,7 @@ export default function Home() {
 
             <div className="w-full h-full">
               {!loadingMap &&
-                <ViewMap posix={[-17.39438, -66.16018]} autos={carsMap} />
+                <ViewMap posix={[-17.39438, -66.16018]} autos={carsMap} radio={radio} />
               }
             </div>
           </div>
