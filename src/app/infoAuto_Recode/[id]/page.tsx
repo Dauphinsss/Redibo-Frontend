@@ -20,14 +20,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   const auto = transformAutoDetails_Recode(autoData);
   const calificaciones = await getCarRatings(id);
-const promedioCalificacion = calificaciones.length
-  ? Number((calificaciones.reduce((sum, val) => sum + val, 0) / calificaciones.length).toFixed(1))
-  : 0;
-  const totalCalificaciones = calificaciones.length;
-const porcentajeCalificaciones = Array.from({ length: 5 }, (_, i) => {
-  const count = calificaciones.filter(c => c === i + 1).length;
-  return totalCalificaciones ? (count / totalCalificaciones) * 100 : 0;
-});
+
+;
 
 
   return (
@@ -55,10 +49,8 @@ const porcentajeCalificaciones = Array.from({ length: 5 }, (_, i) => {
               telefono={auto.telefonoHost}
             />
             <div className="mt-6"  >
-              <CalificaionRecode 
-                promedio={promedioCalificacion} 
-                total={totalCalificaciones} 
-                porcentajes={porcentajeCalificaciones}
+              <CalificaionRecode calificaciones={calificaciones}
+                
               />
             </div >
 
