@@ -29,9 +29,9 @@ export default function Home() {
     filtrosCombustible,
     setFiltrosCombustible,
     filtrosCaracteristicas,
-    setFiltrosCaracteristicas, // Asegúrate de exponer esta función desde useAutos
-     filtrosTransmision, 
-     setFiltrosTransmision 
+    setFiltrosCaracteristicas,
+    filtrosTransmision,
+    setFiltrosTransmision
   } = useAutos();
 
   const [showMap, setShowMap] = useState(false);
@@ -47,28 +47,30 @@ export default function Home() {
 
   return (
     <div className="relative">
-      {/* Sidebar de filtros */}
-      <SidebarFiltros
-        mostrar={mostrarSidebar}
-        onCerrar={() => setMostrarSidebar(false)}
-        setFiltrosCombustible={setFiltrosCombustible} // Pasar correctamente
-        setFiltrosCaracteristicas={setFiltrosCaracteristicas} // Pasar para manejar asientos y puertas
-        setFiltrosTransmision={setFiltrosTransmision}
-        filtrosTransmision={filtrosTransmision} 
-      />
+      {/* Sidebar como overlay */}
+      {mostrarSidebar && (
+        <div className="fixed top-0 left-0 w-64 h-full bg-white shadow-lg z-50 transition-transform duration-300">
+          <SidebarFiltros
+            mostrar={mostrarSidebar}
+            onCerrar={() => setMostrarSidebar(false)}
+            setFiltrosCombustible={setFiltrosCombustible}
+            setFiltrosCaracteristicas={setFiltrosCaracteristicas}
+            setFiltrosTransmision={setFiltrosTransmision}
+            filtrosTransmision={filtrosTransmision}
+          />
+        </div>
+      )}
 
-      {/* Contenido principal que se desplazará */}
-      <div
-        className={`transition-transform duration-300 relative ${mostrarSidebar ? 'translate-x-64' : ''}`}
+      {/* Botón abrir sidebar */}
+      <button
+        onClick={() => setMostrarSidebar((prev) => !prev)}
+        className="fixed top-24 left-4 z-40 bg-black text-white px-4 py-2 rounded shadow-lg hover:bg-gray-700 transition"
       >
-        {/* Botón abrir sidebar */}
-        <button
-          onClick={() => setMostrarSidebar((prev) => !prev)}
-          className="absolute top-24 left-4 z-40 bg-black text-white px-4 py-2 rounded shadow-lg hover:bg-gray-700 transition"
-        >
-          Filtros
-        </button>
+        Filtros
+      </button>
 
+      {/* Contenido principal */}
+      <div className="relative z-10">
         <div className="sticky top-0 z-30 bg-white shadow">
           <Header />
         </div>
@@ -91,11 +93,9 @@ export default function Home() {
 
                 {/* Filtros por botones */}
                 <div className="mb-6 flex flex-wrap gap-4">
-                <ButtonPrecio onFilterChange={(min, max) => console.log('Filtro precio:', min, max)} />
-                <ButtonCalif onFilterChange={(min) => console.log('Filtro calificación:', min)} />
-                <ButtonViajes onFilterChange={(min) => console.log('Filtro viajes:', min)} />
-
-                  {/* Puedes eliminar estos botones si no son necesarios */}
+                  <ButtonPrecio onFilterChange={(min, max) => console.log('Filtro precio:', min, max)} />
+                  <ButtonCalif onFilterChange={(min) => console.log('Filtro calificación:', min)} />
+                  <ButtonViajes onFilterChange={(min) => console.log('Filtro viajes:', min)} />
                 </div>
 
                 <HeaderBusquedaRecode
@@ -117,7 +117,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Mapa */}
+            {/* Mapa escritorio */}
             <div className="hidden lg:block lg:w-1/3">
               <div className="sticky top-20 h-[690px] bg-gray-100 rounded shadow-inner">
                 <ViewMap posix={[4.79029, -75.69003]} />
