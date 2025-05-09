@@ -59,18 +59,16 @@ export default function Home() {
         setFiltrosCaracteristicasAdicionales={setFiltrosCaracteristicasAdicionales}
       />
 
-      {/* Contenido principal que se desplazará */}
-      <div
-        className={`transition-transform duration-300 relative ${mostrarSidebar ? 'translate-x-64' : ''}`}
+      {/* Botón abrir sidebar */}
+      <button
+        onClick={() => setMostrarSidebar((prev) => !prev)}
+        className="fixed top-24 left-4 z-40 bg-black text-white px-4 py-2 rounded shadow-lg hover:bg-gray-700 transition"
       >
-        {/* Botón abrir sidebar */}
-        <button
-          onClick={() => setMostrarSidebar((prev) => !prev)}
-          className="absolute top-24 left-4 z-40 bg-black text-white px-4 py-2 rounded shadow-lg hover:bg-gray-700 transition"
-        >
-          Filtros
-        </button>
+        Filtros
+      </button>
 
+      {/* Contenido principal */}
+      <div className="relative z-10">
         <div className="sticky top-0 z-30 bg-white shadow">
           <Header />
         </div>
@@ -93,11 +91,9 @@ export default function Home() {
 
                 {/* Filtros por botones */}
                 <div className="mb-6 flex flex-wrap gap-4">
-                <ButtonPrecio onFilterChange={(min, max) => console.log('Filtro precio:', min, max)} />
-                <ButtonCalif onFilterChange={(min) => console.log('Filtro calificación:', min)} />
-                <ButtonViajes onFilterChange={(min) => console.log('Filtro viajes:', min)} />
-
-                  {/* Puedes eliminar estos botones si no son necesarios */}
+                  <ButtonPrecio onFilterChange={(min, max) => console.log('Filtro precio:', min, max)} />
+                  <ButtonCalif onFilterChange={(min) => console.log('Filtro calificación:', min)} />
+                  <ButtonViajes onFilterChange={(min) => console.log('Filtro viajes:', min)} />
                 </div>
 
                 <HeaderBusquedaRecode
@@ -119,7 +115,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Mapa */}
+            {/* Mapa escritorio */}
             <div className="hidden lg:block lg:w-1/3">
               <div className="sticky top-20 h-[690px] bg-gray-100 rounded shadow-inner">
                 <ViewMap posix={[4.79029, -75.69003]} />
