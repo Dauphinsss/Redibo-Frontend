@@ -15,7 +15,12 @@ const CalificacionRecode = ({ calificaciones }: { calificaciones: number[] }) =>
         <div className="p-4 border rounded-lg bg-white w-full flex justify-between items-center">
             <div className="text-center">
                 <h2 className="text-6xl">{total === 0 ? "0.0" : promedio.toFixed(1)}</h2>
-                <p className="text-gray-600">{total === 0 ? "0 comentarios" : `${total} opiniones`}</p>
+                <p className="text-gray-600">{total === 0 ? "0 comentarios" : `${total} opiniones`}
+                    {total === 0 
+                        ? "Este auto aún no tiene calificaciones"
+                        : `${total} opiniones`}
+
+                </p>
                 {Array.from({ length: 5 }, (_, index) => (
                     <span
                         key={index}
@@ -39,7 +44,7 @@ const CalificacionRecode = ({ calificaciones }: { calificaciones: number[] }) =>
                             >
                                 <div  
                                     className="h-full bg-black transition-width duration-300"
-                                    style={{ width: total === 0 ? "5%" : `${value}%` }} 
+                                    style={{ width: total === 0 ? "0%" : `${value}%`, borderRadius: "8px"}} 
                                 ></div>
                             </div>
                         </div>
