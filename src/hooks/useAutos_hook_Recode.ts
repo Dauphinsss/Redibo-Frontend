@@ -12,6 +12,7 @@ export function useAutos(cantidadPorLote = 8) {
     const [ordenSeleccionado, setOrdenSeleccionado] = useState('Recomendación');
     const [textoBusqueda, setTextoBusqueda] = useState('');
     const [filtrosCombustible, setFiltrosCombustible] = useState<string[]>([]); // Estado para los filtros de combustible
+    const [filtrosCaracteristicas, setFiltrosCaracteristicas] = useState<{ asientos?: number; puertas?: number }>({}); // Estado para los filtros de características
 
     const fetchAutos = async () => {
         try {
@@ -69,6 +70,16 @@ export function useAutos(cantidadPorLote = 8) {
             });
         }
 
+        // Filtro por características del coche (asientos y puertas)
+        if (filtrosCaracteristicas.asientos) {
+            console.log("Aplicando filtro de asientos:", filtrosCaracteristicas.asientos);
+            resultado = resultado.filter(auto => auto.asientos === filtrosCaracteristicas.asientos);
+        }
+        if (filtrosCaracteristicas.puertas) {
+            console.log("Aplicando filtro de puertas:", filtrosCaracteristicas.puertas);
+            resultado = resultado.filter(auto => auto.puertas === filtrosCaracteristicas.puertas);
+        }
+
         // Ordenar resultados
         switch (ordenSeleccionado) {
             case 'Modelo Ascendente':
@@ -86,7 +97,7 @@ export function useAutos(cantidadPorLote = 8) {
         }
 
         setAutosFiltrados(resultado);
-    }, [autos, textoBusqueda, filtrosCombustible, ordenSeleccionado]);
+    }, [autos, textoBusqueda, filtrosCombustible, filtrosCaracteristicas, ordenSeleccionado]);
 
     useEffect(() => {
         filtrarYOrdenarAutos();
@@ -155,6 +166,8 @@ export function useAutos(cantidadPorLote = 8) {
         filtrarAutos: setTextoBusqueda,
         filtrosCombustible,
         setFiltrosCombustible, // Exponer el setter para los filtros de combustible
+        filtrosCaracteristicas,
+        setFiltrosCaracteristicas, // Exponer el setter para los filtros de características
         obtenerSugerencia,
     };
 }

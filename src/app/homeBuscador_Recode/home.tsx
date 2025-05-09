@@ -7,9 +7,6 @@ import SearchBar from '@/components/recodeComponentes/seccionOrdenarMasResultado
 import HeaderBusquedaRecode from '@/components/recodeComponentes/seccionOrdenarMasResultados/HeaderBusquedaRecode';
 import ResultadosAutos from '@/components/recodeComponentes/seccionOrdenarMasResultados/ResultadosAutos_Recode';
 import Header from '@/components/ui/Header';
-import { ButtonPrecio } from '@/components/filtros/buttonPrecio';
-import { ButtonCalif } from '@/components/filtros/buttonCalif';
-import { ButtonViajes } from '@/components/filtros/buttonViajes';
 import SidebarFiltros from '@/components/filtros/SidebarFiltros';
 import dynamic from "next/dynamic";
 
@@ -27,7 +24,9 @@ export default function Home() {
     filtrarAutos,
     obtenerSugerencia,
     filtrosCombustible,
-    setFiltrosCombustible, // Asegúrate de exponer esta función desde useAutos
+    setFiltrosCombustible,
+    filtrosCaracteristicas,
+    setFiltrosCaracteristicas, // Asegúrate de exponer esta función desde useAutos
   } = useAutos();
 
   const [showMap, setShowMap] = useState(false);
@@ -48,6 +47,7 @@ export default function Home() {
         mostrar={mostrarSidebar}
         onCerrar={() => setMostrarSidebar(false)}
         setFiltrosCombustible={setFiltrosCombustible} // Pasar correctamente
+        setFiltrosCaracteristicas={setFiltrosCaracteristicas} // Pasar para manejar asientos y puertas
       />
 
       {/* Contenido principal que se desplazará */}
@@ -84,9 +84,7 @@ export default function Home() {
 
                 {/* Filtros por botones */}
                 <div className="mb-6 flex flex-wrap gap-4">
-                  <ButtonPrecio onFilterChange={(min, max) => console.log('Filtro precio:', min, max)} />
-                  <ButtonCalif onFilterChange={(min) => console.log('Filtro calificación:', min)} />
-                  <ButtonViajes onFilterChange={(min) => console.log('Filtro viajes:', min)} />
+                  {/* Puedes eliminar estos botones si no son necesarios */}
                 </div>
 
                 <HeaderBusquedaRecode
