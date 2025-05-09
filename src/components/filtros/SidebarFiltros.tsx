@@ -7,9 +7,16 @@ type Props = {
   onCerrar: () => void;
   setFiltrosCombustible: React.Dispatch<React.SetStateAction<string[]>>;
   setFiltrosCaracteristicas: React.Dispatch<React.SetStateAction<{ asientos?: number; puertas?: number }>>;
+  setFiltrosTransmision: React.Dispatch<React.SetStateAction<string[]>>; // NUEVO
 };
 
-export default function SidebarFiltros({ mostrar, onCerrar, setFiltrosCombustible, setFiltrosCaracteristicas }: Props) {
+export default function SidebarFiltros({
+  mostrar,
+  onCerrar,
+  setFiltrosCombustible,
+  setFiltrosCaracteristicas,
+  setFiltrosTransmision, // NUEVO
+}: Props) {
   const [abierto, setAbierto] = useState({
     tipoCombustible: false,
     caracteristicasCoche: false,
@@ -30,7 +37,20 @@ export default function SidebarFiltros({ mostrar, onCerrar, setFiltrosCombustibl
     });
   };
 
-  const handleCaracteristicasChange = (key: 'asientos' | 'puertas', value: number, isChecked: boolean) => {
+  const handleTransmisionChange = (tipo: string, isChecked: boolean) => {
+    setFiltrosTransmision((prev) => {
+      const nuevoEstado = isChecked
+        ? [...prev, tipo.toLowerCase()]
+        : prev.filter((f) => f !== tipo.toLowerCase());
+      return [...new Set(nuevoEstado)];
+    });
+  };
+
+  const handleCaracteristicasChange = (
+    key: 'asientos' | 'puertas',
+    value: number,
+    isChecked: boolean
+  ) => {
     setFiltrosCaracteristicas((prev) => ({
       ...prev,
       [key]: isChecked ? value : undefined,
@@ -102,7 +122,7 @@ export default function SidebarFiltros({ mostrar, onCerrar, setFiltrosCombustibl
                 </div>
               </div>
 
-              {/* Número de puertas */}
+              {/* Puertas */}
               <div>
                 <p className="font-semibold">Número de puertas</p>
                 <div className="grid grid-cols-2 gap-2">
@@ -132,9 +152,13 @@ export default function SidebarFiltros({ mostrar, onCerrar, setFiltrosCombustibl
           </button>
           {abierto.transmision && (
             <div className="p-4 space-y-2">
-              {['Manual', 'Automático'].map((tipo) => (
+              {['Manual', 'Automática'].map((tipo) => (
                 <label key={tipo} className="flex items-center gap-2">
-                  <input type="checkbox" className="form-checkbox" />
+                  <input
+                    type="checkbox"
+                    className="form-checkbox"
+                    onChange={(e) => handleTransmisionChange(tipo, e.target.checked)}
+                  />
                   {tipo}
                 </label>
               ))}

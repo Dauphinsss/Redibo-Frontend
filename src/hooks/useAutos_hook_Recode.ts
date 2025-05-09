@@ -13,6 +13,7 @@ export function useAutos(cantidadPorLote = 8) {
     const [textoBusqueda, setTextoBusqueda] = useState('');
     const [filtrosCombustible, setFiltrosCombustible] = useState<string[]>([]); // Estado para los filtros de combustible
     const [filtrosCaracteristicas, setFiltrosCaracteristicas] = useState<{ asientos?: number; puertas?: number }>({}); // Estado para los filtros de características
+    const [filtrosTransmision, setFiltrosTransmision] = useState<string[]>([]);
 
     const fetchAutos = async () => {
         try {
@@ -80,6 +81,17 @@ export function useAutos(cantidadPorLote = 8) {
             resultado = resultado.filter(auto => auto.puertas === filtrosCaracteristicas.puertas);
         }
 
+        // Filtro por transmisión
+        if (filtrosTransmision.length > 0) {
+            console.log("Aplicando filtro de transmisión:", filtrosTransmision);
+            resultado = resultado.filter(auto => {
+            console.log("Transmisión del auto:", auto.transmision);
+            return filtrosTransmision.some(transmision =>
+             auto.transmision.toLowerCase().includes(transmision.toLowerCase())
+            );
+           });
+        }
+
         // Ordenar resultados
         switch (ordenSeleccionado) {
             case 'Modelo Ascendente':
@@ -97,7 +109,7 @@ export function useAutos(cantidadPorLote = 8) {
         }
 
         setAutosFiltrados(resultado);
-    }, [autos, textoBusqueda, filtrosCombustible, filtrosCaracteristicas, ordenSeleccionado]);
+    }, [autos, textoBusqueda, filtrosCombustible, filtrosCaracteristicas, ordenSeleccionado,filtrosTransmision]);
 
     useEffect(() => {
         filtrarYOrdenarAutos();
@@ -168,6 +180,9 @@ export function useAutos(cantidadPorLote = 8) {
         setFiltrosCombustible, // Exponer el setter para los filtros de combustible
         filtrosCaracteristicas,
         setFiltrosCaracteristicas, // Exponer el setter para los filtros de características
+        filtrosTransmision,
+        setFiltrosTransmision,// Exponer el setter para los filtros de transmisión
+
         obtenerSugerencia,
     };
 }

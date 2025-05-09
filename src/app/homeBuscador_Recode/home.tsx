@@ -27,6 +27,8 @@ export default function Home() {
     setFiltrosCombustible,
     filtrosCaracteristicas,
     setFiltrosCaracteristicas, // Asegúrate de exponer esta función desde useAutos
+     filtrosTransmision, 
+     setFiltrosTransmision 
   } = useAutos();
 
   const [showMap, setShowMap] = useState(false);
@@ -48,6 +50,7 @@ export default function Home() {
         onCerrar={() => setMostrarSidebar(false)}
         setFiltrosCombustible={setFiltrosCombustible} // Pasar correctamente
         setFiltrosCaracteristicas={setFiltrosCaracteristicas} // Pasar para manejar asientos y puertas
+        setFiltrosTransmision={setFiltrosTransmision} 
       />
 
       {/* Contenido principal que se desplazará */}
