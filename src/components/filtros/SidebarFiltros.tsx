@@ -141,6 +141,26 @@ export default function SidebarFiltros({ mostrar, onCerrar, setFiltrosCombustibl
             </div>
           )}
         </div>
+
+        {/* Características adicionales */}
+        <div className="border rounded shadow-sm">
+          <button
+            onClick={() => toggle('caracteristicasAdicionales')}
+            className="w-full text-left px-4 py-2 bg-gray-100 font-semibold hover:bg-gray-200"
+          >
+            Características adicionales
+          </button>
+          {abierto.caracteristicasAdicionales && (
+            <div className="p-4 space-y-2">
+              {['GPS', 'Aire acondicionado'].map((carac) => (
+                <label key={carac} className="flex items-center gap-2">
+                  <input type="checkbox" className="form-checkbox" />
+                  {carac}
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
