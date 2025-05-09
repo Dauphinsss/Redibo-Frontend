@@ -62,7 +62,7 @@ export default function Home() {
           onClick={() => setMostrarSidebar((prev) => !prev)}
           className="absolute top-24 left-4 z-40 bg-blue-600 text-white px-4 py-2 rounded shadow-lg hover:bg-blue-700 transition"
         >
-          Filtros avanzados
+          Filtros
         </button>
 
         <div className="sticky top-0 z-30 bg-white shadow">
