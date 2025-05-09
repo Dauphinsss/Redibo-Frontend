@@ -1,7 +1,7 @@
 "use client";
 import FotoPerfilUsr from "@/components/recodeComponentes/comentarioUsuario/realizarComentario/fotoPerfilUsrRecode";
 import { FaStar } from "react-icons/fa";
-import { HiOutlineChat, HiOutlineHeart,HiHeart} from "react-icons/hi";
+import { HiOutlineChat, HiOutlineHeart} from "react-icons/hi";
 
 interface Props {
   nombreCompleto: string;

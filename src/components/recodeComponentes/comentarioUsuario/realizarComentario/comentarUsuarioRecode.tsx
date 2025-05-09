@@ -1,6 +1,6 @@
 "use client";
 
-import { UserCircle } from "lucide-react";
+//import { UserCircle } from "lucide-react";
 import FotoPerfilUsr from "@/components/recodeComponentes/comentarioUsuario/realizarComentario/fotoPerfilUsrRecode";
 import { HiOutlinePaperAirplane } from "react-icons/hi";
 
