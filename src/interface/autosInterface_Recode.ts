@@ -19,6 +19,7 @@ export interface InfoDestacableProps {
 
 }
 export interface ReservaProps {
+  id: string;
   precio: number;
 }
 export interface Direccion {

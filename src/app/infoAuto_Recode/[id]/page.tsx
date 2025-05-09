@@ -8,7 +8,7 @@ import Reserva from '@/components/recodeComponentes/detailsCar/RecodeReserva'
 import { getCarById , getCarRatings } from '@/service/services_Recode'
 import NotFound from '@/app/not-found'
 import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode'
-import CalificaionRecode from "@/components/recodeComponentes/CalificacionAuto/calificacionRecode"
+import CalificaionRecode from "@/components/recodeComponentes/calificacionAuto/calificacionRecode"
 import ComentarUsr from "@/components/recodeComponentes/comentarioUsuario/realizarComentario/comentarUsuarioRecode"
 import VerComentario from '@/components/recodeComponentes/comentarioUsuario/verComentario/verComentarioRecode'
 
@@ -80,7 +80,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 anio={auto.anio}
                 soat={auto.soat}
               />
-              <Reserva precio={auto.precio} />
+              <Reserva 
+                id={id}
+                precio={auto.precio} 
+              />
             </div>
           </div>
 
