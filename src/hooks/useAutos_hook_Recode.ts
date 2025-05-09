@@ -11,16 +11,17 @@ export function useAutos(cantidadPorLote = 8) {
     const [cargando, setCargando] = useState(true);
     const [ordenSeleccionado, setOrdenSeleccionado] = useState('Recomendación');
     const [textoBusqueda, setTextoBusqueda] = useState('');
-    const [filtrosCombustible, setFiltrosCombustible] = useState<string[]>([]); // Estado para los filtros de combustible
-    const [filtrosCaracteristicas, setFiltrosCaracteristicas] = useState<{ asientos?: number; puertas?: number }>({}); // Estado para los filtros de características
+    const [filtrosCombustible, setFiltrosCombustible] = useState<string[]>([]);
+    const [filtrosCaracteristicas, setFiltrosCaracteristicas] = useState<{ asientos?: number; puertas?: number }>({});
     const [filtrosTransmision, setFiltrosTransmision] = useState<string[]>([]);
+    const [filtrosCaracteristicasAdicionales, setFiltrosCaracteristicasAdicionales] = useState<string[]>([]);
 
     const fetchAutos = async () => {
         try {
             setCargando(true);
-            const rawData: RawAuto[] = await getAllCars(); // obtiene los datos crudos de los autos
-            console.log('Datos crudos de autos:', rawData);
+            const rawData: RawAuto[] = await getAllCars();
             const transformed = rawData.map(transformAuto);
+            console.log('Datos transformados:', transformed);
             setAutos(transformed);
             setAutosFiltrados(transformed);
         } catch (error) {
@@ -36,16 +37,16 @@ export function useAutos(cantidadPorLote = 8) {
     }, []);
 
     const normalizarTexto = (texto: string) => {
-        return texto
-            .normalize("NFD") 
-            .replace(/[\u0300-\u036f]/g, "") 
-            .toLowerCase(); 
+        return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     };
+       autos.forEach((auto) => {
+  console.log("Características adicionales de", auto.modelo || auto.idAuto, ":", auto.caracteristicasAdicionales);
+  });
+  
 
     const filtrarYOrdenarAutos = useCallback(() => {
         let resultado = [...autos];
 
-        // Filtro por texto de búsqueda (marca o modelo)
         if (textoBusqueda.trim()) {
             console.log("Texto de búsqueda:", textoBusqueda);
             const query = normalizarTexto(textoBusqueda.trim());
@@ -60,7 +61,6 @@ export function useAutos(cantidadPorLote = 8) {
             });
         }
 
-        // Filtro por tipo de combustible
         if (filtrosCombustible.length > 0) {
             console.log("Aplicando filtro de combustible:", filtrosCombustible);
             resultado = resultado.filter(auto => {
@@ -71,7 +71,6 @@ export function useAutos(cantidadPorLote = 8) {
             });
         }
 
-        // Filtro por características del coche (asientos y puertas)
         if (filtrosCaracteristicas.asientos) {
             console.log("Aplicando filtro de asientos:", filtrosCaracteristicas.asientos);
             resultado = resultado.filter(auto => auto.asientos === filtrosCaracteristicas.asientos);
@@ -81,18 +80,20 @@ export function useAutos(cantidadPorLote = 8) {
             resultado = resultado.filter(auto => auto.puertas === filtrosCaracteristicas.puertas);
         }
 
-        // Filtro por transmisión
-        if (filtrosTransmision.length > 0) {
-            console.log("Aplicando filtro de transmisión:", filtrosTransmision);
-            resultado = resultado.filter(auto => {
-            console.log("Transmisión del auto:", auto.transmision);
-            return filtrosTransmision.some(transmision =>
-             auto.transmision.toLowerCase().includes(transmision.toLowerCase())
-            );
-           });
-        }
+        // Normalizar las características adicionales antes de la comparación
+if (filtrosCaracteristicasAdicionales.length > 0) {
+    console.log("Aplicando filtro de características adicionales:", filtrosCaracteristicasAdicionales);
+    resultado = resultado.filter(auto => {
+        console.log("Revisando auto:", auto.idAuto || auto, "Características:", auto.caracteristicasAdicionales);
+        return filtrosCaracteristicasAdicionales.every(caracteristica =>
+            (auto.caracteristicasAdicionales || []).some(c => normalizarTexto(c).includes(normalizarTexto(caracteristica)))
+        );
+    });
+}
 
-        // Ordenar resultados
+        console.log("Autos filtrados:", resultado);
+        console.log("Lista de autos antes de aplicar el filtro de características adicionales:", resultado);
+
         switch (ordenSeleccionado) {
             case 'Modelo Ascendente':
                 resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
@@ -109,7 +110,7 @@ export function useAutos(cantidadPorLote = 8) {
         }
 
         setAutosFiltrados(resultado);
-    }, [autos, textoBusqueda, filtrosCombustible, filtrosCaracteristicas, ordenSeleccionado,filtrosTransmision]);
+    }, [autos, textoBusqueda, filtrosCombustible, filtrosCaracteristicas, ordenSeleccionado, filtrosTransmision, filtrosCaracteristicasAdicionales]);
 
     useEffect(() => {
         filtrarYOrdenarAutos();
@@ -177,12 +178,13 @@ export function useAutos(cantidadPorLote = 8) {
         cargando,
         filtrarAutos: setTextoBusqueda,
         filtrosCombustible,
-        setFiltrosCombustible, // Exponer el setter para los filtros de combustible
+        setFiltrosCombustible,
         filtrosCaracteristicas,
-        setFiltrosCaracteristicas, // Exponer el setter para los filtros de características
+        setFiltrosCaracteristicas,
         filtrosTransmision,
-        setFiltrosTransmision,// Exponer el setter para los filtros de transmisión
-
+        setFiltrosTransmision,
+        filtrosCaracteristicasAdicionales,
+        setFiltrosCaracteristicasAdicionales,
         obtenerSugerencia,
     };
 }

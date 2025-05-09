@@ -9,6 +9,7 @@ type Props = {
   setFiltrosCaracteristicas: React.Dispatch<React.SetStateAction<{ asientos?: number; puertas?: number }>>;
   setFiltrosTransmision: React.Dispatch<React.SetStateAction<string[]>>;
   filtrosTransmision: string[];
+  setFiltrosCaracteristicasAdicionales: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 export default function SidebarFiltros({
@@ -18,6 +19,7 @@ export default function SidebarFiltros({
   setFiltrosCaracteristicas,
   setFiltrosTransmision, 
   filtrosTransmision,
+  setFiltrosCaracteristicasAdicionales,
 }: Props) {
   const [abierto, setAbierto] = useState({
     tipoCombustible: false,
@@ -51,9 +53,6 @@ export default function SidebarFiltros({
   });
 };
 
-
-
-
   const handleCaracteristicasChange = (
     key: 'asientos' | 'puertas',
     value: number,
@@ -64,6 +63,16 @@ export default function SidebarFiltros({
       [key]: isChecked ? value : undefined,
     }));
   };
+
+  const handleCaracteristicasAdicionalesChange = (caracteristica: string, isChecked: boolean) => {
+  setFiltrosCaracteristicasAdicionales((prev) => {
+    const nuevoEstado = isChecked
+      ? [...prev, caracteristica.toLowerCase()]
+      : prev.filter((f) => f !== caracteristica.toLowerCase());
+    return [...new Set(nuevoEstado)];
+  });
+};
+
 
   return (
     <div
@@ -189,7 +198,11 @@ export default function SidebarFiltros({
                 "Pantalla táctil", "Sillas para bebé", "Cámara de reversa", "Asientos de cuero",
                 "Sistema antirrobo", "Toldo o rack de techo", "Vidrios polarizados", "Sistema de sonido"].map((carac) => (
                 <label key={carac} className="flex items-center gap-2">
-                  <input type="checkbox" className="form-checkbox" />
+                  <input 
+                  type="checkbox" 
+                  className="form-checkbox"
+                  onChange={(e) => handleCaracteristicasAdicionalesChange(carac, e.target.checked)}
+                   />
                   {carac}
                 </label>
               ))}

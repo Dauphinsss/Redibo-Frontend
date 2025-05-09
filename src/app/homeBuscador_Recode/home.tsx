@@ -31,7 +31,8 @@ export default function Home() {
     filtrosCaracteristicas,
     setFiltrosCaracteristicas, // Asegúrate de exponer esta función desde useAutos
      filtrosTransmision, 
-     setFiltrosTransmision 
+     setFiltrosTransmision,
+    setFiltrosCaracteristicasAdicionales,
   } = useAutos();
 
   const [showMap, setShowMap] = useState(false);
@@ -55,6 +56,7 @@ export default function Home() {
         setFiltrosCaracteristicas={setFiltrosCaracteristicas} // Pasar para manejar asientos y puertas
         setFiltrosTransmision={setFiltrosTransmision}
         filtrosTransmision={filtrosTransmision} 
+        setFiltrosCaracteristicasAdicionales={setFiltrosCaracteristicasAdicionales}
       />
 
       {/* Contenido principal que se desplazará */}
