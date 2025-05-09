@@ -219,13 +219,14 @@ export default function Form() {
         return;
       }
       const { usuario: usuarioLogueado, token } = loginResponse.data;
-      
+
       const finalUser = usuarioLogueado || response.data.usuario;
       const finalToken = token || response.data.token;
 
       if (finalUser && finalToken) {
         localStorage.setItem("nombre", finalUser.nombre);
         localStorage.setItem("foto", finalUser.foto || "default.jpg");
+        localStorage.setItem("roles", loginResponse.data.usuario.roles || "");
         localStorage.setItem("auth_token", finalToken);
         
         toast.success(`Registro exitoso como ${user}.`);

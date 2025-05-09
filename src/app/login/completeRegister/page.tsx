@@ -214,6 +214,7 @@ export default function CompleteRegisterForm() {
       // localStorage.setItem("genero", response.data.usuario.genero);
       // localStorage.setItem("ciudad", response.data.usuario.ciudad);
       localStorage.setItem("foto", response.data.usuario.foto || "default.jpg");
+      localStorage.setItem("roles", response.data.usuario.roles || "");
       localStorage.setItem("auth_token", response.data.token);
       // Cerrar el popup y notificar a la ventana principal
       if (window.opener) {

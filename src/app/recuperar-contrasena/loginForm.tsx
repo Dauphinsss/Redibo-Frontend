@@ -188,6 +188,7 @@ export function LoginForm() {
       localStorage.setItem("auth_token", response.data.token); // Guardar el nuevo token
       localStorage.setItem("nombre", response.data.nombre); // Guardar el nombre del usuario
       localStorage.setItem("foto", response.data.foto || "default.jpg"); // Guardar la foto del usuario
+      localStorage.setItem("roles", response.data.roles || ""); // Guardar los roles del usuario
       toast.success("Contraseña actualizada correctamente");
       
       // Redireccionar al login después de un breve retraso

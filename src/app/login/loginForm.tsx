@@ -48,7 +48,7 @@ function LoginFormContent() {
       // localStorage.setItem("genero", usuario.genero || "");
       // localStorage.setItem("ciudad", usuario.ciudad || "");
       localStorage.setItem("foto", usuario.foto || "default.jpg");
-      // localStorage.setItem("rol", usuario.roles || "");
+      localStorage.setItem("roles", usuario.roles || "");
       localStorage.setItem("auth_token", token);
 
       router.push("/");
@@ -167,7 +167,7 @@ export function LoginForm() {
           // localStorage.setItem("genero", userData.genero || "");
           // localStorage.setItem("ciudad", userData.ciudad || "");
           localStorage.setItem("foto", userData.foto || "default.jpg");
-          // localStorage.setItem("rol", userData.roles || "");
+          localStorage.setItem("roles", userData.roles || "");
           localStorage.setItem("auth_token", urlToken);
 
           // Limpiar URL

@@ -53,6 +53,7 @@ export default function ProfilePage() {
         const res = await axios.get(`${API_URL}/api/perfil`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        localStorage.setItem("roles", res.data.roles);
         setRoles(res.data.roles || []);
       } catch (err) {
         console.error("Error al obtener datos del usuario", err);
