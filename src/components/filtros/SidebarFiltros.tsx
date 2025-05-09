@@ -146,7 +146,7 @@ export default function SidebarFiltros({
         <div className="border rounded shadow-sm">
           <button
             onClick={() => toggle('transmision')}
-            className="w-full text-left px-4 py-2 bg-gray-100 font-semibold hover:bg-gray-200"
+            className="w-full text-left px-4 py-2 bg-black text-white font-semibold hover:bg-gray-700"
           >
             Transmisión
           </button>
