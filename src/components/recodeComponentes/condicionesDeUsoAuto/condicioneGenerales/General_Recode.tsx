@@ -22,7 +22,7 @@ function General_Recode({
   onKmChange
 }: GeneralRecodeProps) {
   return (
-    <div className="space-y-6 px-4 py-4 bg-white rounded-lg shadow">
+    <div className="space-y-2 px-4 py-4 bg-white rounded-lg shadow">
       {/* Slider dual para rango de edad */}
       <SliderRangeDualRecode
         min={18}

@@ -107,7 +107,7 @@ function TablaComponentes_Recode() {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`
-                flex-1 text-sm font-medium py-2 border-r border-black last:border-r-0
+                flex-1 text-xl font-medium py-2 border-r border-black last:border-r-0
                 first:rounded-tl-[10px] last:rounded-tr-[10px]
                 ${activeTab === tab.key ? "bg-black text-white" : "bg-white text-black"}
               `}
@@ -120,9 +120,10 @@ function TablaComponentes_Recode() {
       </div>
 
       {/* Contenido de la pestaña */}
-      <div className="bg-white p-2">{renderTabContent()}</div>
+      <div className="bg-white p-4 min-h-[300px]">{renderTabContent()}</div>
     </div>
   );
+
 }
 
 export default memo(TablaComponentes_Recode);
