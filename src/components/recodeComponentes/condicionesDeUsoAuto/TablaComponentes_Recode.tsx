@@ -120,7 +120,7 @@ function TablaComponentes_Recode() {
       </div>
 
       {/* Contenido de la pestaña */}
-      <div className="bg-white p-4 min-h-[300px]">{renderTabContent()}</div>
+      <div className="bg-white p-2">{renderTabContent()}</div>
     </div>
   );
 }

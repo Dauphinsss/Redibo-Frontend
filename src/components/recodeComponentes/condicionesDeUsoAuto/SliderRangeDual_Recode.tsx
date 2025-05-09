@@ -33,9 +33,9 @@ function SliderRangeDualRecode({
     }
 
     return (
-        <div className="flex flex-col items-center bg-white rounded-xl shadow-md w-full">
+        <div className="flex flex-col items-center w-full">
             <div className="py-8 px-6 w-full">
-                <h2 className="text-center text-xl font-semibold text-gray-800 mb-8">
+                <h2 className="text-center text-base font-medium text-gray-900 mb-8">
                     {label}
                 </h2>
                 <div className="w-full py-6">

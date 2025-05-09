@@ -33,9 +33,9 @@ function SliderRangeSimple_Recode({
     }
 
     return (
-        <div className="flex flex-col items-center bg-white rounded-xl shadow-md w-full">
+        <div className="flex flex-col items-center w-full">
             <div className="py-8 px-6 w-full">
-                <h2 className="mb-7 text-xl font-semibold text-gray-800 text-center">
+                <h2 className="mb-7 text-base font-medium text-gray-900 text-center">
                     {label}
                 </h2>
                 <div className="w-full py-4">
