@@ -13,6 +13,8 @@ export default function SidebarFiltros({ mostrar, onCerrar, setFiltrosCombustibl
   const [abierto, setAbierto] = useState({
     tipoCombustible: false,
     caracteristicasCoche: false,
+    transmision: false,
+    caracteristicasAdicionales: false,
   });
 
   const toggle = (key: keyof typeof abierto) => {
@@ -116,6 +118,26 @@ export default function SidebarFiltros({ mostrar, onCerrar, setFiltrosCombustibl
                   ))}
                 </div>
               </div>
+            </div>
+          )}
+        </div>
+
+        {/* Transmisión */}
+        <div className="border rounded shadow-sm">
+          <button
+            onClick={() => toggle('transmision')}
+            className="w-full text-left px-4 py-2 bg-gray-100 font-semibold hover:bg-gray-200"
+          >
+            Transmisión
+          </button>
+          {abierto.transmision && (
+            <div className="p-4 space-y-2">
+              {['Manual', 'Automático'].map((tipo) => (
+                <label key={tipo} className="flex items-center gap-2">
+                  <input type="checkbox" className="form-checkbox" />
+                  {tipo}
+                </label>
+              ))}
             </div>
           )}
         </div>
