@@ -11,5 +11,7 @@ export type Aeropuerto = {
   nombre: string
   latitud: number
   longitud: number
-  id_ciudad: number
+  ciudad: {
+    nombre: string
+  }
 }

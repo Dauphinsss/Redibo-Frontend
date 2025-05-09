@@ -45,7 +45,7 @@ export default function Header() {
                 <Link href="/homeBuscador_Recode" className="text-sm font-medium">
                   Buscar
                 </Link>
-                <Link href="/filtrarAeropuerto" className="text-sm font-medium">
+                <Link href="/filtrarAeropuertos" className="text-sm font-medium">
                   Filtrar por Aeropuerto
                 </Link>
                 <Link href="/acerca" className="text-sm font-medium">
@@ -105,7 +105,7 @@ export default function Header() {
           <Link href="/homeBuscador_Recode" className="text-sm font-medium">
             Buscar
           </Link>
-          <Link href="/filtrarAeropuerto" className="text-sm font-medium">
+          <Link href="/filtrarAeropuertos" className="text-sm font-medium">
             Filtrar por Aeropuerto
           </Link>
           <Link href="/acerca" className="text-sm font-medium">

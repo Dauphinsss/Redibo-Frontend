@@ -1,8 +1,8 @@
 [
   {
     "id": "1",
-    "nombre": "Toyota Cruze",
-    "marca": "Toyota",
+    "nombre": "Chevrolet Cruze",
+    "marca": "Chevrolet",
     "asientos": 5,
     "puertas": 5,
     "transmision": "Manual",
@@ -22,8 +22,8 @@
   },
   {
     "id": "2",
-    "nombre": "Chevrolet Corolla",
-    "marca": "Chevrolet",
+    "nombre": "Toyota Corolla",
+    "marca": "Toyota",
     "asientos": 4,
     "puertas": 2,
     "transmision": "Manual",
@@ -44,8 +44,8 @@
   },
   {
     "id": "3",
-    "nombre": "Ford Corolla",
-    "marca": "Ford",
+    "nombre": "Toyota Corolla",
+    "marca": "Toyota",
     "asientos": 5,
     "puertas": 2,
     "transmision": "Automatica",
@@ -66,8 +66,8 @@
   },
   {
     "id": "4",
-    "nombre": "Audi Elantra",
-    "marca": "Audi",
+    "nombre": "Hyundai Avante",
+    "marca": "Hyundai",
     "asientos": 4,
     "puertas": 4,
     "transmision": "Manual",
@@ -87,8 +87,8 @@
   },
   {
     "id": "5",
-    "nombre": "Nissan Jetta",
-    "marca": "Nissan",
+    "nombre": "Volkswagen Jetta",
+    "marca": "Volkswagen",
     "asientos": 7,
     "puertas": 5,
     "transmision": "Automatica",
@@ -108,7 +108,7 @@
   },
   {
     "id": "6",
-    "nombre": "Audi Elantra",
+    "nombre": "Audi Sport",
     "marca": "Audi",
     "asientos": 7,
     "puertas": 5,
@@ -129,7 +129,7 @@
   },
   {
     "id": "7",
-    "nombre": "Ford 3",
+    "nombre": "Ford Fiesta",
     "marca": "Ford",
     "asientos": 7,
     "puertas": 4,
@@ -150,8 +150,8 @@
   },
   {
     "id": "8",
-    "nombre": "Audi Focus",
-    "marca": "Audi",
+    "nombre": "Ford Focus",
+    "marca": "Ford",
     "asientos": 5,
     "puertas": 5,
     "transmision": "Manual",
@@ -171,8 +171,8 @@
   },
   {
     "id": "9",
-    "nombre": "Chevrolet Elantra",
-    "marca": "Chevrolet",
+    "nombre": "Hyundai Elandra",
+    "marca": "Hyundai",
     "asientos": 7,
     "puertas": 4,
     "transmision": "Automatica",
@@ -193,7 +193,7 @@
   },
   {
     "id": "10",
-    "nombre": "Ford Cruze",
+    "nombre": "Ford Fiesta",
     "marca": "Ford",
     "asientos": 5,
     "puertas": 2,
@@ -235,7 +235,7 @@
   },
   {
     "id": "12",
-    "nombre": "Hyundai 3",
+    "nombre": "Hyundai Venue",
     "marca": "Hyundai",
     "asientos": 4,
     "puertas": 2,
@@ -256,7 +256,7 @@
   },
   {
     "id": "13",
-    "nombre": "Kia Focus",
+    "nombre": "Kia Sorento",
     "marca": "Kia",
     "asientos": 7,
     "puertas": 4,
@@ -340,8 +340,8 @@
   },
   {
     "id": "17",
-    "nombre": "Toyota A3",
-    "marca": "Toyota",
+    "nombre": "Audi S3",
+    "marca": "Audi",
     "asientos": 4,
     "puertas": 5,
     "transmision": "Manual",
@@ -361,7 +361,7 @@
   },
   {
     "id": "18",
-    "nombre": "Ford Jetta",
+    "nombre": "Ford Fiesta MK5",
     "marca": "Ford",
     "asientos": 4,
     "puertas": 2,
@@ -382,7 +382,7 @@
   },
   {
     "id": "19",
-    "nombre": "Hyundai 3",
+    "nombre": "Hyundai Elandra",
     "marca": "Hyundai",
     "asientos": 5,
     "puertas": 5,
@@ -403,7 +403,7 @@
   },
   {
     "id": "20",
-    "nombre": "Toyota 3",
+    "nombre": "Toyota Corolla T-sport",
     "marca": "Toyota",
     "asientos": 7,
     "puertas": 5,
@@ -424,7 +424,7 @@
   },
   {
     "id": "21",
-    "nombre": "Chevrolet Elantra",
+    "nombre": "Chevy Optra",
     "marca": "Chevrolet",
     "asientos": 5,
     "puertas": 2,
@@ -445,7 +445,7 @@
   },
   {
     "id": "22",
-    "nombre": "Chevrolet 320i",
+    "nombre": "Chevrolet Onix",
     "marca": "Chevrolet",
     "asientos": 7,
     "puertas": 4,
@@ -466,7 +466,7 @@
   },
   {
     "id": "23",
-    "nombre": "Volkswagen Elantra",
+    "nombre": "Volkswagen Jetta",
     "marca": "Volkswagen",
     "asientos": 5,
     "puertas": 4,
@@ -508,7 +508,7 @@
   },
   {
     "id": "25",
-    "nombre": "Kia 320i",
+    "nombre": "Kia K5-GT",
     "marca": "Kia",
     "asientos": 5,
     "puertas": 4,
