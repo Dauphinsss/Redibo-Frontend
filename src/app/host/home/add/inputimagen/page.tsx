@@ -1,7 +1,5 @@
-// src/app/host/page/inputimagen/page.tsx
 "use client";
-
-import { useCallback, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,22 +15,15 @@ export default function InputImagen() {
   const { formData, updateFinalizacion, submitForm } = useFormContext();
   const { finalizacion } = formData;
 
-  const refLock = useRef(false);
-  const formRef = useRef({
-    main: null as File | null,
-    sec1: null as File | null,
-    sec2: null as File | null,
-    mantenimientos: "",
-    precio: "",
-    descripcion: ""
-  });
+  // Para inicializar solo una vez localmente 
+  const initialized = useRef(false);
 
-  const [main, setMain] = useState<File | string | null>(finalizacion.imagenes[1] || null);
-  const [sec1, setSec1] = useState<File | string | null>(finalizacion.imagenes[2] || null);
-  const [sec2, setSec2] = useState<File | string | null>(finalizacion.imagenes[3] || null);
-  const [mantenimientos, setMantenimientos] = useState(finalizacion.num_mantenimientos.toString());
-  const [precio, setPrecio] = useState(finalizacion.precio_por_dia.toString());
-  const [descripcion, setDescripcion] = useState(finalizacion.descripcion || "");
+  const [main, setMain] = useState<File | string | null>(null);
+  const [sec1, setSec1] = useState<File | string | null>(null);
+  const [sec2, setSec2] = useState<File | string | null>(null);
+  const [mantenimientos, setMantenimientos] = useState("");
+  const [precio, setPrecio] = useState("");
+  const [descripcion, setDescripcion] = useState("");
 
   const [errors, setErrors] = useState({
     main: null as string | null,
@@ -45,62 +36,66 @@ export default function InputImagen() {
 
   const [valid, setValid] = useState(false);
 
-  // sync from context
+  // Inicializa estado local una sola vez con datos del context
   useEffect(() => {
-    if (!finalizacion) return;
-    refLock.current = true;
-    setMantenimientos(finalizacion.num_mantenimientos.toString());
-    setPrecio(finalizacion.precio_por_dia.toString());
-    setDescripcion(finalizacion.descripcion || "");
-    refLock.current = false;
+    if (!initialized.current && finalizacion) {
+      setMain(finalizacion.imagenes[0] || null);
+      setSec1(finalizacion.imagenes[1] || null);
+      setSec2(finalizacion.imagenes[2] || null);
+      setMantenimientos(finalizacion.num_mantenimientos.toString());
+      setPrecio(finalizacion.precio_por_dia.toString());
+      setDescripcion(finalizacion.descripcion || "");
+      initialized.current = true;
+    }
   }, [finalizacion]);
 
-  // update context
-  const syncContext = useCallback(() => {
-    if (refLock.current) return;
-    const curr = { main, sec1, sec2, mantenimientos, precio, descripcion };
-    const prev = formRef.current;
-    if (
-      curr.main !== prev.main ||
-      curr.sec1 !== prev.sec1 ||
-      curr.sec2 !== prev.sec2 ||
-      curr.mantenimientos !== prev.mantenimientos ||
-      curr.precio !== prev.precio ||
-      curr.descripcion !== prev.descripcion
-    ) {
-      formRef.current = {
-        ...curr,
-        main: typeof curr.main === "string" ? null : curr.main,
-        sec1: typeof curr.sec1 === "string" ? null : curr.sec1,
-        sec2: typeof curr.sec2 === "string" ? null : curr.sec2,
-      };
-      updateFinalizacion({
-        imagenes: [main, sec1, sec2].filter(Boolean) as File[],
-        num_mantenimientos: mantenimientos ? parseInt(mantenimientos) : 0,
-        precio_por_dia: precio ? parseFloat(precio) : 0,
-        estado: "Disponible",
-        descripcion
-      });
-    }
-  }, [main, sec1, sec2, mantenimientos, precio, descripcion, updateFinalizacion]);
-
-  useEffect(() => { syncContext(); }, [syncContext]);
-
-  // validation
+  // Actualizar context solo cuando los valores cambien
   useEffect(() => {
+    // Solo después de la inicialización
+    if (!initialized.current) return;
+
+    const next = {
+      imagenes: [main, sec1, sec2].filter(Boolean) as File[],
+      num_mantenimientos: mantenimientos ? parseInt(mantenimientos) : 0,
+      precio_por_dia: precio ? parseFloat(precio) : 0,
+      estado: "Disponible",
+      descripcion
+    };
+
+    const same =
+      finalizacion.num_mantenimientos === next.num_mantenimientos &&
+      finalizacion.precio_por_dia   === next.precio_por_dia   &&
+      finalizacion.descripcion     === next.descripcion     &&
+      finalizacion.imagenes.length === next.imagenes.length;
+
+    if (!same) {
+      updateFinalizacion(next);
+    }
+  }, [main, sec1, sec2, mantenimientos, precio, descripcion, finalizacion, updateFinalizacion]);
+
+  // Validación de formulario: requiere 3 imágenes, número de mantenimientos y precio > 0
+  useEffect(() => {
+    const mantNum = parseInt(mantenimientos, 10);
+    const precioNum = parseFloat(precio);
+
     const ok =
-      main && !errors.main &&
-      sec1 && !errors.sec1 &&
-      sec2 && !errors.sec2 &&
-      mantenimientos !== "" && !errors.mantenimientos &&
-      precio !== "" && !errors.precio &&
+      Boolean(main) && !errors.main &&
+      Boolean(sec1) && !errors.sec1 &&
+      Boolean(sec2) && !errors.sec2 &&
+      !isNaN(mantNum) && mantNum > 0 && !errors.mantenimientos &&
+      !isNaN(precioNum) && precioNum > 0 && !errors.precio &&
       !errors.descripcion;
-    setValid(!!ok);
-  }, [main, sec1, sec2, mantenimientos, precio, descripcion, errors]);
+
+    setValid(ok);
+  }, [main, sec1, sec2, mantenimientos, precio, errors]);
 
   const handleSubmit = async () => {
-    const res = await submitForm();
-    return res;
+    try {
+      await submitForm();
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Error desconocido' };
+    }
   };
 
   return (
@@ -166,5 +161,6 @@ export default function InputImagen() {
 
       <BotonesFormulario isFormValid={valid} onSubmit={handleSubmit} />
     </div>
-);
+  );
 }
+

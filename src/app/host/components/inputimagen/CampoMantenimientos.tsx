@@ -14,17 +14,24 @@ const CampoMantenimientos: React.FC<CampoMantenimientosProps> = ({
   error,
   setError,
 }) => {
-  // Validar número de mantenimientos
   const handleMantenimientosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    
+    // Prevenir entrada de valores negativos
+    if (value.startsWith('-')) {
+      return;
+    }
+    
     setMantenimientos(value);
     
     if (value === "") {
       setError("Este campo es obligatorio");
     } else {
       const numValue = parseInt(value);
-      if (isNaN(numValue) || numValue < 0) {
-        setError("Debe ser un número igual o mayor a 0");
+      if (isNaN(numValue)) {
+        setError("Debe ser un número válido");
+      } else if (numValue < 0) {
+        setError("No se permiten valores negativos");
       } else if (numValue > 1000) {
         setError("No puede ser mayor a 1000");
       } else {
@@ -45,6 +52,12 @@ const CampoMantenimientos: React.FC<CampoMantenimientosProps> = ({
         min="0"
         max="1000"
         required
+        onKeyDown={(e) => {
+          // Prevenir entrada del signo negativo
+          if (e.key === '-') {
+            e.preventDefault();
+          }
+        }}
       />
       {error && (
         <div className="text-red-500 text-sm mt-1">

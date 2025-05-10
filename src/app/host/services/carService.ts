@@ -1,6 +1,6 @@
 // src/app/host/services/carService.ts
-import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from "axios";
-import { getDevToken, getToken, removeToken, isTokenValid } from "./authService";
+import axios, { AxiosInstance, AxiosError } from "axios";
+import { getDevToken, getToken, removeToken} from "./authService";
 import { uploadImage, updateImage, deleteImage } from "./imageService";
 import type { Image } from "./imageService";
 
