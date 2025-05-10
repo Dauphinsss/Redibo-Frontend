@@ -17,20 +17,15 @@ interface MapProps {
   posix: LatLngExpression | LatLngTuple,
   zoom?: number,
   autos?: AutoMap[],
-  radio: number
+  radio: number,
+  punto: {lon:number,alt:number},
+  setpunto: (punto:{lon:number,alt:number}) => void;
 }
 
 const defaults = {
   zoom: 12,
 }
-const Map = ({ zoom = defaults.zoom, posix, autos = [] , radio}: MapProps) => {
-  const [punto, setpunto] = useState({ altitud: 0, longitud: 0 })
-  const actualizarPunto = (longitud: number, altitud: number) => {
-    setpunto({
-      longitud,
-      altitud
-    })
-  }
+const Map = ({ zoom = defaults.zoom, posix, autos = [] , radio,punto,setpunto}: MapProps) => {
   return (
     <MapContainer
       center={posix}
@@ -43,8 +38,8 @@ const Map = ({ zoom = defaults.zoom, posix, autos = [] , radio}: MapProps) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {autos.map((auto) => {
-        const sinFiltro = punto.altitud === 0 && punto.longitud === 0;
-        const dentroDelRadio = estaDentroDelRadio(punto.altitud, punto.longitud, auto.latitud, auto.longitud, radio*1000);
+        const sinFiltro = punto.alt === 0 && punto.lon === 0;
+        const dentroDelRadio = estaDentroDelRadio(punto.alt, punto.lon, auto.latitud, auto.longitud, radio*1000);
         if (sinFiltro || dentroDelRadio) {
           const customIcon: DivIcon = L.divIcon({
             html: `<div class="price-marker">$${auto.precio}</div>`,
@@ -70,7 +65,7 @@ const Map = ({ zoom = defaults.zoom, posix, autos = [] , radio}: MapProps) => {
           );
         }
       })}
-      <MapPunto actualizarPunto={actualizarPunto} radio={radio} />
+      <MapPunto radio={radio} punto={punto} setpunto={setpunto}/>
     </MapContainer>
   );
 }

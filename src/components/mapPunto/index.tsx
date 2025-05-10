@@ -3,17 +3,22 @@ import React, { useState } from 'react'
 import { Marker, useMapEvents, Circle } from 'react-leaflet'
 
 interface HijoProps {
-  actualizarPunto: (longitud: number, altitud: number) => void;
-  radio: number
+  radio: number,
+  punto: {lon:number,alt:number},
+  setpunto: (punto:{lon:number,alt:number}) => void;
 }
 
-const MapPunto: React.FC<HijoProps> = ({ actualizarPunto,radio }) => {
+
+const MapPunto= ({radio,punto,setpunto }:HijoProps) => {
   const [position, setPosition] = useState<LatLng | null>(null)
+  function actualizarPunto(lon:number,alt:number) {
+    setpunto({lon,alt})
+  }
   const map = useMapEvents({
     click(e) {
       const { lat, lng } = e.latlng;
       setPosition(e.latlng);
-      actualizarPunto(lng, lat);
+      actualizarPunto(lng,lat);
       map.locate();
     },
   })

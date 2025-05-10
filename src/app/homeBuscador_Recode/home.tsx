@@ -54,6 +54,7 @@ export default function Home() {
   const increment = () => setradio(prev => prev + 1);
   const decrement = () => setradio(prev => prev - 1);
   const reset = () => setradio(0);
+  const [punto, setpunto] = useState({lon:0,alt:0})
   return (
     <div className="relative">
 
@@ -99,6 +100,7 @@ export default function Home() {
               <button onClick={decrement}>-</button>
               <button onClick={reset}>Reset</button>
               <button onClick={increment}>+</button>
+              <p>mostrando datos {punto.alt} {punto.lon}</p>
             </div>
             <HeaderBusquedaRecode
               autosTotales={autos}
@@ -122,7 +124,7 @@ export default function Home() {
         <div className="hidden lg:block lg:w-[40%]">
           <div className="sticky top-[64px] h-[calc(100vh-64px)] bg-gray-100 rounded shadow-inner">
             {!loadingMap &&
-              <ViewMap posix={[-17.39438, -66.16018]} autos={carsMap} radio={radio} />
+              <ViewMap posix={[-17.39438, -66.16018]} autos={carsMap} radio={radio} punto={punto} setpunto={setpunto} />
             }
           </div>
         </div>
@@ -152,7 +154,7 @@ export default function Home() {
 
             <div className="w-full h-full">
               {!loadingMap &&
-                <ViewMap posix={[-17.39438, -66.16018]} autos={carsMap} radio={radio} />
+                <ViewMap posix={[-17.39438, -66.16018]} autos={carsMap} radio={radio} punto={punto} setpunto={setpunto} />
               }
             </div>
           </div>
