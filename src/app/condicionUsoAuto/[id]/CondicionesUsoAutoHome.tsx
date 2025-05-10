@@ -3,8 +3,8 @@
 import React, { useRef, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Header from "@/components/ui/Header";
-import TablaComponentes_Recode from "@/components/recodeComponentes/condicionesDeUsoAuto/TablaComponentes_Recode";
-import BotonVolver from "@/components/recodeComponentes/condicionesDeUsoAuto/BotonVolver";
+import TablaComponentes_Recode from "@/components/recodeComponentes/condicionesDeUsoAutoFormu/TablaComponentes_Recode";
+import BotonVolver from "@/components/recodeComponentes/condicionesDeUsoAutoFormu/BotonVolver";
 
 export default function CondicionesUsoAutoHome() {
   const tablaRef = useRef<{ enviarFormulario: () => void }>(null);
