@@ -52,7 +52,6 @@ const TablaComponentes_Recode = forwardRef(
       placeholder,
       { value: "Lleno", label: "Lleno" },
       { value: "Medio", label: "Medio" },
-      { value: "1/2", label: "1/2" },
       { value: "Vacío", label: "Vacío" },
     ];
     const [entCombustible, setEntCombustible] = useState<OptionString>(placeholder);
@@ -76,16 +75,6 @@ const TablaComponentes_Recode = forwardRef(
     const handleEnviar = async () => {
       if (!entCombustible.value || entCombustible.value === "") {
         alert("Por favor, selecciona el estado del combustible.");
-        return;
-      }
-
-      if (genKmMax <= 0) {
-        alert("Por favor, ingresa un kilometraje máximo mayor a 0.");
-        return;
-      }
-
-      if (genEdadRango[1] - genEdadRango[0] < 2) {
-        alert("La edad máxima debe ser al menos 2 años mayor que la mínima.");
         return;
       }
 
@@ -131,10 +120,10 @@ const TablaComponentes_Recode = forwardRef(
 
       try {
         await postCondicionesUso_Recode(payload);
-        alert("✅ Condiciones guardadas con éxito.");
+        alert("Condiciones guardadas con éxito.");
       } catch (error) {
-        console.error("❌ Error al guardar condiciones:", error);
-        alert("❌ Error al guardar condiciones. Intenta de nuevo más tarde.");
+        console.error("Error al guardar condiciones:", error);
+        alert("Error al guardar condiciones. Intenta de nuevo más tarde.");
       }
     };
 

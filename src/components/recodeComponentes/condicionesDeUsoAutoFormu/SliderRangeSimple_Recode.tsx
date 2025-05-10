@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, useEffect, memo } from 'react'
 import { Range, getTrackBackground } from 'react-range'
 
@@ -20,14 +22,15 @@ function SliderRangeSimple_Recode({
     values,
     onChange
 }: SliderRangeSimpleRecodeProps) {
-    const [internalValue, setInternalValue] = useState<[number]>(values)
+    const clamp = (val: number) => Math.max(min, Math.min(max, val))
+    const [internalValue, setInternalValue] = useState<[number]>([clamp(values[0])])
 
     useEffect(() => {
-        setInternalValue(values)
-    }, [values])
+        setInternalValue([clamp(values[0])])
+    }, [values, min, max])
 
     const handleChange = (vals: number[]) => {
-        const next: [number] = [vals[0]]
+        const next: [number] = [clamp(vals[0])]
         setInternalValue(next)
         onChange?.(next)
     }
