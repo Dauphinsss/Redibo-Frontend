@@ -7,9 +7,9 @@ import React, {
   memo,
 } from "react";
 
-import General_Recode from "./condicioneGenerales/General_Recode";
-import Entrada_Recode from "./condionesEntrada/Entrega_Recode";
-import Devolucion_Recode from "./condicionesDevueltas/Devolucion_Recode";
+import General_Recode from "./General_Recode";
+import Entrada_Recode from "./Entrega_Recode";
+import Devolucion_Recode from "./Devolucion_Recode";
 
 import { postCondicionesUso_Recode } from "@/service/services_Recode";
 import { transformCondicionesUso_Recode } from "@/utils/transformCondicionesUso_Recode";

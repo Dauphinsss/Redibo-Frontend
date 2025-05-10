@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo } from "react";
-import CustomDropdown_Recode, { Option } from "../CustomDropdown_Recode";
+import CustomDropdown_Recode, { Option } from "./CustomDropdown_Recode";
 
 export interface EntradaRecodeProps {
   opciones: Option<string>[];

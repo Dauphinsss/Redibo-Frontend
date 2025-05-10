@@ -1,8 +1,8 @@
 "use client";
 
 import React, { memo } from "react";
-import SliderRangeDualRecode from "../SliderRangeDual_Recode";
-import SliderRangeSimple_Recode from "../SliderRangeSimple_Recode";
+import SliderRangeDualRecode from "./SliderRangeDual_Recode";
+import SliderRangeSimple_Recode from "./SliderRangeSimple_Recode";
 
 export interface GeneralRecodeProps {
   respuestas: Record<string, boolean>;
