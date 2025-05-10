@@ -43,7 +43,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               direccion={`${auto.ciudad}, ${auto.calle}`}
             />
             <DescripcionAuto descripcion={auto.descripcion} />
-
+{/** 
             <div>
               <PopUpComentarios 
               nombreCompleto={auto.nombreHost} fotoHost={""} 
@@ -56,7 +56,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               comentario={""}
               calificacionUsr={0}
               ></PopUpComentarios>
-            </div>
+            </div>*/}
             
             <DescriHost
               nombreHost={auto.nombreHost}
