@@ -1,4 +1,6 @@
 .price-marker {
+  width: 80px;
+  height: 30px;
   position: relative;
   background-color: #000;
   color: white;

@@ -44,7 +44,7 @@ const Map = ({ zoom = defaults.zoom, posix, autos = [], radio, punto, setpunto }
           const customIcon: DivIcon = L.divIcon({
             html: `<div class="price-marker">BOB ${auto.precio}</div>`,
             className: "",
-            iconSize: [80, 30],
+            //iconSize: [80, 30],
             iconAnchor: [40, 8],
           });
 
