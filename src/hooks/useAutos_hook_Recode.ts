@@ -47,6 +47,7 @@ export function useAutos(cantidadPorLote = 8) {
     const filtrarYOrdenarAutos = useCallback(() => {
         let resultado = [...autos];
 
+        // Filtro por texto de búsqueda (marca o modelo)
         if (textoBusqueda.trim()) {
             console.log("Texto de búsqueda:", textoBusqueda);
             const query = normalizarTexto(textoBusqueda.trim());
@@ -61,6 +62,7 @@ export function useAutos(cantidadPorLote = 8) {
             });
         }
 
+        // Filtro por tipo de combustible
         if (filtrosCombustible.length > 0) {
             console.log("Aplicando filtro de combustible:", filtrosCombustible);
             resultado = resultado.filter(auto => {
@@ -71,6 +73,7 @@ export function useAutos(cantidadPorLote = 8) {
             });
         }
 
+        // Filtro por características del coche (asientos y puertas)
         if (filtrosCaracteristicas.asientos) {
             console.log("Aplicando filtro de asientos:", filtrosCaracteristicas.asientos);
             resultado = resultado.filter(auto => auto.asientos === filtrosCaracteristicas.asientos);
@@ -80,15 +83,26 @@ export function useAutos(cantidadPorLote = 8) {
             resultado = resultado.filter(auto => auto.puertas === filtrosCaracteristicas.puertas);
         }
 
+        // Filtro por transmisión
+        if (filtrosTransmision.length > 0) {
+            console.log("Aplicando filtro de transmisión:", filtrosTransmision);
+            resultado = resultado.filter(auto => {
+            console.log("Transmisión del auto:", auto.transmision);
+            return filtrosTransmision.some(transmision =>
+             auto.transmision.toLowerCase().includes(transmision.toLowerCase())
+            );
+           });
+        }
+
         // Normalizar las características adicionales antes de la comparación
-if (filtrosCaracteristicasAdicionales.length > 0) {
-    console.log("Aplicando filtro de características adicionales:", filtrosCaracteristicasAdicionales);
-    resultado = resultado.filter(auto => {
-        console.log("Revisando auto:", auto.idAuto || auto, "Características:", auto.caracteristicasAdicionales);
-        return filtrosCaracteristicasAdicionales.every(caracteristica =>
-            (auto.caracteristicasAdicionales || []).some(c => normalizarTexto(c).includes(normalizarTexto(caracteristica)))
-        );
-    });
+        if (filtrosCaracteristicasAdicionales.length > 0) {
+             console.log("Aplicando filtro de características adicionales:", filtrosCaracteristicasAdicionales);
+             resultado = resultado.filter(auto => {
+             console.log("Revisando auto:", auto.idAuto || auto, "Características:", auto.caracteristicasAdicionales);
+             return filtrosCaracteristicasAdicionales.every(caracteristica =>
+             (auto.caracteristicasAdicionales || []).some(c => normalizarTexto(c).includes(normalizarTexto(caracteristica)))
+           );
+        });
 }
 
         console.log("Autos filtrados:", resultado);
