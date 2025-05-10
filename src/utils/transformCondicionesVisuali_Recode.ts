@@ -1,6 +1,6 @@
 import {
   RawCondicionesUsoResponse
-} from "@/interface/RawCondiciones_Interface_Recode";
+} from "@/interface/RawCondicionesUsoVisuali_Interface_Recode";
 
 import {
   CondicionesUsoResponse

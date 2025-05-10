@@ -1,10 +1,10 @@
 import {apiAllCards,apiCarById, apiFormularioCondicionesUsoAuto} from "@/api/apis_Recode";
-import { CondicionesUsoPayload_Recode } from "@/interface/CondicionesUso_interface_Recode";
+import { CondicionesUsoPayload_Recode } from "@/interface/CondicionesUsoFormu_interface_Recode";
 import { CondicionesUsoResponse } from "@/interface/CondicionesUsoVisual_interface_Recode";
 
 import {RawAuto_Interface_Recode as RawAuto} from "@/interface/RawAuto_Interface_Recode"
-import { RawCondicionesUsoResponse } from "@/interface/RawCondiciones_Interface_Recode";
-import { transformCondiciones_Recode } from "@/utils/transformCondiciones_Recode";
+import { RawCondicionesUsoResponse } from "@/interface/RawCondicionesUsoVisuali_Interface_Recode";
+import { transformCondiciones_Recode } from "@/utils/transformCondicionesVisuali_Recode";
 import { AxiosError } from "axios";
 
 export const getAllCars = async (): Promise<RawAuto[]> => {
@@ -92,11 +92,11 @@ export async function getCarRatings(id: string): Promise<number[]> {
 export const postCondicionesUso_Recode = async (payload: CondicionesUsoPayload_Recode): Promise<void> => {
     try {
         const response = await apiFormularioCondicionesUsoAuto.post("/insertCondition", payload);
-        console.log("✅ Condiciones enviadas correctamente:", response.data);
+        console.log("Condiciones enviadas correctamente:", response.data);
     } catch (error) {
         const axiosError = error as AxiosError;
 
-        console.error("🔴 Error al enviar las condiciones de uso:");
+        console.error("Error al enviar las condiciones de uso:");
         console.error("Mensaje:", axiosError.message);
         console.error("Código:", axiosError.code);
         console.error("Status:", axiosError.response?.status);
