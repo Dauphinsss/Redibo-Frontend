@@ -10,6 +10,7 @@ type Props = {
   setFiltrosTransmision: React.Dispatch<React.SetStateAction<string[]>>;
   filtrosTransmision: string[];
   setFiltrosCaracteristicasAdicionales: React.Dispatch<React.SetStateAction<string[]>>;
+  filtrosCaracteristicasAdicionales: string[];
 };
 
 export default function SidebarFiltros({
@@ -20,6 +21,7 @@ export default function SidebarFiltros({
   setFiltrosTransmision, 
   filtrosTransmision,
   setFiltrosCaracteristicasAdicionales,
+  filtrosCaracteristicasAdicionales, 
 }: Props) {
   const [abierto, setAbierto] = useState({
     tipoCombustible: false,
@@ -27,6 +29,7 @@ export default function SidebarFiltros({
     transmision: false,
     caracteristicasAdicionales: false,
   });
+  
 
   const toggle = (key: keyof typeof abierto) => {
     setAbierto((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -64,19 +67,18 @@ export default function SidebarFiltros({
     }));
   };
 
-  const handleCaracteristicasAdicionalesChange = (caracteristica: string, isChecked: boolean) => {
-  setFiltrosCaracteristicasAdicionales((prev) => {
-    const nuevoEstado = isChecked
-      ? [...prev, caracteristica.toLowerCase()]
-      : prev.filter((f) => f !== caracteristica.toLowerCase());
-    return [...new Set(nuevoEstado)];
-  });
-};
-
+ const handleCaracteristicasAdicionalesChange = (caracteristica: string, isChecked: boolean) => {
+    setFiltrosCaracteristicasAdicionales((prev) => {
+      const nuevoEstado = isChecked
+        ? [...prev, caracteristica.toLowerCase()]
+        : prev.filter((f) => f !== caracteristica.toLowerCase());
+      return [...new Set(nuevoEstado)];
+    });
+  };
 
   return (
     <div
-      className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-40 transition-transform duration-300 transform ${
+      className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 transition-transform duration-300 transform ${
         mostrar ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
@@ -201,6 +203,7 @@ export default function SidebarFiltros({
                   <input 
                   type="checkbox" 
                   className="form-checkbox"
+                  checked={filtrosCaracteristicasAdicionales.includes(carac.toLowerCase())} // ✅ Aquí
                   onChange={(e) => handleCaracteristicasAdicionalesChange(carac, e.target.checked)}
                    />
                   {carac}

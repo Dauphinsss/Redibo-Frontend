@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 import { ButtonPrecio } from '@/components/filtros/buttonPrecio';
 import { ButtonCalif } from '@/components/filtros/buttonCalif';
 import { ButtonViajes } from '@/components/filtros/buttonViajes';
+import { SlidersHorizontal } from 'lucide-react';// Icono de filtro
 
 export default function Home() {
   const {
@@ -30,9 +31,10 @@ export default function Home() {
     setFiltrosCombustible,
     filtrosCaracteristicas,
     setFiltrosCaracteristicas, // Asegúrate de exponer esta función desde useAutos
-     filtrosTransmision, 
-     setFiltrosTransmision,
+    filtrosTransmision, 
+    setFiltrosTransmision,
     setFiltrosCaracteristicasAdicionales,
+    filtrosCaracteristicasAdicionales,
   } = useAutos();
 
   const [showMap, setShowMap] = useState(false);
@@ -57,15 +59,17 @@ export default function Home() {
         setFiltrosTransmision={setFiltrosTransmision}
         filtrosTransmision={filtrosTransmision} 
         setFiltrosCaracteristicasAdicionales={setFiltrosCaracteristicasAdicionales}
+        filtrosCaracteristicasAdicionales={filtrosCaracteristicasAdicionales}
       />
 
-      {/* Botón abrir sidebar */}
+      {/* Botón abrir sidebar */} 
       <button
-        onClick={() => setMostrarSidebar((prev) => !prev)}
-        className="fixed top-24 left-4 z-40 bg-black text-white px-4 py-2 rounded shadow-lg hover:bg-gray-700 transition"
-      >
-        Filtros
+        onClick={() => setMostrarSidebar(true)}
+        className="fixed top-24 left-4 z-40 bg-black text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition"
+      >      
+          <SlidersHorizontal size={24} />          
       </button>
+
 
       {/* Contenido principal */}
       <div className="relative z-10">

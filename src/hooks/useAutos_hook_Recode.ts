@@ -21,7 +21,6 @@ export function useAutos(cantidadPorLote = 8) {
             setCargando(true);
             const rawData: RawAuto[] = await getAllCars();
             const transformed = rawData.map(transformAuto);
-            console.log('Datos transformados:', transformed);
             setAutos(transformed);
             setAutosFiltrados(transformed);
         } catch (error) {
@@ -37,11 +36,11 @@ export function useAutos(cantidadPorLote = 8) {
     }, []);
 
     const normalizarTexto = (texto: string) => {
-        return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        return texto
+            .normalize("NFD") 
+            .replace(/[\u0300-\u036f]/g, "") 
+            .toLowerCase(); 
     };
-       autos.forEach((auto) => {
-  console.log("Características adicionales de", auto.modelo || auto.idAuto, ":", auto.caracteristicasAdicionales);
-  });
   
 
     const filtrarYOrdenarAutos = useCallback(() => {
@@ -96,18 +95,16 @@ export function useAutos(cantidadPorLote = 8) {
 
         // Normalizar las características adicionales antes de la comparación
         if (filtrosCaracteristicasAdicionales.length > 0) {
-             console.log("Aplicando filtro de características adicionales:", filtrosCaracteristicasAdicionales);
+             //console.log("Aplicando filtro de características adicionales:", filtrosCaracteristicasAdicionales);
              resultado = resultado.filter(auto => {
-             console.log("Revisando auto:", auto.idAuto || auto, "Características:", auto.caracteristicasAdicionales);
+             //console.log("Revisando auto:", auto.idAuto || auto, "Características:", auto.caracteristicasAdicionales);
              return filtrosCaracteristicasAdicionales.every(caracteristica =>
              (auto.caracteristicasAdicionales || []).some(c => normalizarTexto(c).includes(normalizarTexto(caracteristica)))
            );
         });
 }
 
-        console.log("Autos filtrados:", resultado);
-        console.log("Lista de autos antes de aplicar el filtro de características adicionales:", resultado);
-
+        // Ordenar resultados
         switch (ordenSeleccionado) {
             case 'Modelo Ascendente':
                 resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
