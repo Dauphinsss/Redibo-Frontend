@@ -50,6 +50,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               modeloAuto={auto.modelo} marcaAuto={auto.marca}
               calificaciones={calificaciones}
               imagenes={auto.imagenes}
+              nombreUser={""}
+              fotoUser={""}
+              fechaComentario={""}
+              comentario={""}
+              calificacionUsr={0}
               ></PopUpComentarios>
             </div>
             
