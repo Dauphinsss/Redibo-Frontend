@@ -52,7 +52,6 @@ function PopUpComentarios({
         <div className="fixed top-0 left-0 w-full h-full bg-black/20 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white rounded-lg max-w-md w-full relative">
             
-            {/* Botón fuera del scroll */}
             <button
               className="absolute top-4 right-4 text-2xl text-gray-600 hover:text-black z-10"
               onClick={closePopup}
@@ -60,7 +59,6 @@ function PopUpComentarios({
               <HiOutlineX />
             </button>
 
-            {/* Área con scroll */}
             <div
               className="overflow-y-auto px-6 pb-6"
               style={{
