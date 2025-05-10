@@ -11,7 +11,7 @@ import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode
 import CalificaionRecode from "@/components/recodeComponentes/calificacionAuto/calificacionRecode"
 import ComentarUsr from "@/components/recodeComponentes/comentarioUsuario/realizarComentario/comentarUsuarioRecode"
 import VerComentario from '@/components/recodeComponentes/comentarioUsuario/verComentario/verComentarioRecode'
-//import PopUpComentarios from '@/components/recodeComponentes/comentarioUsuario/PopUp/popUpComentarios'
+import PopUpComentarios from '@/components/recodeComponentes/comentarioUsuario/PopUp/popUpComentarios'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -43,8 +43,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               direccion={`${auto.ciudad}, ${auto.calle}`}
             />
             <DescripcionAuto descripcion={auto.descripcion} />
-{/** 
-            <div>
+
+            <div className="mt-4 mb-4 flex justify-end">
               <PopUpComentarios 
               nombreCompleto={auto.nombreHost} fotoHost={""} 
               modeloAuto={auto.modelo} marcaAuto={auto.marca}
@@ -56,7 +56,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               comentario={""}
               calificacionUsr={0}
               ></PopUpComentarios>
-            </div>*/}
+            </div>
             
             <DescriHost
               nombreHost={auto.nombreHost}
