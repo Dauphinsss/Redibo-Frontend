@@ -1,8 +1,3 @@
-export interface HerramientaBasica_Recode {
-    nombre: string;
-    cantidad: number;
-}
-
 export interface CondicionesGenerales_Recode {
     edad_minima: number;
     edad_maxima: number;
@@ -23,7 +18,6 @@ export interface EntregaAuto_Recode {
     rayones: boolean;
     llanta_estado: boolean;
     interior_da_o: boolean;
-    herramientas_basicas: HerramientaBasica_Recode[];
 }
 
 export interface DevolucionAuto_Recode {

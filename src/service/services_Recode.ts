@@ -5,6 +5,7 @@ import { CondicionesUsoResponse } from "@/interface/CondicionesUsoVisual_interfa
 import {RawAuto_Interface_Recode as RawAuto} from "@/interface/RawAuto_Interface_Recode"
 import { RawCondicionesUsoResponse } from "@/interface/RawCondiciones_Interface_Recode";
 import { transformCondiciones_Recode } from "@/utils/transformCondiciones_Recode";
+import { AxiosError } from "axios";
 
 export const getAllCars = async (): Promise<RawAuto[]> => {
     try {
@@ -86,17 +87,23 @@ export async function getCarRatings(id: string): Promise<number[]> {
     if (!response.ok) return [];
     const data = await response.json();
     return data.Calificacion.map((c: { calf_carro: number }) => c.calf_carro);
-}
+};
 
-export const postCondicionesUso_Recode = async (payload: CondicionesUsoPayload_Recode) => {
-    try{
+export const postCondicionesUso_Recode = async (payload: CondicionesUsoPayload_Recode): Promise<void> => {
+    try {
         const response = await apiFormularioCondicionesUsoAuto.post("/insertCondition", payload);
-        return response.data
+        console.log("✅ Condiciones enviadas correctamente:", response.data);
     } catch (error) {
-        console.error("Error al enviar las condiciones de uso:", error);
+        const axiosError = error as AxiosError;
+
+        console.error("🔴 Error al enviar las condiciones de uso:");
+        console.error("Mensaje:", axiosError.message);
+        console.error("Código:", axiosError.code);
+        console.error("Status:", axiosError.response?.status);
+        console.error("Data:", axiosError.response?.data);
+
         throw new Error("No se pudo enviar las condiciones de uso. Intenta de nuevo más tarde.");
     }
-    
 };
 
 export async function getCondicionesUsoVisual_Recode(id_carro: number): Promise<CondicionesUsoResponse | null> {
@@ -107,4 +114,4 @@ export async function getCondicionesUsoVisual_Recode(id_carro: number): Promise<
         console.error("Error al obtener condiciones visuales:", error);
         return null;
     }
-}
+};

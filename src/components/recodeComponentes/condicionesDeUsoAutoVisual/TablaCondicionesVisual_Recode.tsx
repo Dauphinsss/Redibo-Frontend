@@ -4,111 +4,83 @@ import React, { useEffect, useState } from "react";
 import GeneralVisual_Recode from "./GeneralVisual_Recode";
 import EntregaVisual_Recode from "./EntregaVisual_Recode";
 import DevolucionVisual_Recode from "./DevolucionVisual_Recode";
+
 import { getCondicionesUsoVisual_Recode } from "@/service/services_Recode";
 import { CondicionesUsoResponse } from "@/interface/CondicionesUsoVisual_interface_Recode";
 
 type Tab = "generales" | "entrega" | "devolucion";
-
 const tabs: { key: Tab; label: string }[] = [
   { key: "generales", label: "Condiciones generales" },
   { key: "entrega", label: "Entrega del auto" },
   { key: "devolucion", label: "Devolución del auto" },
 ];
 
-interface Props {
+interface TablaCondicionesVisualProps {
   id_carro: number;
 }
 
-export default function TablaCondicionesVisual_Recode({ id_carro }: Props) {
+export default function TablaCondicionesVisual_Recode({ id_carro }: TablaCondicionesVisualProps) {
   const [activeTab, setActiveTab] = useState<Tab>("generales");
+  const [condiciones, setCondiciones] = useState<CondicionesUsoResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<CondicionesUsoResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    async function fetchData() {
       try {
-        const response = await getCondicionesUsoVisual_Recode(id_carro);
-        setData(response);
-        console.log("📦 Datos recibidos:", response);
-      } catch (error) {
-        console.error("Error al obtener condiciones:", error);
+        setLoading(true);
+        const data = await getCondicionesUsoVisual_Recode(id_carro);
+        if (!data) throw new Error("No se encontraron condiciones registradas.");
+          setCondiciones(data);
+          setError(null);
+      } catch (err) {
+          console.error("Error al cargar condiciones:", err);
+          setError("No se pudieron cargar las condiciones de uso.");
       } finally {
-        setLoading(false);
+          setLoading(false);
       }
-    };
+    }
 
     fetchData();
   }, [id_carro]);
 
-  if (loading) return <p className="text-center py-8">Cargando condiciones...</p>;
-  if (!data) return <p className="text-center py-8 text-red-600">No se encontraron condiciones.</p>;
+  const renderContent = () => {
+    if (loading) return <p className="text-center py-4">Cargando condiciones...</p>;
+    if (error) return <p className="text-center text-red-600 py-4">{error}</p>;
+    if (!condiciones) return <p className="text-center py-4">No hay condiciones disponibles.</p>;
 
-  const { generales, entrega, devolucion } = data;
+    switch (activeTab) {
+      case "generales":
+        return <GeneralVisual_Recode condiciones={condiciones.condiciones_generales} />;
+      case "entrega":
+        return <EntregaVisual_Recode condiciones={condiciones.entrega_auto} />;
+      case "devolucion":
+        return <DevolucionVisual_Recode condiciones={condiciones.devolucion_auto} />;
+    }
+  };
 
   return (
-    <div className="w-full max-w-3xl mx-auto border border-black rounded-[10px] overflow-hidden bg-white shadow-md">
+    <div className="w-full max-w-[760px] mx-auto border border-black rounded-[10px] overflow-hidden">
       {/* Tabs */}
-      <div className="bg-white border-b border-black">
+      <div className="sticky top-0 z-10 bg-white">
         <div className="flex">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex-1 py-3 text-sm font-medium border-r border-black last:border-r-0
-                ${activeTab === tab.key ? "bg-black text-white" : "bg-white text-black hover:bg-gray-100"}
-              `}
+              className={`flex-1 text-sm font-medium py-2 border-r border-black last:border-r-0
+                first:rounded-tl-[10px] last:rounded-tr-[10px]
+                ${activeTab === tab.key ? "bg-black text-white" : "bg-white text-black"}`}
             >
               {tab.label}
             </button>
           ))}
         </div>
+        <div className="h-[1px] bg-black" />
       </div>
 
       {/* Contenido */}
-      <div className="p-6 min-h-[300px] bg-white">
-        {activeTab === "generales" && generales && (
-          <GeneralVisual_Recode
-            edadMin={generales.edad_minima}
-            edadMax={generales.edad_maxima}
-            kmMax={generales.kilometraje_max_dia}
-            condiciones={{
-              fumar: generales.fumar,
-              mascota: generales.mascota,
-              dev_mismo_conb: generales.dev_mismo_conb,
-              uso_fuera_ciudad: generales.uso_fuera_ciudad,
-              multa_conductor: generales.multa_conductor,
-              dev_mismo_lugar: generales.dev_mismo_lugar,
-              uso_comercial: generales.uso_comercial,
-            }}
-          />
-        )}
-
-        {activeTab === "entrega" && entrega && (
-          <EntregaVisual_Recode
-            estadoCombustible={entrega.estado_combustible}
-            condiciones={{
-              exteriorLimpio: entrega.esterior_limpio,
-              rayones: entrega.rayones,
-              interiorLimpio: entrega.inter_limpio,
-              llantas: entrega.llanta_estado,
-              interiorSinDanios: !entrega.interior_da_o,
-            }}
-          />
-        )}
-
-        {activeTab === "devolucion" && devolucion && (
-          <DevolucionVisual_Recode
-            condiciones={{
-              interior_limpio: devolucion.interior_limpio,
-              exterior_limpio: devolucion.exterior_limpio,
-              rayones: devolucion.rayones,
-              herramientas_devueltas: devolucion.herramientas,
-              danios: devolucion.cobrar_da_os,
-              combustible_igual: devolucion.combustible_igual,
-            }}
-          />
-        )}
-      </div>
+      <div className="bg-white p-4 min-h-[300px]">{renderContent()}</div>
     </div>
   );
 }

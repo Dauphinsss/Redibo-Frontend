@@ -34,94 +34,107 @@ const TablaComponentes_Recode = forwardRef(
   ({ id_carro }: TablaComponentesProps, ref) => {
     const [activeTab, setActiveTab] = useState<Tab>("generales");
 
-    // --- GENERALES ---
     const [genCheckboxes, setGenCheckboxes] = useState<Record<string, boolean>>({
       fumar: false,
-      mascotas: false,
-      combustible: false,
-      fuera_ciudad: false,
-      multas: false,
-      lugar_entrega: false,
+      mascota: false,
+      dev_mismo_conb: false,
+      uso_fuera_ciudad: false,
+      multa_conductor: false,
+      dev_mismo_lugar: false,
       uso_comercial: false,
     });
     const [genEdadRango, setGenEdadRango] = useState<[number, number]>([18, 70]);
     const [genKmMax, setGenKmMax] = useState<number>(0);
 
-    // --- ENTREGA ---
     type OptionString = { value: string; label: string };
     const placeholder: OptionString = { value: "", label: "Seleccionar estado" };
     const estadosEntrega: OptionString[] = [
       placeholder,
-      { value: "lleno", label: "Lleno" },
-      { value: "medio", label: "Medio" },
-      { value: "vacio", label: "Vacío" },
+      { value: "Lleno", label: "Lleno" },
+      { value: "Medio", label: "Medio" },
+      { value: "1/2", label: "1/2" },
+      { value: "Vacío", label: "Vacío" },
     ];
     const [entCombustible, setEntCombustible] = useState<OptionString>(placeholder);
     const [entCheckboxes, setEntCheckboxes] = useState<Record<string, boolean>>({
-      exteriorLimpio: false,
-      interiorLimpio: false,
+      esterior_limpio: false,
+      inter_limpio: false,
       rayones: false,
-      llantas: false,
-      interiorSinDanios: false,
+      llanta_estado: false,
+      interior_da_o: false,
     });
 
-    // --- DEVOLUCIÓN ---
     const [devCheckboxes, setDevCheckboxes] = useState<Record<string, boolean>>({
       interior_limpio: false,
       exterior_limpio: false,
       rayones: false,
-      herramientas_devueltas: false,
-      danios: false,
+      herramientas: false,
+      cobrar_da_os: false,
       combustible_igual: false,
     });
 
-    // --- Enviar a API ---
     const handleEnviar = async () => {
-      const generales: CondicionesGenerales_Recode = {
+      if (!entCombustible.value || entCombustible.value === "") {
+        alert("Por favor, selecciona el estado del combustible.");
+        return;
+      }
+
+      if (genKmMax <= 0) {
+        alert("Por favor, ingresa un kilometraje máximo mayor a 0.");
+        return;
+      }
+
+      if (genEdadRango[1] - genEdadRango[0] < 2) {
+        alert("La edad máxima debe ser al menos 2 años mayor que la mínima.");
+        return;
+      }
+
+      const condiciones_generales: CondicionesGenerales_Recode = {
         edad_minima: genEdadRango[0],
         edad_maxima: genEdadRango[1],
         kilometraje_max_dia: genKmMax,
         fumar: genCheckboxes.fumar,
-        mascota: genCheckboxes.mascotas,
-        dev_mismo_conb: genCheckboxes.combustible,
-        uso_fuera_ciudad: genCheckboxes.fuera_ciudad,
-        multa_conductor: genCheckboxes.multas,
-        dev_mismo_lugar: genCheckboxes.lugar_entrega,
+        mascota: genCheckboxes.mascota,
+        dev_mismo_conb: genCheckboxes.dev_mismo_conb,
+        uso_fuera_ciudad: genCheckboxes.uso_fuera_ciudad,
+        multa_conductor: genCheckboxes.multa_conductor,
+        dev_mismo_lugar: genCheckboxes.dev_mismo_lugar,
         uso_comercial: genCheckboxes.uso_comercial,
       };
 
-      const entrega: EntregaAuto_Recode = {
+      const entrega_auto: EntregaAuto_Recode = {
         estado_combustible: entCombustible.value,
-        esterior_limpio: entCheckboxes.exteriorLimpio,
-        inter_limpio: entCheckboxes.interiorLimpio,
+        esterior_limpio: entCheckboxes.esterior_limpio,
+        inter_limpio: entCheckboxes.inter_limpio,
         rayones: entCheckboxes.rayones,
-        llanta_estado: entCheckboxes.llantas,
-        interior_da_o: !entCheckboxes.interiorSinDanios,
-        herramientas_basicas: [
-          { nombre: "Gato hidráulico", cantidad: 1 },
-          { nombre: "botiquin", cantidad: 1 },
-          { nombre: "Prueba", cantidad: 1 },
-          { nombre: "Prueba1", cantidad: 1 },
-        ],
+        llanta_estado: entCheckboxes.llanta_estado,
+        interior_da_o: entCheckboxes.interior_da_o,
       };
 
-      const devolucion: DevolucionAuto_Recode = {
+      const devolucion_auto: DevolucionAuto_Recode = {
         interior_limpio: devCheckboxes.interior_limpio,
         exterior_limpio: devCheckboxes.exterior_limpio,
         rayones: devCheckboxes.rayones,
-        herramientas: devCheckboxes.herramientas_devueltas,
-        cobrar_da_os: devCheckboxes.danios,
+        herramientas: devCheckboxes.herramientas,
+        cobrar_da_os: devCheckboxes.cobrar_da_os,
         combustible_igual: devCheckboxes.combustible_igual,
       };
 
-      const payload = transformCondicionesUso_Recode(id_carro, generales, entrega, devolucion);
+      const payload = transformCondicionesUso_Recode(
+        id_carro,
+        condiciones_generales,
+        entrega_auto,
+        devolucion_auto
+      );
+
+      console.log("📦 Payload final:", JSON.stringify(payload, null, 2));
 
       try {
         await postCondicionesUso_Recode(payload);
-        alert("Condiciones guardadas con éxito.");
+        alert("✅ Condiciones guardadas con éxito.");
       } catch (error) {
-        console.error("Error al guardar condiciones:", error);
-        alert("Error al guardar condiciones.");
+        console.error("❌ Error al guardar condiciones:", error);
+        alert("❌ Error al guardar condiciones. Intenta de nuevo más tarde.");
       }
     };
 
@@ -164,7 +177,6 @@ const TablaComponentes_Recode = forwardRef(
 
     return (
       <div className="w-full max-w-[760px] mx-auto border border-black rounded-[10px] overflow-hidden">
-        {/* Tabs */}
         <div className="sticky top-0 z-10 bg-white">
           <div className="flex">
             {tabs.map((tab) => (
@@ -173,8 +185,7 @@ const TablaComponentes_Recode = forwardRef(
                 onClick={() => setActiveTab(tab.key)}
                 className={`flex-1 text-sm font-medium py-2 border-r border-black last:border-r-0
                   first:rounded-tl-[10px] last:rounded-tr-[10px]
-                  ${activeTab === tab.key ? "bg-black text-white" : "bg-white text-black"}
-                `}
+                  ${activeTab === tab.key ? "bg-black text-white" : "bg-white text-black"}`}
               >
                 {tab.label}
               </button>
@@ -183,7 +194,6 @@ const TablaComponentes_Recode = forwardRef(
           <div className="h-[1px] bg-black" />
         </div>
 
-        {/* Contenido de la pestaña */}
         <div className="bg-white p-4 min-h-[300px]">{renderTabContent()}</div>
       </div>
     );
@@ -191,5 +201,4 @@ const TablaComponentes_Recode = forwardRef(
 );
 
 TablaComponentes_Recode.displayName = "TablaComponentes_Recode";
-
 export default memo(TablaComponentes_Recode);

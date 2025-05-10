@@ -1,37 +1,38 @@
 "use client";
 
 import React, { memo } from "react";
+import { EntregaAutoVisual } from "@/interface/CondicionesUsoVisual_interface_Recode";
 
-interface EntregaVisualProps {
-  estadoCombustible: string;
-  condiciones: Record<string, boolean>;
+export interface EntregaVisualProps {
+  condiciones: EntregaAutoVisual;
 }
 
-const condicionesLabels: Record<string, string> = {
-  exteriorLimpio: "Exterior limpio",
+const condicionesLabels: Record<keyof Omit<EntregaAutoVisual, "estado_combustible">, string> = {
+  esterior_limpio: "Exterior limpio",
   rayones: "Tiene rayones visibles",
-  interiorLimpio: "Interior limpio",
-  llantas: "Llantas en buen estado",
-  interiorSinDanios: "Interior sin daños",
+  inter_limpio: "Interior limpio",
+  llanta_estado: "Llantas en buen estado",
+  interior_da_o: "Interior sin daños",
 };
 
-function EntregaVisual_Recode({ estadoCombustible, condiciones }: EntregaVisualProps) {
+function EntregaVisual_Recode({ condiciones }: EntregaVisualProps) {
+  const { estado_combustible, ...rest } = condiciones;
+
   return (
     <div className="bg-white rounded-lg shadow p-6 space-y-6">
-
-      <div className="text-sm text-gray-700">
-        <p><strong>Estado del combustible:</strong> {estadoCombustible || "No especificado"}</p>
-      </div>
+      <p className="text-sm text-gray-700">
+        <strong>Estado del combustible:</strong> {estado_combustible}
+      </p>
 
       <ul className="space-y-2 pt-4 text-sm">
         {Object.entries(condicionesLabels).map(([key, label]) => (
           <li
             key={key}
-            className="flex justify-between items-center last:border-b-0 pb-2"
+            className="flex justify-between items-center border-b border-gray-200 pb-2 last:border-none"
           >
             <span>{label}</span>
-            <span className={condiciones[key] ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
-              {condiciones[key] ? "✓" : "✗"}
+            <span className={rest[key as keyof typeof rest] ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
+              {rest[key as keyof typeof rest] ? "✓" : "✗"}
             </span>
           </li>
         ))}
