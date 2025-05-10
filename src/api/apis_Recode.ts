@@ -21,4 +21,8 @@ const apiFormularioCondicionesUsoAuto = axios.create({
     },
 });
 
-export { apiAllCards, apiCarById, apiFormularioCondicionesUsoAuto };
+const getCondicionesUsoAutoAPI = (id_carro: number) => {
+    return apiCarById.get(`/useConditon/${id_carro}`);
+};
+
+export { apiAllCards, apiCarById, apiFormularioCondicionesUsoAuto, getCondicionesUsoAutoAPI };

@@ -1,17 +1,35 @@
 "use client";
-import React, { useRef } from "react";
 
+import React, { useRef, useMemo } from "react";
+import { useParams } from "next/navigation";
 import Header from "@/components/ui/Header";
-import TablaComponentes_Recode from "@/components/recodeComponentes/condicionesDeUsoAuto/TablaComponentes_Recode";
-import BotonVolver from "@/components/recodeComponentes/condicionesDeUsoAuto/BotonVolver";
+import TablaComponentes_Recode from "@/components/recodeComponentes/condicionesDeUsoAutoFormu/TablaComponentes_Recode";
+import BotonVolver from "@/components/recodeComponentes/condicionesDeUsoAutoFormu/BotonVolver";
 
 export default function CondicionesUsoAutoHome() {
   const tablaRef = useRef<{ enviarFormulario: () => void }>(null);
+  const params = useParams();
+
+  const id_carro = useMemo(() => {
+    const raw = params?.id;
+    if (typeof raw !== "string") return NaN;
+    const parsed = Number(raw);
+    return isNaN(parsed) ? NaN : parsed;
+  }, [params]);
+
+  if (isNaN(id_carro)) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl font-bold text-red-600">Error</h1>
+          <p className="text-gray-700">ID de auto no válido en la URL.</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleGuardar = () => {
-    if (tablaRef.current) {
-      tablaRef.current.enviarFormulario();
-    }
+    tablaRef.current?.enviarFormulario();
   };
 
   return (
@@ -30,7 +48,7 @@ export default function CondicionesUsoAutoHome() {
 
       {/* Formulario de condiciones */}
       <main>
-        <TablaComponentes_Recode ref={tablaRef} id_carro={1} />
+        <TablaComponentes_Recode ref={tablaRef} id_carro={id_carro} />
 
         {/* Botón Guardar */}
         <div className="w-full flex justify-center mt-4">

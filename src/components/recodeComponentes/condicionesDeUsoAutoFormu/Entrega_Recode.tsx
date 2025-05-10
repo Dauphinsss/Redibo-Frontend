@@ -1,7 +1,7 @@
 "use client";
 
-import React, { memo } from 'react';
-import CustomDropdown_Recode, { Option } from '../CustomDropdown_Recode';
+import React, { memo } from "react";
+import CustomDropdown_Recode, { Option } from "./CustomDropdown_Recode";
 
 export interface EntradaRecodeProps {
   opciones: Option<string>[];
@@ -16,11 +16,11 @@ function Entrada_Recode({
   valorCombustible,
   onChangeCombustible,
   respuestas,
-  onCheckboxChange
+  onCheckboxChange,
 }: EntradaRecodeProps) {
   return (
     <div className="space-y-4 px-4 py-4 bg-white rounded-lg shadow">
-      {/* Dropdown: columna en mobile, fila en md+ */}
+      {/* Dropdown: estado del combustible */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
         <label className="font-semibold mb-2 md:mb-0">
           Estado del combustible:
@@ -34,14 +34,14 @@ function Entrada_Recode({
         </div>
       </div>
 
-      {/* Checkboxes: grid 1 columna mobile/tablet, 2 columnas md+ */}
+      {/* Checkboxes: estado físico del auto */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
         {[
-          { label: "Exterior limpio", key: "exteriorLimpio" },
-          { label: "Interior limpio", key: "interiorLimpio" },
+          { label: "Exterior limpio", key: "esterior_limpio" },
+          { label: "Interior limpio", key: "inter_limpio" },
           { label: "Tiene rayones", key: "rayones" },
-          { label: "Llantas en buen estado", key: "llantas" },
-          { label: "Interior sin daños", key: "interiorSinDanios" }
+          { label: "Llantas en buen estado", key: "llanta_estado" },
+          { label: "Interior dañado", key: "interior_da_o" },
         ].map(({ label, key }) => (
           <label key={key} className="flex items-center space-x-2">
             <input

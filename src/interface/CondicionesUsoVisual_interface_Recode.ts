@@ -1,9 +1,4 @@
-export interface HerramientaBasica_Recode {
-    nombre: string;
-    cantidad: number;
-}
-
-export interface CondicionesGenerales_Recode {
+export interface CondicionesGeneralesVisual {
     edad_minima: number;
     edad_maxima: number;
     kilometraje_max_dia: number;
@@ -16,17 +11,16 @@ export interface CondicionesGenerales_Recode {
     uso_comercial: boolean;
 }
 
-export interface EntregaAuto_Recode {
+export interface EntregaAutoVisual {
     estado_combustible: string;
     esterior_limpio: boolean;
     inter_limpio: boolean;
     rayones: boolean;
     llanta_estado: boolean;
     interior_da_o: boolean;
-    herramientas_basicas: HerramientaBasica_Recode[];
 }
 
-export interface DevolucionAuto_Recode {
+export interface DevolucionAutoVisual {
     interior_limpio: boolean;
     exterior_limpio: boolean;
     rayones: boolean;
@@ -35,11 +29,8 @@ export interface DevolucionAuto_Recode {
     combustible_igual: boolean;
 }
 
-export interface CondicionesUsoPayload_Recode {
-    id_carro: number;
-    condiciones_uso: {
-        condiciones_generales: CondicionesGenerales_Recode;
-        entrega_auto: EntregaAuto_Recode;
-        devolucion_auto: DevolucionAuto_Recode;
-    };
+export interface CondicionesUsoResponse {
+    condiciones_generales: CondicionesGeneralesVisual;
+    entrega_auto: EntregaAutoVisual;
+    devolucion_auto: DevolucionAutoVisual;
 }

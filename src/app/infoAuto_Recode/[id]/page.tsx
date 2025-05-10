@@ -8,9 +8,10 @@ import Reserva from '@/components/recodeComponentes/detailsCar/RecodeReserva'
 import { getCarById , getCarRatings } from '@/service/services_Recode'
 import NotFound from '@/app/not-found'
 import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode'
-import CalificaionRecode from "@/components/recodeComponentes/CalificacionAuto/calificacionRecode"
+import CalificaionRecode from "@/components/recodeComponentes/calificacionAuto/calificacionRecode"
 import ComentarUsr from "@/components/recodeComponentes/comentarioUsuario/realizarComentario/comentarUsuarioRecode"
 import VerComentario from '@/components/recodeComponentes/comentarioUsuario/verComentario/verComentarioRecode'
+import PopUpComentarios from '@/components/recodeComponentes/comentarioUsuario/PopUp/popUpComentarios'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -42,6 +43,21 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               direccion={`${auto.ciudad}, ${auto.calle}`}
             />
             <DescripcionAuto descripcion={auto.descripcion} />
+
+            <div className="mt-4 mb-4 flex justify-end">
+              <PopUpComentarios 
+              nombreCompleto={auto.nombreHost} fotoHost={""} 
+              modeloAuto={auto.modelo} marcaAuto={auto.marca}
+              calificaciones={calificaciones}
+              imagenes={auto.imagenes}
+              nombreUser={""}
+              fotoUser={""}
+              fechaComentario={""}
+              comentario={""}
+              calificacionUsr={0}
+              ></PopUpComentarios>
+            </div>
+            
             <DescriHost
               nombreHost={auto.nombreHost}
               calificacion={4.5}
@@ -53,6 +69,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 
               />
             </div >
+
+            
 
             {/**Comentarios */}
               <ComentarUsr
@@ -80,7 +98,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 anio={auto.anio}
                 soat={auto.soat}
               />
-              <Reserva precio={auto.precio} />
+              <Reserva 
+                id={id}
+                precio={auto.precio} 
+              />
             </div>
           </div>
 

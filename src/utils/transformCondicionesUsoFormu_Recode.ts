@@ -1,9 +1,9 @@
 import {
-    CondicionesUsoPayload_Recode,
     CondicionesGenerales_Recode,
     EntregaAuto_Recode,
     DevolucionAuto_Recode,
-} from "@/interface/CondicionesUso_interface_Recode";
+    CondicionesUsoPayload_Recode
+} from "@/interface/CondicionesUsoFormu_interface_Recode";
 
 export function transformCondicionesUso_Recode(
     id_carro: number,
@@ -14,9 +14,9 @@ export function transformCondicionesUso_Recode(
     return {
         id_carro,
         condiciones_uso: {
-        condiciones_generales: generales,
-        entrega_auto: entrega,
-        devolucion_auto: devolucion,
-        },
+            condiciones_generales: generales,
+            entrega_auto: entrega,
+            devolucion_auto: devolucion,
+        }
     };
 }

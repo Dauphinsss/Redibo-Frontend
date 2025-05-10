@@ -1,8 +1,8 @@
 "use client";
 
 import React, { memo } from "react";
-import SliderRangeDualRecode from "../SliderRangeDual_Recode";
-import SliderRangeSimple_Recode from "../SliderRangeSimple_Recode";
+import SliderRangeDualRecode from "./SliderRangeDual_Recode";
+import SliderRangeSimple_Recode from "./SliderRangeSimple_Recode";
 
 export interface GeneralRecodeProps {
   respuestas: Record<string, boolean>;
@@ -35,7 +35,7 @@ function General_Recode({
 
       {/* Slider simple para kilometraje */}
       <SliderRangeSimple_Recode
-        min={0}
+        min={100}
         max={900}
         label="Kilometraje permitido"
         unit=" km"

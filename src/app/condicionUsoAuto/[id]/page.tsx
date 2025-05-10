@@ -1,4 +1,4 @@
-import CondicionesUsoAutoHome from '@/app/condicionUsoAuto/CondicionesUsoAutoHome';
+import CondicionesUsoAutoHome from '@/app/condicionUsoAuto/[id]/CondicionesUsoAutoHome';
 import { notFound } from 'next/navigation';
 
 export default function Page() {
