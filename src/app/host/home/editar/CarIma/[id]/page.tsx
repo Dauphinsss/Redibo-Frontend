@@ -1,284 +1,246 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { ChevronLeft, Upload } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { useEffect, useState, useRef } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { getCarById, updateCar } from "@/app/host/services/carService";
+import {
+  getImagesByCarId,
+  updateImage,
+} from "@/app/host/services/imageService";
 import {
   AlertDialog,
   AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogCancel,
   AlertDialogAction,
+  AlertDialogDescription,
 } from "@/components/ui/alert-dialog";
-
-export default function InputImagen() {
+import { Button } from "@/components/ui/button";
+import CampoImagen from "@/app/host/components/inputimagen/CampoImagen";
+import CampoMantenimientos from "@/app/host/components/inputimagen/CampoMantenimientos";
+import CampoPrecio from "@/app/host/components/inputimagen/CampoPrecio";
+import CampoDescripcion from "@/app/host/components/inputimagen/CampoDescripcion";
+export default function EditarCarroImagen() {
+  const { id } = useParams();
   const router = useRouter();
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [cancelOpen, setCancelOpen] = useState(false);
-  
-  // Referencias para los inputs de archivo - especificando el tipo
-  const mainImageRef = useRef<HTMLInputElement>(null);
-  const secondaryImage1Ref = useRef<HTMLInputElement>(null);
-  const secondaryImage2Ref = useRef<HTMLInputElement>(null);
-  
-  // Estado para almacenar las imágenes cargadas - especificando el tipo como string | null
-  const [mainImage, setMainImage] = useState<string | null>(null);
-  const [secondaryImage1, setSecondaryImage1] = useState<string | null>(null);
-  const [secondaryImage2, setSecondaryImage2] = useState<string | null>(null);
+  const carId = Number(id);
 
-  // Maneja la carga de la imagen principal
-  const handleMainImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setMainImage(URL.createObjectURL(file));
+  const [main, setMain] = useState<File | string | null>(null);
+  const [sec1, setSec1] = useState<File | string | null>(null);
+  const [sec2, setSec2] = useState<File | string | null>(null);
+  const [mantenimientos, setMantenimientos] = useState("");
+  const [precio, setPrecio] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [errors, setErrors] = useState({
+    main: null as string | null,
+    sec1: null as string | null,
+    sec2: null as string | null,
+    mantenimientos: null as string | null,
+    precio: null as string | null,
+    descripcion: null as string | null,
+  });
+  const [valid, setValid] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const refImagesId = useRef<number[]>([]);
+  const refOriginal = useRef({
+    main: null as string | null,
+    sec1: null as string | null,
+    sec2: null as string | null,
+  });
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+
+      const carData = await getCarById(carId);
+      const imagesResp = await getImagesByCarId(carId);
+      const images = imagesResp.data || [];
+
+      setMain(images[0]?.data || null);
+      setSec1(images[1]?.data || null);
+      setSec2(images[2]?.data || null);
+      refImagesId.current = [images[0]?.id, images[1]?.id, images[2]?.id];
+
+      refOriginal.current = {
+        main: images[0]?.data || null,
+        sec1: images[1]?.data || null,
+        sec2: images[2]?.data || null,
+      };
+
+      setMantenimientos(carData?.num_mantenimientos?.toString() || "");
+      setPrecio(carData?.price?.toString() || "");
+      setDescripcion(carData?.descripcion || "");
+      setLoading(false);
+    }
+
+    if (carId) fetchData();
+  }, [carId]);
+
+  useEffect(() => {
+    const ok =
+      main && !errors.main &&
+      sec1 && !errors.sec1 &&
+      sec2 && !errors.sec2 &&
+      mantenimientos !== "" && !errors.mantenimientos &&
+      precio !== "" && !errors.precio &&
+      !errors.descripcion;
+    setValid(!!ok);
+  }, [main, sec1, sec2, mantenimientos, precio, descripcion, errors]);
+
+  const handleSubmit = async () => {
+    setShowConfirm(true);
+  };
+
+  const handleConfirmSave = async () => {
+    setShowConfirm(false);
+    if (!valid) return;
+
+    try {
+      // Actualizar datos del carro
+      await updateCar(carId, {
+        num_mantenimientos: parseInt(mantenimientos),
+        precio_por_dia: parseFloat(precio),
+        descripcion,
+      });
+
+      // Actualizar imágenes
+      const updates = [
+        { file: main, prev: refOriginal.current.main, id: refImagesId.current[0] },
+        { file: sec1, prev: refOriginal.current.sec1, id: refImagesId.current[1] },
+        { file: sec2, prev: refOriginal.current.sec2, id: refImagesId.current[2] },
+      ];
+
+      for (const { file, prev, id } of updates) {
+        if (typeof file !== "string" && file instanceof File) {
+          await updateImage(id, file);
+        }
+      }
+
+      // Modal de éxito opcional: puedes agregar otro AlertDialog si lo deseas
+      router.push("/host/pages");
+    } catch (error) {
+      console.error("Error al guardar cambios", error);
+      alert("Ocurrió un error al guardar los cambios");
     }
   };
 
-  // Maneja la carga de la imagen secundaria 1
-  const handleSecondaryImage1Upload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setSecondaryImage1(URL.createObjectURL(file));
-    }
+  const handleCancel = () => {
+    router.back();
   };
 
-  // Maneja la carga de la imagen secundaria 2
-  const handleSecondaryImage2Upload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setSecondaryImage2(URL.createObjectURL(file));
-    }
-  };
-
-  // Funciones seguras para manejar los clics en los botones
-  const handleMainImageClick = () => {
-    if (mainImageRef.current) {
-      mainImageRef.current.click();
-    }
-  };
-
-  const handleSecondaryImage1Click = () => {
-    if (secondaryImage1Ref.current) {
-      secondaryImage1Ref.current.click();
-    }
-  };
-
-  const handleSecondaryImage2Click = () => {
-    if (secondaryImage2Ref.current) {
-      secondaryImage2Ref.current.click();
-    }
-  };
+  if (loading) return <div className="p-6">Cargando...</div>;
 
   return (
     <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
-      {/* Botón Volver */}
-      <Link href="/host/home/add/carcoche">
-        <Button
-          variant="secondary"
-          className="flex items-center gap-1 self-start justify-start cursor-pointer w-32 h-10 text-base font-medium transition-all duration-200 hover:bg-gray-100 hover:brightness-90"
-        >
-          <ChevronLeft className="h-3 w-3" />
-          Volver
-        </Button>
-      </Link>
+      <h1 className="text-4xl font-bold mb-6">Editar Imágenes de tu vehículo</h1>
+      <p className="font-medium mb-4">
+        Debe seleccionar exactamente tres imágenes: <span className="text-red-600">*</span>
+      </p>
 
-      {/* Título */}
-      <div className="w-full max-w-5xl flex justify-start">
-        <h1 className="text-4xl font-bold my-5 pl-7">Cargar Imágenes de tu auto:</h1>
-      </div>
-
-      {/* Formulario de carga de imágenes */}
       <div className="w-full max-w-5xl px-9 space-y-6">
-        {/* Área de carga de imágenes */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Imagen principal - Más grande */}
-          <div className="col-span-1 md:col-span-2">
-            <div 
-              className="border rounded-md bg-gray-50 h-64 flex flex-col items-center justify-center p-4 relative"
-              style={{
-                backgroundImage: mainImage ? `url(${mainImage})` : 'none',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
-              }}
-            >
-              {!mainImage && <Upload className="h-10 w-10 text-gray-400 mb-2" />}
-              <input
-                type="file"
-                ref={mainImageRef}
-                onChange={handleMainImageUpload}
-                accept="image/*"
-                className="hidden"
-              />
-              <Button 
-                variant="outline" 
-                className={`${mainImage ? 'bg-white bg-opacity-70' : 'bg-white'}`}
-                onClick={handleMainImageClick}
-              >
-                Elige una foto a subir
-              </Button>
-            </div>
-          </div>
-          
-          {/* Imagen secundaria 1 */}
-          <div className="col-span-1">
-            <div 
-              className="border rounded-md bg-gray-50 h-64 flex flex-col items-center justify-center p-4 relative"
-              style={{
-                backgroundImage: secondaryImage1 ? `url(${secondaryImage1})` : 'none',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
-              }}
-            >
-              {!secondaryImage1 && <Upload className="h-10 w-10 text-gray-400 mb-2" />}
-              <input
-                type="file"
-                ref={secondaryImage1Ref}
-                onChange={handleSecondaryImage1Upload}
-                accept="image/*"
-                className="hidden"
-              />
-              <Button 
-                variant="outline" 
-                className={`${secondaryImage1 ? 'bg-white bg-opacity-70' : 'bg-white'}`}
-                onClick={handleSecondaryImage1Click}
-              >
-                Elige una foto a subir
-              </Button>
-            </div>
-          </div>
-          
-          {/* Imagen secundaria 2 */}
-          <div className="col-span-1">
-            <div 
-              className="border rounded-md bg-gray-50 h-64 flex flex-col items-center justify-center p-4 relative"
-              style={{
-                backgroundImage: secondaryImage2 ? `url(${secondaryImage2})` : 'none',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
-              }}
-            >
-              {!secondaryImage2 && <Upload className="h-10 w-10 text-gray-400 mb-2" />}
-              <input
-                type="file"
-                ref={secondaryImage2Ref}
-                onChange={handleSecondaryImage2Upload}
-                accept="image/*"
-                className="hidden"
-              />
-              <Button 
-                variant="outline" 
-                className={`${secondaryImage2 ? 'bg-white bg-opacity-70' : 'bg-white'}`}
-                onClick={handleSecondaryImage2Click}
-              >
-                Elige una foto a subir
-              </Button>
-            </div>
-          </div>
-        </div>
-        
-        {/* Número de mantenimientos */}
-        <div className="flex flex-col mt-6">
-          <label className="text-base font-medium mb-2">Nro de mantenimientos</label>
-          <Input
-            type="number"
-            placeholder="3"
-            className="w-full max-w-md"
+          <CampoImagen
+            label="Principal"
+            image={main}
+            onImageChange={setMain}
+            error={errors.main}
+            setError={msg => setErrors(e => ({ ...e, main: msg }))}
+            isPrimary
+          />
+          <CampoImagen
+            label="Secundaria 1"
+            image={sec1}
+            onImageChange={setSec1}
+            error={errors.sec1}
+            setError={msg => setErrors(e => ({ ...e, sec1: msg }))}
+          />
+          <CampoImagen
+            label="Secundaria 2"
+            image={sec2}
+            onImageChange={setSec2}
+            error={errors.sec2}
+            setError={msg => setErrors(e => ({ ...e, sec2: msg }))}
           />
         </div>
 
-        {/* Precio de alquiler por día */}
-        <div className="flex flex-col mt-6">
-          <label className="text-base font-medium mb-2">Precio de alquiler por día</label>
-          <Input
-            type="number"
-            placeholder="150"
-            className="w-full max-w-md"
-          />
-        </div>
-
-        {/* Descripción */}
-        <div className="flex flex-col mt-6">
-          <label className="text-base font-medium mb-2">Descripción</label>
-          <Textarea
-            placeholder="Describa las características de su vehículo..."
-            className="w-full resize-none h-24"
-          />
-        </div>
+        <CampoMantenimientos
+          mantenimientos={mantenimientos}
+          setMantenimientos={setMantenimientos}
+          error={errors.mantenimientos}
+          setError={msg => setErrors(e => ({ ...e, mantenimientos: msg }))}
+        />
+        <CampoPrecio
+          precio={precio}
+          setPrecio={setPrecio}
+          error={errors.precio}
+          setError={msg => setErrors(e => ({ ...e, precio: msg }))}
+        />
+        <CampoDescripcion
+          descripcion={descripcion}
+          setDescripcion={setDescripcion}
+          error={errors.descripcion}
+          setError={msg => setErrors(e => ({ ...e, descripcion: msg }))}
+        />
       </div>
 
-      {/* Botones de Cancelar y Finalizar */}
-      <div className="w-full max-w-5xl flex justify-between items-center mt-10 px-10">
-        {/* Botón Cancelar */}
-        <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="secondary"
-              className="w-[160px] h-12 text-lg font-semibold transition-all duration-200 hover:bg-gray-100 hover:brightness-90"
-            >
-              CANCELAR
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                ¿Está seguro que desea salir del proceso de añadir un carro?
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                Toda la información no guardada se perderá si abandona esta sección.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => router.push("/host/pages")}
-                className="bg-red-600 text-white hover:bg-red-700"
-              >
-                Confirmar
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-
-        {/* Botón Finalizar */}
+      <div className="w-full mt-10 flex flex-col sm:flex-row sm:justify-between gap-4">
         <Button
-          variant="default"
-          className="h-12 text-lg font-semibold text-white px-6"
-          onClick={() => setConfirmOpen(true)}
+          type="button"
+          variant="secondary"
+          onClick={handleCancel}
+          className="w-full sm:w-auto text-2xl py-6 px-15 transition-all duration-200 hover:bg-gray-400 hover:text-white"
         >
-          FINALIZAR EDICIÓN Y GUARDAR
+          CANCELAR
+        </Button>
+        <Button
+          type="button"
+          onClick={handleSubmit}
+          disabled={!valid}
+          className="w-full sm:w-auto text-2xl py-6 px-15 transition-all duration-200 hover:bg-gray-400 hover:text-white disabled:opacity-60"
+        >
+          FINALIZAR Y GUARDAR
         </Button>
       </div>
 
-      {/* AlertDialog para Confirmación de Finalización */}
-      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              ¿Confirmar publicación del vehículo?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Al confirmar, su vehículo será publicado y estará disponible para alquiler.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => router.push("/host/pages")}
-              className="bg-green-600 text-white hover:bg-green-700"
-            >
-              Confirmar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Modal de confirmación */}
+      <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
+  <AlertDialogContent className="bg-zinc-900 border border-zinc-800 text-zinc-100 max-w-xs mx-auto p-6">
+    <AlertDialogHeader>
+      <AlertDialogTitle className="text-xl font-semibold text-zinc-100 text-center">
+        ¿Está seguro que desea guardar los cambios?
+      </AlertDialogTitle>
+      <AlertDialogDescription className="text-zinc-400 text-center mt-2">
+        Esta acción actualizará la información e imágenes del vehículo.
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter className="flex flex-row justify-between items-center mt-8 gap-2">
+      <AlertDialogCancel asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          className="bg-zinc-800 border border-zinc-700 text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 px-8 py-4 rounded-md text-lg transition-all min-w-[120px]"
+        >
+          Cancelar
+        </Button>
+      </AlertDialogCancel>
+      <div className="flex-1" />
+      <AlertDialogAction asChild>
+        <Button
+          type="button"
+          onClick={handleConfirmSave}
+          className="bg-zinc-700 text-zinc-100 hover:bg-zinc-600 px-8 py-4 rounded-md text-lg transition-all min-w-[120px]"
+        >
+          Confirmar
+        </Button>
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
     </div>
   );
 }

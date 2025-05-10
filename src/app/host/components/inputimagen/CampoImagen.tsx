@@ -1,97 +1,116 @@
+// src/components/inputimagen/CampoImagen.tsx
 "use client";
 import React, { useRef, useCallback } from "react";
-import { Upload, AlertCircle } from "lucide-react";
+import { Upload, AlertCircle, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface CampoImagenProps {
-  image: File | null;
-  onImageChange: (file: File | null) => void;
+  label?: string;
+  image: File | string | null;
+  onImageChange: (file: File | string | null) => void;
   error: string | null;
   setError: (error: string | null) => void;
+  isPrimary?: boolean;
 }
 
 const CampoImagen: React.FC<CampoImagenProps> = ({
+  label,
   image,
   onImageChange,
   error,
   setError,
+  isPrimary = false,
 }) => {
-  const imageRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const validateImage = useCallback((file: File): string | null => {
-    // Validar extensión del archivo (solo .jpg y .png)
-    const fileName = file.name.toLowerCase();
-    if (!fileName.endsWith('.jpg') && !fileName.endsWith('.png')) {
-      return "Solo se permiten imágenes .jpg o .png";
+    const name = file.name.toLowerCase();
+    const allowedExtensions = /\.(jpg|png)$/i;
+    const allowedMimeTypes = ["image/jpeg", "image/png"];
+
+    if (!allowedExtensions.test(name)) {
+      return "Solo .jpg/.png";
     }
-    
-    // Validar tipo MIME (image/jpeg para .jpg y image/png para .png)
-    const allowedTypes = ['image/jpeg', 'image/png'];
-    if (!allowedTypes.includes(file.type)) {
-      return "Formato de archivo no válido";
+
+    const mimeType = file.type.toLowerCase();
+    if (!allowedMimeTypes.includes(mimeType)) {
+      return "Formato no válido";
     }
-    
-    // Validar tamaño (2MB máximo)
+
     if (file.size > 2 * 1024 * 1024) {
-      return "La imagen no debe exceder 2MB";
+      return "Máx. 2MB";
     }
-    
+
     return null;
   }, []);
 
-  const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const validationError = validateImage(file);
-      
-      if (validationError) {
-        setError(validationError);
+  const handleClick = () => inputRef.current?.click();
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      const err = validateImage(file);
+      if (err) {
+        setError(err);
         onImageChange(null);
-        if (imageRef.current) imageRef.current.value = '';
+        e.target.value = "";
       } else {
         setError(null);
         onImageChange(file);
       }
     }
-  }, [validateImage, setError, onImageChange]);
-
-  const handleImageClick = useCallback(() => {
-    imageRef.current?.click();
-  }, []);
+  }, [validateImage, onImageChange, setError]);
 
   return (
     <div className="col-span-1">
-      <div 
-        className={`border rounded-md bg-gray-50 h-64 flex flex-col items-center justify-center p-4 relative ${error ? 'border-red-500' : ''}`}
-        style={{
-          backgroundImage: image ? `url(${URL.createObjectURL(image)})` : 'none',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
+      <label className="block mb-2 text-sm font-medium">
+        {label}
+        {isPrimary && <Star className="inline-block ml-1 text-yellow-500" />}
+      </label>
+      <div
+        className={`relative border rounded-lg overflow-hidden bg-gray-50 h-64 flex items-center justify-center ${error ? 'border-red-500' : 'border-gray-300'}`}
       >
-        {!image && <Upload className="h-10 w-10 text-gray-400 mb-2" />}
+        {image ? (
+          typeof image === "string" ? (
+            <img
+              src={image}
+              alt={label}
+              className="object-contain w-full h-full"
+            />
+          ) : (
+            <img
+              src={URL.createObjectURL(image)}
+              alt={label}
+              className="object-contain w-full h-full"
+            />
+          )
+        ) : (
+          <Upload className="h-12 w-12 text-gray-400" />
+        )}
         <input
           type="file"
-          ref={imageRef}
-          onChange={handleImageUpload}
-          accept=".jpg,.png" // Solo acepta .jpg y .png explícitamente
+          accept=".jpg,.png"
+          ref={inputRef}
           className="hidden"
+          onChange={handleChange}
         />
-        <Button 
-          variant="outline" 
-          className={`${image ? 'bg-white bg-opacity-70' : 'bg-white'}`}
-          onClick={handleImageClick}
+        <Button
+          variant="outline"
+          size="sm"
+          className="absolute bottom-2"
+          onClick={handleClick}
         >
-          {image ? "Cambiar imagen" : "Elige una foto a subir"}
+          {image ? "Cambiar" : "Subir"}
         </Button>
-        {error && (
-          <div className="text-red-500 text-sm mt-1 bg-white bg-opacity-70 p-1 rounded flex items-center">
-            <AlertCircle className="h-3 w-3 mr-1" />
-            {error}
-          </div>
-        )}
       </div>
-      <p className="text-xs text-gray-500 mt-1">*Solo .jpg/.png, máx. 2MB</p>
+      {error && (
+        <div className="flex items-center text-red-500 text-xs mt-1">
+          <AlertCircle className="h-4 w-4 mr-1" /> {error}
+        </div>
+      )}
+      <p className="text-xs text-gray-500 mt-1">
+        {isPrimary ? "Imagen principal" : "Imagen secundaria"} • .jpg/.png ≤2MB
+      </p>
     </div>
   );
 };

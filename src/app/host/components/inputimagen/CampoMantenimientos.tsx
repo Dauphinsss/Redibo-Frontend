@@ -25,6 +25,8 @@ const CampoMantenimientos: React.FC<CampoMantenimientosProps> = ({
       const numValue = parseInt(value);
       if (isNaN(numValue) || numValue < 0) {
         setError("Debe ser un número igual o mayor a 0");
+      } else if (numValue > 1000) {
+        setError("No puede ser mayor a 1000");
       } else {
         setError(null);
       }
@@ -41,6 +43,7 @@ const CampoMantenimientos: React.FC<CampoMantenimientosProps> = ({
         value={mantenimientos}
         onChange={handleMantenimientosChange}
         min="0"
+        max="1000"
         required
       />
       {error && (
