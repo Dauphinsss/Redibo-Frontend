@@ -1,12 +1,11 @@
+// src/app/condicionesVisual_Recode/[id]/page.tsx
+
 import { notFound } from "next/navigation";
 import TablaCondicionesVisual_Recode from "@/components/recodeComponentes/condicionesDeUsoAutoVisual/TablaCondicionesVisual_Recode";
 
-interface PageProps {
-  params: { id: string };
-}
-
-export default function CondicionVisualPage({ params }: PageProps) {
-  const id_carro = parseInt(params.id, 10);
+export default async function CondicionVisualPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const id_carro = parseInt(id, 10);
 
   if (isNaN(id_carro) || id_carro <= 0) {
     notFound();
