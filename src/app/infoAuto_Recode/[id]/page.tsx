@@ -11,7 +11,7 @@ import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode
 import CalificaionRecode from "@/components/recodeComponentes/calificacionAuto/calificacionRecode"
 import ComentarUsr from "@/components/recodeComponentes/comentarioUsuario/realizarComentario/comentarUsuarioRecode"
 import VerComentario from '@/components/recodeComponentes/comentarioUsuario/verComentario/verComentarioRecode'
-import PopUpComentarios from '@/components/recodeComponentes/comentarioUsuario/PopUp/popUpComentarios'
+//import PopUpComentarios from '@/components/recodeComponentes/comentarioUsuario/PopUp/popUpComentarios'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
