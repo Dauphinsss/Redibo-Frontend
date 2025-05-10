@@ -200,6 +200,7 @@ export interface CreateFullCarPayload {
   num_mantenimientos: number;
   estado: string;
   descripcion?: string;
+  segurosAdicionales?: Array<{ id: number; nombre: string; tipoSeguro: string; empresa: string; fechaInicio: string; fechaFin?: string; }>;
 }
 
 export interface CreateFullCarResponse {
