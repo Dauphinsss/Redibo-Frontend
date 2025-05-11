@@ -61,6 +61,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               calificacion={4.5}
               numAuto={1}  
               telefono={auto.telefonoHost}
+              
             />
             <div className="mt-6"  >
               <CalificaionRecode calificaciones={calificaciones}
