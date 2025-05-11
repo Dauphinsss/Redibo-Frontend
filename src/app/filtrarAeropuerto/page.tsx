@@ -21,7 +21,7 @@ export default function Page() {
   return (
     <div>
     <Header />
-    <div className="max-w-xl mx-auto pt-4">
+    <div className="max-w-2xl mx-auto pt-4 px-4">
       <h1 className="text-center text-2xl mb-4 font-semibold">Filtar Por Aeropuerto</h1>
       <p className="mb-4 font-semibold">Seleccione un Aeropuerto y haga click en Buscar</p>
       <div className="flex gap-1 mb-4">

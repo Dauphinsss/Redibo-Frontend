@@ -1,8 +1,9 @@
 import { GiCarDoor } from "react-icons/gi";
 import { IoPeople } from "react-icons/io5";
 import { TbManualGearboxFilled } from "react-icons/tb";
-import data from "../../data/autos.json"
+import { useCars } from '@/api/queries/useCars'
 const CarsByLocation = ({ latitude, longitude }: any) => {  
+  const { data: content = []} = useCars();
   const haversineDistance = (lat1: any, lon1: any, lat2: any, lon2: any) => {
     const R = 6371; // Radio de la tierra en kilometros
     const toRad = (value: number) => (value * Math.PI) / 180;
@@ -18,19 +19,19 @@ const CarsByLocation = ({ latitude, longitude }: any) => {
   let count = 0;
   return (<div>
   <ul className="max-w-xl divide-y divide-gray-200 dark:divide-gray-700">
-    {data.map((item:any, i:number) => {
+    {content.map((item, i:number) => {
       const distance =  haversineDistance(latitude, longitude, item.latitud, item.longitud);      
-      if(distance <10){
+      if(distance <100){
         count++;
         return(
       <li key={i} className="pb-3 sm:pb-4">
         <div className="flex items-center space-x-4 rtl:space-x-reverse">
          <div className="shrink-0">
-            <img className="w-20 rounded-sm mt-2" src={item.imagenes[0]} alt="imagen auto" />
+            <img className="w-20 rounded-sm mt-2" src={item.imagenes} alt="imagen auto" />
          </div>
          <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-gray-900 truncate dark:text-white">
-              {item.nombre}
+              {item.modelo}
             </p>
             <p className="text-sm text-gray-500 truncate">
             Marca:{item.marca}  &#124;  &#9733; {item.calificacion} &#124; distancia: ({distance} Km)
@@ -40,10 +41,10 @@ const CarsByLocation = ({ latitude, longitude }: any) => {
             </p>
          </div>
          <div className="inline-flex items-center text-base font-semibold text-gray-900">
-            {item.precioOficial}
+            {item.precio_por_dia}
          </div>
-         <button type="button" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-xs rounded-lg text-xs px-3 py-2 me-2 mb-2 mt-4">
-          Ver Detalles</button>
+         <a href={"infoAuto_Recode/" + item.id} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-xs rounded-lg text-xs px-3 py-2 me-2 mb-2 mt-4">
+          Ver Detalles</a>
       </div>        
       </li>)   
       }       
