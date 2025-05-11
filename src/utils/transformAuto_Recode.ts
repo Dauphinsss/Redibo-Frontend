@@ -22,4 +22,7 @@ export const transformAuto = (item: RawAuto): AutoCard => ({
     precioDescuento: Number(item.precio_por_dia),
     precioPorDia: Number(item.precio_por_dia),
     imagenURL: item.Imagen?.[0]?.data || "",
+    caracteristicasAdicionales: Array.isArray(item.caracteristicasAdicionales) 
+        ? item.caracteristicasAdicionales 
+        : [],
 });

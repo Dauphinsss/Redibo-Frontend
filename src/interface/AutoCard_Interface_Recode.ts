@@ -15,4 +15,5 @@ export interface AutoCard_Interfaces_Recode {
     precioOficial: number;
     precioDescuento: number;
     precioPorDia: number;
+    caracteristicasAdicionales: string[];	
 }

@@ -7,11 +7,12 @@ import SearchBar from '@/components/recodeComponentes/seccionOrdenarMasResultado
 import HeaderBusquedaRecode from '@/components/recodeComponentes/seccionOrdenarMasResultados/HeaderBusquedaRecode';
 import ResultadosAutos from '@/components/recodeComponentes/seccionOrdenarMasResultados/ResultadosAutos_Recode';
 import Header from '@/components/ui/Header';
+import SidebarFiltros from '@/components/filtros/SidebarFiltros';
+import dynamic from "next/dynamic";
 import { ButtonPrecio } from '@/components/filtros/buttonPrecio';
 import { ButtonCalif } from '@/components/filtros/buttonCalif';
 import { ButtonViajes } from '@/components/filtros/buttonViajes';
-import SidebarFiltros from '@/components/filtros/SidebarFiltros';
-import dynamic from "next/dynamic";
+import { SlidersHorizontal } from 'lucide-react';// Icono de filtro
 
 export default function Home() {
   const {
@@ -27,7 +28,13 @@ export default function Home() {
     filtrarAutos,
     obtenerSugerencia,
     filtrosCombustible,
-    setFiltrosCombustible, // Asegúrate de exponer esta función desde useAutos
+    setFiltrosCombustible,
+    filtrosCaracteristicas,
+    setFiltrosCaracteristicas, // Asegúrate de exponer esta función desde useAutos
+    filtrosTransmision, 
+    setFiltrosTransmision,
+    setFiltrosCaracteristicasAdicionales,
+    filtrosCaracteristicasAdicionales,
   } = useAutos();
 
   const [showMap, setShowMap] = useState(false);
@@ -48,20 +55,24 @@ export default function Home() {
         mostrar={mostrarSidebar}
         onCerrar={() => setMostrarSidebar(false)}
         setFiltrosCombustible={setFiltrosCombustible} // Pasar correctamente
+        setFiltrosCaracteristicas={setFiltrosCaracteristicas} // Pasar para manejar asientos y puertas
+        setFiltrosTransmision={setFiltrosTransmision}
+        filtrosTransmision={filtrosTransmision} 
+        setFiltrosCaracteristicasAdicionales={setFiltrosCaracteristicasAdicionales}
+        filtrosCaracteristicasAdicionales={filtrosCaracteristicasAdicionales}
       />
 
-      {/* Contenido principal que se desplazará */}
-      <div
-        className={`transition-transform duration-300 relative ${mostrarSidebar ? 'translate-x-64' : ''}`}
-      >
-        {/* Botón abrir sidebar */}
-        <button
-          onClick={() => setMostrarSidebar((prev) => !prev)}
-          className="absolute top-24 left-4 z-40 bg-blue-600 text-white px-4 py-2 rounded shadow-lg hover:bg-blue-700 transition"
-        >
-          Filtros avanzados
-        </button>
+      {/* Botón abrir sidebar */} 
+      <button
+        onClick={() => setMostrarSidebar(true)}
+        className="fixed top-24 left-4 z-40 bg-black text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition"
+      >      
+          <SlidersHorizontal size={24} />          
+      </button>
 
+
+      {/* Contenido principal */}
+      <div className="relative z-10">
         <div className="sticky top-0 z-30 bg-white shadow">
           <Header />
         </div>
@@ -108,7 +119,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Mapa */}
+            {/* Mapa escritorio */}
             <div className="hidden lg:block lg:w-1/3">
               <div className="sticky top-20 h-[690px] bg-gray-100 rounded shadow-inner">
                 <ViewMap posix={[4.79029, -75.69003]} />
