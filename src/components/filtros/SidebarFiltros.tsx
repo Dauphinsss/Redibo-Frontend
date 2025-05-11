@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 type Props = {
   mostrar: boolean;
@@ -29,7 +29,7 @@ export default function SidebarFiltros({
     transmision: false,
     caracteristicasAdicionales: false,
   });
-  
+
   // Estado para los errores de validación
   const [errores, setErrores] = useState({
     combustible: ""
@@ -37,12 +37,30 @@ export default function SidebarFiltros({
 
   // Estado local para mantener el filtro actual de combustible
   const [filtrosCombustibleLocal, setFiltrosCombustibleLocal] = useState<string[]>([]);
-  
+
   // Estado local para mantener los filtros de características
   const [caracteristicasLocal, setCaracteristicasLocal] = useState<{
     asientos?: number;
     puertas?: number;
   }>({});
+
+  // Referencia para el contenedor del sidebar
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  // Cierra el sidebar si se hace clic fuera de él
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        onCerrar();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onCerrar]);
 
   const toggle = (key: keyof typeof abierto) => {
     setAbierto((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -128,12 +146,13 @@ export default function SidebarFiltros({
 
   return (
     <div
+      ref={sidebarRef}
       className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 transition-transform duration-300 transform ${
         mostrar ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
       <div className="flex justify-between items-center px-4 py-3 border-b">
-        <h2 className="font-semibold text-lg">Filtros        </h2>
+        <h2 className="font-semibold text-lg">Filtros</h2>
         {/* Cambios que se hizo ultimo, boton del reset, que limpia todo lo seleccionado */}
         <button
           onClick={() => {
