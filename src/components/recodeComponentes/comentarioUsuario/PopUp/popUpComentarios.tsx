@@ -43,7 +43,6 @@ function PopUpComentarios({
   const [popUpOpen, setPopUpOpen] = useState(false);
   const ordenar = ["Mejor Calificación", "Peor Calificación", "Más valorado", "Menos valorado"];
   
-
   const closePopup = () => setPopUpOpen(false);
   const openPopup = () => setPopUpOpen(true);
 
