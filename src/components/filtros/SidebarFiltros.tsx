@@ -30,44 +30,90 @@ export default function SidebarFiltros({
     caracteristicasAdicionales: false,
   });
   
+  // Estado para los errores de validación
+  const [errores, setErrores] = useState({
+    combustible: ""
+  });
+
+  // Estado local para mantener el filtro actual de combustible
+  const [filtrosCombustibleLocal, setFiltrosCombustibleLocal] = useState<string[]>([]);
+
+  
 
   const toggle = (key: keyof typeof abierto) => {
     setAbierto((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const handleCheckboxChange = (tipo: string, isChecked: boolean) => {
-    setFiltrosCombustible((prev) => {
-      const nuevoEstado = isChecked
-        ? [...prev, tipo.toLowerCase()]
-        : prev.filter((f) => f !== tipo.toLowerCase());
-      return [...new Set(nuevoEstado)];
-    });
+    const tipoLower = tipo.toLowerCase();
+    
+    // Si está desmarcando, simplemente quitamos el valor
+    if (!isChecked) {
+      const nuevosFiltros = filtrosCombustibleLocal.filter(f => f !== tipoLower);
+      setFiltrosCombustibleLocal(nuevosFiltros);
+      setFiltrosCombustible(nuevosFiltros);
+      setErrores(prev => ({ ...prev, combustible: "" }));
+      return;
+    }
+    
+    // Si está marcando y ya hay 2 seleccionados, mostramos error
+    if (filtrosCombustibleLocal.length >= 2) {
+      setErrores(prev => ({ 
+        ...prev, 
+        combustible: "Solo puedes seleccionar máximo 2 tipos de combustible" 
+      }));
+      return;
+    }
+    
+    // Si está marcando y hay menos de 2, añadimos el valor
+    const nuevosFiltros = [...filtrosCombustibleLocal, tipoLower];
+    setFiltrosCombustibleLocal(nuevosFiltros);
+    setFiltrosCombustible(nuevosFiltros);
+    setErrores(prev => ({ ...prev, combustible: "" }));
   };
 
   const handleTransmisionChange = (tipo: string) => {
-  setFiltrosTransmision((prev) => {
-    const tipoLower = tipo.toLowerCase();
-    // Si ya está seleccionado, lo deselecciona
-    if (prev.includes(tipoLower)) {
-      return [];
-    }
-    // Si no está seleccionado, lo selecciona y deselecciona el otro
-    return [tipoLower];
-  });
-};
+    setFiltrosTransmision((prev) => {
+      const tipoLower = tipo.toLowerCase();
+      // Si ya está seleccionado, lo deselecciona
+      if (prev.includes(tipoLower)) {
+        return [];
+      }
+      // Si no está seleccionado, lo selecciona y deselecciona el otro
+      return [tipoLower];
+    });
+  };
 
   const handleCaracteristicasChange = (
     key: 'asientos' | 'puertas',
     value: number,
     isChecked: boolean
   ) => {
-    setFiltrosCaracteristicas((prev) => ({
-      ...prev,
-      [key]: isChecked ? value : undefined,
-    }));
+    // Si está desmarcando, quitamos el valor
+    if (!isChecked) {
+      setCaracteristicasLocal(prev => ({
+        ...prev,
+        [key]: undefined
+      }));
+      
+      setFiltrosCaracteristicas(prev => ({
+        ...prev,
+        [key]: undefined
+      }));
+      return;
+    }
+    
+    // Si está marcando, reemplazamos el valor existente
+    const nuevasCaracteristicas = {
+      ...caracteristicasLocal,
+      [key]: value
+    };
+    
+    setCaracteristicasLocal(nuevasCaracteristicas);
+    setFiltrosCaracteristicas(nuevasCaracteristicas);
   };
 
- const handleCaracteristicasAdicionalesChange = (caracteristica: string, isChecked: boolean) => {
+  const handleCaracteristicasAdicionalesChange = (caracteristica: string, isChecked: boolean) => {
     setFiltrosCaracteristicasAdicionales((prev) => {
       const nuevoEstado = isChecked
         ? [...prev, caracteristica.toLowerCase()]
@@ -105,11 +151,15 @@ export default function SidebarFiltros({
                   <input
                     type="checkbox"
                     className="form-checkbox"
+                    checked={filtrosCombustibleLocal.includes(tipo.toLowerCase())}
                     onChange={(e) => handleCheckboxChange(tipo, e.target.checked)}
                   />
                   {tipo}
                 </label>
               ))}
+              {errores.combustible && (
+                <p className="text-red-500 text-sm mt-2">{errores.combustible}</p>
+              )}
             </div>
           )}
         </div>
@@ -133,6 +183,7 @@ export default function SidebarFiltros({
                       <input
                         type="checkbox"
                         className="form-checkbox"
+                        checked={caracteristicasLocal.asientos === n}
                         onChange={(e) => handleCaracteristicasChange('asientos', n, e.target.checked)}
                       />
                       {n}
@@ -150,6 +201,7 @@ export default function SidebarFiltros({
                       <input
                         type="checkbox"
                         className="form-checkbox"
+                        checked={caracteristicasLocal.puertas === n}
                         onChange={(e) => handleCaracteristicasChange('puertas', n, e.target.checked)}
                       />
                       {n}
@@ -201,11 +253,11 @@ export default function SidebarFiltros({
                 "Sistema antirrobo", "Toldo o rack de techo", "Vidrios polarizados", "Sistema de sonido"].map((carac) => (
                 <label key={carac} className="flex items-center gap-2">
                   <input 
-                  type="checkbox" 
-                  className="form-checkbox"
-                  checked={filtrosCaracteristicasAdicionales.includes(carac.toLowerCase())} // ✅ Aquí
-                  onChange={(e) => handleCaracteristicasAdicionalesChange(carac, e.target.checked)}
-                   />
+                    type="checkbox" 
+                    className="form-checkbox"
+                    checked={filtrosCaracteristicasAdicionales.includes(carac.toLowerCase())}
+                    onChange={(e) => handleCaracteristicasAdicionalesChange(carac, e.target.checked)}
+                  />
                   {carac}
                 </label>
               ))}
