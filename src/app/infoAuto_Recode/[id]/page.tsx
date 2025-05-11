@@ -9,8 +9,6 @@ import { getCarById , getCarRatings } from '@/service/services_Recode'
 import NotFound from '@/app/not-found'
 import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode'
 import CalificaionRecode from "@/components/recodeComponentes/calificacionAuto/calificacionRecode"
-import ComentarUsr from "@/components/recodeComponentes/comentarioUsuario/realizarComentario/comentarUsuarioRecode"
-import VerComentario from '@/components/recodeComponentes/comentarioUsuario/verComentario/verComentarioRecode'
 import PopUpComentarios from '@/components/recodeComponentes/comentarioUsuario/PopUp/popUpComentarios'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
@@ -69,24 +67,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 
               />
             </div >
-
-            
-
-            {/**Comentarios */}
-              <ComentarUsr
-                fotoUser={''}
-                palabraInput={'Realiza un comentario ...'}
-              ></ComentarUsr>
-
-            {/**Visualizar Comentarios */}
-            <VerComentario
-              nombreCompleto={""}
-              fotoUser={''}
-              fechaComentario={''}
-              comentario={''}
-              calificacionUsr={0}
-            ></VerComentario>
-            {/**hasta aqui se agrego modificacion */}
 
           </div>
           
