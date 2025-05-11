@@ -133,8 +133,23 @@ export default function SidebarFiltros({
       }`}
     >
       <div className="flex justify-between items-center px-4 py-3 border-b">
-        <h2 className="font-semibold text-lg">Filtros</h2>
-        <button onClick={onCerrar} className="text-xl font-bold hover:text-red-600">
+        <h2 className="font-semibold text-lg">Filtros        </h2>
+        {/* Cambios que se hizo ultimo, boton del reset, que limpia todo lo seleccionado */}
+        <button
+          onClick={() => {
+            setFiltrosCombustible([]);
+            setFiltrosCombustibleLocal([]);
+            setFiltrosTransmision([]);
+            setFiltrosCaracteristicas({});
+            setCaracteristicasLocal({});
+            setFiltrosCaracteristicasAdicionales([]);
+            setErrores({ combustible: "" });
+          }}
+          className="text-sm bg-black text-white px-3 py-1 rounded hover:bg-black-600 transition"
+        >
+          Resetear filtros
+        </button>
+        <button onClick={onCerrar} className="text-xl font-bold hover:text-black-600">
           &times;
         </button>
       </div>
