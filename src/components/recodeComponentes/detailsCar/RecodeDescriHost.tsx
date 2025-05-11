@@ -23,7 +23,11 @@ export default function DescriHost({
           <div>
             <h3 className="text-lg font-semibold">Conoce a tu host</h3>
             <div className="space-y-1 mt-1">
-              <p className="font-medium">{nombreHost}</p>
+
+              <Link href={`/infoHost/`} target="_blank"> {/**Para recargar en la misma pagina borrar target */}
+                <button className='font-medium'>{nombreHost}</button>
+              </Link>
+            
               <div className="flex items-center gap-2 text-sm">
                 <FaStar className="text-gray-300" />
                 <span>{calificacion.toFixed(1)} calificación</span>

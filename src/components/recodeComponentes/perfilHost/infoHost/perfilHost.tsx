@@ -33,12 +33,12 @@ function PerfilHost({nombreHost,fotoPerfil,fechaNacimiento,generoHost,ciudadHost
                 target="_blank"
                 rel="noopener noreferrer"
             >
-            <button
-                type="button"
-                className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-neutral-500 transition"
-            >
-                <FaWhatsapp /> Contáctalo
-            </button>
+                <button
+                    type="button"
+                    className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-neutral-500 transition"
+                >
+                    <FaWhatsapp /> Contáctalo
+                </button>
             </Link>
 
         </div>
