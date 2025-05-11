@@ -13,7 +13,7 @@ export default function DescriHost({
   numAuto, 
   telefono
 }: DescriHostProps) {
-  const mensaje = `Hola ${nombreHost}, estoy interesado en tu auto publicado en ReCode.`;
+  const mensaje = `Hola ${nombreHost}, estoy interesado en tu auto publicado en Redibo.`;
 
   return (
     <section className="w-full border border-gray-200 rounded-lg p-4">
