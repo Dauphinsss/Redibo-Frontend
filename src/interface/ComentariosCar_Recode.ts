@@ -9,5 +9,7 @@ export interface ComentariosCar{
     dont_likes: number;
     Usuario:{
         nombre: string;
-    }
+    };
+    respuestas:{
+    }[];
 }

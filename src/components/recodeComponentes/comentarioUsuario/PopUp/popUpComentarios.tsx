@@ -8,7 +8,10 @@ import Autoimag from "../../detailsCar/RecodeAutoimag";
 import FiltroGenerico from "../filtrosComentariosRecode.tsx/filtroGenerico";
 import VerComentario from "../verComentario/verComentarioRecode";
 
+import { useComentariosAuto } from "@/hooks/useComentario_hook_Recode";
+
 interface Props {
+  idCar: string;
   nombreCompleto: string;
   fotoHost: string;
   modeloAuto: string;
@@ -24,6 +27,7 @@ interface Props {
 }
 
 function PopUpComentarios({
+  idCar,
   nombreCompleto,
   fotoHost,
   modeloAuto,
@@ -38,9 +42,12 @@ function PopUpComentarios({
 }: Props) {
   const [popUpOpen, setPopUpOpen] = useState(false);
   const ordenar = ["Mejor Calificación", "Peor Calificación", "Más valorado", "Menos valorado"];
+  
 
   const closePopup = () => setPopUpOpen(false);
   const openPopup = () => setPopUpOpen(true);
+
+  const { comentarios, cargando, error } = useComentariosAuto(Number(idCar));
 
   return (
     <div>
@@ -80,7 +87,6 @@ function PopUpComentarios({
 
               <div className="mb-4">
                 <Autoimag imagenes={imagenes} nombre={modeloAuto} />
-                <span className="text-black">{marcaAuto}</span>
               </div>
 
               <div className="mb-4">
@@ -92,13 +98,20 @@ function PopUpComentarios({
               </div>
 
               <div className="space-y-4">
-                <VerComentario
-                  nombreCompleto={nombreUser}
-                  fotoUser={fotoUser}
-                  fechaComentario={fechaComentario}
-                  comentario={comentario}
-                  calificacionUsr={calificacionUsr}
-                />
+                {cargando && <p>Cargando comentarios...</p>}
+                {error && <p>{error}</p>}
+                {!cargando && comentarios.length === 0 && <p>No hay comentarios disponibles.</p>}
+
+                {comentarios.map((comentario) => (
+                  <VerComentario
+                    key={comentario.id}
+                    nombreCompleto={comentario.Usuario.nombre}
+                    fotoUser={fotoUser}
+                    fechaComentario={comentario.comentado_en}
+                    comentario={comentario.contenido}
+                    calificacionUsr={comentario.Calificacion.calf_carro}
+                  />
+                ))}
               </div>
             </div>
           </div>

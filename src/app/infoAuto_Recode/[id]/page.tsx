@@ -44,6 +44,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
             <div className="mt-4 mb-4 flex justify-end">
               <PopUpComentarios 
+              idCar={id}
               nombreCompleto={auto.nombreHost} fotoHost={""} 
               modeloAuto={auto.modelo} marcaAuto={auto.marca}
               calificaciones={calificaciones}

@@ -128,14 +128,3 @@ export const getDetalleHost_Recode = async (id_host: number) => {
         return null;
     }
 };
-//Se agrego para HU3
-export const getComentarioCar_Recode = async (id_carro: number) =>{
-    try {
-        const response = await fetch(`https://search-car-backend.vercel.app/comments/${id_carro}`);
-        const data = await response.json(); 
-        return data;
-    } catch (error) {
-        console.error(`Error al obtener el comentario de Auto con ID ${id_carro}:`, error);
-        return null;
-    }
-}
