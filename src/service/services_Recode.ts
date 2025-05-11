@@ -1,6 +1,7 @@
 import {apiAllCards,apiCarById, apiFormularioCondicionesUsoAuto} from "@/api/apis_Recode";
 import { CondicionesUsoPayload_Recode } from "@/interface/CondicionesUsoFormu_interface_Recode";
 import { CondicionesUsoResponse } from "@/interface/CondicionesUsoVisual_interface_Recode";
+import { DetalleHost } from "@/interface/DetalleHost_Recode";
 
 import {RawAuto_Interface_Recode as RawAuto} from "@/interface/RawAuto_Interface_Recode"
 import { RawCondicionesUsoResponse } from "@/interface/RawCondicionesUsoVisuali_Interface_Recode";
@@ -115,3 +116,26 @@ export async function getCondicionesUsoVisual_Recode(id_carro: number): Promise<
         return null;
     }
 };
+
+//Se anadio esto para HU2
+export const getDetalleHost_Recode = async (id_host: number) => {
+    try {
+        const response = await fetch(`https://search-car-backend.vercel.app/detailHost/${id_host}`);
+        const data = await response.json(); 
+        return data;
+    } catch (error) {
+        console.error(`Error al obtener el detalle del host con ID ${id_host}:`, error);
+        return null;
+    }
+};
+//Se agrego para HU3
+export const getComentarioCar_Recode = async (id_carro: number) =>{
+    try {
+        const response = await fetch(`https://search-car-backend.vercel.app/comments/${id_carro}`);
+        const data = await response.json(); 
+        return data;
+    } catch (error) {
+        console.error(`Error al obtener el comentario de Auto con ID ${id_carro}:`, error);
+        return null;
+    }
+}
