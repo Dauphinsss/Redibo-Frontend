@@ -1,4 +1,3 @@
-// hooks/useCobertura.ts
 'use client';
 import { useState } from 'react';
 import { SeguroForm, Cobertura, CoberturaResponse } from '../interface/CoberturaForm_Interface_Recode';

@@ -15,21 +15,26 @@ export default function ImageUploadButton({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    setIsLoading(true);
-    
-    try {
-      // Reemplaza con tu lógica real de Cloudinary
-      const mockUrl = URL.createObjectURL(file);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      onUploadComplete(mockUrl);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  setIsLoading(true);
+  
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'TU_UPLOAD_PRESET');
+
+  try {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/dzoeeaovz/upload`, {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    onUploadComplete(data.secure_url);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="flex items-center gap-3">
