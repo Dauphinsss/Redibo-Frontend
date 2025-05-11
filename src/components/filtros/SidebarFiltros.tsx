@@ -37,8 +37,11 @@ export default function SidebarFiltros({
 
   // Estado local para mantener el filtro actual de combustible
   const [filtrosCombustibleLocal, setFiltrosCombustibleLocal] = useState<string[]>([]);
-
   
+  // Estado local para mantener los filtros de características
+  const [caracteristicasLocal, setCaracteristicasLocal] = useState<{
+    asientos?: number;
+  }>({});
 
   const toggle = (key: keyof typeof abierto) => {
     setAbierto((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -85,7 +88,7 @@ export default function SidebarFiltros({
   };
 
   const handleCaracteristicasChange = (
-    key: 'asientos' | 'puertas',
+    key: 'asientos',
     value: number,
     isChecked: boolean
   ) => {
@@ -96,10 +99,7 @@ export default function SidebarFiltros({
         [key]: undefined
       }));
       
-      setFiltrosCaracteristicas(prev => ({
-        ...prev,
-        [key]: undefined
-      }));
+    
       return;
     }
     
