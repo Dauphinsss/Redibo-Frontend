@@ -41,6 +41,7 @@ export default function SidebarFiltros({
   // Estado local para mantener los filtros de características
   const [caracteristicasLocal, setCaracteristicasLocal] = useState<{
     asientos?: number;
+    puertas?: number;
   }>({});
 
   const toggle = (key: keyof typeof abierto) => {
@@ -88,7 +89,7 @@ export default function SidebarFiltros({
   };
 
   const handleCaracteristicasChange = (
-    key: 'asientos',
+    key: 'asientos' | 'puertas',
     value: number,
     isChecked: boolean
   ) => {
@@ -99,7 +100,10 @@ export default function SidebarFiltros({
         [key]: undefined
       }));
       
-    
+      setFiltrosCaracteristicas(prev => ({
+        ...prev,
+        [key]: undefined
+      }));
       return;
     }
     
