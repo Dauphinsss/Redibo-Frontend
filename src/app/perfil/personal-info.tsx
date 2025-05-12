@@ -20,6 +20,14 @@ interface UserProfile {
   roles: string[];
 }
 
+// Formato visual: convierte ISO a dd/mm/yyyy
+function formatDateToDDMMYYYY(dateString: string): string {
+  if (!dateString) return "";
+  const [year, month, day] = dateString.split("-");
+  return `${day}/${month}/${year}`;
+}
+
+
 export function PersonalInfo() {
   const [userData, setUserData] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -91,7 +99,7 @@ export function PersonalInfo() {
 
           <div className="grid col-span-2 md:col-span-1 gap-2">
             <Label htmlFor="fecha_nacimiento">Fecha de Nacimiento</Label>
-            <a className="text-base">{userData?.fecha_nacimiento}</a>
+            <a className="text-base">{formatDateToDDMMYYYY(userData?.fecha_nacimiento || "")}</a>
           </div>
 
           <div className="grid col-span-2 md:col-span-1 gap-2">

@@ -267,7 +267,7 @@ export default function CompleteRegisterForm() {
                 value={telefono}
                 onChange={handleTelefonoChange}
                 maxLength={8}
-                placeholder="Ingresa tu teléfono"
+                placeholder="Ingrese su número de teléfono"
               />
               {errores.telefono && <p className="text-sm text-red-500 mt-1">{errores.telefono}</p>}
             </div>

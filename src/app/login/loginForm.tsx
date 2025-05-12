@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { API_URL } from "@/utils/bakend";
 import axios from "axios";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
+
 // Componente de carga
 function LoadingSpinner() {
   return (
@@ -24,9 +26,32 @@ function LoginFormContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    let hasError = false;
+    setEmailError("");
+    setPasswordError("");
+
+    if (!email.trim()) {
+      setEmailError("El correo electrónico es obligatorio");
+      hasError = true;
+    } else if (!email.includes("@")) {
+      setEmailError("El correo debe tener un formato válido");
+      hasError = true;
+    }
+
+    if (!password.trim()) {
+      setPasswordError("La contraseña es obligatoria");
+      hasError = true;
+    }
+
+    if (hasError) return;
+    
     setIsLoading(true);
 
     try {
@@ -36,7 +61,10 @@ function LoginFormContent() {
       });
 
       if (response.data.error) {
-        toast.error(response.data.error);
+        setEmailError("Credenciales inválidas");
+        setPasswordError("Credenciales inválidas"); 
+        setPassword("");
+
         return;
       }
 
@@ -75,28 +103,49 @@ function LoginFormContent() {
           </Label>
           <Input 
             id="email" 
-            type="email" 
+            type="text" 
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (emailError) setEmailError("");
+            }}
             placeholder="correo@ejemplo.com" 
-            className="h-10 px-4" 
-            required
+            className={`h-10 px-4 ${emailError ? "border border-red-500" : ""}`}
           />
+          {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
         </div>
 
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 relative">
           <Label htmlFor="password" className="text-sm font-medium">
             Contraseña
           </Label>
+          <div className="relative">
           <Input 
             id="password" 
-            type="password" 
+            type={showPassword ? "text" : "password"}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (passwordError) setPasswordError("");
+            }}
             placeholder="Ingrese su contraseña" 
-            className="h-10 px-4" 
-            required
+            className={`h-10 px-4 ${passwordError ? "border border-red-500" : ""}`}
           />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-600 hover:text-black"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5 text-gray-600" />
+              ) : (
+                <Eye className="h-5 w-5 text-gray-600" />
+              )}
+            </Button>
+            </div>
+          {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
         </div>
 
         <div className="flex justify-end">

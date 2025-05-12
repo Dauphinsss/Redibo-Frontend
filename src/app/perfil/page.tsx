@@ -122,6 +122,11 @@ export default function ProfilePage() {
     },
   ];
 
+  const handleLogout = () => {
+    localStorage.clear();       // Limpia toda la sesión
+    window.location.href = "/"; // Redirige a la página de inicio
+  };
+  
   return (
     <div className="flex flex-col  w-full max-w-full overflow-hidden bg-gray-50">
       <div className="flex-1">
@@ -209,13 +214,14 @@ export default function ProfilePage() {
               </SidebarContent>
 
               <SidebarFooter className="p-4 border-t border-gray-100">
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Cerrar sesión
-                </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
+                onClick={handleLogout} // ← Aquí agregas el evento
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Cerrar sesión
+              </Button>
               </SidebarFooter>
             </Sidebar>
 
@@ -240,8 +246,7 @@ export default function ProfilePage() {
                         {sectionTitles[activeSection]}
                       </h1>
                       <p className="text-sm text-gray-500 mt-1">
-                        Gestiona tu información de{" "}
-                        {sectionTitles[activeSection].toLowerCase()}
+                      Gestiona tu información personal y configuración de cuenta
                       </p>
                     </div>
                     <div className="p-4 md:p-6">{renderContent()}</div>
