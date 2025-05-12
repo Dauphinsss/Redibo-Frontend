@@ -21,6 +21,7 @@ export interface RawAutoDetails_Interface_Recode {
         };
     };
     Usuario: {
+        id: number;
         nombre: string;
         telefono: string;
     };

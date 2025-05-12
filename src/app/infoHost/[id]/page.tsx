@@ -1,7 +1,18 @@
+
 import PerfilHost from "@/components/recodeComponentes/perfilHost/infoHost/perfilHost";
 import TarjetaCar from "@/components/recodeComponentes/perfilHost/tarjetasAutos/tarjetaAuto";
 
-export default function Page() {
+import { notFound } from "next/navigation";
+
+export default async function Page({ params }: { params: Promise<{ id: number }> }) {
+
+  const { id } = await params;
+  const id_host = id;
+
+  if (isNaN(id_host) || id_host <= 0) {
+    notFound();
+  }
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex flex-col md:flex-row gap-6 items-start">

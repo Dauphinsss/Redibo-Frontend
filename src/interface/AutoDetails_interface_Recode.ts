@@ -13,6 +13,7 @@ export interface AutoDetails_interface_Recode {
     zona: string;
     ciudad: string;
     provincia: string;
+    idHost: number;
     nombreHost: string;
     telefonoHost: string;
     combustibles: string[];

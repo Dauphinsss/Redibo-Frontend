@@ -18,6 +18,7 @@ export const transformAutoDetails_Recode = (
     zona: item.Direccion?.zona || "",
     ciudad: item.Direccion?.Provincia?.Ciudad?.nombre || "",
     provincia: item.Direccion?.Provincia?.nombre || "",
+    idHost: item.Usuario.id,
     nombreHost: item.Usuario?.nombre || "",
     telefonoHost: item.Usuario?.telefono || "",
     combustibles:

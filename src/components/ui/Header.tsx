@@ -14,16 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-<<<<<<< HEAD
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-=======
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
->>>>>>> 75e53524ccb1d094fec326940149ae134c6f0367
 
 export default function Header() {
   const [user, setUser] = useState<{ nombre: string; foto: string } | null>(null);

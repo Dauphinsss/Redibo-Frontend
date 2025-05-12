@@ -5,13 +5,15 @@ interface DescriHostProps {
   calificacion: number;
   numAuto: number;
   telefono: string
+  idHost: number;
 }
 
 export default function DescriHost({ 
   nombreHost, 
   calificacion, 
   numAuto, 
-  telefono
+  telefono,
+  idHost
 }: DescriHostProps) {
   const mensaje = `Hola ${nombreHost}, estoy interesado en tu auto publicado en Redibo.`;
 
@@ -24,7 +26,7 @@ export default function DescriHost({
             <h3 className="text-lg font-semibold">Conoce a tu host</h3>
             <div className="space-y-1 mt-1">
 
-              <Link href={`/infoHost/`} target="_blank"> {/**Para recargar en la misma pagina borrar target */}
+              <Link href={`/infoHost/${idHost}`} target="_blank"> {/**Para recargar en la misma pagina borrar target */}
                 <button className='font-medium'>{nombreHost}</button>
               </Link>
             

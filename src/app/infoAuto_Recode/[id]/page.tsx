@@ -58,6 +58,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             </div>
             
             <DescriHost
+              idHost={auto.idHost}
               nombreHost={auto.nombreHost}
               calificacion={4.5}
               numAuto={1}  
