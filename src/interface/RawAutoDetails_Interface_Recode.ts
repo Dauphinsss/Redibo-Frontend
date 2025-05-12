@@ -8,7 +8,7 @@ export interface RawAutoDetails_Interface_Recode {
     soat: boolean;
     precio_por_dia: string;
     descripcion: string;
-    transmision: string;
+    transmicion: string;
     direccion: {
         calle: string;
         zona: string;
@@ -20,23 +20,22 @@ export interface RawAutoDetails_Interface_Recode {
             };
         };
     };
-    usuario_rol: {
-        usuario: {
+    usuario: {
         nombre: string;
-        };
     };
-    combustiblecarro: {
-        tipocombustible?: {
-            tipo_de_combustible: string;
-            };
+
+    combustiblesporCarro: {
+        combustible?: {
+            tipoDeCombustible: string;
+        };
     }[];
-    imagen: {
+    imagenes: {
         id: number;
         data: string;
         id_carro: number;
     }[];
-    caracteristicasadicionalescarro: {
-        caracteristicas_adicionales: {
+    caracteristicasAdicionalesCarro: {
+        carasteristicasAdicionales: {
             nombre: string;
         };
     }[];

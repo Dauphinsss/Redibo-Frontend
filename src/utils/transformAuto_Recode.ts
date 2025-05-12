@@ -7,21 +7,21 @@ export const transformAuto = (item: RawAuto): AutoCard => ({
     marca: item.marca,
     asientos: item.asientos,
     puertas: item.puertas,
-    transmision: item.transmision,
-    combustibles: Array.isArray(item.combustiblecarro)
-        ? item.combustiblecarro
-            .map((c) => c?.tipocombustible?.tipo_de_combustible)
+    transmision: item.transmicion,
+    combustibles: Array.isArray(item.combustiblesporCarro)
+        ? item.combustiblesporCarro
+            .map((c) => c?.combustible?.tipoDeCombustible)
             .filter((c): c is string => typeof c === "string")
         : [],
     estadoAlquiler: item.estado,
-    nombreHost: item.usuario_rol?.usuario?.nombre || "Sin nombre",
+    nombreHost: item.usuario?.nombre || "Sin nombre",
     calificacionAuto: 4.5,
     ciudad: item.direccion?.provincia?.ciudad?.nombre || "Desconocido",
     calle: item.direccion?.calle || "No especificada",
     precioOficial: Number(item.precio_por_dia),
     precioDescuento: Number(item.precio_por_dia),
     precioPorDia: Number(item.precio_por_dia),
-    disponible_desde: item.disponible_desde || "No disponible",
-    disponible_hasta: item.disponible_hasta || "No disponible",
-    imagenURL: item.imagen?.[0]?.data || "",
+    disponible_desde: item.disponible_desde || "Sin fecha de inicio",
+    disponible_hasta: item.disponible_hasta || "Sin fecha de fin",
+    imagenURL: item.imagenes?.[0]?.data || "",
 });

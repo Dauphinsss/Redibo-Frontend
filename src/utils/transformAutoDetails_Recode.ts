@@ -3,7 +3,7 @@ import { AutoDetails_interface_Recode } from "@/interface/AutoDetails_interface_
 
 export const transformAutoDetails_Recode = (
     item: RawAutoDetails_Interface_Recode
-    ): AutoDetails_interface_Recode => ({
+): AutoDetails_interface_Recode => ({
     marca: item.marca,
     modelo: item.modelo,
     placa: item.placa,
@@ -13,20 +13,20 @@ export const transformAutoDetails_Recode = (
     soat: item.soat,
     precio: Number(item.precio_por_dia),
     descripcion: item.descripcion,
-    transmision: item.transmision,
+    transmision: item.transmicion,
     calle: item.direccion?.calle || "",
     zona: item.direccion?.zona || "",
     ciudad: item.direccion?.provincia?.ciudad?.nombre || "",
     provincia: item.direccion?.provincia?.nombre || "",
-    nombreHost: item.usuario_rol?.usuario?.nombre || "",
+    nombreHost: item.usuario?.nombre || "",
     combustibles:
-        item.combustiblecarro?.map(
-        (c) => c.tipocombustible?.tipo_de_combustible
+        item.combustiblesporCarro?.map(
+            (c) => c.combustible?.tipoDeCombustible
         ).filter(Boolean) as string[] || [],
     imagenes:
-        item.imagen?.map(({ id, data }) => ({ id, data })) || [],
+        item.imagenes?.map(({ id, data }) => ({ id, data })) || [],
     caracteristicasAdicionales:
-        item.caracteristicasadicionalescarro?.map(
-        (c) => c.caracteristicas_adicionales?.nombre
+        item.caracteristicasAdicionalesCarro?.map(
+            (c) => c.carasteristicasAdicionales?.nombre
         ) || [],
 });

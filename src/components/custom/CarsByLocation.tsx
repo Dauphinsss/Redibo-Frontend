@@ -41,9 +41,10 @@ const CarsByLocation = ({ latitude, longitude }: any) => {
             <IoPeople className="mt-1" />{item.asientos} <GiCarDoor className="mt-1 ml-1" />{item.puertas}  <TbManualGearboxFilled className="mt-1 ml-1" /> {item.transmision} 
             </p>
          </div>
-         <div className="inline-flex items-center text-sm font-semibold text-gray-900">
-          BOB. {item.precio_por_dia}          
-          <Link href={"infoAuto_Recode/" + item.id} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-xs rounded-sm text-xs px-2 py-2 mx-2 my-4">
+         <div className="inline-flex flex-col md:flex-row items-center text-sm font-semibold text-gray-900">
+          <p>BOB. {item.precio_por_dia}</p>
+          <Link href={"infoAuto_Recode/" + item.id} target="blank" 
+          className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-xs rounded-sm text-xs px-2 py-2 ms-2 mt-2">
           Ver Oferta</Link>
           </div>
       </div>        

@@ -18,27 +18,31 @@ export default function Page() {
     const longitude = content[index].longitud
     setSelectedLongitude(longitude);
   }  
-  if (isLoading) {
-    return (
-      <p className="text-center text-md mt-4 font-semibold text-muted-foreground">
-        Cargando Aeropuertos...
-      </p>
-    )
-  }
-  if (isError) {
-    return (
-      <p className="text-center text-md mt-4 text-blue-700">
-        Error al cargar los Aeropuertos
-      </p>
-    )
-  }
+  
   return (
     <div>
     <Header />
     <div className="max-w-4xl mx-auto p-3">
       <h1 className="text-center text-2xl mb-4 font-semibold">Filtar Por Aeropuerto</h1>
       <p className="mb-4 font-semibold text-sm">Seleccione un Aeropuerto y haga click en Buscar</p>
+      {(() => {
+        if (isLoading) {
+          return (
+            <p className="text-center text-md mt-4 font-semibold text-muted-foreground">
+            Cargando Aeropuertos...
+            </p>
+          )
+        }
+        if (isError) {
+        return (
+          <p className="text-center text-md mt-4 text-blue-700">
+            Error al cargar los Aeropuertos
+          </p>
+        )
+        }
+      })()} 
       <div className="flex flex-col md:flex-row gap-2 mb-4">
+         
         <select id="aeropuertos" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
           value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)}
         >
