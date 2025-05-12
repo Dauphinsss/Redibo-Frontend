@@ -14,12 +14,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+<<<<<<< HEAD
 import {
   Sheet,
   SheetContent,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+=======
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+>>>>>>> 75e53524ccb1d094fec326940149ae134c6f0367
 
 export default function Header() {
   const [user, setUser] = useState<{ nombre: string; foto: string } | null>(null);
@@ -66,8 +70,8 @@ export default function Header() {
                 <Link href="/" className="text-sm font-medium">
                   Inicio
                 </Link>
-                <Link href="/productos" className="text-sm font-medium">
-                  Productos
+                <Link href="/homeBuscador_Recode" className="text-sm font-medium">
+                  Buscar
                 </Link>
                 <Link href="/acerca" className="text-sm font-medium">
                   Acerca de
@@ -133,8 +137,8 @@ export default function Header() {
           <Link href="/" className="text-sm font-medium">
             Inicio
           </Link>
-          <Link href="/productos" className="text-sm font-medium">
-            Productos
+          <Link href="/homeBuscador_Recode" className="text-sm font-medium">
+            Buscar
           </Link>
           <Link href="/acerca" className="text-sm font-medium">
             Acerca de
