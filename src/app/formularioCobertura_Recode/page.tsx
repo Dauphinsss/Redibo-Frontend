@@ -1,77 +1,93 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import Formulario from '@/components/recodeComponentes/cobertura/FormularioRecode';
-import TablaCobertura from '@/components/recodeComponentes/cobertura/TablaRecode';
-import PopupCobertura from '@/components/recodeComponentes/cobertura/AñadirRecode';
-import { Coverage } from '@/interface/CoberturaForm_Interface_Recode';
-import BotonSiguiente from '@/components/recodeComponentes/cobertura/BotonSiguiente';
 
-function CoberturaAutoPage() {
-  const [hasInsurance, setHasInsurance] = useState<boolean | null>(null);
-  const [insuranceCompany, setInsuranceCompany] = useState<string>('');
-  const [validity, setValidity] = useState<string>('');
-  const [coverages, setCoverages] = useState<Coverage[]>([]);
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const [newCoverage, setNewCoverage] = useState<Coverage>({
-    name: '',
-    description: '',
-    amount: '',
-    validity: '',
+import { useState } from "react";
+import FormularioCobertura from "@/components/recodeComponentes/cobertura/FormularioRecode";
+import TablaCoberturas from "@/components/recodeComponentes/cobertura/TablaRecode";
+import PopupCobertura from "@/components/recodeComponentes/cobertura/AñadirRecode";
+import BotonValidar from "@/components/recodeComponentes/cobertura/BotonValidacion";
+import { CoberturaInterface } from "@/interface/CoberturaForm_Interface_Recode";
+
+export default function CoberturaAutoPage() {
+  const [coberturas, setCoberturas] = useState<CoberturaInterface[]>([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [coberturaActual, setCoberturaActual] = useState<CoberturaInterface>({
+    tipo_dano: "",
+    descripcion: "",
+    valides: "",
+    url: "",
+    id_carro: 0,
   });
-
-  useEffect(() => {
-    const data = localStorage.getItem('coverages');
-    if (data) setCoverages(JSON.parse(data));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('coverages', JSON.stringify(coverages));
-  }, [coverages]);
-
-  const handleSaveCoverage = () => {
-    if (!newCoverage.name || !newCoverage.amount) return;
-    const updated = [...coverages, { ...newCoverage, validity: validity || 'Sin fecha' }];
-    setCoverages(updated);
-    setNewCoverage({ name: '', description: '', amount: '', validity: '' });
-    setShowModal(false);
-  };
-
-  const handleRemoveCoverage = (index: number) => {
-    const updated = [...coverages];
-    updated.splice(index, 1);
-    setCoverages(updated);
+  
+  const agregarCobertura = () => {
+    if (isEditing) {
+      const index = coberturas.findIndex(
+        (c) => c.tipo_dano === coberturaActual.tipo_dano && c.valides === coberturaActual.valides
+      );
+      const nuevas = [...coberturas];
+      nuevas[index] = coberturaActual;
+      setCoberturas(nuevas);
+    } else {
+      setCoberturas([...coberturas, coberturaActual]);
+    }
+    setShowPopup(false);
+    setCoberturaActual({
+      tipo_dano: "",
+      descripcion: "",
+      valides: "",
+      url: "",
+      id_carro: 0,
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm overflow-hidden">
-        <Formulario
-          hasInsurance={hasInsurance}
-          insuranceCompany={insuranceCompany}
-          validity={validity}
-          setHasInsurance={setHasInsurance}
-          setInsuranceCompany={setInsuranceCompany}
-          setValidity={setValidity}
-        />
-        <TablaCobertura
-          coverages={coverages}
-          onRemove={handleRemoveCoverage}
-          onAddClick={() => setShowModal(true)}
-        />
+    <div className="max-w-5xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4">Cobertura de uso del auto</h1>
+      <div className="border rounded shadow">
+        <div className="bg-black text-white p-2 font-semibold">Cobertura de seguro</div>
+        <div className="p-4 space-y-4">
+          <FormularioCobertura />
+
+          <TablaCoberturas
+            coberturas={coberturas}
+            onEditar={(idx) => {
+              setCoberturaActual(coberturas[idx]);
+              setIsEditing(true);
+              setShowPopup(true);
+            }}
+            onEliminar={(idx) => {
+              const nuevas = [...coberturas];
+              nuevas.splice(idx, 1);
+              setCoberturas(nuevas);
+            }}
+            onAgregar={() => {
+              setCoberturaActual({
+                tipo_dano: "",
+                descripcion: "",
+                valides: "",
+                url: "",
+                id_carro: 0,
+              });
+              setIsEditing(false);
+              setShowPopup(true);
+            }}
+          />
+
+          <div className="mt-6 flex justify-center">
+            <BotonValidar />
+          </div>
+        </div>
       </div>
-      {showModal && (
+
+      {showPopup && (
         <PopupCobertura
-          newCoverage={newCoverage}
-          setNewCoverage={setNewCoverage}
-          onClose={() => setShowModal(false)}
-          onSave={handleSaveCoverage}
+          cobertura={coberturaActual}
+          setCobertura={setCoberturaActual}
+          onClose={() => setShowPopup(false)}
+          onSave={agregarCobertura}
+          isEditing={isEditing}
         />
       )}
-      <div className="w-full py-4 flex justify-center border-t mt-6">
-        <BotonSiguiente to="/condicionUsoAuto" />
-      </div>
     </div>
   );
 }
-
-export default CoberturaAutoPage;
