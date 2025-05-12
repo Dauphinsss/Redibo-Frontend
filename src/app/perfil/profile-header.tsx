@@ -132,14 +132,9 @@ export function ProfileHeader() {
               onError={() => setImageError(true)}
               unoptimized
             />
-          ) : userData?.nombre ? (
-            <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600 text-4xl font-semibold">
-              {userData.nombre.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase()}
-            </div>
           ) : (
             <User size={64} className="text-gray-400" />
           )}
-
         </div>
       </div>
 

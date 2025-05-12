@@ -416,15 +416,6 @@ export function LoginForm() {
       <Button type="submit" className="w-full h-10" disabled={isLoading}>
         {isLoading ? "Cambiando contraseña..." : "Cambiar contraseña"}
       </Button>
-      {/* Botón de volver atrás con el mismo estilo que en el paso de código */}
-    <Button
-      type="button"
-      variant="outline"
-      className="w-full h-10"
-      onClick={() => setStep("code")}
-    >
-      Volver atrás
-    </Button>
     </form>
   );
 

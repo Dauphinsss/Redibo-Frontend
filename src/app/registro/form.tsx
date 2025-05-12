@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import type React from "react";
 import { useState, useEffect } from "react";
@@ -120,20 +120,10 @@ export default function Form() {
     setPasswordTouched(true);
     setPhoneTouched(true);
 
-    // Validación de ciudad
-    if (!city || city === 0) {
-      toast.error("Debes seleccionar una ciudad");
-      setCityTouched(true);
-      return;
-    }
-
-
-
     if (password !== confirmPassword) {
       toast.error("Las contraseñas no coinciden.");
       return;
     }
-
 
     if (
       !name ||
@@ -172,7 +162,10 @@ export default function Form() {
       return;
     }
 
-
+    if (!city) {
+      toast.error("Por favor, seleccione una ciudad.");
+      return;
+    }
 
     if (
       !password ||
@@ -676,30 +669,12 @@ export default function Form() {
                   <select
                     id="city"
                     value={city}
-                    onChange={(e) => {
-                      const value = Number(e.target.value);
-                      setCity(value);
-                      handleFormChange();
-                      setCityTouched(true);
-                      if (value === 0) {
-                        toast.error("Debes seleccionar una ciudad");
-                      }
-                    }}
-                    onBlur={() => {
-                      setCityTouched(true);
-                      if (!city || city === 0) {
-                        toast.error("Debes seleccionar una ciudad");
-                      }
-                    }}
+                    onChange={(e) => setCity(Number(e.target.value))}
+                    onBlur={() => setCityTouched(true)}
                     className={`w-full border rounded-md h-10 px-3 text-sm ${
-                      (cityTouched || isFormDirty) && (!city || city === 0) ? "border-red-500" : ""
+                      cityTouched && !city ? "border-red-500" : ""
                     }`}
-
-
-
                   >
-
-
                     <option value={0} disabled>
                       Seleccione una ciudad
                     </option>
@@ -709,13 +684,11 @@ export default function Form() {
                       </option>
                     ))}
                   </select>
-                  {(cityTouched || isFormDirty) && (!city || city === 0) && (
+                  {!city && cityTouched && (
                     <p className="text-sm text-red-500">
                       Debes seleccionar una ciudad
                     </p>
                   )}
-
-
                 </div>
               </div>
 
