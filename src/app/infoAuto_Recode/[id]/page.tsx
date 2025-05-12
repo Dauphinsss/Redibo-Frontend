@@ -9,8 +9,6 @@ import { getCarById , getCarRatings } from '@/service/services_Recode'
 import NotFound from '@/app/not-found'
 import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode'
 import CalificaionRecode from "@/components/recodeComponentes/calificacionAuto/calificacionRecode"
-import ComentarUsr from "@/components/recodeComponentes/comentarioUsuario/realizarComentario/comentarUsuarioRecode"
-import VerComentario from '@/components/recodeComponentes/comentarioUsuario/verComentario/verComentarioRecode'
 import PopUpComentarios from '@/components/recodeComponentes/comentarioUsuario/PopUp/popUpComentarios'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
@@ -46,6 +44,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
             <div className="mt-4 mb-4 flex justify-end">
               <PopUpComentarios 
+              idCar={id}
               nombreCompleto={auto.nombreHost} fotoHost={""} 
               modeloAuto={auto.modelo} marcaAuto={auto.marca}
               calificaciones={calificaciones}
@@ -59,34 +58,18 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             </div>
             
             <DescriHost
+              idHost={auto.idHost}
               nombreHost={auto.nombreHost}
               calificacion={4.5}
               numAuto={1}  
               telefono={auto.telefonoHost}
+              
             />
             <div className="mt-6"  >
               <CalificaionRecode calificaciones={calificaciones}
                 
               />
             </div >
-
-            
-
-            {/**Comentarios */}
-              <ComentarUsr
-                fotoUser={''}
-                palabraInput={'Realiza un comentario ...'}
-              ></ComentarUsr>
-
-            {/**Visualizar Comentarios */}
-            <VerComentario
-              nombreCompleto={""}
-              fotoUser={''}
-              fechaComentario={''}
-              comentario={''}
-              calificacionUsr={0}
-            ></VerComentario>
-            {/**hasta aqui se agrego modificacion */}
 
           </div>
           

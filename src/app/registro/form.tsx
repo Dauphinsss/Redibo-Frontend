@@ -23,7 +23,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   UserIcon,
   HomeIcon,
-  CarIcon,
   ChevronRight,
   EyeOff,
   Eye,
@@ -32,7 +31,7 @@ import { API_URL } from "@/utils/bakend";
 import { Ciudad } from "@/utils/types";
 import Link from "next/link";
 
-type UserType = "HOST" | "RENTER" | "DRIVER" | null;
+type UserType = "HOST" | "RENTER" | null;
 
 export default function Form() {
   const [phone, setPhone] = useState("");
@@ -107,7 +106,7 @@ export default function Form() {
 
     fetchCiudades();
 
-  })
+  }, []);
   
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -130,7 +129,8 @@ export default function Form() {
       !name ||
       name.length < 3 ||
       name.length > 50 ||
-      !/^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$/.test(name)
+      !/^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$/.test(name) ||
+      name.trim().split(/\s+/).length < 2
     ) {
       toast.error("Por favor, ingrese un nombre válido.");
       return;
@@ -202,16 +202,47 @@ export default function Form() {
           ? "Propietario"
           : userType === "RENTER"
           ? "Arrendatario"
-          : userType === "DRIVER"
-          ? "Conductor"
           : "";
+
       const response = await axios.post(`${API_URL}/api/registro`, usuario);
       console.log(response.data);
-      toast.success(`Gracias por registrarse como ${user}.`);
-      resetar();
+      if (response.data.error) {
+        toast.error(response.data.error);
+        return;
+      }
+      const loginResponse = await axios.post(`${API_URL}/api/auth/login`, {
+        "correo": usuario.correo,
+        "contrasena": usuario.contrasena
+      });
+      if (loginResponse.data.error) {
+        toast.error(loginResponse.data.error);
+        return;
+      }
+      const { usuario: usuarioLogueado, token } = loginResponse.data;
+
+      const finalUser = usuarioLogueado || response.data.usuario;
+      const finalToken = token || response.data.token;
+
+      if (finalUser && finalToken) {
+        localStorage.setItem("nombre", finalUser.nombre);
+        localStorage.setItem("foto", finalUser.foto || "default.jpg");
+        localStorage.setItem("roles", loginResponse.data.usuario.roles || "");
+        localStorage.setItem("auth_token", finalToken);
+        
+        toast.success(`Registro exitoso como ${user}.`);
+        window.location.href = "/";
+      } else {
+        toast.success(`Gracias por registrarse como ${user}.`);
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1500);
+      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        toast.error(` ${error.response?.data.error}`);
+        const errorMessage = error.response?.data?.error || "Error al registrar el usuario";
+        toast.error(errorMessage);
+      } else {
+        toast.error("Error al registrar el usuario");
       }
       console.error("Error al registrar el usuario:", error);
     }
@@ -237,8 +268,6 @@ export default function Form() {
         return "Registrar Propietario";
       case "RENTER":
         return "Registrar Arrendatario";
-      case "DRIVER":
-        return "Registrar Conductor";
       default:
         return "Registro";
     }
@@ -250,12 +279,42 @@ export default function Form() {
         return "Complete sus datos como propietario de vehículos para renta y acepte nuestros términos y condiciones.";
       case "RENTER":
         return "Complete sus datos como persona que se renta vehículos y acepte nuestros términos y condiciones.";
-      case "DRIVER":
-        return "Complete sus datos como conductor y acepte nuestnombreos términos y condiciones.";
       default:
         return "Seleccione el tipo de usuario para continuar con el registro.";
     }
   };
+
+  const GoogleSection = (
+    <div className="flex flex-col items-center gap-2 w-full">
+      <div className="relative w-full text-center flex items-center justify-center mb-2">
+        <hr className="flex-grow border-gray-300" />
+        <span className="mx-4 text-gray-500 text-sm whitespace-nowrap">O CONTINÚA CON</span>
+        <hr className="flex-grow border-gray-300" />
+      </div>
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full max-w-xs h-10 text-sm font-semibold flex items-center justify-center gap-2 rounded-lg shadow-sm border border-gray-300 bg-white hover:bg-gray-50"
+        style={{ minWidth: 220 }}
+        onClick={() => {
+          window.location.href = `${API_URL}/api/auth/google`;
+        }}
+      >
+        <img
+          src="https://www.svgrepo.com/show/475656/google-color.svg"
+          alt="Google"
+          className="w-4 h-4"
+        />
+        Iniciar sesión con Google
+      </Button>
+      <p className="text-sm text-gray-600 mt-2">
+        ¿Ya tienes una cuenta?{' '}
+        <a href="/login" className="text-black-600 hover:underline">
+          Iniciar sesión
+        </a>
+      </p>
+    </div>
+  );
 
   if (!userType) {
     return (
@@ -271,7 +330,7 @@ export default function Form() {
           </CardHeader>
           <CardContent>
             <RadioGroup
-              className="space-y-2.5"
+              className="space-y-2.5 mt-6"
               onValueChange={(value) => setUserType(value as UserType)}
             >
               <div className="flex items-center space-x-2 rounded-md border p-4 cursor-pointer hover:bg-muted">
@@ -298,21 +357,10 @@ export default function Form() {
                   </div>
                 </Label>
               </div>
-              <div className="flex items-center space-x-2 rounded-md border p-4 cursor-pointer hover:bg-muted">
-                <RadioGroupItem value="DRIVER" id="conductor" />
-                <Label htmlFor="conductor" className="flex items-center">
-                  <CarIcon className="mr-2 h-5 w-5" />
-                  <div>
-                    <p className="font-medium">Conductor</p>
-                    <p className="text-sm text-muted-foreground">
-                      Registrarse como conductor de vehículos
-                    </p>
-                  </div>
-                </Label>
-              </div>
             </RadioGroup>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex flex-col gap-4 pt-0 border-t mt-4">
+            {GoogleSection}
             <Button
               variant="outline"
               className="w-full"
@@ -390,7 +438,7 @@ export default function Form() {
                     id="name"
                     value={name}
                     maxLength={50}
-                    onChange={(e) => setName(e.target.value.trimStart())}
+                    onChange={(e) => setName(e.target.value)}
                     onBlur={() => setNameTouched(true)}
                     placeholder="Ingrese su nombre"
                     className={
@@ -420,6 +468,11 @@ export default function Form() {
                             No debe contener caracteres especiales
                           </p>
                         )}
+                        {!name.trim().includes(" ") && name.trim().length >= 3 && (
+                                  <p className="text-sm text-red-500">
+                                    Debe ingresar al menos nombre y apellido
+                                  </p>
+                                )}
                     </>
                   )}
                 </div>
@@ -800,27 +853,17 @@ export default function Form() {
             <div className="relative w-full text-center">
               <hr className="border-gray-300" />
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-3 text-gray-500 text-sm">
-                O CONTINÚA CON
+             
               </span>
             </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full flex items-center justify-center gap-2"
-              disabled
-            >
-              <img
-                src="https://www.svgrepo.com/show/475656/google-color.svg"
-                alt="Google"
-                className="w-5 h-5"
-              />
-              Iniciar sesión con Google
-            </Button>
+           
 
             <p className="text-sm text-gray-600">
               ¿Ya tienes una cuenta?{" "}
-              <a className="text-black-600 hover:underline">Iniciar sesión</a>
+              <a href="/login" className="text-primary hover:underline">
+              Iniciar sesion
+              </a>
             </p>
           </CardFooter>
         </Card>

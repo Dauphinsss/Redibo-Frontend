@@ -27,7 +27,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "types" // ✅ Incluye tus tipos personalizados
+    "types"
   ],
   "exclude": ["node_modules"]
 }

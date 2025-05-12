@@ -9,7 +9,7 @@ export function Header() {
         <Link href="/" className="text-2xl font-bold">REDIBO</Link>
         <nav className="flex items-center gap-4">
           <Link href="/" className="text-sm font-medium hover:underline">Inicio</Link>
-          <Link href="/registro"className="bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition"> Registro </Link>
+          <Link href="/registro"className="bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition"> Registrarse </Link>
         </nav>
       </div>
     </header>

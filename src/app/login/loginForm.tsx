@@ -1,14 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { API_URL } from "@/utils/bakend";
+import axios from "axios";
+import Link from "next/link";
+// Componente de carga
+function LoadingSpinner() {
+  return (
+    <div className="flex justify-center items-center min-h-[50vh]">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-2 border-black"></div>
+    </div>
+  );
+}
 
-export function LoginForm() {
+// Componente del formulario
+function LoginFormContent() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,21 +30,33 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
+      const response = await axios.post(`${API_URL}/api/auth/login`, {
+        "correo": email,
+        "contrasena": password
       });
 
-      if (result?.error) {
-        toast.error("Credenciales incorrectas");
-      } else {
-        router.push("/");
-        toast.success("Inicio de sesión exitoso");
+      if (response.data.error) {
+        toast.error(response.data.error);
+        return;
       }
-    } catch (error) {
+
+      const { usuario, token } = response.data;
+      localStorage.setItem("nombre", usuario.nombre);
+      // localStorage.setItem("correo", usuario.correo);
+      // localStorage.setItem("telefono", usuario.telefono || "");
+      // localStorage.setItem("fecha_nacimiento", usuario.fecha_nacimiento || "");
+      // localStorage.setItem("genero", usuario.genero || "");
+      // localStorage.setItem("ciudad", usuario.ciudad || "");
+      localStorage.setItem("foto", usuario.foto || "default.jpg");
+      localStorage.setItem("roles", usuario.roles || "");
+      localStorage.setItem("auth_token", token);
+
+      router.push("/");
+      toast.success("Inicio de sesión exitoso");
+    } catch (error: unknown) {
       console.error("Error al iniciar sesión:", error);
-      toast.error("Error al iniciar sesión");
+      const errorMessage = "Error al iniciar sesión";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -76,6 +99,12 @@ export function LoginForm() {
           />
         </div>
 
+        <div className="flex justify-end">
+          <Link href="/recuperar-contrasena" className="text-sm text-primary hover:underline">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
+
         <Button type="submit" className="w-full h-10" disabled={isLoading}>
           {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
         </Button>
@@ -90,11 +119,9 @@ export function LoginForm() {
       <Button
         type="button"
         variant="outline"
-        onClick={() =>
-          signIn("google", {
-            callbackUrl: "/login/redirect",
-          })
-        }
+        onClick={() => {
+          window.location.href = `${API_URL}/api/auth/google`;
+        }}
         className="w-full flex items-center justify-center gap-2 h-10"
       >
         <img
@@ -108,9 +135,67 @@ export function LoginForm() {
       <p className="text-sm text-center mt-8 text-muted-foreground">
         ¿No tienes una cuenta?{" "}
         <a href="/registro" className="text-primary hover:underline">
-          Regístrate
+          Registrarse
         </a>
       </p>
     </div>
   );
+}
+
+// Componente principal
+export function LoginForm() {
+  const router = useRouter();
+  const [isProcessing, setIsProcessing] = useState(true);
+  const [shouldShowForm, setShouldShowForm] = useState(false);
+
+  useEffect(() => {
+    const processUrlData = async () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedData = urlParams.get('data');
+        const urlToken = urlParams.get('token');
+
+        if (encodedData && urlToken) {
+          const userData = JSON.parse(
+            Buffer.from(encodedData, 'base64').toString()
+          );
+          // Guardar en localStorage
+          localStorage.setItem("nombre", userData.nombre);
+          // localStorage.setItem("correo", userData.correo);
+          // localStorage.setItem("telefono", userData.telefono || "");
+          // localStorage.setItem("fecha_nacimiento", userData.fecha_nacimiento || "");
+          // localStorage.setItem("genero", userData.genero || "");
+          // localStorage.setItem("ciudad", userData.ciudad || "");
+          localStorage.setItem("foto", userData.foto || "default.jpg");
+          localStorage.setItem("roles", userData.roles || "");
+          localStorage.setItem("auth_token", urlToken);
+
+          // Limpiar URL
+          window.history.replaceState({}, document.title, "/login");
+          
+          // Esperar un momento para asegurar que los datos se guarden
+          // await new Promise(resolve => setTimeout(resolve, 500));
+          
+          router.push("/");
+          toast.success("Inicio de sesión exitoso");
+        } else {
+          setShouldShowForm(true);
+        }
+      } catch (error) {
+        console.log("No hay datos en URL o error al procesarlos" + error);
+        setShouldShowForm(true);
+      } finally {
+        setIsProcessing(false);
+      }
+    };
+
+    processUrlData();
+  }, [router]);
+
+  // Si estamos procesando o no debemos mostrar el formulario, mostrar el spinner
+  if (isProcessing || !shouldShowForm) {
+    return <LoadingSpinner />;
+  }
+
+  return <LoginFormContent />;
 }
