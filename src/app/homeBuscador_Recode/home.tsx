@@ -1,5 +1,5 @@
 'use client';
-
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { X, Map } from "lucide-react";
 import { useAutos } from '@/hooks/useAutos_hook_Recode';
@@ -11,6 +11,7 @@ import { useCarsMap } from "@/hooks/useAutosMapa";
 
 import DateRangeFilter from '@/components/filtrofechas_7-bits/DateRangeFilter'
 import dynamic from "next/dynamic";
+import { set } from "date-fns";
 
 export default function Home() {
   const {
@@ -44,17 +45,14 @@ export default function Home() {
     }
   ), []);
 
-  const handleFiltrar = (query: string) => {
-    setBusqueda(query);
-    filtrarAutos(query);
-  };
-
   const { data: carsMap, isLoading: loadingMap } = useCarsMap(startDate, endDate);
   const [radio, setradio] = useState(3)
   const increment = () => setradio(prev => prev + 1);
   const decrement = () => setradio(prev => prev - 1);
   const reset = () => setradio(0);
   const [punto, setpunto] = useState({lon:0,alt:0})
+
+
   return (
     <div className="relative">
 
@@ -75,7 +73,11 @@ export default function Home() {
             />
             {/* <div className="mt-6">RecodeCarousel aquí (opcional)</div> */}
           </section>
-
+          <div className="flex gap-2 justify-start mb-2 w-full">
+            <Link href="/filtrarAeropuerto" 
+            className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+            >Filtrar por Aeropuerto</Link> 
+          </div>
           {/* Filtro de Fechas */}
           <div className="flex flex-col md:flex-row items-center justify-start gap-4 mb-4 w-full">
             <DateRangeFilter
@@ -84,7 +86,7 @@ export default function Home() {
               fechaFin={fechaFin}
               setFechaInicio={(fecha) => {
                 setFechaInicio(fecha);
-                filtrarAutos(busqueda, fecha, fechaFin); 
+                filtrarAutos(busqueda, fecha, fechaFin);
               }}
               setFechaFin={(fecha) => {
                 setFechaFin(fecha);
@@ -95,13 +97,30 @@ export default function Home() {
           </div>
 
           <div className="w-full max-w-4xl mx-auto">
-            <div style={{ textAlign: 'center', background: '#7FFFD4'}}>
-              <h2>Contador: {radio  }</h2>
-              <button onClick={decrement}>-</button>
-              <button onClick={reset}>Reset</button>
-              <button onClick={increment}>+</button>
-              <p>mostrando datos {punto.alt} {punto.lon}</p>
+            <div className="bg-black text-white text-center p-2 rounded-md shadow-sm w-fit mx-auto">
+              <h2 className="text-sm font-medium mb-2">Radio: {radio}</h2>
+              <div className="space-x-1">
+                <button
+                  onClick={decrement}
+                  className="bg-gray-700 hover:bg-gray-600 text-xs px-2 py-1 rounded"
+                >
+                  -
+                </button>
+                <button
+                  onClick={reset}
+                  className="bg-gray-500 hover:bg-gray-400 text-xs px-2 py-1 rounded"
+                >
+                  Reset
+                </button>
+                <button
+                  onClick={increment}
+                  className="bg-gray-700 hover:bg-gray-600 text-xs px-2 py-1 rounded"
+                >
+                  +
+                </button>
+              </div>
             </div>
+
             <HeaderBusquedaRecode
               autosTotales={autos}
               autosFiltrados={autosFiltrados}
@@ -140,19 +159,21 @@ export default function Home() {
       </div>
 
       {showMap && (
-        <div className="fixed inset-0 bg-white bg-opacity-70 z-50 flex items-center justify-center lg:hidden">
+        <div className="fixed inset-0 bg-white bg-opacity-70 z-[9999] flex items-center justify-center lg:hidden">
           <div className="relative w-full h-full bg-white rounded-t-xl overflow-hidden">
 
-            <div className="w-full flex justify-center pt-8 pb-2">
-              <button
-                className="absolute top-0.5 right-4 p-2 bg-white rounded-full shadow-md z-50"
-                onClick={() => setShowMap(false)}
-              >
-                <X size={20} className="text-black" />
-              </button>
+            <div className="sticky top-0 left-0 w-full bg-white ">
+              <div className="flex justify-end items-center h-10">
+                <button
+                  className="p-2 bg-white rounded-full shadow-md mx-4"
+                  onClick={() => setShowMap(false)}
+                >
+                  <X size={20} className="text-black" />
+                </button>
+              </div>
             </div>
 
-            <div className="w-full h-full">
+            <div className="w-full h-[calc(100%-40px)]">
               {!loadingMap &&
                 <ViewMap posix={[-17.39438, -66.16018]} autos={carsMap} radio={radio} punto={punto} setpunto={setpunto} />
               }
@@ -164,3 +185,4 @@ export default function Home() {
     </div>
   );
 }
+
