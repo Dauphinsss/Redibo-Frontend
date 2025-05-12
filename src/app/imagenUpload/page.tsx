@@ -10,10 +10,21 @@ export default function ImagenUploadPage() {
   const [imagen, setImagen] = useState<string>('');
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-xl font-bold mb-4">Subir Imagen de Cobertura</h1>
-      <p className="mb-4">ID del auto: {id}</p>
-      <SubirImagenCloudinary imagen={imagen} setImagen={setImagen} />
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-md p-6 border border-black rounded-lg bg-white shadow-md">
+        <h1 className="text-xl font-bold mb-4 text-center">Subir Imagen de Cobertura</h1>
+        <p className="mb-4 text-center">ID del auto: <span className="font-semibold">{id}</span></p>
+        <SubirImagenCloudinary imagen={imagen} setImagen={setImagen} />
+        <button
+          onClick={() => alert('Imagen subida con éxito')}
+          disabled={!imagen}
+          className={`w-full mt-4 px-4 py-2 rounded text-white font-semibold ${
+            imagen ? 'bg-black hover:bg-gray-800' : 'bg-gray-400 cursor-not-allowed'
+          }`}
+        >
+          Subir Imagen
+        </button>
+      </div>
     </div>
   );
 }
