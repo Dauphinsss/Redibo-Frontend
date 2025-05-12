@@ -17,19 +17,14 @@ const CalificacionRecode = ({ calificaciones }: { calificaciones: number[] }) =>
                 <div className="text-center">
                     <h2 className="text-6xl">{total === 0 ? "0.0" : promedio.toFixed(1)}</h2>
                     <p className="text-gray-600">{total === 0 ? "0 comentarios" : `${total} opiniones`}</p>
-
-                    {/* Mostrar estrellas completas y medias estrellas según el promedio */}
                     <div className="flex justify-center space-x-1">
                         {Array.from({ length: 5 }, (_, index) => {
-                            const isFilled = index < Math.floor(promedio); // Determina si es una estrella llena
-                            const isHalfFilled = promedio - Math.floor(promedio) >= 0.5 && Math.floor(promedio) === index; // Determina si es media estrella
+                            const isFilled = index < Math.floor(promedio);
+                            const isHalfFilled = promedio - Math.floor(promedio) >= 0.5 && Math.floor(promedio) === index; 
 
                             return (
                                 <div key={index} className="relative text-3xl text-gray-300">
-                                    {/* Estrella completa */}
                                     <span className={isFilled ? "text-black" : ""}>★</span>
-                                    
-                                    {/* Media estrella (superpuesta) */}
                                     {isHalfFilled && (
                                         <span className="absolute left-0 top-0 text-black overflow-hidden w-1/2">★</span>
                                     )}
