@@ -26,7 +26,7 @@
     "@radix-ui/react-use-is-hydrated": "^0.1.0",
     "@tanstack/react-query": "^5.75.2",
     "@types/leaflet": "^1.9.17",
-    "axios": "^1.8.4",
+    "axios": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
