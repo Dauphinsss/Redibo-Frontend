@@ -1,14 +1,17 @@
 import { CoberturaInterface } from "@/interface/CoberturaForm_Interface_Recode";
 import { Pencil, Trash2, Plus } from "lucide-react";
+import { postCobertura } from "@/service/services_Recode";
 
 interface Props {
-  coberturas: CoberturaInterface[];
+  tipo_dano: string;
+  descripcion: string;
+  valides: string;
   onEditar: (index: number) => void;
   onEliminar: (index: number) => void;
   onAgregar: () => void;
 }
 
-export default function TablaCoberturas({ coberturas, onEditar, onEliminar, onAgregar }: Props) {
+export default function TablaCoberturas({ tipo_dano, descripcion, valides, onEditar, onEliminar, onAgregar }: Props) {
   return (
     <div className="mt-6">
       <div className="flex justify-between items-center mb-2">

@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { useRouter } from "next/navigation";
 import { AutoCard_Interfaces_Recode as Auto } from "@/interface/AutoCard_Interface_Recode";
-import CarCardImage from "@/components/recodeComponentes/carCard/CarCardImgRecode";
+import ImagenUpload from "@/components/recodeComponentes/cobertura/ImagenUpload";
 import CarCardHeader from "@/components/recodeComponentes/carCard/CarCardHeaderRecode";
 
 export type RecodeCarCardProps = Auto;
@@ -28,7 +28,7 @@ console.log("RecodeCarCard props:", props);
     <div className="w-full max-w-[750px] border border-black rounded-[15px] p-4 shadow-sm bg-white flex flex-col items-center gap-4">
 
       <div className="w-full md:w-[230px] flex items-center justify-center">
-        <CarCardImage imagenUrl={imagenURL} />
+        <ImagenUpload imagen={imagenURL} />
       </div>
 
       <CarCardHeader nombre={modelo} marca={marca} />
