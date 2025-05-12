@@ -7,13 +7,14 @@ import CarCardImage from "@/components/recodeComponentes/carCard/CarCardImgRecod
 import CarCardHeader from "@/components/recodeComponentes/carCard/CarCardHeaderRecode";
 
 export type RecodeCarCardProps = Auto;
-
+//esto
 function RecodeCarCard(props: Auto) {
   const { idAuto, modelo, marca, imagenURL } = props;
   const router = useRouter();
-console.log("RecodeCarCard props:", props);
+  console.log("RecodeCarCard props:", props);
+
   const handleVerCobertura = () => {
-    router.push(`/ImagenUpload/id=${idAuto}`);
+    router.push(`/imagenUpload?id=${idAuto}`);
   };
 
   const handleValidarCobertura = () => {
