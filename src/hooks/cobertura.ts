@@ -1,81 +1,32 @@
-'use client';
-import { useState } from 'react';
-import { SeguroForm, Cobertura, CoberturaResponse } from '../interface/CoberturaForm_Interface_Recode';
+import axios from "axios";
+import { CoberturaInterface } from "@/interface/CoberturaForm_Interface_Recode";
 
-export const useCobertura = () => {
-  const [seguro, setSeguro] = useState<SeguroForm>({
-    tieneSeguro: false,
-    coberturas: [],
-    imagenAcreditacion: undefined
-  });
+const API_BASE = "/api/seguros";
 
-  const guardarCobertura = (cobertura: Cobertura, index?: number) => {
-    setSeguro(prev => {
-      const nuevasCoberturas = [...prev.coberturas];
-      
-      if (typeof index === 'number') {
-        nuevasCoberturas[index] = cobertura;
-      } else {
-        nuevasCoberturas.push(cobertura);
-      }
-      
-      return {
-        ...prev,
-        coberturas: nuevasCoberturas
-      };
-    });
+export const useCoberturaAPI = () => {
+  const agregarCobertura = async (id_seguro: number, cobertura: CoberturaInterface) => {
+    const { data } = await axios.post(`${API_BASE}/${id_seguro}/coberturas`, cobertura);
+    return data;
   };
 
-  const eliminarCobertura = (index: number) => {
-    setSeguro(prev => ({
-      ...prev,
-      coberturas: prev.coberturas.filter((_, i) => i !== index)
-    }));
+  const actualizarCobertura = async (id_cobertura: number, cobertura: CoberturaInterface) => {
+    const { data } = await axios.put(`${API_BASE}/coberturas/${id_cobertura}`, cobertura);
+    return data;
   };
 
-  const guardarImagen = (url: string) => {
-    setSeguro(prev => ({
-      ...prev,
-      imagenAcreditacion: url
-    }));
+  const eliminarCobertura = async (id_cobertura: number) => {
+    await axios.delete(`${API_BASE}/coberturas/${id_cobertura}`);
   };
 
-  const actualizarSeguro = (datos: Partial<SeguroForm>) => {
-    setSeguro(prev => ({
-      ...prev,
-      ...datos
-    }));
-  };
-
-  const enviarDatos = async (idCarro: number): Promise<CoberturaResponse> => {
-    const response = await fetch(`https://search-car-backend.vercel.app/insurance/${idCarro}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ...seguro,
-        coberturas: seguro.coberturas.map(c => ({
-          tipoda_o: c.tipoDaño,
-          descripcion: c.descripcion,
-          valides: c.monto // Asumiendo que monto va en valides
-        }))
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error('Error al enviar los datos');
-    }
-
-    return await response.json();
+  const obtenerCoberturas = async (id_seguro: number) => {
+    const { data } = await axios.get(`${API_BASE}/${id_seguro}/coberturas`);
+    return data as CoberturaInterface[];
   };
 
   return {
-    seguro,
-    guardarCobertura,
+    agregarCobertura,
+    actualizarCobertura,
     eliminarCobertura,
-    guardarImagen,
-    actualizarSeguro,
-    enviarDatos
+    obtenerCoberturas,
   };
 };

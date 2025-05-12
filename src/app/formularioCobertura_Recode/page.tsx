@@ -1,96 +1,91 @@
 'use client';
-import { useState } from 'react';
-import { useCobertura } from '@/hooks/cobertura';
-import FormularioSeguro from '@/components/recodeComponentes/cobertura/FormularioRecode';
-import TablaCoberturas from '@/components/recodeComponentes/cobertura/TablaRecode';
-import PopupCobertura from '@/components/recodeComponentes/cobertura/PopUpCobertura';
-import ImageUploadButton from '@/components/recodeComponentes/cobertura/ImagenUpload';
-import BotonValidacion from '@/components/recodeComponentes/cobertura/BotonValidacion';
-import { useRouter } from 'next/navigation';
+
+import { useState } from "react";
+import FormularioCobertura from "@/components/recodeComponentes/cobertura/FormularioRecode";
+import TablaCoberturas from "@/components/recodeComponentes/cobertura/TablaRecode";
+import PopupCobertura from "@/components/recodeComponentes/cobertura/AñadirRecode";
+import BotonValidar from "@/components/recodeComponentes/cobertura/BotonValidacion";
+import { CoberturaInterface } from "@/interface/CoberturaForm_Interface_Recode";
 
 export default function CoberturaAutoPage() {
-  const router = useRouter();
-  const {
-    seguro,
-    guardarCobertura,
-    eliminarCobertura,
-    guardarImagen,
-    actualizarSeguro,
-    enviarDatos
-  } = useCobertura();
-
-  const [showModal, setShowModal] = useState(false);
-  const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmitAll = async () => {
-    setIsSubmitting(true);
-    try {
-      await enviarDatos();
-      router.push('/condicionUsoAuto'); // Redirige después de validar
-    } finally {
-      setIsSubmitting(false);
+  const [coberturas, setCoberturas] = useState<CoberturaInterface[]>([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [coberturaActual, setCoberturaActual] = useState<CoberturaInterface>({
+    tipo_dano: "",
+    descripcion: "",
+    valides: "",
+    url: "",
+    id_carro: 0,
+  });
+  
+  const agregarCobertura = () => {
+    if (isEditing) {
+      const index = coberturas.findIndex(
+        (c) => c.tipo_dano === coberturaActual.tipo_dano && c.valides === coberturaActual.valides
+      );
+      const nuevas = [...coberturas];
+      nuevas[index] = coberturaActual;
+      setCoberturas(nuevas);
+    } else {
+      setCoberturas([...coberturas, coberturaActual]);
     }
+    setShowPopup(false);
+    setCoberturaActual({
+      tipo_dano: "",
+      descripcion: "",
+      valides: "",
+      url: "",
+      id_carro: 0,
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm overflow-hidden">
-        {!seguro.imagenAcreditacion && (
-          <div className="p-6 text-center">
-            <h2 className="text-xl font-semibold mb-4">Validación de Cobertura</h2>
-            <p className="mb-6 text-gray-600">Por favor sube una imagen de acreditación para continuar</p>
-            <div className="flex justify-center">
-              <ImageUploadButton 
-                onUploadComplete={guardarImagen}
-              />
-            </div>
-          </div>
-        )}
+    <div className="max-w-5xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4">Cobertura de uso del auto</h1>
+      <div className="border rounded shadow">
+        <div className="bg-black text-white p-2 font-semibold">Cobertura de seguro</div>
+        <div className="p-4 space-y-4">
+          <FormularioCobertura />
 
-        {seguro.imagenAcreditacion && (
-          <>
-            <div className="p-4 border-b flex justify-between items-center">
-              <ImageUploadButton 
-                existingImage={seguro.imagenAcreditacion}
-                onUploadComplete={guardarImagen}
-              />
-              <BotonValidacion
-                onClick={handleSubmitAll}
-                disabled={seguro.coberturas.length === 0}
-                isLoading={isSubmitting}
-              />
-            </div>
-            
-            <FormularioSeguro
-              seguro={seguro}
-              actualizarSeguro={actualizarSeguro}
-            />
-            
-            <TablaCoberturas
-              coberturas={seguro.coberturas}
-              onEdit={(index) => {
-                setEditIndex(index);
-                setShowModal(true);
-              }}
-              onRemove={eliminarCobertura}
-              onAdd={() => {
-                setEditIndex(null);
-                setShowModal(true);
-              }}
-            />
-          </>
-        )}
+          <TablaCoberturas
+            coberturas={coberturas}
+            onEditar={(idx) => {
+              setCoberturaActual(coberturas[idx]);
+              setIsEditing(true);
+              setShowPopup(true);
+            }}
+            onEliminar={(idx) => {
+              const nuevas = [...coberturas];
+              nuevas.splice(idx, 1);
+              setCoberturas(nuevas);
+            }}
+            onAgregar={() => {
+              setCoberturaActual({
+                tipo_dano: "",
+                descripcion: "",
+                valides: "",
+                url: "",
+                id_carro: 0,
+              });
+              setIsEditing(false);
+              setShowPopup(true);
+            }}
+          />
+
+          <div className="mt-6 flex justify-center">
+            <BotonValidar />
+          </div>
+        </div>
       </div>
 
-      {showModal && (
+      {showPopup && (
         <PopupCobertura
-          cobertura={editIndex !== null ? seguro.coberturas[editIndex] : undefined}
-          onSave={(cobertura) => {
-            guardarCobertura(cobertura, editIndex ?? undefined);
-            setShowModal(false);
-          }}
-          onClose={() => setShowModal(false)}
+          cobertura={coberturaActual}
+          setCobertura={setCoberturaActual}
+          onClose={() => setShowPopup(false)}
+          onSave={agregarCobertura}
+          isEditing={isEditing}
         />
       )}
     </div>

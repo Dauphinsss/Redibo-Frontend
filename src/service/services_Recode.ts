@@ -1,6 +1,7 @@
-import {apiAllCards,apiCarById, apiFormularioCondicionesUsoAuto} from "@/api/apis_Recode";
+import {apiAllCards,apiCarById, apiCobertura, apiFormularioCondicionesUsoAuto} from "@/api/apis_Recode";
 import { CondicionesUsoPayload_Recode } from "@/interface/CondicionesUsoFormu_interface_Recode";
 import { CondicionesUsoResponse } from "@/interface/CondicionesUsoVisual_interface_Recode";
+import { CoberturaInterface } from "@/interface/CoberturaForm_Interface_Recode";
 
 import {RawAuto_Interface_Recode as RawAuto} from "@/interface/RawAuto_Interface_Recode"
 import { RawCondicionesUsoResponse } from "@/interface/RawCondicionesUsoVisuali_Interface_Recode";
@@ -113,5 +114,22 @@ export async function getCondicionesUsoVisual_Recode(id_carro: number): Promise<
     } catch (error) {
         console.error("Error al obtener condiciones visuales:", error);
         return null;
+    }
+};
+
+export const postCobertura = async (payload: CoberturaInterface): Promise<void> => {
+    try {
+        const response = await apiCobertura.post("/insertedInsurance", payload);
+        console.log("Enviado los datos de Cobertura", response.data);
+    } catch (error) {
+        const axiosError = error as AxiosError;
+
+        console.error("Error al enviar las condiciones de uso:");
+        console.error("Mensaje:", axiosError.message);
+        console.error("Código:", axiosError.code);
+        console.error("Status:", axiosError.response?.status);
+        console.error("Data:", axiosError.response?.data);
+
+        throw new Error("No se pudo enviar las condiciones de uso. Intenta de nuevo más tarde.");
     }
 };

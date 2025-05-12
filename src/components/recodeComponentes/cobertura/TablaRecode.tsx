@@ -1,75 +1,46 @@
-// components/TablaCoberturas.tsx
-'use client';
-import { Cobertura } from '@/interface/CoberturaForm_Interface_Recode';
+import { CoberturaInterface } from "@/interface/CoberturaForm_Interface_Recode";
+import { Pencil, Trash2, Plus } from "lucide-react";
 
-interface TablaCoberturasProps {
-  coberturas: Cobertura[];
-  onEdit: (index: number) => void;
-  onRemove: (index: number) => void;
-  onAdd: () => void;
+interface Props {
+  coberturas: CoberturaInterface[];
+  onEditar: (index: number) => void;
+  onEliminar: (index: number) => void;
+  onAgregar: () => void;
 }
 
-export default function TablaCoberturas({ coberturas, onEdit, onRemove, onAdd }: TablaCoberturasProps) {
+export default function TablaCoberturas({ coberturas, onEditar, onEliminar, onAgregar }: Props) {
   return (
-    <section className="p-4 md:p-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-        <h3 className="text-lg font-semibold text-gray-800">Tipo de cobertura</h3>
-        <div className="flex gap-2">
-          <button 
-            onClick={onAdd}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-          >
-            + Añadir cobertura
-          </button>
-        </div>
+    <div className="mt-6">
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="font-semibold">Tipo de cobertura</h3>
+        <button onClick={onAgregar} className="p-2 bg-black text-white rounded">
+          <Plus size={16} />
+        </button>
       </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3">Tipo de daño</th>
-              <th className="px-4 py-3">Descripción</th>
-              <th className="px-4 py-3">Monto/Remuneración</th>
-              <th className="px-4 py-3">Acciones</th>
+
+      <table className="w-full border">
+        <thead className="bg-gray-100 text-left">
+          <tr>
+            <th className="p-2 border">Nombre</th>
+            <th className="p-2 border">Descripcion</th>
+            <th className="p-2 border">Monto</th>
+            <th className="p-2 border text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {coberturas.map((c, index) => (
+            <tr key={index}>
+              <td className="p-2 border">{c.tipo_dano}</td>
+              <td className="p-2 border">{c.descripcion}</td>
+              <td className="p-2 border">{c.valides}</td>
+              <td className="p-2 border text-center space-x-2">
+                <button onClick={() => onEditar(index)}><Pencil size={16} /></button>
+                <button onClick={() => onEliminar(index)}><Trash2 size={16} /></button>
+              </td>
             </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {coberturas.length > 0 ? (
-              coberturas.map((cobertura, index) => (
-                <tr key={index}>
-                  <td className="px-4 py-4 text-center">{cobertura.tipoDaño}</td>
-                  <td className="px-4 py-4 text-center">{cobertura.descripcion}</td>
-                  <td className="px-4 py-4 text-center">
-                    {cobertura.monto.includes('%') ? cobertura.monto : `BOB ${cobertura.monto}`}
-                  </td>
-                  <td className="px-4 py-4 text-center flex justify-center space-x-2">
-                    <button 
-                      onClick={() => onEdit(index)}
-                      className="text-blue-500 hover:text-blue-700"
-                      title="Editar"
-                    >
-                      ✏️
-                    </button>
-                    <button 
-                      onClick={() => onRemove(index)}
-                      className="text-red-500 hover:text-red-700"
-                      title="Eliminar"
-                    >
-                      🗑️
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-gray-500">
-                  No hay coberturas registradas
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </section>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

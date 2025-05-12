@@ -1,89 +1,73 @@
-'use client';
-import { useState, useRef } from 'react';
-import Image from 'next/image';
+import { memo } from 'react';
+import { CoberturaInterface } from '@/interface/CoberturaForm_Interface_Recode';
 
-interface ImageUploadButtonProps {
-  onUploadComplete: (url: string) => void;
-  existingImage?: string;
+interface PopupProps {
+  cobertura: CoberturaInterface;
+  setCobertura: (c: CoberturaInterface) => void;
+  onClose: () => void;
+  onSave: () => void;
+  isEditing?: boolean;
 }
 
-export default function ImageUploadButton({
-  onUploadComplete,
-  existingImage
-}: ImageUploadButtonProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-
-  setIsLoading(true);
-  
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', 'TU_UPLOAD_PRESET');
-
-  try {
-    const res = await fetch(`https://api.cloudinary.com/v1_1/dzoeeaovz/upload`, {
-      method: 'POST',
-      body: formData
-    });
-    const data = await res.json();
-    onUploadComplete(data.secure_url);
-  } finally {
-    setIsLoading(false);
-  }
-};
-
+function PopupCobertura({ cobertura, setCobertura, onClose, onSave, isEditing = false }: PopupProps) {
   return (
-    <div className="flex items-center gap-3">
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleUpload}
-        accept="image/*"
-        className="hidden"
-        disabled={isLoading}
-      />
-      
-      <button
-        onClick={() => fileInputRef.current?.click()}
-        disabled={isLoading}
-        className={`px-4 py-2 rounded-md flex items-center gap-2 ${
-          existingImage ? 'bg-blue-600' : 'bg-green-600'
-        } text-white hover:opacity-90 disabled:opacity-70 transition-colors`}
-      >
-        {isLoading ? (
-          <>
-            <Spinner />
-            Subiendo...
-          </>
-        ) : (
-          existingImage ? 'Cambiar imagen' : 'Subir imagen'
-        )}
-      </button>
-
-      {existingImage && (
-        <div className="relative w-10 h-10 rounded-md overflow-hidden border border-gray-200">
-          <Image
-            src={existingImage}
-            alt="Miniatura"
-            fill
-            className="object-cover"
-            unoptimized
-          />
+    <div className="fixed top-0 right-0 h-full bg-white shadow-lg w-full max-w-md md:w-[400px] z-50 overflow-y-auto transition-transform duration-300">
+      <div className="p-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">
+          {isEditing ? 'Editar cobertura' : 'Añadir nueva cobertura'}
+        </h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de daño*</label>
+            <input
+              type="text"
+              className="w-full p-2 border border-gray-300 rounded-md"
+              value={cobertura.tipo_dano}
+              onChange={(e) => setCobertura({ ...cobertura, tipo_dano: e.target.value })}
+              placeholder="Ej: Colisión, Daño parcial"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <textarea
+              className="w-full p-2 border border-gray-300 rounded-md"
+              rows={3}
+              value={cobertura.descripcion}
+              onChange={(e) => setCobertura({ ...cobertura, descripcion: e.target.value })}
+              placeholder="Detalles del daño cubierto"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Monto/Remuneración*</label>
+            <input
+              type="text"
+              className="w-full p-2 border border-gray-300 rounded-md"
+              value={cobertura.valides}
+              onChange={(e) => setCobertura({ ...cobertura, valides: e.target.value })}
+              placeholder="Ej: 5000 BOB o 10%"
+              required
+            />
+          </div>
         </div>
-      )}
+        <div className="mt-6 flex justify-end space-x-3">
+          <button 
+            onClick={onClose} 
+            className="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onSave}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm"
+            disabled={!cobertura.tipo_dano || !cobertura.valides}
+          >
+            {isEditing ? 'Actualizar' : 'Guardar'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
 
-function Spinner() {
-  return (
-    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-    </svg>
-  );
-}
+export default memo(PopupCobertura);
