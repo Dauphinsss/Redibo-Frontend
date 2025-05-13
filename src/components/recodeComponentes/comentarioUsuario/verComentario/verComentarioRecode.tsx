@@ -12,13 +12,7 @@ interface Props {
 }
 
 function VerComentario({nombreCompleto, fotoUser, fechaComentario, comentario, calificacionUsr,}: Props) {
-
-  nombreCompleto = "Juan Pérez";
-  fotoUser = "";
-  fechaComentario = "05 de mayo de 2025";
-  comentario = "No tiene el Auto en buenas condiciones.";
-  calificacionUsr = 3;
-
+  
   return (
     <div className="w-full border border-gray-200 rounded-lg p-4">
 

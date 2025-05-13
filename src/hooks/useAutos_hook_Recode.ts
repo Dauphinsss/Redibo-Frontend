@@ -4,6 +4,7 @@ import { RawAuto_Interface_Recode as RawAuto } from '@/interface/RawAuto_Interfa
 import { getAllCars } from '@/service/services_Recode';
 import { transformAuto } from '@/utils/transformAuto_Recode';
 
+
 export function useAutos(cantidadPorLote = 8) {
     const [autos, setAutos] = useState<Auto[]>([]);
     const [autosFiltrados, setAutosFiltrados] = useState<Auto[]>([]);
@@ -130,6 +131,7 @@ export function useAutos(cantidadPorLote = 8) {
       return busqueda + diferencia;
     };    
     
+
     return {
         autos,
         autosFiltrados,
