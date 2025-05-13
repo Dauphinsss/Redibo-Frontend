@@ -124,7 +124,7 @@ export default function CaracteristicasCoche() {
         combustibleIds: combustibles,
         asientos,
         puertas,
-        transmicion: transmision as "automatica" | "manual",
+        transmicion: transmision as "Automatica" | "Manual",
         soat: seguro,
         segurosAdicionales: segurosAdicionales,
       });
