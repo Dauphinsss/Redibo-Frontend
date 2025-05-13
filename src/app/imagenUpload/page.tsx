@@ -19,12 +19,17 @@ export default function ImagenUploadPage() {
       return;
     }
 
-    const payload: EnlaceInterface = { enlace };
+    const payload: EnlaceInterface = {
+      id_carro: Number(id),
+      enlace: enlace
+    };
 
     try {
       setIsSubmitting(true);
       await postCoberturaEnlace(payload);
       alert('Imagen subida y guardada correctamente');
+      router.push('/listadoPrueba');
+      router.refresh();
     } catch (err) {
       console.error('Error al guardar en la base de datos:', err);
       alert('Hubo un error al guardar la imagen en la base de datos');

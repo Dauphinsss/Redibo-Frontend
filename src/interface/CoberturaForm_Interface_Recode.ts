@@ -6,6 +6,7 @@ export interface CoberturaInterface {
 }
 
 export interface EnlaceInterface{
+  id_carro: number;
   enlace: string;
 }
 
@@ -17,7 +18,7 @@ export interface SeguroInterface {
 }
 
 export interface ValidarInterface {
-  id: number;
+  id_carro: number;
   fechaInicio: string;
   fechaFin: string;
   empresa: string;

@@ -1,17 +1,14 @@
 import { CoberturaInterface } from "@/interface/CoberturaForm_Interface_Recode";
 import { Pencil, Trash2, Plus } from "lucide-react";
-import { postCobertura } from "@/service/services_Recode";
 
 interface Props {
-  tipo_dano: string;
-  descripcion: string;
-  valides: string;
+  coberturas: CoberturaInterface[];
   onEditar: (index: number) => void;
   onEliminar: (index: number) => void;
   onAgregar: () => void;
 }
 
-export default function TablaCoberturas({ tipo_dano, descripcion, valides, onEditar, onEliminar, onAgregar }: Props) {
+export default function TablaCoberturas({ coberturas, onEditar, onEliminar, onAgregar }: Props) {
   return (
     <div className="mt-6">
       <div className="flex justify-between items-center mb-2">
@@ -25,7 +22,7 @@ export default function TablaCoberturas({ tipo_dano, descripcion, valides, onEdi
         <thead className="bg-gray-100 text-left">
           <tr>
             <th className="p-2 border">Nombre</th>
-            <th className="p-2 border">Descripcion</th>
+            <th className="p-2 border">Descripción</th>
             <th className="p-2 border">Monto</th>
             <th className="p-2 border text-center">Acciones</th>
           </tr>
@@ -33,7 +30,7 @@ export default function TablaCoberturas({ tipo_dano, descripcion, valides, onEdi
         <tbody>
           {coberturas.map((c, index) => (
             <tr key={index}>
-              <td className="p-2 border">{c.tipo_dano}</td>
+              <td className="p-2 border">{c.tipodaño}</td>
               <td className="p-2 border">{c.descripcion}</td>
               <td className="p-2 border">{c.valides}</td>
               <td className="p-2 border text-center space-x-2">

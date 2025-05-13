@@ -1,42 +1,43 @@
 'use client';
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import FormularioCobertura from "@/components/recodeComponentes/cobertura/FormularioRecode";
 import TablaCoberturas from "@/components/recodeComponentes/cobertura/TablaRecode";
-import PopupCobertura from "@/components/recodeComponentes/cobertura/AñadirRecode";
+import PopupCobertura from "@/components/recodeComponentes/cobertura/PopUpCobertura";
 import BotonValidar from "@/components/recodeComponentes/cobertura/BotonValidacion";
 import { CoberturaInterface } from "@/interface/CoberturaForm_Interface_Recode";
 
 export default function CoberturaAutoPage() {
+  const params = useSearchParams();
+  const idCarro = parseInt(params.get("id") || "0", 10);
+
   const [coberturas, setCoberturas] = useState<CoberturaInterface[]>([]);
   const [showPopup, setShowPopup] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [coberturaActual, setCoberturaActual] = useState<CoberturaInterface>({
-    tipo_dano: "",
+    tipodaño: "",
     descripcion: "",
     valides: "",
-    url: "",
-    id_carro: 0,
+    id_carro: idCarro,
   });
-  
+
   const agregarCobertura = () => {
     if (isEditing) {
-      const index = coberturas.findIndex(
-        (c) => c.tipo_dano === coberturaActual.tipo_dano && c.valides === coberturaActual.valides
-      );
+      const index = coberturas.findIndex((c) => c.tipodaño === coberturaActual.tipodaño && c.valides === coberturaActual.valides);
       const nuevas = [...coberturas];
       nuevas[index] = coberturaActual;
       setCoberturas(nuevas);
     } else {
       setCoberturas([...coberturas, coberturaActual]);
     }
+
     setShowPopup(false);
     setCoberturaActual({
-      tipo_dano: "",
+      tipodaño: "",
       descripcion: "",
       valides: "",
-      url: "",
-      id_carro: 0,
+      id_carro: idCarro,
     });
   };
 
@@ -62,11 +63,10 @@ export default function CoberturaAutoPage() {
             }}
             onAgregar={() => {
               setCoberturaActual({
-                tipo_dano: "",
+                tipodaño: "",
                 descripcion: "",
                 valides: "",
-                url: "",
-                id_carro: 0,
+                id_carro: idCarro,
               });
               setIsEditing(false);
               setShowPopup(true);
@@ -74,7 +74,7 @@ export default function CoberturaAutoPage() {
           />
 
           <div className="mt-6 flex justify-center">
-            <BotonValidar />
+            <BotonValidar coberturas={coberturas} />
           </div>
         </div>
       </div>
