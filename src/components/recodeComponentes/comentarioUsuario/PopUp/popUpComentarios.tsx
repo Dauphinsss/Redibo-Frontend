@@ -37,7 +37,6 @@ function PopUpComentarios({
   numComentarios,
   comentariosConCalificacion,
   imagenes,
-  nombreUser,
   fotoUser,
   fechaComentario,
   comentario,
@@ -49,16 +48,13 @@ function PopUpComentarios({
   
   const closePopup = () => setPopUpOpen(false);
   const openPopup = () => setPopUpOpen(true);
+
   const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
   useEffect(() => {
-  console.log("Calificación seleccionada:", filtroCalificacion);
 }, [filtroCalificacion]);
 
 
   const { comentarios, cargando, error } = useComentariosAuto(Number(idCar));
-const handleClick = () => {
-  alert("Click en calificación");
-};
 const comentariosFiltrados = filtroCalificacion !== null
   ? comentarios.filter((comentario) => comentario.Calificacion.calf_carro === filtroCalificacion)
   : comentarios;
