@@ -13,7 +13,6 @@ import { useState } from "react";
 interface ButtonPrecioProps {
   onFilterChange: (min: number, max: number) => void;
 }
-
 export function ButtonPrecio({ onFilterChange }: ButtonPrecioProps) {
   const [minPrecio, setMinPrecio] = useState<string>("");
   const [maxPrecio, setMaxPrecio] = useState<string>("");
