@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { CalendarIcon, Search } from "lucide-react";
+import { CalendarIcon, Search, RefreshCw } from "lucide-react";
 import { format, addDays, isBefore } from "date-fns";
 import { es } from "date-fns/locale";
 import { useForm } from "react-hook-form";
@@ -98,6 +98,10 @@ export default function Home() {
   const [selectedCiudad, setSelectedCiudad] = useState<string | null>(null);
   const [nombreCiudad, setNombreCiudad] = useState<string>("");
   const [buscando, setBuscando] = useState<boolean>(false);
+  // Estado para indicar si se han aplicado filtros
+  const [filtrosAplicados, setFiltrosAplicados] = useState<boolean>(false);
+  // Estado para indicar si no se encontraron resultados
+  const [sinResultados, setSinResultados] = useState<boolean>(false);
 
   // Formulario para búsqueda por fecha y ubicación
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -166,6 +170,29 @@ export default function Home() {
   return autosFiltrados;
 };
 
+  // Función para restablecer todos los filtros
+  const restablecerFiltros = () => {
+    // Limpiar formulario
+    form.reset({
+      location: "",
+      ciudadId: "",
+      startDate: undefined,
+      endDate: undefined
+    });
+    
+    // Limpiar estados
+    setSelectedCiudad(null);
+    setNombreCiudad("");
+    setFiltroCiudad("");
+    setFiltrosAplicados(false);
+    setSinResultados(false);
+    
+    // Restaurar todos los autos
+    setAutosFiltrados(autos || []);
+    
+    toast.success("Filtros restablecidos correctamente");
+  };
+
   const onSubmitWithValidation = form.handleSubmit((data) => {
     if (!data.startDate) {
       form.setError("startDate", {
@@ -188,6 +215,8 @@ export default function Home() {
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     setBuscando(true);
+    setFiltrosAplicados(true);
+    setSinResultados(false);
     
     toast.success("Aplicando filtros...", {
       description: (
@@ -220,10 +249,13 @@ export default function Home() {
         // Actualizar el estado con los autos filtrados
         setAutosFiltrados(autosFiltradosResultado);
         toast.success(`Se encontraron ${autosFiltradosResultado.length} vehículos disponibles`);
+        setSinResultados(false);
       } else {
         toast.info("No se encontraron vehículos disponibles para los criterios seleccionados");
         // Mostrar lista vacía
         setAutosFiltrados([]);
+        // Establecer estado de sin resultados
+        setSinResultados(true);
       }
     } catch (error) {
       console.error("Error al procesar la búsqueda:", error);
@@ -395,33 +427,70 @@ export default function Home() {
                 />
               </div>
             </div>
+
+            {/* Botón para restablecer filtros - solo visible cuando hay filtros aplicados */}
+            {filtrosAplicados && (
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={restablecerFiltros}
+                  className="flex items-center gap-2"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Restablecer filtros
+                </Button>
+              </div>
+            )}
           </form>
         </Form>
 
-        {/* Sección de vehículos disponibles */}
-        <section className="w-full max-w-6xl mt-12">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold mb-2">
-              {nombreCiudad 
-                ? `Vehículos disponibles en ${nombreCiudad}` 
-                : "Todos nuestros vehículos disponibles"}
-            </h2>
-            <div className="flex items-center">
-              <p className="text-gray-700">
-                Mostrando {autosActuales.length} de {autosFiltrados.length} vehículos
+        {/* Mensaje cuando no hay resultados */}
+        {sinResultados && (
+          <div className="w-full max-w-6xl mt-12 bg-amber-50 border border-amber-200 p-6 rounded-lg">
+            <div className="flex flex-col items-center text-center">
+              <h3 className="text-xl font-semibold text-amber-800">No se encontraron vehículos disponibles</h3>
+              <p className="mt-2 text-amber-700">
+                No hay vehículos disponibles con los criterios de búsqueda seleccionados.
               </p>
+              <Button
+                onClick={restablecerFiltros}
+                variant="outline"
+                className="mt-4 border-amber-500 text-amber-700 hover:bg-amber-100 flex items-center gap-2"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Restablecer filtros y ver todos los vehículos
+              </Button>
             </div>
           </div>
-         
-          {/* Lista de vehículos */}
-          <ResultadosAutos
-            cargando={cargando || buscando}
-            autosActuales={autosActuales}
-            autosFiltrados={autosFiltrados}
-            autosVisibles={autosVisibles}
-            mostrarMasAutos={mostrarMasAutos}
-          />
-        </section>
+        )}
+
+        {/* Sección de vehículos disponibles - solo visible cuando hay resultados o no se han aplicado filtros */}
+        {(!sinResultados || !filtrosAplicados) && (
+          <section className="w-full max-w-6xl mt-12">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold mb-2">
+                {nombreCiudad 
+                  ? `Vehículos disponibles en ${nombreCiudad}` 
+                  : "Todos nuestros vehículos disponibles"}
+              </h2>
+              <div className="flex items-center">
+                <p className="text-gray-700">
+                  Mostrando {autosActuales.length} de {autosFiltrados.length} vehículos
+                </p>
+              </div>
+            </div>
+           
+            {/* Lista de vehículos */}
+            <ResultadosAutos
+              cargando={cargando || buscando}
+              autosActuales={autosActuales}
+              autosFiltrados={autosFiltrados}
+              autosVisibles={autosVisibles}
+              mostrarMasAutos={mostrarMasAutos}
+            />
+          </section>
+        )}
       </main>
     </div>
   );
