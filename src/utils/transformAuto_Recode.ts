@@ -8,11 +8,11 @@ export const transformAuto = (item: RawAuto): AutoCard => ({
     asientos: item.asientos,
     puertas: item.puertas,
     transmision: item.transmicion,
-    combustibles: Array.isArray(item.combustiblesporCarro)
-        ? item.combustiblesporCarro
-            .map((c) => c?.combustible?.tipoDeCombustible?.toLowerCase())
-            .filter((c): c is string => typeof c === "string")
-        : [],
+    combustibles: Array.isArray(item.CombustibleCarro)
+    ? item.CombustibleCarro
+        .map((c) => c?.TipoCombustible?.tipoDeCombustible?.toLowerCase())
+        .filter((c): c is string => typeof c === "string")
+    : [],
     estadoAlquiler: item.estado,
     nombreHost: item.Usuario?.nombre || "Sin nombre",
     calificacionAuto: 4.5,
