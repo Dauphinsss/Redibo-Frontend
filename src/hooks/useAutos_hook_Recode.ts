@@ -204,6 +204,7 @@ export function useAutos(cantidadPorLote = 8) {
         setFiltrosCaracteristicas,
         filtrosTransmision,
         setFiltrosTransmision,
+        setFiltrosCaracteristicasAdicionales,
         filtrosCaracteristicasAdicionales,
         obtenerSugerencia,
         filtroCiudad,
