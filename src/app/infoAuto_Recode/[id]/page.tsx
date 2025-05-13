@@ -19,11 +19,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   if (!autoData) NotFound();
 
   const auto = transformAutoDetails_Recode(autoData);
- const calificacionesAuto = await getCarRatingsFromAuto(id);
-const calificacionesComentarios = await getCarRatingsFromComments(id);
-const numComentarios = calificacionesComentarios.filter(c => c > 0).length; 
-const comentariosConCalificacion = calificacionesComentarios.filter(c => c > 0);
-const calificaciones = [...calificacionesAuto, ...calificacionesComentarios];
+  const calificacionesAuto = await getCarRatingsFromAuto(id);
+  const calificacionesComentarios = await getCarRatingsFromComments(id);
+  const numComentarios = calificacionesComentarios.filter(c => c > 0).length; 
+  const comentariosConCalificacion = calificacionesComentarios.filter(c => c > 0);
+  const calificaciones = [...calificacionesAuto, ...calificacionesComentarios];
 
 
   return (

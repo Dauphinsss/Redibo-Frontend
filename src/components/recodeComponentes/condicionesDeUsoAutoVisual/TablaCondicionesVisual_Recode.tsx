@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import GeneralVisual_Recode from "./GeneralVisual_Recode";
 import EntregaVisual_Recode from "./EntregaVisual_Recode";
 import DevolucionVisual_Recode from "./DevolucionVisual_Recode";
+import NotificacionEnvioExitoso_recode from "./Notificacion_envio_exitoso_Recode";
 
 import { getCondicionesUsoVisual_Recode } from "@/service/services_Recode";
 import { CondicionesUsoResponse } from "@/interface/CondicionesUsoVisual_interface_Recode";
@@ -25,6 +26,8 @@ export default function TablaCondicionesVisual_Recode({ id_carro }: TablaCondici
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [showNotification, setShowNotification] = useState(false);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -43,6 +46,19 @@ export default function TablaCondicionesVisual_Recode({ id_carro }: TablaCondici
 
     fetchData();
   }, [id_carro]);
+
+  const handleEnviarSolicitud = async () => {
+    try {
+      //const response = await enviarSolicitud(id_carro);//funcion a implementar para q envie el sms
+      
+      if(200 === 200){
+        setShowNotification(true);
+        setTimeout(() => setShowNotification(false), 3000);
+      }
+    } catch (error) {
+      console.log("error al enviar la solicitud:", error);
+    }
+  }
 
   const renderContent = () => {
     if (loading) return <p className="text-center py-4">Cargando condiciones...</p>;
@@ -69,7 +85,7 @@ export default function TablaCondicionesVisual_Recode({ id_carro }: TablaCondici
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`flex-1 text-sm font-medium py-2 border-r border-black last:border-r-0
-                first:rounded-tl-[10px] last:rounded-tr-[10px]
+                first:rounded-tl-[10px] last:rounded-tr-[1  0px]
                 ${activeTab === tab.key ? "bg-black text-white" : "bg-white text-black"}`}
             >
               {tab.label}
@@ -81,6 +97,17 @@ export default function TablaCondicionesVisual_Recode({ id_carro }: TablaCondici
 
       {/* Contenido */}
       <div className="bg-white p-4 min-h-[300px]">{renderContent()}</div>
+
+      <div className="p-4 text-center">
+        <button
+          onClick={handleEnviarSolicitud}
+          className="bg-black-500 text-white py-2 px-4 rounded hover:bg-black-600"
+        >
+          Enviar Solicitud
+        </button>
+      </div>
+
+      {showNotification && <NotificacionEnvioExitoso_recode/>}
     </div>
   );
 }
