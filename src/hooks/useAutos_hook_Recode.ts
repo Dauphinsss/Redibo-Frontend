@@ -15,6 +15,7 @@ export function useAutos(cantidadPorLote = 8) {
     const [filtrosCaracteristicas, setFiltrosCaracteristicas] = useState<{ asientos?: number; puertas?: number }>({});
     const [filtrosTransmision, setFiltrosTransmision] = useState<string[]>([]);
     const [filtrosCaracteristicasAdicionales, setFiltrosCaracteristicasAdicionales] = useState<string[]>([]);
+    const [filtroCiudad, setFiltroCiudad] = useState<string>('');
 
     const fetchAutos = async () => {
         try {
@@ -102,7 +103,16 @@ export function useAutos(cantidadPorLote = 8) {
              (auto.caracteristicasAdicionales || []).some(c => normalizarTexto(c).includes(normalizarTexto(caracteristica)))
            );
         });
-}
+        
+    
+        if (filtroCiudad && filtroCiudad.trim()) {
+        console.log("Aplicando filtro de ciudad:", filtroCiudad);
+        resultado = resultado.filter(auto =>
+            normalizarTexto(auto.ciudad).includes(normalizarTexto(filtroCiudad))
+        );
+        }
+    }
+
 
         // Ordenar resultados
         switch (ordenSeleccionado) {
@@ -121,7 +131,7 @@ export function useAutos(cantidadPorLote = 8) {
         }
 
         setAutosFiltrados(resultado);
-    }, [autos, textoBusqueda, filtrosCombustible, filtrosCaracteristicas, ordenSeleccionado, filtrosTransmision, filtrosCaracteristicasAdicionales]);
+    }, [autos, textoBusqueda, filtrosCombustible, filtrosCaracteristicas, ordenSeleccionado, filtrosTransmision, filtrosCaracteristicasAdicionales, filtroCiudad]);
 
     useEffect(() => {
         filtrarYOrdenarAutos();
@@ -195,7 +205,8 @@ export function useAutos(cantidadPorLote = 8) {
         filtrosTransmision,
         setFiltrosTransmision,
         filtrosCaracteristicasAdicionales,
-        setFiltrosCaracteristicasAdicionales,
         obtenerSugerencia,
+        filtroCiudad,
+        setFiltroCiudad
     };
 }

@@ -13,7 +13,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import ResultadosAutos from '@/components/recodeComponentes/seccionOrdenarMasResultados/ResultadosAutos_Recode';
-import axios from "axios";
 import {
   Form,
   FormControl,
@@ -35,15 +34,22 @@ import {
   SelectGroup,
   SelectItem,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import React from "react";
+import { transformAuto } from "@/utils/transformAuto_Recode";
 
-// URL de la API
-const API_URL = "https://redibo-backend-sprinteros1.onrender.com/api";
-
-// ID fijo para Bolivia - asegúrate de que este ID sea correcto para tu base de datos
-const BOLIVIA_ID = "1"; // Ajusta este valor al ID real de Bolivia en tu sistema
+// Lista de ciudades de Bolivia - Datos locales
+const CIUDADES_BOLIVIA = [
+  { id: 1, nombre: "La Paz" },
+  { id: 2, nombre: "Cochabamba" },
+  { id: 3, nombre: "Santa Cruz" },
+  { id: 4, nombre: "Sucre" },
+  { id: 5, nombre: "Oruro" },
+  { id: 6, nombre: "Potosí" },
+  { id: 7, nombre: "Tarija" },
+  { id: 8, nombre: "Beni" },
+  { id: 9, nombre: "Pando" }
+];
 
 // Interfaz para opciones del combobox
 interface Option {
@@ -53,8 +59,7 @@ interface Option {
 
 const FormSchema = z.object({
   location: z.string().min(1, "Debes especificar una ciudad"),
-  paisId: z.string().optional(),
-  ciudadId: z.string().optional(),
+  ciudadId: z.string().min(1, "Selecciona una ciudad"),
   startDate: z.date({
     required_error: "La fecha de inicio es requerida",
   }),
@@ -84,50 +89,21 @@ export default function Home() {
     setAutosFiltrados,
     mostrarMasAutos,
     cargando,
+    filtroCiudad,
+    setFiltroCiudad,
   } = useAutos();
 
   // Estados para el combobox de ciudades
-  const [ciudades, setCiudades] = useState<Option[]>([]);
+  const [ciudades] = useState<Option[]>(CIUDADES_BOLIVIA);
   const [selectedCiudad, setSelectedCiudad] = useState<string | null>(null);
   const [nombreCiudad, setNombreCiudad] = useState<string>("");
-  const [loadingLocations, setLoadingLocations] = useState<boolean>(false);
-
-  // Cargar todos los autos al inicio
-  useEffect(() => {
-    if (autos && autos.length > 0) {
-      setAutosFiltrados(autos);
-    }
-  }, [autos, setAutosFiltrados]);
-
-  // Cargar ciudades de Bolivia al iniciar el componente
-  useEffect(() => {
-    const fetchCiudadesBolivia = async () => {
-      setLoadingLocations(true);
-      try {
-        const response = await axios.get(`${API_URL}/ciudades/${BOLIVIA_ID}`);
-        console.log(`Ciudades de Bolivia:`, response.data);
-        if (response.data && Array.isArray(response.data)) {
-          setCiudades(response.data);
-        } else {
-          setCiudades([]);
-        }
-      } catch (err) {
-        console.error("Error al cargar ciudades de Bolivia:", err);
-        setCiudades([]);
-      } finally {
-        setLoadingLocations(false);
-      }
-    };
-
-    fetchCiudadesBolivia();
-  }, []);
+  const [buscando, setBuscando] = useState<boolean>(false);
 
   // Formulario para búsqueda por fecha y ubicación
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       location: "",
-      paisId: BOLIVIA_ID, // Bolivia como país por defecto
       ciudadId: "",
     },
   });
@@ -153,10 +129,42 @@ export default function Home() {
     // Actualizar el nombre de la ciudad seleccionada y establecer location
     const ciudadSeleccionada = ciudades.find(c => c.id.toString() === value);
     if (ciudadSeleccionada) {
-      setNombreCiudad(ciudadSeleccionada.nombre);
-      form.setValue("location", ciudadSeleccionada.nombre);
+      const nombreCiudad = ciudadSeleccionada.nombre;
+      setNombreCiudad(nombreCiudad);
+      form.setValue("location", nombreCiudad);
+      
+      // También actualizamos el filtro de ciudad para el hook useAutos
+      setFiltroCiudad(nombreCiudad);
     }
   };
+
+  // Función para filtrar autos localmente usando transformAuto
+ const filtrarAutosLocalmente = (ciudad: string, fechaInicio: Date, fechaFin?: Date) => {
+  const todosLosAutos = autos || [];
+  
+  console.log("Filtrando por ciudad:", ciudad);
+  console.log("Autos a filtrar:", todosLosAutos);
+
+  const autosFiltrados = todosLosAutos.filter(auto => {
+    // Si auto ya está transformado, úsalo directamente; si no, transforma
+    const autoTransformado = (auto && 'ciudad' in auto)
+      ? auto
+      : transformAuto(auto);
+    if (!autoTransformado.ciudad) return false;
+    
+    console.log(`Auto ${autoTransformado.idAuto}: ciudad=${autoTransformado.ciudad}`);
+    
+    // Compara la ciudad del auto con la ciudad seleccionada
+    const autoCiudad = autoTransformado.ciudad.toLowerCase().trim();
+    const ciudadFiltro = ciudad.toLowerCase().trim();
+    
+    return autoCiudad === ciudadFiltro;
+  });
+  
+  console.log("Autos filtrados:", autosFiltrados);
+  
+  return autosFiltrados;
+};
 
   const onSubmitWithValidation = form.handleSubmit((data) => {
     if (!data.startDate) {
@@ -179,7 +187,9 @@ export default function Home() {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast.success("Filtros aplicados:", {
+    setBuscando(true);
+    
+    toast.success("Aplicando filtros...", {
       description: (
         <>
           <div className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 text-white">
@@ -197,9 +207,30 @@ export default function Home() {
         </>
       ),
     });
-   
-    // Aquí podrías implementar la lógica de filtrado real
-    // Por ahora mostramos todos los autos
+    
+    try {
+      // Filtrar autos localmente en lugar de llamar a la API
+      const autosFiltradosResultado = filtrarAutosLocalmente(
+        data.location,
+        data.startDate,
+        data.endDate
+      );
+      
+      if (autosFiltradosResultado && autosFiltradosResultado.length > 0) {
+        // Actualizar el estado con los autos filtrados
+        setAutosFiltrados(autosFiltradosResultado);
+        toast.success(`Se encontraron ${autosFiltradosResultado.length} vehículos disponibles`);
+      } else {
+        toast.info("No se encontraron vehículos disponibles para los criterios seleccionados");
+        // Mostrar lista vacía
+        setAutosFiltrados([]);
+      }
+    } catch (error) {
+      console.error("Error al procesar la búsqueda:", error);
+      toast.error("Ocurrió un error al procesar tu búsqueda");
+    } finally {
+      setBuscando(false);
+    }
   }
 
   return (
@@ -219,49 +250,48 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* ComboBox para ciudad con altura fija de 24 */}
               <FormField
-  control={form.control}
-  name="ciudadId"
-  render={({ field }) => (
-    <FormItem className="flex flex-col h-24"> {/* Cambiado a flex flex-col para que coincida con la estructura de los otros campos */}
-      <FormLabel>* Donde te encuentras:</FormLabel>
-      <div className="flex gap-2 items-center"> {/* Agregado div contenedor similar al de fecha de fin */}
-        <Select
-          value={field.value}
-          onValueChange={(value) => {
-            field.onChange(value);
-            handleCiudadChange(value);
-          }}
-          disabled={loadingLocations}
-        >
-          <FormControl>
-            <SelectTrigger className={`${!field.value ? 'text-muted-foreground' : ''} h-10 flex-1`}> {/* Altura fija h-10 igual a los botones de fecha */}
-              <SelectValue placeholder={loadingLocations ? "Cargando ciudades..." : "Seleccione una ciudad"} />
-            </SelectTrigger>
-          </FormControl>
-          <SelectContent>
-            <SelectGroup>
-              {ciudades.map((ciudad) => (
-                <SelectItem key={ciudad.id} value={ciudad.id.toString()}>
-                  {ciudad.nombre}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="h-5"> {/* Espacio fijo para mensajes de error */}
-        <FormMessage />
-      </div>
-    </FormItem>
-  )}
-/>
+                control={form.control}
+                name="ciudadId"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col h-24">
+                    <FormLabel>* Donde te encuentras:</FormLabel>
+                    <div className="flex gap-2 items-center">
+                      <Select
+                        value={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          handleCiudadChange(value);
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger className={`${!field.value ? 'text-muted-foreground' : ''} h-10 flex-1`}>
+                            <SelectValue placeholder="Seleccione una ciudad" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectGroup>
+                            {ciudades.map((ciudad) => (
+                              <SelectItem key={ciudad.id} value={ciudad.id.toString()}>
+                                {ciudad.nombre}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="h-5">
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
 
               {/* Campo de fecha de inicio con altura fija */}
               <FormField
                 control={form.control}
                 name="startDate"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col h-24"> {/* Altura fija para el contenedor */}
+                  <FormItem className="flex flex-col h-24">
                     <FormLabel>* Fecha de inicio:</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -293,7 +323,7 @@ export default function Home() {
                         />
                       </PopoverContent>
                     </Popover>
-                    <div className="h-5"> {/* Espacio fijo para mensajes de error */}
+                    <div className="h-5">
                       <FormMessage />
                     </div>
                   </FormItem>
@@ -308,14 +338,14 @@ export default function Home() {
                   render={({ field }) => (
                     <FormItem className="flex flex-col w-full">
                       <FormLabel>Fecha de fin:</FormLabel>
-                      <div className="flex gap-2 items-center"> {/* Contenedor para alinear horizontalmente */}
+                      <div className="flex gap-2 items-center">
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "pl-3 text-left font-normal h-10 flex-1", // Altura fija
+                                  "pl-3 text-left font-normal h-10 flex-1",
                                   !field.value && "text-muted-foreground"
                                 )}
                                 disabled={!form.watch("startDate")}
@@ -352,11 +382,12 @@ export default function Home() {
                           type="submit"
                           className="h-10 w-10 p-0 rounded-full flex-shrink-0"
                           variant="default"
+                          disabled={buscando}
                         >
                           <Search className="h-4 w-4" />
                         </Button>
                       </div>
-                      <div className="h-5"> {/* Espacio fijo para mensajes de error */}
+                      <div className="h-5">
                         <FormMessage />
                       </div>
                     </FormItem>
@@ -367,20 +398,24 @@ export default function Home() {
           </form>
         </Form>
 
-        {/* Sección de todos los vehículos disponibles */}
+        {/* Sección de vehículos disponibles */}
         <section className="w-full max-w-6xl mt-12">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold mb-2">Todos nuestros vehículos disponibles</h2>
+            <h2 className="text-2xl font-bold mb-2">
+              {nombreCiudad 
+                ? `Vehículos disponibles en ${nombreCiudad}` 
+                : "Todos nuestros vehículos disponibles"}
+            </h2>
             <div className="flex items-center">
               <p className="text-gray-700">
-                Mostrando {Array.isArray(autosVisibles) ? autosVisibles.length : autosVisibles || 0} de {Array.isArray(autosFiltrados) ? autosFiltrados.length : autosFiltrados || 0} vehículos
+                Mostrando {autosActuales.length} de {autosFiltrados.length} vehículos
               </p>
             </div>
           </div>
          
           {/* Lista de vehículos */}
           <ResultadosAutos
-            cargando={cargando}
+            cargando={cargando || buscando}
             autosActuales={autosActuales}
             autosFiltrados={autosFiltrados}
             autosVisibles={autosVisibles}
@@ -391,5 +426,3 @@ export default function Home() {
     </div>
   );
 }
-
-
