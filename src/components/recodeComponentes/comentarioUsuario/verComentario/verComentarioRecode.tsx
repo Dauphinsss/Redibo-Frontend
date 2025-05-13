@@ -38,24 +38,27 @@ function VerComentario({nombreCompleto, fotoUser, fechaComentario, comentario, c
 
       <p className="mt-4 mb-4">{comentario}</p>
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <button className="flex items-center gap-2 px-4 py-2 text-black hover:bg-stone-300 rounded-lg">
-        <HiOutlineChat />
-        Comentar
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <button className="flex items-center gap-2 px-4 py-2 text-black hover:bg-stone-300 rounded-lg self-start sm:self-auto">
+          <HiOutlineChat />
+          Comentar
         </button>
 
-        <div className="flex items-center gap-2 text-sm text-black">
+        <div className="flex items-center space-x-2 text-sm self-start sm:self-auto">
           <span>¿Te resultó útil esta opinión?</span>
+
           <div className="flex items-center gap-1 cursor-pointer text-gray-400 hover:text-gray-600">
             <HiThumbUp />
             <span>{cantLikes}</span>
           </div>
+
           <div className="flex items-center gap-1 cursor-pointer text-gray-400 hover:text-gray-600">
             <HiThumbDown />
             <span>{cantDontlikes}</span>
           </div>
         </div>
       </div>
+
     </div>
   );
 }
