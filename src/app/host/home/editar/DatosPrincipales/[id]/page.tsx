@@ -150,6 +150,11 @@ export default function DatosPrincipales() {
   }, [fieldErrors, formData]);
 
   const handleChange = (field: keyof CarFormData, value: string) => {
+ // Truncate value to 100 characters if brand or model
+    if (field === 'brand' || field === 'model') {
+      if(value.length > 50)
+        return
+    }
     setFormData((prev) => ({ ...prev, [field]: value }));
     
     // Validar el campo inmediatamente
@@ -175,6 +180,7 @@ export default function DatosPrincipales() {
         if (!value.trim()) return "La marca es obligatoria";
         if (value !== value.toUpperCase()) return "La marca debe estar en MAYÚSCULAS";
         if (!/^[A-Z\s]+$/.test(value)) return "Solo letras mayúsculas y espacios permitidos";
+          if (value.length > 50) return "La marca no puede tener más de 50 caracteres"; //Show error at 50.
         break;
       case "model":
         if (!value.trim()) return "El modelo es obligatorio";
@@ -344,19 +350,20 @@ export default function DatosPrincipales() {
         </div>
 
         {/* Marca */}
-        <div className="w-full flex flex-col mt-6">
-          <label className="text-base md:text-lg font-semibold mb-1">Marca</label>
-          <Input
-            type="text"
-            value={formData.brand}
-            onChange={(e) => handleChange("brand", e.target.value)}
-            className={`w-full md:w-[600px] mt-2 border-2 rounded-md ${
-              fieldErrors.brand ? "border-red-500" : "border-black"
-            }`}
-            placeholder="Introducir Marca (EN MAYÚSCULAS)"
-          />
-          {fieldErrors.brand && <span className="text-sm text-red-500 mt-1">{fieldErrors.brand}</span>}
-        </div>
+         <div className="w-full flex flex-col mt-6">
+            <label className="text-base md:text-lg font-semibold mb-1">Marca</label>
+            <Input
+              type="text"
+              value={formData.brand}
+              onChange={(e) => handleChange("brand", e.target.value)}
+              maxLength={50} // Add max length back
+              className={`w-full md:w-[600px] mt-2 border-2 rounded-md ${
+                fieldErrors.brand ? "border-red-500" : "border-black"
+              }`}
+              placeholder="Introducir Marca (EN MAYÚSCULAS)"
+            />
+            {fieldErrors.brand && <span className="text-sm text-red-500 mt-1">{fieldErrors.brand}</span>}
+          </div>
 
         {/* Modelo */}
         <div className="w-full flex flex-col mt-6">
