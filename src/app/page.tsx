@@ -251,7 +251,7 @@ export default function Home() {
         toast.success(`Se encontraron ${autosFiltradosResultado.length} vehículos disponibles`);
         setSinResultados(false);
       } else {
-        toast.info("No se encontraron vehículos disponibles para los criterios seleccionados");
+        toast.info("No se encontraron vehículos disponibles para los criterios elegidos");
         // Mostrar lista vacía
         setAutosFiltrados([]);
         // Establecer estado de sin resultados
