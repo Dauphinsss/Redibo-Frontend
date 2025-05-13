@@ -11,6 +11,7 @@ import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode
 import CalificaionRecode from "@/components/recodeComponentes/calificacionAuto/calificacionRecode"
 import PopUpComentarios from '@/components/recodeComponentes/comentarioUsuario/PopUp/popUpComentarios'
 
+
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const autoData = await getCarById(id);
@@ -23,8 +24,6 @@ const calificacionesComentarios = await getCarRatingsFromComments(id);
 const numComentarios = calificacionesComentarios.filter(c => c > 0).length; 
 const comentariosConCalificacion = calificacionesComentarios.filter(c => c > 0);
 const calificaciones = [...calificacionesAuto, ...calificacionesComentarios];
-
-;
 
 
   return (
@@ -95,7 +94,6 @@ const calificaciones = [...calificacionesAuto, ...calificacionesComentarios];
               />
             </div>
           </div>
-
         </div>
       </main>
     </>

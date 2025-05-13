@@ -7,6 +7,7 @@ import {RawAuto_Interface_Recode as RawAuto} from "@/interface/RawAuto_Interface
 import { RawCondicionesUsoResponse } from "@/interface/RawCondicionesUsoVisuali_Interface_Recode";
 import { transformCondiciones_Recode } from "@/utils/transformCondicionesVisuali_Recode";
 import { AxiosError } from "axios";
+import { DetalleHost } from "@/interface/DetalleHost_Recode";
 
 export const getAllCars = async (): Promise<RawAuto[]> => {
     try {
@@ -142,3 +143,4 @@ export const postCobertura = async (payload: CoberturaInterface): Promise<void> 
         throw new Error("No se pudo enviar las condiciones de uso. Intenta de nuevo más tarde.");
     }
 };
+
