@@ -1,9 +1,15 @@
 // src/app/host/components/CarCard.tsx
 
+"use client";
+
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Trash2 } from "lucide-react";
+import { motion } from "framer-motion";
+
 import { Car } from "@/app/host/types";
 import { CarImage } from "@/app/host/hooks/useCarImages";
 import { DeleteCarDialog } from "./DeleteCarDialog";
@@ -16,43 +22,58 @@ interface CarCardProps {
 }
 
 export function CarCard({ car, images, onDelete }: CarCardProps) {
-  const image = images[0]; // Primera imagen como portada tiene que estar (1,2 o 3)  no va desde 0
-  const aspectRatio = image && image.width && image.height
-    ? image.width / image.height
-    : 1.5; // Valor por defecto
+  const cover = images[0];
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  // Base height en px para el recorte
+  const BASE_HEIGHT = 200;
+  const MAX_HEIGHT = 300;
+
+  // Calculamos un alto dinámico: si la imagen es muy alta, aumentamos el contenedor
+  const containerHeight = useMemo(() => {
+    if (!cover?.width || !cover?.height) return BASE_HEIGHT;
+    const ratio = cover.width / cover.height;
+    // ratio < 1 → imagen alta → containerHeight > BASE_HEIGHT
+    if (ratio < 1) {
+      return Math.min(BASE_HEIGHT * (1 / ratio), MAX_HEIGHT);
+    }
+    // ratio ≥ 1 → imagen ancha o cuadrada → altura fija
+    return BASE_HEIGHT;
+  }, [cover]);
 
   return (
     <Card className="flex flex-col md:flex-row shadow-lg border hover:shadow-xl transition-shadow overflow-hidden">
       <CardHeader className="p-0 md:w-1/3">
-        {image ? (
-          <div
-            className="w-full"
-            style={{
-              aspectRatio: `${aspectRatio}`,
-              overflow: "hidden",
-              backgroundColor: "#f3f3f3",
-            }}
+        <div
+          className="relative w-full bg-gray-100 overflow-hidden"
+          style={{ height: `${containerHeight}px` }}
+        >
+          {!imageLoaded && <Skeleton className="absolute inset-0" />}
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: imageLoaded ? 1 : 0 }}
+            transition={{ duration: 0.4 }}
+            className="absolute inset-0"
           >
-          {image.data ? (
-            <img
-              src={image.data}
-              alt={`Foto del carro ${car.id}`}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-              <span>Sin imagen</span>
-            </div>
-          )}
-          </div>
-        ) : (
-          <div className="flex items-center justify-center w-full h-48 md:h-full bg-gray-200">
-            <p>No image available</p>
-          </div>
-        )}
+            {cover?.data ? (
+              <img
+                src={cover.data}
+                alt={`Foto del carro ${car.id}`}
+                className="w-full h-full object-cover object-center"
+                onLoad={() => setImageLoaded(true)}
+                onError={() => setImageLoaded(true)}
+              />
+            ) : (
+              <div className="flex items-center justify-center w-full h-full text-gray-500">
+                Sin imagen
+              </div>
+            )}
+          </motion.div>
+        </div>
       </CardHeader>
 
-      <CardContent className="md:w-2/3 p-4 space-y-2">
+      <CardContent className="md:w-2/3 p-4 space-y-4 flex flex-col justify-between">
         <div className="flex justify-between items-start">
           <div className="flex flex-col gap-1">
             <h3 className="text-lg font-semibold">
