@@ -8,7 +8,6 @@ export interface DevolucionRecodeProps {
 }
 
 function Devolucion_Recode({ respuestas, onCheckboxChange }: DevolucionRecodeProps) {
-  // Lista de condiciones para devolución alineadas con el backend
     const condiciones = [
         { label: "Interior limpio", key: "interior_limpio" },
         { label: "Exterior limpio", key: "exterior_limpio" },
@@ -20,19 +19,26 @@ function Devolucion_Recode({ respuestas, onCheckboxChange }: DevolucionRecodePro
 
     return (
         <div className="space-y-4 px-4 py-4 bg-white rounded-lg shadow">
-            {/* Grid responsive: 1 columna en mobile, 2 en md+ */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                {condiciones.map(({ label, key }) => (
-                <label key={key} className="flex items-center space-x-2">
-                    <input
-                        type="checkbox"
-                        checked={respuestas[key]}
-                        onChange={() => onCheckboxChange(key)}
-                        className="h-4 w-4 accent-black border-black rounded"
-                    />
-                        <span className="font-semibold">{label}</span>
-                </label>
-                ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
+                {condiciones.map(({ label, key }) => {
+                const checked = !!respuestas[key];
+                    return (
+                        <label
+                            key={key}
+                            className={`flex items-center space-x-2 p-2 rounded transition-all duration-150 transform
+                                ${checked ? "scale-105 shadow-md bg-gray-50" : "scale-100"}
+                            `}
+                        >
+                            <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => onCheckboxChange(key)}
+                                className="h-4 w-4 accent-black border-black rounded focus:ring-black"
+                            />
+                            <span className="font-semibold text-sm text-gray-900">{label}</span>
+                        </label>
+                    );
+                })}
             </div>
         </div>
     );

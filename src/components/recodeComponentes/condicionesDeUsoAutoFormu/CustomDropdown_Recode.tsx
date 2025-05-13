@@ -13,16 +13,19 @@ interface CustomDropdownProps<T> {
   options: Option<T>[];
   value: Option<T>;
   onChange: (value: Option<T>) => void;
+  error?: boolean;
 }
 
 const CustomDropdown_Recode = forwardRef<HTMLButtonElement, CustomDropdownProps<string>>(
-  ({ options, value, onChange }, ref) => {
+  ({ options, value, onChange, error }, ref) => {
     return (
       <Listbox value={value} onChange={onChange}>
         <div className="relative">
           <Listbox.Button
             ref={ref}
-            className="relative w-full cursor-default rounded-md border border-black bg-white py-2 pl-3 pr-10 text-left focus:outline-none focus:ring-1 focus:ring-black text-sm"
+            className={`relative w-full cursor-default rounded-md bg-white py-2 pl-3 pr-10 text-left text-sm
+              ${error ? "border border-red-500 ring-1 ring-red-500" : "border border-black focus:outline-none focus:ring-1 focus:ring-black"}
+            `}
           >
             <span className={`block truncate ${value.value === "" ? "text-gray-400" : ""}`}>
               {value.label}
@@ -34,7 +37,7 @@ const CustomDropdown_Recode = forwardRef<HTMLButtonElement, CustomDropdownProps<
 
           <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-10">
             {options
-              .filter((opt) => opt.value !== "") // opcional: evita mostrar el placeholder otra vez
+              .filter((opt) => opt.value !== "") // opcional: evita mostrar placeholder como opción
               .map((opt) => (
                 <Listbox.Option
                   key={String(opt.value)}
