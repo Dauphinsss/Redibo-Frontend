@@ -7,8 +7,10 @@ import { DetalleHost } from "@/interface/DetalleHost_Recode";
 import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
 import { useRef } from "react";
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const id_host = Number(params.id);
+export default async function Page({ params }: { params: Promise<{ id: number }> }) {
+
+  const { id } = await params;
+  const id_host = id;
 
   if (isNaN(id_host) || id_host <= 0) {
     notFound();

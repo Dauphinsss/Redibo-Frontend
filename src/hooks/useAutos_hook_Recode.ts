@@ -4,7 +4,6 @@ import { RawAuto_Interface_Recode as RawAuto } from '@/interface/RawAuto_Interfa
 import { getAllCars } from '@/service/services_Recode';
 import { transformAuto } from '@/utils/transformAuto_Recode';
 
-import { DetalleHost } from '@/interface/DetalleHost_Recode';
 
 export function useAutos(cantidadPorLote = 8) {
     const [autos, setAutos] = useState<Auto[]>([]);
@@ -132,18 +131,6 @@ export function useAutos(cantidadPorLote = 8) {
       return busqueda + diferencia;
     };    
     
-    const getDetalleHost_Recode = async (id_host: number): Promise<DetalleHost | null> => {
-      try {
-        const response = await fetch(`https://search-car-backend.vercel.app/detailHost/${id_host}`);
-        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-    
-        const data: DetalleHost = await response.json();
-        return data;
-      } catch (error) {
-        console.error(`Error al obtener el detalle del host con ID ${id_host}:`, error);
-        return null;
-      }
-    };
 
     return {
         autos,
