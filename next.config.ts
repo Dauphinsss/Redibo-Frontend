@@ -17,10 +17,8 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'cdn-datak.motork.net',
-      },      
+      },    
     ],
-    loader: 'cloudinary',
-    path: 'https://res-cloudinary.com/dzoeeaovz'
   }
 };
 

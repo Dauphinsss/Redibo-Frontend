@@ -1,15 +1,37 @@
 import Image from "next/image";
 
 interface Props {
+  imagen: string;
   setImagen: (url: string) => void;
 }
-export default function ImagenUpload({ setImagen }: Props) {
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+export default function SubirImagenCloudinary({ imagen, setImagen }: Props) {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const urlSimulada = URL.createObjectURL(file);
-    setImagen(urlSimulada);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "auto_cobertura");
+
+    try {
+      const response = await fetch("https://api.cloudinary.com/v1_1/dzoeeaovz/image/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (data.secure_url) {
+        setImagen(data.secure_url);
+      } else {
+        alert("Error al subir la imagen.");
+        console.error("Cloudinary error:", data);
+      }
+    } catch (err) {
+      console.error("Upload failed:", err);
+      alert("Falló la subida a Cloudinary");
+    }
   };
 
   return (
@@ -23,9 +45,12 @@ export default function ImagenUpload({ setImagen }: Props) {
             <Image
               src={imagen}
               alt="Imagen de cobertura"
-              layout="fill"
+              width={256}
+              height={256}
               className="object-cover"
-            />
+              unoptimized
+          />
+
           </div>
         ) : (
           <div className="text-center">

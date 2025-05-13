@@ -3,33 +3,30 @@
 import { memo } from "react";
 import { useRouter } from "next/navigation";
 import { AutoCard_Interfaces_Recode as Auto } from "@/interface/AutoCard_Interface_Recode";
-import ImagenUpload from "@/components/recodeComponentes/cobertura/ImagenUpload";
+import CarCardImg from "@/components/recodeComponentes/carCard/CarCardImgRecode";
 import CarCardHeader from "@/components/recodeComponentes/carCard/CarCardHeaderRecode";
 
+
 export type RecodeCarCardProps = Auto;
-//esto
+
 function RecodeCarCard(props: Auto) {
   const { idAuto, modelo, marca, imagenURL } = props;
   const router = useRouter();
-  console.log("RecodeCarCard props:", props);
 
   const handleVerCobertura = () => {
     router.push(`/imagenUpload?id=${idAuto}`);
   };
 
-  const handleValidarCobertura = () => {
-    if (!imagenURL || imagenURL.trim() === "") {
-      alert("Primero debe acreditarse (subir una imagen) para validar cobertura.");
-      return;
-    }
-    router.push(`/formularioCobertura_Recode?id=${idAuto}`);
+  const handleValidarCobertura = async () => {
+    
+      router.push(`/formularioCobertura_Recode?id=${idAuto}`);
+    
   };
 
   return (
     <div className="w-full max-w-[750px] border border-black rounded-[15px] p-4 shadow-sm bg-white flex flex-col items-center gap-4">
-
       <div className="w-full md:w-[230px] flex items-center justify-center">
-        <ImagenUpload imagen={imagenURL} />
+        <CarCardImg imagenUrl={imagenURL} />
       </div>
 
       <CarCardHeader nombre={modelo} marca={marca} />
