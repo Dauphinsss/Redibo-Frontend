@@ -193,7 +193,7 @@ export interface CreateFullCarPayload {
   asientos: number;
   puertas: number;
   soat: boolean;
-  transmicion: "manual" | "automatica";
+  transmicion: "Manual" | "Automatica";
   combustibleIds: number[];
   extraIds: number[];
   precio_por_dia: number;
