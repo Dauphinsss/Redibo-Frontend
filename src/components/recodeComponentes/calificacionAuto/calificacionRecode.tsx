@@ -1,8 +1,8 @@
 "use client";
-
 import React from "react";
 
-const CalificacionRecode = ({ calificaciones, numComentarios, comentariosConCalificacion }: { calificaciones: number[], numComentarios: number, comentariosConCalificacion: number[] }) => {
+const CalificacionRecode = ({ calificaciones, numComentarios, comentariosConCalificacion ,onBarClick}:
+{ calificaciones: number[], numComentarios: number, comentariosConCalificacion: number[] ,onBarClick?: (index: number) => void}) => {
     const total = calificaciones.length;
     const promedio = total ? Number((calificaciones.reduce((sum, val) => sum + val, 0) / total).toFixed(1)) : 0;
 
@@ -11,19 +11,21 @@ const CalificacionRecode = ({ calificaciones, numComentarios, comentariosConCali
         return total ? (count / total) * 100 : 0;
     });
 
+    
+
     return (
-        <div className="p-4 border rounded-lg bg-white w-full flex flex-col justify-between h-full">
+        <div className="p-4 border rounded-lg bg-white w-full flex flex-col justify-between h-full cursor-pointer" >
             <div className="flex justify-between items-center">
                 <div className="text-center">
                     <h2 className="text-6xl">{total === 0 ? "0.0" : promedio.toFixed(1)}</h2>
                     <p className="text-gray-600">{numComentarios === 0 ? "0 comentarios" : `${numComentarios} comentarios`}</p>
-                    <p className="text-gray-600">{total === 0 ? "0 calificaciones" : `${total} ${total === 1 ? "calificación" : "calificaciones"}`}</p> {/* ✅ Corrección aplicada */}
+                    <p className="text-gray-600">{total === 0 ? "0 calificaciones" : `${total} ${total === 1 ? "calificación" : "calificaciones"}`}</p>
 
                     <div className="flex justify-center space-x-1">
                         {Array.from({ length: 5 }, (_, index) => {
                             const isFilled = index < Math.floor(promedio);
                             const isPartial = index === Math.floor(promedio) && promedio % 1 !== 0;
-                            const fillPercentage = (promedio % 1) * 100; // Porcentaje de la estrella parcial
+                            const fillPercentage = (promedio % 1) * 100;
 
                             return (
                                 <div key={index} className="relative text-3xl text-gray-300">
@@ -52,6 +54,11 @@ const CalificacionRecode = ({ calificaciones, numComentarios, comentariosConCali
                                 <div  
                                     className="flex-1 h-4 bg-gray-300 rounded-lg overflow-hidden ml-2 relative"
                                     title={`${comentariosCount} ${comentariosCount === 1 ? "comentario" : "comentarios"}`}  
+                                    onClick={() => {
+  console.log(`Se hizo clic en la barra de calificación ${5 - index}`);
+  onBarClick?.(5 - index);
+}}
+
                                 >
                                     <div   
                                         className="h-full bg-black transition-width duration-300"

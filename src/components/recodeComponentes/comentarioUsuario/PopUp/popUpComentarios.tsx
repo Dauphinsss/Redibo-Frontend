@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HiOutlineX } from "react-icons/hi";
 import FotoPerfilUsrRecode from "../realizarComentario/fotoPerfilUsrRecode";
 import CalificacionRecode from "../../calificacionAuto/calificacionRecode";
@@ -49,10 +49,22 @@ function PopUpComentarios({
   
   const closePopup = () => setPopUpOpen(false);
   const openPopup = () => setPopUpOpen(true);
-  
+  const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
+  useEffect(() => {
+  console.log("Calificación seleccionada:", filtroCalificacion);
+}, [filtroCalificacion]);
+
+
   const { comentarios, cargando, error } = useComentariosAuto(Number(idCar));
+const handleClick = () => {
+  alert("Click en calificación");
+};
+const comentariosFiltrados = filtroCalificacion
+  ? comentarios.filter((comentario) => comentario.Calificacion.calf_carro === filtroCalificacion)
+  : comentarios;
 
   return (
+    
     <div>
       <button onClick={openPopup} className="bg-black text-white px-4 py-2 rounded">
         Comentarios
@@ -96,7 +108,10 @@ function PopUpComentarios({
                 <CalificacionRecode  
                  calificaciones={calificaciones}
                numComentarios={numComentarios} 
-               comentariosConCalificacion={comentariosConCalificacion}/>
+               comentariosConCalificacion={comentariosConCalificacion}
+               onBarClick={setFiltroCalificacion}
+               
+               />
               </div>
 
               <div className="mb-4">
@@ -108,7 +123,8 @@ function PopUpComentarios({
                 {error && <p>{error}</p>}
                 {!cargando && comentarios.length === 0 && <p>No hay comentarios disponibles.</p>}
 
-                {comentarios.map((comentario) => (
+                {comentariosFiltrados.map((comentario) => (
+                  
                   <VerComentario
                     key={comentario.id}
                     nombreCompleto={comentario.Usuario.nombre}
