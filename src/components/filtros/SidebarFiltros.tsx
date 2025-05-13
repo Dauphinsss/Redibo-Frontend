@@ -18,10 +18,10 @@ export default function SidebarFiltros({
   onCerrar,
   setFiltrosCombustible,
   setFiltrosCaracteristicas,
-  setFiltrosTransmision, 
+  setFiltrosTransmision,
   filtrosTransmision,
   setFiltrosCaracteristicasAdicionales,
-  filtrosCaracteristicasAdicionales, 
+  filtrosCaracteristicasAdicionales,
 }: Props) {
   const [abierto, setAbierto] = useState({
     tipoCombustible: false,
@@ -30,24 +30,19 @@ export default function SidebarFiltros({
     caracteristicasAdicionales: false,
   });
 
-  // Estado para los errores de validación
   const [errores, setErrores] = useState({
-    combustible: ""
+    combustible: "",
   });
 
-  // Estado local para mantener el filtro actual de combustible
   const [filtrosCombustibleLocal, setFiltrosCombustibleLocal] = useState<string[]>([]);
 
-  // Estado local para mantener los filtros de características
   const [caracteristicasLocal, setCaracteristicasLocal] = useState<{
     asientos?: number;
     puertas?: number;
   }>({});
 
-  // Referencia para el contenedor del sidebar
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  // Cierra el sidebar si se hace clic fuera de él
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
@@ -56,10 +51,7 @@ export default function SidebarFiltros({
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onCerrar]);
 
   const toggle = (key: keyof typeof abierto) => {
@@ -68,8 +60,7 @@ export default function SidebarFiltros({
 
   const handleCheckboxChange = (tipo: string, isChecked: boolean) => {
     const tipoLower = tipo.toLowerCase();
-    
-    // Si está desmarcando, simplemente quitamos el valor
+
     if (!isChecked) {
       const nuevosFiltros = filtrosCombustibleLocal.filter(f => f !== tipoLower);
       setFiltrosCombustibleLocal(nuevosFiltros);
@@ -77,17 +68,15 @@ export default function SidebarFiltros({
       setErrores(prev => ({ ...prev, combustible: "" }));
       return;
     }
-    
-    // Si está marcando y ya hay 2 seleccionados, mostramos error
+
     if (filtrosCombustibleLocal.length >= 2) {
-      setErrores(prev => ({ 
-        ...prev, 
-        combustible: "Solo puedes seleccionar máximo 2 tipos de combustible" 
+      setErrores(prev => ({
+        ...prev,
+        combustible: "Solo puedes seleccionar máximo 2 tipos de combustible"
       }));
       return;
     }
-    
-    // Si está marcando y hay menos de 2, añadimos el valor
+
     const nuevosFiltros = [...filtrosCombustibleLocal, tipoLower];
     setFiltrosCombustibleLocal(nuevosFiltros);
     setFiltrosCombustible(nuevosFiltros);
@@ -97,12 +86,7 @@ export default function SidebarFiltros({
   const handleTransmisionChange = (tipo: string) => {
     setFiltrosTransmision((prev) => {
       const tipoLower = tipo.toLowerCase();
-      // Si ya está seleccionado, lo deselecciona
-      if (prev.includes(tipoLower)) {
-        return [];
-      }
-      // Si no está seleccionado, lo selecciona y deselecciona el otro
-      return [tipoLower];
+      return prev.includes(tipoLower) ? [] : [tipoLower];
     });
   };
 
@@ -111,28 +95,14 @@ export default function SidebarFiltros({
     value: number,
     isChecked: boolean
   ) => {
-    // Si está desmarcando, quitamos el valor
     if (!isChecked) {
-      setCaracteristicasLocal(prev => ({
-        ...prev,
-        [key]: undefined
-      }));
-      
-      setFiltrosCaracteristicas(prev => ({
-        ...prev,
-        [key]: undefined
-      }));
-      return;
+      setCaracteristicasLocal(prev => ({ ...prev, [key]: undefined }));
+      setFiltrosCaracteristicas(prev => ({ ...prev, [key]: undefined }));
+    } else {
+      const nuevasCaracteristicas = { ...caracteristicasLocal, [key]: value };
+      setCaracteristicasLocal(nuevasCaracteristicas);
+      setFiltrosCaracteristicas(nuevasCaracteristicas);
     }
-    
-    // Si está marcando, reemplazamos el valor existente
-    const nuevasCaracteristicas = {
-      ...caracteristicasLocal,
-      [key]: value
-    };
-    
-    setCaracteristicasLocal(nuevasCaracteristicas);
-    setFiltrosCaracteristicas(nuevasCaracteristicas);
   };
 
   const handleCaracteristicasAdicionalesChange = (caracteristica: string, isChecked: boolean) => {
@@ -151,9 +121,9 @@ export default function SidebarFiltros({
         mostrar ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
+      {/* Encabezado */}
       <div className="flex justify-between items-center px-4 py-3 border-b">
         <h2 className="font-semibold text-lg">Filtros</h2>
-        {/* Cambios que se hizo ultimo, boton del reset, que limpia todo lo seleccionado */}
         <button
           onClick={() => {
             setFiltrosCombustible([]);
@@ -164,17 +134,18 @@ export default function SidebarFiltros({
             setFiltrosCaracteristicasAdicionales([]);
             setErrores({ combustible: "" });
           }}
-          className="text-sm bg-black text-white px-3 py-1 rounded hover:bg-black-600 transition"
+          className="text-sm bg-black text-white px-3 py-1 rounded hover:bg-gray-700 transition"
         >
           Resetear filtros
         </button>
-        <button onClick={onCerrar} className="text-xl font-bold hover:text-black-600">
+        <button onClick={onCerrar} className="text-xl font-bold hover:text-gray-600">
           &times;
         </button>
       </div>
 
-      <div className="space-y-4 p-4 overflow-y-auto h-full">
-        {/* Tipo de Combustible */}
+      {/* Contenido scrollable con altura limitada */}
+      <div className="space-y-4 p-4 overflow-y-auto max-h-[calc(100vh-60px)]">
+        {/* Combustible */}
         <div className="border rounded shadow-sm">
           <button
             onClick={() => toggle('tipoCombustible')}
@@ -212,7 +183,6 @@ export default function SidebarFiltros({
           </button>
           {abierto.caracteristicasCoche && (
             <div className="p-4 space-y-4">
-              {/* Asientos */}
               <div>
                 <p className="font-semibold">Número de asientos</p>
                 <div className="grid grid-cols-2 gap-2">
@@ -230,7 +200,6 @@ export default function SidebarFiltros({
                 </div>
               </div>
 
-              {/* Puertas */}
               <div>
                 <p className="font-semibold">Número de puertas</p>
                 <div className="grid grid-cols-2 gap-2">
@@ -267,7 +236,7 @@ export default function SidebarFiltros({
                     type="checkbox"
                     className="form-checkbox"
                     checked={filtrosTransmision.includes(tipo.toLowerCase())}
-                    onChange={(e) => handleTransmisionChange(tipo)}
+                    onChange={() => handleTransmisionChange(tipo)}
                   />
                   {tipo}
                 </label>
@@ -285,13 +254,15 @@ export default function SidebarFiltros({
             Características adicionales
           </button>
           {abierto.caracteristicasAdicionales && (
-            <div className="p-4 space-y-2 max-h-38 overflow-y-auto">
-              {["Aire acondicionado", "Bluetooth", "GPS", "Portabicicletas", "Soporte para esquís",
+            <div className="p-4 space-y-2 max-h-48 overflow-y-auto">
+              {[
+                "Aire acondicionado", "Bluetooth", "GPS", "Portabicicletas", "Soporte para esquís",
                 "Pantalla táctil", "Sillas para bebé", "Cámara de reversa", "Asientos de cuero",
-                "Sistema antirrobo", "Toldo o rack de techo", "Vidrios polarizados", "Sistema de sonido"].map((carac) => (
+                "Sistema antirrobo", "Toldo o rack de techo", "Vidrios polarizados", "Sistema de sonido"
+              ].map((carac) => (
                 <label key={carac} className="flex items-center gap-2">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     className="form-checkbox"
                     checked={filtrosCaracteristicasAdicionales.includes(carac.toLowerCase())}
                     onChange={(e) => handleCaracteristicasAdicionalesChange(carac, e.target.checked)}
