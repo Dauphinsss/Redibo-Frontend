@@ -24,9 +24,9 @@ export interface RawAutoDetails_Interface_Recode {
         nombre: string;
     };
     CombustibleCarro: {
-        TipoCombustible: {
-            tipoDeCombustible: string;
-        };
+       TipoCombustible: {
+       tipoDeCombustible: string;
+       };
     }[];
     Imagen: {
         id: number;
