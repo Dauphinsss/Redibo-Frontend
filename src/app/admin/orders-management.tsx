@@ -136,8 +136,10 @@ export function OrdersManagement() {
       }
 
       await axios.post(
-        `${API_URL}/api/accept-order`,
-        { codigo: selectedOrder.codigo },
+        `${API_URL}/api/admin/updatePaymentOrder`,
+        { codigo_orden_pago: selectedOrder.codigo,
+          estado: "COMPLETADO"
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -168,8 +170,10 @@ export function OrdersManagement() {
       }
 
       await axios.post(
-        `${API_URL}/api/reject-order`,
-        { codigo: selectedOrder.codigo },
+        `${API_URL}/api/admin/updatePaymentOrder`,
+        { codigo_orden_pago: selectedOrder.codigo,
+          estado: "CANCELADO"
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,

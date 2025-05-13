@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_URL } from "@/utils/bakend";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -53,6 +54,7 @@ export function ReservationsList() {
   const [error, setError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<PaymentOrderDetail | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchPaymentOrders = async () => {
@@ -107,6 +109,12 @@ export function ReservationsList() {
     } catch (err) {
       console.error("Error al obtener detalles de la orden:", err);
       setError("Error al cargar los detalles de la orden");
+    }
+  };
+
+  const handlePaymentClick = () => {
+    if (selectedOrder) {
+      router.push(`/perfil/payment?code=${selectedOrder.codigo}`);
     }
   };
 
@@ -184,13 +192,19 @@ export function ReservationsList() {
                       </TableCell>
                       <TableCell onClick={(e) => e.stopPropagation()}>
                         <Button 
-                          className="bg-black hover:bg-gray-800 text-white"
+                          className="bg-black hover:bg-gray-800 text-white flex items-center justify-center gap-2"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleOrderClick(order.codigo);
+                            setSelectedOrder(null); // Clear previous selection
+                            setDialogOpen(true); // Open dialog immediately
+                            handleOrderClick(order.codigo); // Fetch order details
                           }}
                         >
-                          Abrir Detalles
+                          {selectedOrder?.codigo === order.codigo && !selectedOrder ? (
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          ) : (
+                            "Abrir Detalles"
+                          )}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -225,8 +239,9 @@ export function ReservationsList() {
                 <p className="text-gray-700">Código: <span className="font-bold">{selectedOrder.codigo}</span></p>
                 <p className="text-gray-700">Estado: 
                   <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium text-white ${
-                    selectedOrder.estado === "PAGADO" ? "bg-green-600" : 
-                    selectedOrder.estado === "PENDIENTE" ? "bg-yellow-600" : "bg-red-600"
+                    selectedOrder.estado === "PAGADO" || selectedOrder.estado === "COMPLETADO" ? "bg-green-600" : 
+                    selectedOrder.estado === "PENDIENTE" ? "bg-yellow-600" : 
+                    selectedOrder.estado === "PROCESANDO" ? "bg-purple-600" : "bg-red-600"
                   }`}>
                     {selectedOrder.estado}
                   </span>
@@ -259,9 +274,10 @@ export function ReservationsList() {
             </Button>
             <Button 
               className="bg-blue-600 hover:bg-blue-700 text-white"
-              disabled={selectedOrder?.estado === "PAGADO"}
+              disabled={selectedOrder?.estado === "COMPLETADO" || selectedOrder?.estado === "PROCESANDO"|| selectedOrder?.estado === "CANCELADO"}
+              onClick={handlePaymentClick}
             >
-              {selectedOrder?.estado === "PAGADO" ? "Pagado" : "Pagar"}
+              {selectedOrder?.estado === "COMPLETADO" ? "Completado" : "Pagar"}
             </Button>
           </DialogFooter>
         </DialogContent>
