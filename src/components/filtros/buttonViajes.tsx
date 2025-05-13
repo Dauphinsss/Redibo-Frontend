@@ -12,9 +12,10 @@ import { useState } from "react";
 
 interface ButtonViajesProps {
   onFilterChange: (minViajes: number) => void;
+  disabled?: boolean;
 }
 
-export function ButtonViajes({ onFilterChange }: ButtonViajesProps) {
+export function ButtonViajes({ onFilterChange, disabled }: ButtonViajesProps) {
   const [minViajes, setMinViajes] = useState<string>("");
 
   const handleApply = () => {
@@ -25,7 +26,7 @@ export function ButtonViajes({ onFilterChange }: ButtonViajesProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="w-[200px] justify-between">
+        <Button variant="outline" className="w-[200px] justify-between" disabled={disabled}>
           Filtro por Viajes
           <span className="ml-2">↓</span>
         </Button>
@@ -43,6 +44,7 @@ export function ButtonViajes({ onFilterChange }: ButtonViajesProps) {
               value={minViajes}
               onValueChange={setMinViajes}
               className="grid grid-cols-2 gap-4"
+              disabled={disabled}
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="" id="v0" />
@@ -65,7 +67,7 @@ export function ButtonViajes({ onFilterChange }: ButtonViajesProps) {
                 <Label htmlFor="v5">5+ viajes</Label>
               </div>
             </RadioGroup>
-            <Button onClick={handleApply} className="mt-2">
+            <Button onClick={handleApply} className="mt-2" disabled={disabled}>
               Aplicar Filtro
             </Button>
           </div>
