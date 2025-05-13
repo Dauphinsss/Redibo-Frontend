@@ -26,9 +26,10 @@ const CalificacionRecode: React.FC<CalificacionProps> = ({ calificaciones, numCo
   return (
     <div className="p-4 border rounded-lg bg-white w-full flex flex-col justify-between h-full cursor-pointer">
       <div className="flex justify-between items-center">
+        {/** 
         <InfoPromedio total={total} promedio={promedio} numComentarios={numComentarios} onBarClick={onBarClick} />
         <BarraCalificacion porcentajes={porcentajes} comentariosConCalificacion={comentariosConCalificacion} onBarClick={onBarClick} />
-      </div>
+      */}</div>
       {total === 0 && <p className="mt-auto text-right text-gray-600 text-sm">Este auto aún no tiene calificaciones ni comentarios</p>}
     </div>
   );
