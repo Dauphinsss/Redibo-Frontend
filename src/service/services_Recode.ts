@@ -8,6 +8,8 @@ import { RawCondicionesUsoResponse } from "@/interface/RawCondicionesUsoVisuali_
 import { transformCondiciones_Recode } from "@/utils/transformCondicionesVisuali_Recode";
 import { AxiosError } from "axios";
 import { DetalleHost } from "@/interface/DetalleHost_Recode";
+import { RawHostDetails_Recode } from "@/interface/RawHostDetails_Recode";
+import { transformDetailsHost_Recode } from "@/utils/transformDetailsHost_Recode";
 
 export const getAllCars = async (): Promise<RawAuto[]> => {
     try {
@@ -136,4 +138,15 @@ export const postCobertura = async (payload: CoberturaInterface): Promise<void> 
         throw new Error("No se pudo enviar las condiciones de uso. Intenta de nuevo más tarde.");
     }
 };
+
+export const getDetalleHost_Recode = async (id_host: number) => {
+    try {
+        const response = await apiCarById.get<RawHostDetails_Recode>(`/detailHost/${id_host}`);
+        return transformDetailsHost_Recode(response.data);
+    } catch (error) {
+        console.error("Error al obtener condiciones visuales:", error);
+        return null;
+    }
+}; 
+
 

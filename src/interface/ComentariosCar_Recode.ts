@@ -10,6 +10,6 @@ export interface ComentariosCar{
     Usuario:{
         nombre: string;
     };
-    respuestas:{
+    respuesta:{
     }[];
 }
