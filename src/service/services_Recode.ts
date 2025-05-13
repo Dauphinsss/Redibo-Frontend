@@ -165,13 +165,21 @@ export const postCoberturaEnlace = async (payload: EnlaceInterface): Promise<voi
   }
 };
 
-export const getInsuranceByID = async <T = ValidarInterface>(id: string): Promise<T> => {
+export const getInsuranceByID = async <T = ValidarInterface>(id_carro: string): Promise<T | null> => {
   try {
-    const response = await apiCarById.get(`/insurance/${id}`);
-    return response.data as T;
+    const response = await apiCarById.get(`/insurance/${id_carro}`);
+
+    const dataArray = response.data;
+
+    if (!Array.isArray(dataArray) || dataArray.length === 0) {
+      console.warn('No se encontró seguro para el id_carro:', id_carro);
+      return null;
+    }
+
+    return dataArray[0] as T; // Asumes que solo quieres el primero
   } catch (error) {
-    console.error(`Error al obtener el seguro con ID ${id}:`, error);
-    throw error;
+    console.error(`Error al obtener el seguro con id_carro ${id_carro}:`, error);
+    return null;
   }
 };
 export const getDetalleHost_Recode = async (id_host: number) => {
