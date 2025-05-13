@@ -9,9 +9,11 @@ interface Props {
   fechaComentario: string;
   comentario: string;
   calificacionUsr: number;
+  cantLikes: number;
+  cantDontlikes: number;
 }
 
-function VerComentario({nombreCompleto, fotoUser, fechaComentario, comentario, calificacionUsr,}: Props) {
+function VerComentario({nombreCompleto, fotoUser, fechaComentario, comentario, calificacionUsr,cantLikes,cantDontlikes}: Props) {
   
   return (
     <div className="w-full border border-gray-200 rounded-lg p-4">
@@ -36,18 +38,32 @@ function VerComentario({nombreCompleto, fotoUser, fechaComentario, comentario, c
 
       <p className="mt-4 mb-4">{comentario}</p>
 
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+      {/*<div className="flex items-center space-x-2 text-sm self-start sm:self-auto">
+        <span>¿Te resultó útil esta opinión?</span>
+          <HiThumbUp className="cursor-pointer text-gray-400 hover:text-gray-600" ></HiThumbUp>
+          <HiThumbDown className="cursor-pointer text-gray-400 hover:text-gray-600"></HiThumbDown>
+      </div>*/}
+
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 ">
         <button className="flex items-center gap-2 px-4 py-2 text-black hover:bg-stone-300 rounded-lg self-start sm:self-auto">
           <HiOutlineChat />
           Comentar
         </button>
 
         <div className="flex items-center space-x-2 text-sm self-start sm:self-auto">
-          <span>¿Te resultó útil esta opinión?</span>
-          <HiThumbUp className="cursor-pointer hover:text-green-600" />
-          <HiThumbDown className="cursor-pointer hover:text-red-600" />
+
+          <div className="flex items-center gap-1 cursor-pointer text-gray-400 hover:text-gray-600">
+            <HiThumbUp />
+            <span>{cantLikes}</span>
+          </div>
+
+          <div className="flex items-center gap-1 cursor-pointer text-gray-400 hover:text-gray-600">
+            <HiThumbDown />
+            <span>{cantDontlikes}</span>
+          </div>
         </div>
       </div>
+
     </div>
   );
 }

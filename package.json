@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@headlessui/react": "^2.2.2",
+    "@headlessui/react": "^2.2.3",
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.7",
@@ -35,7 +35,7 @@
     "embla-carousel-react": "^8.6.0",
     "force": "^0.0.3",
     "formik": "^2.4.6",
-    "framer-motion": "^12.7.4",
+    "framer-motion": "^12.11.0",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
     "leaflet-geosearch": "^4.2.0",

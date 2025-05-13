@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, forwardRef } from "react";
+import React, { forwardRef } from "react";
 import CustomDropdown_Recode, { Option } from "./CustomDropdown_Recode";
 
 export interface EntradaRecodeProps {
@@ -9,6 +9,7 @@ export interface EntradaRecodeProps {
   onChangeCombustible: (opt: Option<string>) => void;
   respuestas: Record<string, boolean>;
   onCheckboxChange: (key: string) => void;
+  errorCombustible?: boolean;
 }
 
 const Entrada_Recode = forwardRef<HTMLButtonElement, EntradaRecodeProps>(
@@ -19,45 +20,57 @@ const Entrada_Recode = forwardRef<HTMLButtonElement, EntradaRecodeProps>(
       onChangeCombustible,
       respuestas,
       onCheckboxChange,
+      errorCombustible = false,
     },
     ref
   ) => {
+    const condiciones = [
+      { label: "Exterior limpio", key: "esterior_limpio" },
+      { label: "Interior limpio", key: "inter_limpio" },
+      { label: "Rayones visibles", key: "rayones" },
+      { label: "Buen estado de llantas", key: "llanta_estado" },
+      { label: "Daños en interior", key: "interior_da_o" },
+    ];
+
     return (
-      <div className="space-y-4 px-4 py-4 bg-white rounded-lg shadow">
-        {/* Dropdown: estado del combustible */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-          <label className="font-semibold mb-2 md:mb-0">
-            Estado del combustible:
+      <div className="space-y-6">
+        {/* Estado del combustible */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Estado del combustible
           </label>
-          <div className="w-full md:w-1/3">
-            <CustomDropdown_Recode
-              ref={ref}
-              options={opciones}
-              value={valorCombustible}
-              onChange={onChangeCombustible}
-            />
-          </div>
+          <CustomDropdown_Recode
+            ref={ref}
+            options={opciones}
+            value={valorCombustible}
+            onChange={onChangeCombustible}
+            error={errorCombustible}
+          />
         </div>
 
-        {/* Checkboxes: estado físico del auto */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-          {[
-            { label: "Exterior limpio", key: "esterior_limpio" },
-            { label: "Interior limpio", key: "inter_limpio" },
-            { label: "Tiene rayones", key: "rayones" },
-            { label: "Llantas en buen estado", key: "llanta_estado" },
-            { label: "Interior dañado", key: "interior_da_o" },
-          ].map(({ label, key }) => (
-            <label key={key} className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={respuestas[key]}
-                onChange={() => onCheckboxChange(key)}
-                className="h-4 w-4 accent-black border-black rounded"
-              />
-              <span className="font-semibold">{label}</span>
-            </label>
-          ))}
+        {/* Checkboxes de condiciones */}
+        <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {condiciones.map(({ label, key }) => {
+              const checked = !!respuestas[key];
+              return (
+                <label
+                  key={key}
+                  className={`flex items-center space-x-2 p-2 rounded transition-all duration-150 transform
+                    ${checked ? "scale-105 shadow-md bg-gray-50" : "scale-100"}
+                  `}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => onCheckboxChange(key)}
+                    className="h-4 w-4 accent-black border-black rounded focus:ring-black"
+                  />
+                  <span className="font-semibold text-sm text-gray-900">{label}</span>
+                </label>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
@@ -65,4 +78,4 @@ const Entrada_Recode = forwardRef<HTMLButtonElement, EntradaRecodeProps>(
 );
 
 Entrada_Recode.displayName = "Entrada_Recode";
-export default memo(Entrada_Recode);
+export default Entrada_Recode;

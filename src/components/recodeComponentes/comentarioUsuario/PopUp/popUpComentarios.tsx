@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HiOutlineX } from "react-icons/hi";
 import FotoPerfilUsrRecode from "../realizarComentario/fotoPerfilUsrRecode";
 import CalificacionRecode from "../../calificacionAuto/calificacionRecode";
@@ -37,7 +37,6 @@ function PopUpComentarios({
   numComentarios,
   comentariosConCalificacion,
   imagenes,
-  nombreUser,
   fotoUser,
   fechaComentario,
   comentario,
@@ -49,10 +48,29 @@ function PopUpComentarios({
   
   const closePopup = () => setPopUpOpen(false);
   const openPopup = () => setPopUpOpen(true);
-  
+
+  const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
+  useEffect(() => {
+}, [filtroCalificacion]);
+
+
   const { comentarios, cargando, error } = useComentariosAuto(Number(idCar));
+const comentariosFiltrados = filtroCalificacion !== null
+  ? comentarios.filter((comentario) => comentario.Calificacion.calf_carro === filtroCalificacion)
+  : comentarios;
+
+
+
+  function formatearFecha(fechaISO: string): string {
+    const fecha = new Date(fechaISO);
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const año = fecha.getFullYear();
+  return `${dia}/${mes}/${año}`;
+  }
 
   return (
+    
     <div>
       <button onClick={openPopup} className="bg-black text-white px-4 py-2 rounded">
         Comentarios
@@ -72,7 +90,7 @@ function PopUpComentarios({
             <div
               className="overflow-y-auto px-6 pb-6"
               style={{
-                maxHeight: "calc(120vh - 160px)", // Altura máxima ajustable parte 120vh
+                maxHeight: "calc(120vh - 160px)", // Altura máxima ajustable parte de 120vh
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
               }}
@@ -96,7 +114,10 @@ function PopUpComentarios({
                 <CalificacionRecode  
                  calificaciones={calificaciones}
                numComentarios={numComentarios} 
-               comentariosConCalificacion={comentariosConCalificacion}/>
+               comentariosConCalificacion={comentariosConCalificacion}
+               onBarClick={setFiltroCalificacion}
+               
+               />
               </div>
 
               <div className="mb-4">
@@ -108,14 +129,17 @@ function PopUpComentarios({
                 {error && <p>{error}</p>}
                 {!cargando && comentarios.length === 0 && <p>No hay comentarios disponibles.</p>}
 
-                {comentarios.map((comentario) => (
+                {comentariosFiltrados.map((comentario) => (
+                  
                   <VerComentario
                     key={comentario.id}
                     nombreCompleto={comentario.Usuario.nombre}
                     fotoUser={fotoUser}
-                    fechaComentario={comentario.comentado_en}
+                    fechaComentario={formatearFecha(comentario.comentado_en)}
                     comentario={comentario.contenido}
                     calificacionUsr={comentario.Calificacion.calf_carro}
+                    cantDontlikes={comentario.dont_likes}
+                    cantLikes={comentario.likes}
                   />
                 ))}
               </div>
