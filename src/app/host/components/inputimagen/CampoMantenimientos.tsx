@@ -16,18 +16,16 @@ const CampoMantenimientos: React.FC<CampoMantenimientosProps> = ({
 }) => {
   const handleMantenimientosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    
-    // Prevenir entrada de valores negativos
-    if (value.startsWith('-')) {
-      return;
-    }
-    
-    setMantenimientos(value);
-    
-    if (value === "") {
+
+    // Remove any non-digit characters
+    const sanitizedValue = value.replace(/[^0-9]/g, ''); // Removes everything that isn't a number
+
+    setMantenimientos(sanitizedValue);
+
+    if (sanitizedValue === "") {
       setError("Este campo es obligatorio");
     } else {
-      const numValue = parseInt(value);
+      const numValue = parseInt(sanitizedValue);
       if (isNaN(numValue)) {
         setError("Debe ser un número válido");
       } else if (numValue < 0) {
@@ -44,7 +42,7 @@ const CampoMantenimientos: React.FC<CampoMantenimientosProps> = ({
     <div className="flex flex-col mt-6">
       <label className="text-base font-medium mb-2">Número de mantenimientos:<span className="text-red-600"> *</span></label>
       <Input
-        type="number"
+        type="text" // Change to type="text" to allow sanitization
         placeholder="0"
         className={`w-full max-w-md ${error ? 'border-red-500' : ''}`}
         value={mantenimientos}
@@ -52,9 +50,12 @@ const CampoMantenimientos: React.FC<CampoMantenimientosProps> = ({
         min="0"
         max="1000"
         required
-        onKeyDown={(e) => {
+         onKeyDown={(e) => {
           // Prevenir entrada del signo negativo
           if (e.key === '-') {
+            e.preventDefault();
+          }
+          if (isNaN(Number(e.key)) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') {
             e.preventDefault();
           }
         }}
