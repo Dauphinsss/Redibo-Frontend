@@ -43,7 +43,8 @@ export default function Header() {
             rolesStr.split(",").map(role => role.trim());
           
           setIsAdmin(roles.includes("ADMIN"));
-        } catch (e) {
+        } catch (error) {
+          console.log(error)
           // Si no se puede parsear como JSON, verificar si el string contiene "ADMIN"
           setIsAdmin(rolesStr.includes("ADMIN"));
         }

@@ -59,7 +59,8 @@ export default function AdminPage() {
           return;
         }
         
-        setRoles(["ADMIN"]); // Solo mostramos rol de ADMIN aunque tenga otros
+        await setRoles(["ADMIN"]); // Solo mostramos rol de ADMIN aunque tenga otros
+        console.log(roles)
       } catch (err) {
         console.error("Error al obtener datos del usuario", err);
       }
