@@ -33,6 +33,10 @@ function validateVin(vin: string): string {
   if (!vinRegex.test(vin)) {
     return "El VIN solo puede contener letras y números (sin I, O ni Q).";
   }
+  // 3.1) No puede contener solo números
+  if (/^[0-9]+$/.test(vin)) {
+    return "El VIN debe contener letras además de números.";
+  }
 
   // 4) Dígito de verificación (posición 9)
   /*

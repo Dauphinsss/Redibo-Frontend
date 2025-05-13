@@ -20,7 +20,7 @@ export default function CampoCombustible({
   const opcionesCombustible = [
     { id: 1, label: "Gasolina" },
     { id: 2, label: "Gas Natural" },
-    { id: 3, label: "Electrico" },
+    { id: 3, label: "Eléctrico" },
     { id: 4, label: "Diesel" },
   ];
 

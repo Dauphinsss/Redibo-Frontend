@@ -54,6 +54,13 @@ export default function CampoProvincia({
     }
   }, [departamento, apiUrl, setProvinciaError]);
 
+  useEffect(() => {
+     if(departamento && !provincia){
+         setProvinciaError("Debe seleccionar una provincia");
+     }
+
+ }, [departamento, provincia, setProvinciaError]);
+ 
   return (
     <div className="flex flex-col max-w-md">
       <label className="text-base font-medium mb-1">Provincia:<span className="text-red-600"> *</span></label>
