@@ -1,10 +1,9 @@
 import Image from "next/image";
 
 interface Props {
-  imagen: string;
   setImagen: (url: string) => void;
 }
-export default function SubirImagenCloudinary({ imagen, setImagen }: Props) {
+export default function ImagenUpload({ setImagen }: Props) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
