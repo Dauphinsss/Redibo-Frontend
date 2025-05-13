@@ -53,7 +53,6 @@ export default function TablaCondicionesVisual_Recode({ id_carro }: TablaCondici
       
       if(200 === 200){
         setShowNotification(true);
-        setTimeout(() => setShowNotification(false), 3000);
       }
     } catch (error) {
       console.log("error al enviar la solicitud:", error);
@@ -76,38 +75,41 @@ export default function TablaCondicionesVisual_Recode({ id_carro }: TablaCondici
   };
 
   return (
-    <div className="w-full max-w-[760px] mx-auto border border-black rounded-[10px] overflow-hidden">
-      {/* Tabs */}
-      <div className="sticky top-0 z-10 bg-white">
-        <div className="flex">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`flex-1 text-sm font-medium py-2 border-r border-black last:border-r-0
-                first:rounded-tl-[10px] last:rounded-tr-[1  0px]
-                ${activeTab === tab.key ? "bg-black text-white" : "bg-white text-black"}`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        <div className="h-[1px] bg-black" />
+    <>
+      {showNotification && (
+        <NotificacionEnvioExitoso_recode onClose={() => setShowNotification(false)} />
+      )}
+      <div className="w-full max-w-[760px] mx-auto border border-black rounded-[10px] overflow-hidden">
+        {/* Tabs */}
+        <div className="sticky top-0 z-10 bg-white">
+          <div className="flex">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`flex-1 text-sm font-medium py-2 border-r border-black last:border-r-0
+                  first:rounded-tl-[10px] last:rounded-tr-[1  0px]
+                  ${activeTab === tab.key ? "bg-black text-white" : "bg-white text-black"}`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <div className="h-[1px] bg-black" />
+        </div>  
+
+        {/* Contenido */}
+        <div className="bg-white p-4 min-h-[300px]">{renderContent()}</div>
+
       </div>
-
-      {/* Contenido */}
-      <div className="bg-white p-4 min-h-[300px]">{renderContent()}</div>
-
       <div className="p-4 text-center">
         <button
           onClick={handleEnviarSolicitud}
-          className="bg-black-500 text-white py-2 px-4 rounded hover:bg-black-600"
+          className="bg-black text-white py-2 px-4 rounded hover:bg-gray-800"
         >
           Enviar Solicitud
         </button>
       </div>
-
-      {showNotification && <NotificacionEnvioExitoso_recode/>}
-    </div>
+    </>
   );
 }
