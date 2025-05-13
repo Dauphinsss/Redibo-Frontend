@@ -69,17 +69,17 @@ function General_Recode({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-4">
         {[
           { label: "Fumar", key: "fumar" },
-          { label: "Mascotas permitidas", key: "mascotas" },
-          { label: "Devolver mismo combustible", key: "combustible" },
-          { label: "Uso fuera de la ciudad permitido", key: "fuera_ciudad" },
-          { label: "Multas por cuenta del conductor", key: "multas" },
-          { label: "Devolver auto en mismo lugar", key: "lugar_entrega" },
+          { label: "Mascotas permitidas", key: "mascota" },
+          { label: "Devolver mismo combustible", key: "dev_mismo_conb" },
+          { label: "Uso fuera de la ciudad permitido", key: "uso_fuera_ciudad" },
+          { label: "Multas por cuenta del conductor", key: "multa_conductor" },
+          { label: "Devolver auto en mismo lugar", key: "dev_mismo_lugar" },
           { label: "Uso comercial permitido", key: "uso_comercial" }
         ].map(({ label, key }) => (
           <label key={key} className="flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={respuestas[key]}
+              checked={!!respuestas[key]}
               onChange={() => onCheckboxChange(key)}
               className="h-4 w-4 accent-black border-black rounded"
             />
