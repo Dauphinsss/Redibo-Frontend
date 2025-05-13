@@ -40,14 +40,16 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
     const [modalSuccess, setModalSuccess] = useState(false);
     const [modalError, setModalError] = useState(false);
     const [mostrarAdvertencia, setMostrarAdvertencia] = useState(false);
+    const [errorCombustible, setErrorCombustible] = useState(false);
 
-    // Ref para enfocar el dropdown
     const dropdownRef = useRef<HTMLButtonElement | null>(null);
 
-    // Enfoca el input del dropdown al cerrar el modal de advertencia
     useEffect(() => {
-      if (!mostrarAdvertencia && dropdownRef.current) {
-        dropdownRef.current.focus();
+      if (mostrarAdvertencia && dropdownRef.current) {
+        const timeout = setTimeout(() => {
+          dropdownRef.current?.focus();
+        }, 200);
+        return () => clearTimeout(timeout);
       }
     }, [mostrarAdvertencia]);
 
@@ -94,7 +96,9 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
 
     const handleEnviar = async () => {
       if (!entCombustible.value || entCombustible.value === "") {
+        setActiveTab("entrega");
         setMostrarAdvertencia(true);
+        setErrorCombustible(true);
         return;
       }
 
@@ -172,9 +176,13 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
               ref={dropdownRef}
               opciones={estadosEntrega}
               valorCombustible={entCombustible}
-              onChangeCombustible={setEntCombustible}
+              onChangeCombustible={(val) => {
+                setEntCombustible(val);
+                if (val.value !== "") setErrorCombustible(false); // ✅ limpia error al seleccionar
+              }}
               respuestas={entCheckboxes}
               onCheckboxChange={(k) => setEntCheckboxes((p) => ({ ...p, [k]: !p[k] }))}
+              errorCombustible={errorCombustible}
             />
           );
         case "devolucion":
