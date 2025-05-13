@@ -16,9 +16,10 @@ interface Props {
   fotoHost: string;
   modeloAuto: string;
   marcaAuto: string;
-  calificaciones: number[];
+ calificaciones: number[];
+  numComentarios: number;
+  comentariosConCalificacion: number[];
   imagenes: { id: number; data: string }[];
-
   nombreUser: string;
   fotoUser: string;
   fechaComentario: string;
@@ -33,19 +34,22 @@ function PopUpComentarios({
   modeloAuto,
   marcaAuto,
   calificaciones,
+  numComentarios,
+  comentariosConCalificacion,
   imagenes,
   nombreUser,
   fotoUser,
   fechaComentario,
   comentario,
   calificacionUsr,
+
 }: Props) {
   const [popUpOpen, setPopUpOpen] = useState(false);
   const ordenar = ["Mejor Calificación", "Peor Calificación", "Más valorado", "Menos valorado"];
   
   const closePopup = () => setPopUpOpen(false);
   const openPopup = () => setPopUpOpen(true);
-
+  
   const { comentarios, cargando, error } = useComentariosAuto(Number(idCar));
 
   return (
@@ -89,7 +93,10 @@ function PopUpComentarios({
               </div>
 
               <div className="mb-4">
-                <CalificacionRecode calificaciones={calificaciones} />
+                <CalificacionRecode  
+                 calificaciones={calificaciones}
+               numComentarios={numComentarios} 
+               comentariosConCalificacion={comentariosConCalificacion}/>
               </div>
 
               <div className="mb-4">

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useRef, useMemo } from "react";
-import { useParams } from "next/navigation";
+import React, { useRef, useMemo, useState } from "react";
+import { notFound, useParams } from "next/navigation";
 import Header from "@/components/ui/Header";
 import TablaComponentes_Recode from "@/components/recodeComponentes/condicionesDeUsoAutoFormu/TablaComponentes_Recode";
 import BotonVolver from "@/components/recodeComponentes/condicionesDeUsoAutoFormu/BotonVolver";
@@ -9,27 +9,20 @@ import BotonVolver from "@/components/recodeComponentes/condicionesDeUsoAutoForm
 export default function CondicionesUsoAutoHome() {
   const tablaRef = useRef<{ enviarFormulario: () => void }>(null);
   const params = useParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const id_carro = useMemo(() => {
     const raw = params?.id;
-    if (typeof raw !== "string") return NaN;
+    if (typeof raw !== "string") notFound();
     const parsed = Number(raw);
-    return isNaN(parsed) ? NaN : parsed;
+    if (isNaN(parsed)) notFound();
+    return parsed;
   }, [params]);
 
-  if (isNaN(id_carro)) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold text-red-600">Error</h1>
-          <p className="text-gray-700">ID de auto no válido en la URL.</p>
-        </div>
-      </div>
-    );
-  }
-
   const handleGuardar = () => {
-    tablaRef.current?.enviarFormulario();
+    if (tablaRef.current) {
+      tablaRef.current.enviarFormulario();
+    }
   };
 
   return (
@@ -46,17 +39,48 @@ export default function CondicionesUsoAutoHome() {
         </h2>
       </div>
 
-      {/* Formulario de condiciones */}
+      {/* Formulario */}
       <main>
-        <TablaComponentes_Recode ref={tablaRef} id_carro={id_carro} />
+        <TablaComponentes_Recode
+          ref={tablaRef}
+          id_carro={id_carro}
+          setIsSubmitting={setIsSubmitting}
+        />
 
         {/* Botón Guardar */}
         <div className="w-full flex justify-center mt-4">
           <button
             onClick={handleGuardar}
-            className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition"
+            className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition disabled:opacity-50"
+            disabled={isSubmitting}
           >
-            Guardar condiciones
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <svg
+                  className="animate-spin h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"
+                  ></path>
+                </svg>
+                Guardando...
+              </span>
+            ) : (
+              "Guardar condiciones"
+            )}
           </button>
         </div>
 

@@ -5,7 +5,7 @@ import InfoDestacable from '@/components/recodeComponentes/detailsCar/RecodeInfo
 import DescriHost from '@/components/recodeComponentes/detailsCar/RecodeDescriHost'
 import DescripcionAuto from '@/components/recodeComponentes/detailsCar/RecodeDescripcionAuto'
 import Reserva from '@/components/recodeComponentes/detailsCar/RecodeReserva'
-import { getCarById , getCarRatings } from '@/service/services_Recode'
+import { getCarById , getCarRatingsFromComments,getCarRatingsFromAuto} from '@/service/services_Recode'
 import NotFound from '@/app/not-found'
 import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode'
 import CalificaionRecode from "@/components/recodeComponentes/calificacionAuto/calificacionRecode"
@@ -19,7 +19,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   if (!autoData) NotFound();
 
   const auto = transformAutoDetails_Recode(autoData);
-  const calificaciones = await getCarRatings(id);
+ const calificacionesAuto = await getCarRatingsFromAuto(id);
+const calificacionesComentarios = await getCarRatingsFromComments(id);
+const numComentarios = calificacionesComentarios.filter(c => c > 0).length; 
+const comentariosConCalificacion = calificacionesComentarios.filter(c => c > 0);
+const calificaciones = [...calificacionesAuto, ...calificacionesComentarios];
 
 
   return (
@@ -47,13 +51,15 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               nombreCompleto={auto.nombreHost} fotoHost={""} 
               modeloAuto={auto.modelo} marcaAuto={auto.marca}
               calificaciones={calificaciones}
+                numComentarios={numComentarios} 
+               comentariosConCalificacion={comentariosConCalificacion}
               imagenes={auto.imagenes}
               nombreUser={""}
               fotoUser={""}
               fechaComentario={""}
               comentario={""}
               calificacionUsr={0}
-              ></PopUpComentarios>
+              />
             </div>
             
             <DescriHost
@@ -65,8 +71,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               
             />
             <div className="mt-6"  >
-              <CalificaionRecode calificaciones={calificaciones}
-                
+              <CalificaionRecode  
+              calificaciones={calificaciones}
+               numComentarios={numComentarios} 
+               comentariosConCalificacion={comentariosConCalificacion}
               />
             </div >
 

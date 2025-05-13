@@ -86,15 +86,22 @@ export const getCarsByPriceDesc = async () => {
         throw error;
     }
 };
-export async function getCarRatings(idCar: string): Promise<number[]> {
+export async function getCarRatingsFromComments(idCar: string): Promise<number[]> {
     const response = await fetch(`https://search-car-backend.vercel.app/comments/${idCar}`);
     if (!response.ok) return [];
 
     const data = await response.json();
     
-    return data.map((comentario: { Calificacion: { calf_carro: number } }) => comentario.Calificacion.calf_carro);
+    return data.map((comentario: { Calificacion?: { calf_carro: number } }) => 
+        comentario.Calificacion?.calf_carro ?? 0 // Si no tiene calificación, asigna 0
+    );
 }
-
+export async function getCarRatingsFromAuto(id: string): Promise<number[]> {
+    const response = await fetch(`https://search-car-backend.vercel.app/detailCar/${id}`);
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.Calificacion.map((c: { calf_carro: number }) => c.calf_carro);
+};
 export const postCondicionesUso_Recode = async (payload: CondicionesUsoPayload_Recode): Promise<void> => {
     try {
         const response = await apiFormularioCondicionesUsoAuto.post("/insertCondition", payload);
