@@ -11,6 +11,7 @@ import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode
 import CalificaionRecode from "@/components/recodeComponentes/calificacionAuto/calificacionRecode"
 import PopUpComentarios from '@/components/recodeComponentes/comentarioUsuario/PopUp/popUpComentarios'
 
+
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const autoData = await getCarById(id);
@@ -19,8 +20,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   const auto = transformAutoDetails_Recode(autoData);
   const calificaciones = await getCarRatings(id);
-
-;
 
 
   return (
@@ -87,7 +86,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               />
             </div>
           </div>
-
         </div>
       </main>
     </>
