@@ -366,17 +366,19 @@ const EditarDireccionPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="p-6 flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500 mb-4" />
-        <p className="text-lg ml-3">Cargando datos del vehículo...</p>
+      <div className="p-4 md:p-6 flex items-center justify-center min-h-screen">
+        <div className="flex flex-col md:flex-row items-center">
+          <Loader2 className="h-6 w-6 md:h-8 md:w-8 animate-spin text-blue-500 mb-2 md:mb-0 md:mr-3" />
+          <p className="text-base md:text-lg">Cargando datos del vehículo...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-6 flex items-center justify-center min-h-screen">
-        <p className="text-red-500">{error}</p>
+      <div className="p-4 md:p-6 flex items-center justify-center min-h-screen">
+        <p className="text-red-500 text-center">{error}</p>
       </div>
     );
   }
@@ -459,7 +461,7 @@ const EditarDireccionPage: React.FC = () => {
       
       // Redirigir después de un breve retraso
       setTimeout(() => router.push("/host"), 1500);
-    } catch (err: unknown) { // 👈 Aquí cambiamos any por unknown
+    } catch (err: unknown) {
       console.error("Error al actualizar la dirección:", err);
     
       let errorMessage = "Error al guardar los cambios";
@@ -483,34 +485,34 @@ const EditarDireccionPage: React.FC = () => {
   const isSubmitDisabled = hasErrors() || hasEmptyFields() || isSaving;
 
   return (
-    <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold my-5">Dirección</h1>
+    <div className="p-4 md:p-6 flex flex-col items-start min-h-screen bg-gray-100">
+      <h1 className="text-2xl md:text-4xl font-bold my-3 md:my-5">Dirección</h1>
 
       {error && (
-        <div className="w-full max-w-5xl mb-4">
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <div className="w-full mb-4">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 md:px-4 md:py-3 rounded">
             {error}
           </div>
         </div>
       )}
 
       {successMessage && (
-        <div className="w-full max-w-5xl mb-4">
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+        <div className="w-full mb-4">
+          <div className="bg-green-100 border border-green-400 text-green-700 px-3 py-2 md:px-4 md:py-3 rounded">
             {successMessage}
           </div>
         </div>
       )}
 
-      <form onSubmit={handlePrepareSubmit}>
+      <form onSubmit={handlePrepareSubmit} className="w-full">
         {/* País */}
-        <div className="w-full max-w-5xl flex flex-col mt-4">
-          <label className="text-lg font-semibold mb-1">País <span className="text-red-500">*</span></label>
+        <div className="w-full flex flex-col mt-4">
+          <label className="text-base md:text-lg font-semibold mb-1">País <span className="text-red-500">*</span></label>
           <Select
             value={selectedPais?.toString()}
             onValueChange={handlePaisChange}
           >
-            <SelectTrigger className={`w-[600px] mt-2 ${touched.pais && paisError ? 'border-red-500' : ''}`}>
+            <SelectTrigger className={`w-full max-w-full md:max-w-lg mt-2 ${touched.pais && paisError ? 'border-red-500' : ''}`}>
               <SelectValue placeholder="Seleccione un país">
                 {nombrePais || "Seleccione un país"}
               </SelectValue>
@@ -531,14 +533,14 @@ const EditarDireccionPage: React.FC = () => {
         </div>
 
         {/* Ciudad */}
-        <div className="w-full max-w-5xl flex flex-col mt-4">
-          <label className="text-lg font-semibold mb-1">Ciudad <span className="text-red-500">*</span></label>
+        <div className="w-full flex flex-col mt-4">
+          <label className="text-base md:text-lg font-semibold mb-1">Ciudad <span className="text-red-500">*</span></label>
           <Select
             value={selectedCiudad?.toString()}
             onValueChange={handleCiudadChange}
             disabled={!selectedPais}
           >
-            <SelectTrigger className={`w-[600px] mt-2 ${touched.ciudad && ciudadError ? 'border-red-500' : ''}`}>
+            <SelectTrigger className={`w-full max-w-full md:max-w-lg mt-2 ${touched.ciudad && ciudadError ? 'border-red-500' : ''}`}>
               <SelectValue placeholder="Seleccione una ciudad">
                 {nombreCiudad || "Seleccione una ciudad"}
               </SelectValue>
@@ -562,14 +564,14 @@ const EditarDireccionPage: React.FC = () => {
         </div>
 
         {/* Provincia */}
-        <div className="w-full max-w-5xl flex flex-col mt-4">
-          <label className="text-lg font-semibold mb-1">Provincia <span className="text-red-500">*</span></label>
+        <div className="w-full flex flex-col mt-4">
+          <label className="text-base md:text-lg font-semibold mb-1">Provincia <span className="text-red-500">*</span></label>
           <Select
             value={selectedProvincia?.toString()}
             onValueChange={handleProvinciaChange}
             disabled={!selectedCiudad}
           >
-            <SelectTrigger className={`w-[600px] mt-2 ${touched.provincia && provinciaError ? 'border-red-500' : ''}`}>
+            <SelectTrigger className={`w-full max-w-full md:max-w-lg mt-2 ${touched.provincia && provinciaError ? 'border-red-500' : ''}`}>
               <SelectValue placeholder="Seleccione una provincia">
                 {nombreProvincia || "Seleccione una provincia"}
               </SelectValue>
@@ -593,14 +595,14 @@ const EditarDireccionPage: React.FC = () => {
         </div>
 
         {/* Dirección calle */}
-        <div className="w-full max-w-5xl flex flex-col mt-6">
-          <label className="text-lg font-semibold mb-1">Dirección de la calle <span className="text-red-500">*</span></label>
+        <div className="w-full flex flex-col mt-4 md:mt-6">
+          <label className="text-base md:text-lg font-semibold mb-1">Dirección de la calle <span className="text-red-500">*</span></label>
           <input
             type="text"
             value={calle}
             onChange={handleCalleChange}
             disabled={!selectedProvincia}
-            className={`w-[600px] mt-2 p-2 border ${touched.calle && calleError ? 'border-red-500' : 'border-gray-300'} rounded`}
+            className={`w-full max-w-full md:max-w-lg mt-2 p-2 border ${touched.calle && calleError ? 'border-red-500' : 'border-gray-300'} rounded`}
             placeholder="Ingrese la dirección de la calle"
           />
           {touched.calle && calleError && (
@@ -612,14 +614,14 @@ const EditarDireccionPage: React.FC = () => {
         </div>
 
         {/* Número de casa - Con validación para solo números */}
-        <div className="w-full max-w-5xl flex flex-col mt-6">
-          <label className="text-lg font-semibold mb-1">Número de casa <span className="text-red-500">*</span></label>
+        <div className="w-full flex flex-col mt-4 md:mt-6">
+          <label className="text-base md:text-lg font-semibold mb-1">Número de casa <span className="text-red-500">*</span></label>
           <input
             type="text"
             value={numCasa}
             onChange={handleNumCasaChange}
             disabled={!selectedProvincia}
-            className={`w-[600px] mt-2 p-2 border ${touched.numCasa && numCasaError ? 'border-red-500' : 'border-gray-300'} rounded`}
+            className={`w-full max-w-full md:max-w-lg mt-2 p-2 border ${touched.numCasa && numCasaError ? 'border-red-500' : 'border-gray-300'} rounded`}
             placeholder="Ingrese solo números"
           />
           {touched.numCasa && numCasaError && (
@@ -631,12 +633,12 @@ const EditarDireccionPage: React.FC = () => {
         </div>
         
         {/* Botones */}
-        <div className="flex justify-between mt-10 w-full max-w-5xl">
+        <div className="flex flex-col sm:flex-row justify-between mt-8 md:mt-10 w-full gap-4">
           <Button
             type="button"
             onClick={handleCancel}
             variant="secondary"
-            className="w-[160px] h-12 text-lg font-semibold transition-colors duration-200"
+            className="w-full sm:w-auto h-10 md:h-12 text-base md:text-lg font-semibold transition-colors duration-200"
             style={{ backgroundColor: "#D3D3D3" }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#E0E0E0")}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#D3D3D3")}
@@ -650,7 +652,7 @@ const EditarDireccionPage: React.FC = () => {
               <Button 
                 type="submit"
                 variant="default"
-                className={`h-12 text-lg font-semibold text-white px-6 ${isSubmitDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`w-full sm:w-auto h-10 md:h-12 text-base md:text-lg font-semibold text-white px-3 md:px-6 ${isSubmitDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                 disabled={isSubmitDisabled}
               >
                 {isSaving ? (
@@ -659,11 +661,14 @@ const EditarDireccionPage: React.FC = () => {
                     GUARDANDO...
                   </>
                 ) : (
-                  "FINALIZAR EDICIÓN Y GUARDAR"
+                  <>
+                    <span className="hidden sm:inline">FINALIZAR EDICIÓN Y GUARDAR</span>
+                    <span className="sm:hidden">GUARDAR</span>
+                  </>
                 )}
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="w-[90%] sm:w-auto">
               <AlertDialogHeader>
                 <AlertDialogTitle>
                   Guardar cambios
@@ -672,8 +677,8 @@ const EditarDireccionPage: React.FC = () => {
                   ¿Desea guardar los cambios en la dirección?
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
+                <AlertDialogCancel className="mt-0">Cancelar</AlertDialogCancel>
                 <AlertDialogAction onClick={handleConfirmSubmit}>
                   Confirmar
                 </AlertDialogAction>
