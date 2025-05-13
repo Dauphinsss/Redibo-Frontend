@@ -20,6 +20,7 @@ import { PaymentInfo } from "./payment-info";
 import { DriverInfo } from "./driver-info";
 import { RatingsInfo } from "./ratings-info";
 import { VehiclesInfo } from "./vehicles-info";
+import { ReservationsList } from "./orders-info"; // Importamos el nuevo componente
 import {
   CreditCard,
   User,
@@ -30,6 +31,7 @@ import {
   LogOut,
   Settings,
   HelpCircle,
+  Receipt, // Importamos icono para órdenes de pago
 } from "lucide-react";
 import { SteeringWheel } from "./steering-wheel-icon";
 import { Footer } from "@/components/ui/footer";
@@ -38,7 +40,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-type SectionType = "personal" | "payments" | "driver" | "ratings" | "vehicles";
+type SectionType = "personal" | "payments" | "driver" | "ratings" | "vehicles" | "orders";
 
 export default function ProfilePage() {
   const [activeSection, setActiveSection] = useState<SectionType>("personal");
@@ -75,6 +77,8 @@ export default function ProfilePage() {
         return <RatingsInfo />;
       case "vehicles":
         return <VehiclesInfo />;
+      case "orders":
+        return <ReservationsList />;
       default:
         return <PersonalInfo />;
     }
@@ -86,6 +90,7 @@ export default function ProfilePage() {
     driver: "Conductor",
     ratings: "Calificaciones",
     vehicles: "Vehículos",
+    orders: "Órdenes de Pago",
   };
 
   const menuItems = [
@@ -119,6 +124,13 @@ export default function ProfilePage() {
       title: "Vehículos",
       icon: Car,
       alwaysShow: true,
+    },
+    {
+      id: "orders",
+      title: "Órdenes de Pago",
+      icon: Receipt,
+      alwaysShow: false,
+      requiresRole: "RENTER",
     },
   ];
 
@@ -217,7 +229,7 @@ export default function ProfilePage() {
               <Button
                 variant="outline"
                 className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
-                onClick={handleLogout} // ← Aquí agregas el evento
+                onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Cerrar sesión

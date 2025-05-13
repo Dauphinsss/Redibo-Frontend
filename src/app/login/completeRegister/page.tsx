@@ -199,8 +199,14 @@ export default function CompleteRegisterForm() {
       console.log("🧪 Enviando al backend:", userData);
       console.log("🧪 Clave fecha_nacimiento:", userData.fechaNacimiento,);
   
-      // Enviar al backend (registro real)
-      const response = await axios.post(`${API_URL}/api/auth/complete-profile`, userData, {withCredentials:true});
+      const axiosConfig = {
+        // withCredentials: true, <-- Eliminar o establecer en false
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      };
+      // Modificación del código frontend para quitar withCredentials
+      const response = await axios.post(`${API_URL}/api/auth/complete-profile`, userData, axiosConfig);
       if (response.data.error) {
         toast.error(response.data.error);
         return;
