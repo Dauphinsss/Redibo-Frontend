@@ -59,9 +59,11 @@ function PopUpComentarios({
 const handleClick = () => {
   alert("Click en calificación");
 };
-const comentariosFiltrados = filtroCalificacion
+const comentariosFiltrados = filtroCalificacion !== null
   ? comentarios.filter((comentario) => comentario.Calificacion.calf_carro === filtroCalificacion)
   : comentarios;
+
+
 
   return (
     

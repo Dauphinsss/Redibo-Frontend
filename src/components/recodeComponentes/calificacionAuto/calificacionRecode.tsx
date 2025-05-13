@@ -2,7 +2,7 @@
 import React from "react";
 
 const CalificacionRecode = ({ calificaciones, numComentarios, comentariosConCalificacion ,onBarClick}:
-{ calificaciones: number[], numComentarios: number, comentariosConCalificacion: number[] ,onBarClick?: (index: number) => void}) => {
+{ calificaciones: number[], numComentarios: number, comentariosConCalificacion: number[] ,onBarClick?: (index: number|null) => void}) => {
     const total = calificaciones.length;
     const promedio = total ? Number((calificaciones.reduce((sum, val) => sum + val, 0) / total).toFixed(1)) : 0;
 
@@ -18,7 +18,9 @@ const CalificacionRecode = ({ calificaciones, numComentarios, comentariosConCali
             <div className="flex justify-between items-center">
                 <div className="text-center">
                     <h2 className="text-6xl">{total === 0 ? "0.0" : promedio.toFixed(1)}</h2>
-                    <p className="text-gray-600">{numComentarios === 0 ? "0 comentarios" : `${numComentarios} comentarios`}</p>
+                    
+                    <p className="text-gray-600 cursor-pointer" onClick={() => onBarClick?.(null)} >
+                       {numComentarios === 0 ? "0 opiniones" : `${numComentarios} opiniones`}</p>
                     <p className="text-gray-600">{total === 0 ? "0 calificaciones" : `${total} ${total === 1 ? "calificación" : "calificaciones"}`}</p>
 
                     <div className="flex justify-center space-x-1">
@@ -55,9 +57,8 @@ const CalificacionRecode = ({ calificaciones, numComentarios, comentariosConCali
                                     className="flex-1 h-4 bg-gray-300 rounded-lg overflow-hidden ml-2 relative"
                                     title={`${comentariosCount} ${comentariosCount === 1 ? "comentario" : "comentarios"}`}  
                                     onClick={() => {
-  console.log(`Se hizo clic en la barra de calificación ${5 - index}`);
-  onBarClick?.(5 - index);
-}}
+                                            onBarClick?.(5 - index);
+                                        }}
 
                                 >
                                     <div   
