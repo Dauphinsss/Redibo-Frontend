@@ -9,6 +9,9 @@ import {RawAuto_Interface_Recode as RawAuto} from "@/interface/RawAuto_Interface
 import { RawCondicionesUsoResponse } from "@/interface/RawCondicionesUsoVisuali_Interface_Recode";
 import { transformCondiciones_Recode } from "@/utils/transformCondicionesVisuali_Recode";
 import { AxiosError } from "axios";
+import { DetalleHost } from "@/interface/DetalleHost_Recode";
+import { RawHostDetails_Recode } from "@/interface/RawHostDetails_Recode";
+import { transformDetailsHost_Recode } from "@/utils/transformDetailsHost_Recode";
 
 export const getAllCars = async (): Promise<RawAuto[]> => {
     try {
@@ -85,15 +88,22 @@ export const getCarsByPriceDesc = async () => {
         throw error;
     }
 };
-export async function getCarRatings(idCar: string): Promise<number[]> {
+export async function getCarRatingsFromComments(idCar: string): Promise<number[]> {
     const response = await fetch(`https://search-car-backend.vercel.app/comments/${idCar}`);
     if (!response.ok) return [];
 
     const data = await response.json();
     
-    return data.map((comentario: { Calificacion: { calf_carro: number } }) => comentario.Calificacion.calf_carro);
+    return data.map((comentario: { Calificacion?: { calf_carro: number } }) => 
+        comentario.Calificacion?.calf_carro ?? 0 // Si no tiene calificación, asigna 0
+    );
 }
-
+export async function getCarRatingsFromAuto(id: string): Promise<number[]> {
+    const response = await fetch(`https://search-car-backend.vercel.app/detailCar/${id}`);
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.Calificacion.map((c: { calf_carro: number }) => c.calf_carro);
+};
 export const postCondicionesUso_Recode = async (payload: CondicionesUsoPayload_Recode): Promise<void> => {
     try {
         const response = await apiFormularioCondicionesUsoAuto.post("/insertCondition", payload);
@@ -164,3 +174,14 @@ export const getInsuranceByID = async <T = ValidarInterface>(id: string): Promis
     throw error;
   }
 };
+export const getDetalleHost_Recode = async (id_host: number) => {
+    try {
+        const response = await apiCarById.get<RawHostDetails_Recode>(`/detailHost/${id_host}`);
+        return transformDetailsHost_Recode(response.data);
+    } catch (error) {
+        console.error("Error al obtener condiciones visuales:", error);
+        return null;
+    }
+}; 
+
+
