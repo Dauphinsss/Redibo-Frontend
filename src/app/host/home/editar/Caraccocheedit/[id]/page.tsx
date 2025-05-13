@@ -302,9 +302,9 @@ const CaracteristicasPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="p-6 flex flex-col items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500 mb-4" />
-        <p className="text-lg">Cargando características...</p>
+      <div className="p-4 md:p-6 flex flex-col items-center justify-center min-h-screen">
+        <Loader2 className="h-6 w-6 md:h-8 md:w-8 animate-spin text-blue-500 mb-3 md:mb-4" />
+        <p className="text-base md:text-lg">Cargando características...</p>
       </div>
     );
   }
@@ -312,37 +312,37 @@ const CaracteristicasPage: React.FC = () => {
   // Función para mostrar mensaje de error si el campo ha sido tocado y tiene error
   const showErrorMessage = (fieldName: keyof ValidationErrors) => {
     return touchedFields[fieldName] && validationErrors[fieldName] ? (
-      <p className="text-red-500 text-sm mt-1">{validationErrors[fieldName]}</p>
+      <p className="text-red-500 text-xs md:text-sm mt-1">{validationErrors[fieldName]}</p>
     ) : null;
   };
 
   return (
-    <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
+    <div className="p-4 md:p-6 flex flex-col items-start min-h-screen bg-gray-100">
       <div className="w-full max-w-5xl">
-        <h1 className="text-4xl font-bold my-5 pl-7">Características del coche</h1>
+        <h1 className="text-2xl md:text-4xl font-bold my-3 md:my-5 pl-2 md:pl-7">Características del coche</h1>
       </div>
 
       {error && (
-        <div className="w-full max-w-5xl mb-4 pl-7">
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <div className="w-full max-w-5xl mb-3 md:mb-4 pl-2 md:pl-7">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 md:px-4 md:py-3 rounded text-sm md:text-base">
             {error}
           </div>
         </div>
       )}
 
       {successMessage && (
-        <div className="w-full max-w-5xl mb-4 pl-7">
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+        <div className="w-full max-w-5xl mb-3 md:mb-4 pl-2 md:pl-7">
+          <div className="bg-green-100 border border-green-400 text-green-700 px-3 py-2 md:px-4 md:py-3 rounded text-sm md:text-base">
             {successMessage}
           </div>
         </div>
       )}
 
-      <form onSubmit={handlePrepareSubmit} className="w-full max-w-5xl pl-7">
+      <form onSubmit={handlePrepareSubmit} className="w-full max-w-5xl pl-2 md:pl-7">
         {/* Combustible */}
-        <div className="mb-6">
-          <label className="text-lg font-semibold mb-2">Tipo de combustible*</label>
-          <div className="mt-2 space-y-2">
+        <div className="mb-4 md:mb-6">
+          <label className="text-base md:text-lg font-semibold mb-1 md:mb-2">Tipo de combustible*</label>
+          <div className="mt-1 md:mt-2 space-y-1 md:space-y-2">
             {COMBUSTIBLE_OPTIONS.map((item) => (
               <div key={item.id} className="flex items-center">
                 <Checkbox
@@ -350,7 +350,7 @@ const CaracteristicasPage: React.FC = () => {
                   checked={formData.combustibles.includes(item.id)}
                   onCheckedChange={() => handleCombustibleChange(item.id)}
                 />
-                <label htmlFor={item.id} className="ml-2">
+                <label htmlFor={item.id} className="ml-2 text-sm md:text-base">
                   {item.label}
                 </label>
               </div>
@@ -360,13 +360,13 @@ const CaracteristicasPage: React.FC = () => {
         </div>
 
         {/* Asientos */}
-        <div className="mb-6">
-          <label className="text-lg font-semibold mb-2">Asientos*</label>
+        <div className="mb-4 md:mb-6">
+          <label className="text-base md:text-lg font-semibold mb-1 md:mb-2">Asientos*</label>
           <Select
             value={formData.asientos}
             onValueChange={(value) => handleFieldChange("asientos", value)}
           >
-            <SelectTrigger className={`w-[600px] border-2 ${touchedFields.asientos && validationErrors.asientos ? 'border-red-500' : ''}`}>
+            <SelectTrigger className={`w-full md:w-[600px] border-2 ${touchedFields.asientos && validationErrors.asientos ? 'border-red-500' : ''}`}>
               <SelectValue>
                 {ASIENTOS_OPTIONS.find(opt => opt.value === formData.asientos)?.label || "Seleccione"}
               </SelectValue>
@@ -385,13 +385,13 @@ const CaracteristicasPage: React.FC = () => {
         </div>
 
         {/* Puertas */}
-        <div className="mb-6">
-          <label className="text-lg font-semibold mb-2">Puertas*</label>
+        <div className="mb-4 md:mb-6">
+          <label className="text-base md:text-lg font-semibold mb-1 md:mb-2">Puertas*</label>
           <Select
             value={formData.puertas}
             onValueChange={(value) => handleFieldChange("puertas", value)}
           >
-            <SelectTrigger className={`w-[600px] border-2 ${touchedFields.puertas && validationErrors.puertas ? 'border-red-500' : ''}`}>
+            <SelectTrigger className={`w-full md:w-[600px] border-2 ${touchedFields.puertas && validationErrors.puertas ? 'border-red-500' : ''}`}>
               <SelectValue>
                 {PUERTAS_OPTIONS.find(opt => opt.value === formData.puertas)?.label || "Seleccione"}
               </SelectValue>
@@ -410,13 +410,13 @@ const CaracteristicasPage: React.FC = () => {
         </div>
 
         {/* Transmisión */}
-        <div className="mb-6">
-          <label className="text-lg font-semibold mb-2">Transmisión*</label>
+        <div className="mb-4 md:mb-6">
+          <label className="text-base md:text-lg font-semibold mb-1 md:mb-2">Transmisión*</label>
           <Select
             value={formData.transmision}
             onValueChange={(value) => handleFieldChange("transmision", value)}
           >
-            <SelectTrigger className={`w-[600px] border-2 ${touchedFields.transmision && validationErrors.transmision ? 'border-red-500' : ''}`}>
+            <SelectTrigger className={`w-full md:w-[600px] border-2 ${touchedFields.transmision && validationErrors.transmision ? 'border-red-500' : ''}`}>
               <SelectValue>
                 {TRANSMISION_OPTIONS.find(opt => opt.value === formData.transmision)?.label || "Seleccione"}
               </SelectValue>
@@ -435,8 +435,8 @@ const CaracteristicasPage: React.FC = () => {
         </div>
 
         {/* SOAT */}
-        <div className="mb-6">
-          <label className="text-lg font-semibold mb-2">Seguro SOAT*</label>
+        <div className="mb-4 md:mb-6">
+          <label className="text-base md:text-lg font-semibold mb-1 md:mb-2">Seguro SOAT*</label>
           <div className="flex items-center">
             <Checkbox
               id="soat"
@@ -444,7 +444,7 @@ const CaracteristicasPage: React.FC = () => {
               onCheckedChange={(checked) => handleFieldChange("soat", checked as boolean)}
               className={touchedFields.soat && validationErrors.soat ? 'border-red-500' : ''}
             />
-            <label htmlFor="soat" className="ml-2">
+            <label htmlFor="soat" className="ml-2 text-sm md:text-base">
               SOAT 
             </label>
           </div>
@@ -452,12 +452,12 @@ const CaracteristicasPage: React.FC = () => {
         </div>
         
         {/* Botones con diálogo de confirmación */}
-        <div className="flex justify-between mt-10">
+        <div className="flex flex-col sm:flex-row justify-between items-center mt-6 md:mt-10 gap-4">
           <Button
             type="button"
             onClick={handleCancel}
             variant="secondary"
-            className="w-[160px] h-12 text-lg font-semibold transition-colors duration-200"
+            className="w-full sm:w-[160px] h-10 md:h-12 text-base md:text-lg font-semibold transition-colors duration-200"
             style={{ backgroundColor: "#D3D3D3" }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#E0E0E0")}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#D3D3D3")}
@@ -471,7 +471,7 @@ const CaracteristicasPage: React.FC = () => {
               <Button
                 type="submit"
                 variant="default"
-                className="h-12 text-lg font-semibold text-white px-6"
+                className="w-full sm:w-auto h-10 md:h-12 text-base md:text-lg font-semibold text-white px-4 md:px-6"
                 disabled={isSaving || Object.keys(validationErrors).length > 0}
               >
                 {isSaving ? (
@@ -484,7 +484,7 @@ const CaracteristicasPage: React.FC = () => {
                 )}
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="max-w-md mx-auto">
               <AlertDialogHeader>
                 <AlertDialogTitle>
                   Guardar cambios
@@ -493,8 +493,8 @@ const CaracteristicasPage: React.FC = () => {
                   ¿Desea guardar los cambios en las características del vehículo?
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0">
+                <AlertDialogCancel className="mt-2 sm:mt-0">Cancelar</AlertDialogCancel>
                 <AlertDialogAction onClick={handleConfirmSubmit}>
                   Confirmar
                 </AlertDialogAction>
