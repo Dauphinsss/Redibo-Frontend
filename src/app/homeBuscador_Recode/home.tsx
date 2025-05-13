@@ -13,6 +13,7 @@ import { ButtonPrecio } from '@/components/filtros/buttonPrecio';
 import { ButtonCalif } from '@/components/filtros/buttonCalif';
 import { ButtonViajes } from '@/components/filtros/buttonViajes';
 import { SlidersHorizontal } from 'lucide-react';// Icono de filtro
+import { ButtonLimpiar } from '@/components/filtros/buttonLimpiar';
 
 export default function Home() {
   const {
@@ -30,11 +31,16 @@ export default function Home() {
     filtrosCombustible,
     setFiltrosCombustible,
     filtrosCaracteristicas,
-    setFiltrosCaracteristicas, // Asegúrate de exponer esta función desde useAutos
+    setFiltrosCaracteristicas,
     filtrosTransmision, 
     setFiltrosTransmision,
     setFiltrosCaracteristicasAdicionales,
     filtrosCaracteristicasAdicionales,
+    cargandoFiltros,
+    aplicarFiltroPrecio,
+    aplicarFiltroViajes,
+    aplicarFiltroCalificacion,
+    limpiarFiltros
   } = useAutos();
 
   const [showMap, setShowMap] = useState(false);
@@ -95,9 +101,22 @@ export default function Home() {
 
                 {/* Filtros por botones */}
                 <div className="mb-6 flex flex-wrap gap-4">
-                  <ButtonPrecio onFilterChange={(min, max) => console.log('Filtro precio:', min, max)} />
-                  <ButtonCalif onFilterChange={(min) => console.log('Filtro calificación:', min)} />
-                  <ButtonViajes onFilterChange={(min) => console.log('Filtro viajes:', min)} />
+                  <ButtonPrecio 
+                    onFilterChange={aplicarFiltroPrecio} 
+                    disabled={cargandoFiltros}
+                  />
+                  <ButtonCalif 
+                    onFilterChange={aplicarFiltroCalificacion} 
+                    disabled={cargandoFiltros}
+                  />
+                  <ButtonViajes 
+                    onFilterChange={aplicarFiltroViajes} 
+                    disabled={cargandoFiltros}
+                  />
+                  <ButtonLimpiar 
+                    onLimpiar={limpiarFiltros}
+                    disabled={cargandoFiltros}
+                  />
                 </div>
 
                 <HeaderBusquedaRecode

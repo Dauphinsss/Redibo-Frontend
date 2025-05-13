@@ -12,8 +12,10 @@ import { useState } from "react";
 
 interface ButtonPrecioProps {
   onFilterChange: (min: number, max: number) => void;
+  disabled?: boolean;
 }
-export function ButtonPrecio({ onFilterChange }: ButtonPrecioProps) {
+
+export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
   const [minPrecio, setMinPrecio] = useState<string>("");
   const [maxPrecio, setMaxPrecio] = useState<string>("");
 
@@ -26,7 +28,7 @@ export function ButtonPrecio({ onFilterChange }: ButtonPrecioProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="w-[200px] justify-between">
+        <Button variant="outline" className="w-[200px] justify-between" disabled={disabled}>
           Filtro por Precio
           <span className="ml-2">↓</span>
         </Button>
@@ -49,6 +51,7 @@ export function ButtonPrecio({ onFilterChange }: ButtonPrecioProps) {
                   placeholder="0"
                   value={minPrecio}
                   onChange={(e) => setMinPrecio(e.target.value)}
+                  disabled={disabled}
                 />
               </div>
               <div className="grid gap-1.5">
@@ -59,10 +62,11 @@ export function ButtonPrecio({ onFilterChange }: ButtonPrecioProps) {
                   placeholder="∞"
                   value={maxPrecio}
                   onChange={(e) => setMaxPrecio(e.target.value)}
+                  disabled={disabled}
                 />
               </div>
             </div>
-            <Button onClick={handleApply} className="mt-2">
+            <Button onClick={handleApply} className="mt-2" disabled={disabled}>
               Aplicar Filtro
             </Button>
           </div>
