@@ -9,7 +9,8 @@ import {
   useCallback,
   useMemo
 } from "react";
-import { createFullCar, FullCarPayload } from "@/app/host/services/carService";
+import { createFullCar, CreateFullCarPayload } from "@/app/host/services/carService";
+import { uploadImage } from "@/app/host/services/imageService";
 
 interface DireccionData {
   id_provincia: number | null;
@@ -65,7 +66,7 @@ interface FormContextType {
   updateCaracteristicas(data: CaracteristicasData): void;
   updateCaracteristicasAdicionales(data: CaracteristicasAdicionalesData): void;
   updateFinalizacion(data: FinalizacionData): void;
-  submitForm(): Promise<void>;
+  submitForm(): Promise<{ success: boolean; error?: string }>;
   resetForm(): void;
 }
 
@@ -115,35 +116,17 @@ export function FormProvider({ children }: { children: ReactNode }) {
     const { direccion, datosPrincipales, caracteristicas, caracteristicasAdicionales, finalizacion } = formData;
     return (
       direccion.id_provincia !== null &&
-      direccion.calle.trim() !== "" &&
-      direccion.zona.trim() !== "" &&
       datosPrincipales.vim.trim() !== "" &&
-      datosPrincipales.año >= 1900 &&
-      datosPrincipales.marca.trim() !== "" &&
-      datosPrincipales.modelo.trim() !== "" &&
-      datosPrincipales.placa.trim() !== "" &&
       caracteristicas.combustibleIds.length > 0 &&
-      caracteristicas.asientos > 0 &&
-      caracteristicas.puertas > 0 &&
-      caracteristicasAdicionales.extraIds.length > 0 &&
-      finalizacion.imagenes.length >= 3 &&
-      finalizacion.precio_por_dia > 0 &&
-      finalizacion.estado.trim() !== ""
+      finalizacion.imagenes.length === 3 &&
+      finalizacion.precio_por_dia > 0
     );
   }, [formData]);
 
-  const toBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve((reader.result as string).split(",")[1]);
-      reader.onerror = err => reject(err);
-    });
-
-  const submitForm = useCallback(async () => {
+  const submitForm = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
     if (!validateForm()) {
       setSubmitError("Complete todos los campos obligatorios.");
-      return;
+      return { success: false, error: "Formulario incompleto" };
     }
     setIsSubmitting(true);
     setSubmitError(null);
@@ -156,9 +139,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
       finalizacion: { imagenes, num_mantenimientos, precio_por_dia, estado, descripcion }
     } = formData;
 
-    const imagesBase64 = await Promise.all(imagenes.map(toBase64));
-
-    const payload: FullCarPayload = {
+    const payload: CreateFullCarPayload = {
       id_provincia: id_provincia!,
       calle,
       zona,
@@ -178,23 +159,23 @@ export function FormProvider({ children }: { children: ReactNode }) {
       num_mantenimientos,
       estado,
       descripcion,
-      imagesBase64
     };
 
     try {
       const result = await createFullCar(payload);
-      if (result.success) {
-        setSubmitSuccess(true);
-        resetForm();
-      } else {
+      if (!result.success) {
         setSubmitError(result.message || "Error al crear el carro");
+        return { success: false, error: result.message };
       }
+      const carId = result.data.id;
+      await Promise.all(imagenes.map(file => uploadImage(carId, file)));
+      setSubmitSuccess(true);
+      resetForm();
+      return { success: true };
     } catch (err) {
-      if (err instanceof Error) {
-        setSubmitError(err.message || "Error desconocido");
-      } else {
-        setSubmitError("Error desconocido");
-      }
+      const msg = err instanceof Error ? err.message : "Error desconocido";
+      setSubmitError(msg);
+      return { success: false, error: msg };
     } finally {
       setIsSubmitting(false);
     }

@@ -8,6 +8,7 @@ import {
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogCancel,
@@ -129,6 +130,7 @@ const BotonesFormulario: React.FC<BotonesFormularioProps> = ({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
     </div>
   );
 };

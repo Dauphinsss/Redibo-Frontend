@@ -14,17 +14,26 @@ const CampoPrecio: React.FC<CampoPrecioProps> = ({
   error,
   setError,
 }) => {
-  // Validar precio
   const handlePrecioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    
+    // Prevenir entrada de valores negativos
+    if (value.startsWith('-')) {
+      return;
+    }
+    
     setPrecio(value);
     
     if (value === "") {
       setError("Este campo es obligatorio");
     } else {
       const numValue = parseFloat(value);
-      if (isNaN(numValue) || numValue < 1) {
-        setError("Debe ser un número mayor o igual a 1");
+      if (isNaN(numValue)) {
+        setError("Debe ser un número válido");
+      } else if (numValue <= 0) {
+        setError("El precio debe ser mayor a 0");
+      } else if (numValue > 5000) {
+        setError("El precio no puede ser mayor a 5000 Bs");
       } else {
         setError(null);
       }
@@ -40,8 +49,16 @@ const CampoPrecio: React.FC<CampoPrecioProps> = ({
         className={`w-full max-w-md ${error ? 'border-red-500' : ''}`}
         value={precio}
         onChange={handlePrecioChange}
-        min="1"
+        min="0.01"
+        max="5000"
+        step="0.01"
         required
+        onKeyDown={(e) => {
+          // Prevenir entrada del signo negativo
+          if (e.key === '-') {
+            e.preventDefault();
+          }
+        }}
       />
       {error && (
         <div className="text-red-500 text-sm mt-1">

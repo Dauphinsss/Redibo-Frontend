@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import { useFormContext } from "../../home/add/context/FormContext";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useFormContext } from "../../home/add/context/FormContext";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -13,7 +13,6 @@ import {
   AlertDialogFooter,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-
 const BotonSiguiente: React.FC = () => {
   const router = useRouter();
   const { formData } = useFormContext();
@@ -59,6 +58,8 @@ const BotonSiguiente: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      
     </>
   );
 };

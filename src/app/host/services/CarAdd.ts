@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = "https://redibo-backend-sprinteros1.onrender.com/api/sprinteros/Par_1/controlador/rutas";
+const API_URL = "http://localhost:4000/api/v1/sprinteros/Par_1/controlador/rutas";
 
 interface BackendFeature {
 id: number;

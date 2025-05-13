@@ -26,7 +26,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-const API_URL = "https://redibo-backend-sprinteros1.onrender.com/api";
+const API_URL = "http://localhost:4000/api/v1";
 
 interface CarFormData {
   brand: string;
@@ -281,38 +281,37 @@ export default function DatosPrincipales() {
 
   if (isLoading) {
     return (
-      <div className="p-6 flex items-center justify-center min-h-screen">
-        <p className="text-lg">Cargando datos del vehículo...</p>
+      <div className="p-4 md:p-6 flex items-center justify-center min-h-screen">
+        <p className="text-base md:text-lg">Cargando datos del vehículo...</p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 flex flex-col items-start min-h-screen bg-gray-100">
+    <div className="p-4 md:p-6 flex flex-col items-start min-h-screen bg-gray-100">
       <div className="w-full max-w-5xl flex justify-start">
-        <h1 className="text-4xl font-bold my-5 pl-7">Datos principales</h1>
+        <h1 className="text-2xl md:text-4xl font-bold my-3 md:my-5 pl-2 md:pl-7">Datos principales</h1>
       </div>
 
-      <span className="text-lg font-medium pl-9 mb-6">
+      <span className="text-base md:text-lg font-medium pl-2 md:pl-9 mb-4 md:mb-6">
         Actualice los datos principales del vehículo
       </span>
 
       {generalError && (
-        <div className="w-full max-w-5xl mb-6 pl-9">
+        <div className="w-full max-w-5xl mb-4 md:mb-6 pl-2 md:pl-9">
           <p className="text-red-500">{generalError}</p>
         </div>
       )}
 
-      <form onSubmit={handlePrepareSubmit} className="w-full max-w-5xl pl-13">
-
+      <form onSubmit={handlePrepareSubmit} className="w-full max-w-5xl pl-2 md:pl-13">
         {/* VIN */}
         <div className="w-full flex flex-col mt-4">
-          <label className="text-lg font-semibold mb-1">Número de VIN</label>
+          <label className="text-base md:text-lg font-semibold mb-1">Número de VIN</label>
           <Input
             type="text"
             value={formData.vin}
             onChange={(e) => handleChange("vin", e.target.value)}
-            className={`w-[600px] mt-2 border-2 rounded-md ${
+            className={`w-full md:w-[600px] mt-2 border-2 rounded-md ${
               fieldErrors.vin ? "border-red-500" : "border-black"
             }`}
             placeholder="Introducir Número VIN (EN MAYÚSCULAS)"
@@ -322,10 +321,10 @@ export default function DatosPrincipales() {
 
         {/* Año */}
         <div className="w-full flex flex-col mt-6">
-          <label className="text-lg font-semibold mb-1">Año del coche</label>
+          <label className="text-base md:text-lg font-semibold mb-1">Año del coche</label>
           <Select value={formData.year} onValueChange={(value) => handleChange("year", value)}>
             <SelectTrigger
-              className={`w-[600px] mt-2 border-2 rounded-md ${
+              className={`w-full md:w-[600px] mt-2 border-2 rounded-md ${
                 fieldErrors.year ? "border-red-500" : "border-black"
               }`}
             >
@@ -346,12 +345,12 @@ export default function DatosPrincipales() {
 
         {/* Marca */}
         <div className="w-full flex flex-col mt-6">
-          <label className="text-lg font-semibold mb-1">Marca</label>
+          <label className="text-base md:text-lg font-semibold mb-1">Marca</label>
           <Input
             type="text"
             value={formData.brand}
             onChange={(e) => handleChange("brand", e.target.value)}
-            className={`w-[600px] mt-2 border-2 rounded-md ${
+            className={`w-full md:w-[600px] mt-2 border-2 rounded-md ${
               fieldErrors.brand ? "border-red-500" : "border-black"
             }`}
             placeholder="Introducir Marca (EN MAYÚSCULAS)"
@@ -361,12 +360,12 @@ export default function DatosPrincipales() {
 
         {/* Modelo */}
         <div className="w-full flex flex-col mt-6">
-          <label className="text-lg font-semibold mb-1">Modelo</label>
+          <label className="text-base md:text-lg font-semibold mb-1">Modelo</label>
           <Input
             type="text"
             value={formData.model}
             onChange={(e) => handleChange("model", e.target.value)}
-            className={`w-[600px] mt-2 border-2 rounded-md ${
+            className={`w-full md:w-[600px] mt-2 border-2 rounded-md ${
               fieldErrors.model ? "border-red-500" : "border-black"
             }`}
             placeholder="Introducir Modelo (EN MAYÚSCULAS)"
@@ -376,12 +375,12 @@ export default function DatosPrincipales() {
 
         {/* Placa */}
         <div className="w-full flex flex-col mt-6">
-          <label className="text-lg font-semibold mb-1">Placa</label>
+          <label className="text-base md:text-lg font-semibold mb-1">Placa</label>
           <Input
             type="text"
             value={formData.plate}
             onChange={(e) => handleChange("plate", e.target.value)}
-            className={`w-[600px] mt-2 border-2 rounded-md ${
+            className={`w-full md:w-[600px] mt-2 border-2 rounded-md ${
               fieldErrors.plate ? "border-red-500" : "border-black"
             }`}
             placeholder="Introducir Placa (formato: 1234-ABC)"
@@ -390,31 +389,31 @@ export default function DatosPrincipales() {
         </div>
 
         {/* Botones */}
-        <div className="w-full flex justify-between items-center mt-10">
-            <Button
+        <div className="w-full flex flex-col sm:flex-row justify-between items-center mt-8 md:mt-10 gap-4">
+          <Button
             type="button"
             onClick={handleCancel}
             variant="secondary"
-            className="w-[160px] h-12 text-lg font-semibold transition-colors duration-200"
+            className="w-full sm:w-[160px] h-10 md:h-12 text-base md:text-lg font-semibold transition-colors duration-200"
             style={{ backgroundColor: "#D3D3D3" }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#E0E0E0")}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#D3D3D3")}
             disabled={isLoading || isSaving}
-            >
+          >
             CANCELAR
-            </Button>
+          </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
                 type="submit"
                 variant="default"
-                className="h-12 text-lg font-semibold text-white px-6"
+                className="w-full sm:w-auto h-10 md:h-12 text-base md:text-lg font-semibold text-white px-4 md:px-6"
                 disabled={isLoading || isSaving || !isFormValid}
               >
                 {isSaving ? "GUARDANDO..." : "FINALIZAR EDICIÓN Y GUARDAR"}
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="max-w-md mx-auto">
               <AlertDialogHeader>
                 <AlertDialogTitle>
                   Guardar cambios
@@ -423,8 +422,8 @@ export default function DatosPrincipales() {
                   ¿Desea guardar los cambios efectuados?
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0">
+                <AlertDialogCancel className="mt-2 sm:mt-0">Cancelar</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleConfirmSubmit}
                 >

@@ -32,7 +32,7 @@ export default function BotonesFormulario({
         <AlertDialogTrigger asChild>
           <Button
             variant="secondary"
-            className="w-full sm:w-60 h-14 text-lg font-semibold transition-transform duration-200 ease-in-out transform hover:scale-110 hover:bg-gray-200 hover:text-drab-300"
+            className="w-full sm:w-48 h-12 text-lg font-semibold transition-transform duration-200 ease-in-out transform hover:scale-110 hover:bg-gray-200 hover:text-drab-300"
           >
             CANCELAR
           </Button>
