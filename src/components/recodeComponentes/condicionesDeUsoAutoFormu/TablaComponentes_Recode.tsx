@@ -34,15 +34,6 @@ const TablaComponentes_Recode = forwardRef(
   ({ id_carro }: TablaComponentesProps, ref) => {
     const [activeTab, setActiveTab] = useState<Tab>("generales");
 
-    const [genCheckboxes, setGenCheckboxes] = useState<Record<string, boolean>>({
-      fumar: false,
-      mascota: false,
-      dev_mismo_conb: false,
-      uso_fuera_ciudad: false,
-      multa_conductor: false,
-      dev_mismo_lugar: false,
-      uso_comercial: false,
-    });
     const [genEdadRango, setGenEdadRango] = useState<[number, number]>([18, 70]);
     const [genKmMax, setGenKmMax] = useState<number>(0);
 
@@ -54,7 +45,19 @@ const TablaComponentes_Recode = forwardRef(
       { value: "Medio", label: "Medio" },
       { value: "Vacío", label: "Vacío" },
     ];
+    
     const [entCombustible, setEntCombustible] = useState<OptionString>(placeholder);
+    
+    const [genCheckboxes, setGenCheckboxes] = useState<Record<string, boolean>>({
+      fumar: false,
+      mascota: false,
+      dev_mismo_conb: false,
+      uso_fuera_ciudad: false,
+      multa_conductor: false,
+      dev_mismo_lugar: false,
+      uso_comercial: false,
+    });
+    
     const [entCheckboxes, setEntCheckboxes] = useState<Record<string, boolean>>({
       esterior_limpio: false,
       inter_limpio: false,
