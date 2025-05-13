@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { API_URL } from "@/utils/bakend";
@@ -28,8 +28,14 @@ const BANK_DETAILS = [
 ];
 
 type PaymentStep = "bank-selection" | "qr-generation" | "transaction-registration";
-
-export default function PaymentPage() {
+export default function PaymentPageWrapper() {
+  return (
+    <Suspense fallback={<div>Cargando datos de pago...</div>}>
+      <PaymentPage />
+    </Suspense>
+  );
+}
+function PaymentPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
@@ -45,15 +51,13 @@ export default function PaymentPage() {
   } | null>(null);
 
   useEffect(() => {
-    if (!code) {
-      console.error("No se encontró el código en la URL");
-      router.replace("/perfil");
-      return;
-    }
-
     const fetchOrderDetails = async () => {
+      if (!code) {
+        console.log("No se encontró el código en la URL");
+        router.replace("/perfil");
+        return;
+      }
       try {
-        console.log("Fetching order details for code:", code);
         const response = await axios.post(
           `${API_URL}/api/paymentOrderbyCode`,
           { codigo: code },
