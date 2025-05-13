@@ -5,12 +5,15 @@ import React, {
   forwardRef,
   useImperativeHandle,
   memo,
+  useRef,
+  useEffect,
 } from "react";
 
 import General_Recode from "./General_Recode";
 import Entrada_Recode from "./Entrega_Recode";
 import Devolucion_Recode from "./Devolucion_Recode";
 
+import ModalRecode from "./ModalRecode";
 import { postCondicionesUso_Recode } from "@/service/services_Recode";
 import { transformCondicionesUso_Recode } from "@/utils/transformCondicionesUsoFormu_Recode";
 import {
@@ -28,14 +31,25 @@ const tabs: { key: Tab; label: string }[] = [
 
 interface TablaComponentesProps {
   id_carro: number;
+  setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const TablaComponentes_Recode = forwardRef(
-  ({ id_carro }: TablaComponentesProps, ref) => {
+const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, TablaComponentesProps>(
+  ({ id_carro, setIsSubmitting }, ref) => {
     const [activeTab, setActiveTab] = useState<Tab>("generales");
+    const [modalSuccess, setModalSuccess] = useState(false);
+    const [modalError, setModalError] = useState(false);
+    const [mostrarAdvertencia, setMostrarAdvertencia] = useState(false);
 
-    const [genEdadRango, setGenEdadRango] = useState<[number, number]>([18, 70]);
-    const [genKmMax, setGenKmMax] = useState<number>(0);
+    // Ref para enfocar el dropdown
+    const dropdownRef = useRef<HTMLButtonElement | null>(null);
+
+    // Enfoca el input del dropdown al cerrar el modal de advertencia
+    useEffect(() => {
+      if (!mostrarAdvertencia && dropdownRef.current) {
+        dropdownRef.current.focus();
+      }
+    }, [mostrarAdvertencia]);
 
     type OptionString = { value: string; label: string };
     const placeholder: OptionString = { value: "", label: "Seleccionar estado" };
@@ -45,19 +59,9 @@ const TablaComponentes_Recode = forwardRef(
       { value: "Medio", label: "Medio" },
       { value: "Vacío", label: "Vacío" },
     ];
-    
+
     const [entCombustible, setEntCombustible] = useState<OptionString>(placeholder);
-    
-    const [genCheckboxes, setGenCheckboxes] = useState<Record<string, boolean>>({
-      fumar: false,
-      mascota: false,
-      dev_mismo_conb: false,
-      uso_fuera_ciudad: false,
-      multa_conductor: false,
-      dev_mismo_lugar: false,
-      uso_comercial: false,
-    });
-    
+
     const [entCheckboxes, setEntCheckboxes] = useState<Record<string, boolean>>({
       esterior_limpio: false,
       inter_limpio: false,
@@ -75,11 +79,26 @@ const TablaComponentes_Recode = forwardRef(
       combustible_igual: false,
     });
 
+    const [genCheckboxes, setGenCheckboxes] = useState<Record<string, boolean>>({
+      fumar: false,
+      mascota: false,
+      dev_mismo_conb: false,
+      uso_fuera_ciudad: false,
+      multa_conductor: false,
+      dev_mismo_lugar: false,
+      uso_comercial: false,
+    });
+
+    const [genEdadRango, setGenEdadRango] = useState<[number, number]>([18, 70]);
+    const [genKmMax, setGenKmMax] = useState<number>(0);
+
     const handleEnviar = async () => {
       if (!entCombustible.value || entCombustible.value === "") {
-        alert("Por favor, selecciona el estado del combustible.");
+        setMostrarAdvertencia(true);
         return;
       }
+
+      setIsSubmitting(true);
 
       const condiciones_generales: CondicionesGenerales_Recode = {
         edad_minima: genEdadRango[0],
@@ -119,14 +138,14 @@ const TablaComponentes_Recode = forwardRef(
         devolucion_auto
       );
 
-      console.log("📦 Payload final:", JSON.stringify(payload, null, 2));
-
       try {
         await postCondicionesUso_Recode(payload);
-        alert("Condiciones guardadas con éxito.");
+        setModalSuccess(true);
       } catch (error) {
         console.error("Error al guardar condiciones:", error);
-        alert("Error al guardar condiciones. Intenta de nuevo más tarde.");
+        setModalError(true);
+      } finally {
+        setIsSubmitting(false);
       }
     };
 
@@ -150,6 +169,7 @@ const TablaComponentes_Recode = forwardRef(
         case "entrega":
           return (
             <Entrada_Recode
+              ref={dropdownRef}
               opciones={estadosEntrega}
               valorCombustible={entCombustible}
               onChangeCombustible={setEntCombustible}
@@ -168,26 +188,53 @@ const TablaComponentes_Recode = forwardRef(
     };
 
     return (
-      <div className="w-full max-w-[760px] mx-auto border border-black rounded-[10px] overflow-hidden">
-        <div className="sticky top-0 z-10 bg-white">
-          <div className="flex">
-            {tabs.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`flex-1 text-sm font-medium py-2 border-r border-black last:border-r-0
-                  first:rounded-tl-[10px] last:rounded-tr-[10px]
-                  ${activeTab === tab.key ? "bg-black text-white" : "bg-white text-black"}`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-          <div className="h-[1px] bg-black" />
-        </div>
+      <>
+        <ModalRecode
+          isOpen={modalSuccess}
+          onClose={() => setModalSuccess(false)}
+          title="¡Guardado exitoso!"
+          description="Las condiciones fueron guardadas correctamente."
+          variant="success"
+          autoCloseAfter={3000}
+        />
 
-        <div className="bg-white p-4 min-h-[300px]">{renderTabContent()}</div>
-      </div>
+        <ModalRecode
+          isOpen={modalError}
+          onClose={() => setModalError(false)}
+          title="Error al guardar"
+          description="Ocurrió un problema al guardar. Intenta nuevamente."
+          variant="error"
+        />
+
+        <ModalRecode
+          isOpen={mostrarAdvertencia}
+          onClose={() => setMostrarAdvertencia(false)}
+          title="Información incompleta"
+          description="Debes seleccionar el estado del combustible antes de continuar."
+          variant="warning"
+        />
+
+        <div className="w-full max-w-[760px] mx-auto border border-black rounded-[10px] overflow-hidden">
+          <div className="sticky top-0 z-10 bg-white">
+            <div className="flex">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`flex-1 text-sm font-medium py-2 border-r border-black last:border-r-0
+                    first:rounded-tl-[10px] last:rounded-tr-[10px]
+                    ${activeTab === tab.key ? "bg-black text-white" : "bg-white text-black"}`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <div className="h-[1px] bg-black" />
+          </div>
+
+          <div className="bg-white p-4 min-h-[300px]">{renderTabContent()}</div>
+        </div>
+      </>
     );
   }
 );
