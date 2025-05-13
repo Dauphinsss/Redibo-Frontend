@@ -1,6 +1,6 @@
 "use client";
 
-import { useState , useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Menu, User, LogIn, UserPlus, LogOut, ChevronDown } from "lucide-react";
@@ -23,28 +23,52 @@ import {
 
 export default function Header() {
   const [user, setUser] = useState<{ nombre: string; foto: string } | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const nombre = localStorage.getItem("nombre");
     const foto = localStorage.getItem("foto");
+    const rolesStr = localStorage.getItem("roles");
+
     if (nombre && foto) {
       setUser({ nombre, foto });
+      
+      // Verificar si el usuario es administrador
+      if (rolesStr) {
+        try {
+          // Intentar parsear como JSON si es un array
+          const roles = rolesStr.includes("[") ? 
+            JSON.parse(rolesStr) : 
+            rolesStr.split(",").map(role => role.trim());
+          
+          setIsAdmin(roles.includes("ADMIN"));
+        } catch (e) {
+          // Si no se puede parsear como JSON, verificar si el string contiene "ADMIN"
+          setIsAdmin(rolesStr.includes("ADMIN"));
+        }
+      }
     } else {
       setUser(null);
+      setIsAdmin(false);
     }
   }, []);
 
   const handleLogout = () => {
     localStorage.clear();
     setUser(null);
+    setIsAdmin(false);
     router.push("/");
   };
 
+  // Función para determinar la ruta del perfil
+  const getProfileRoute = () => {
+    return isAdmin ? "/admin" : "/perfil";
+  };
 
   return (
     <header className="border-b">
-      <div className=" flex h-16 items-center justify-between px-4 md:px-6">
+      <div className="flex h-16 items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-2">
           <Link href="/" className="font-bold text-xl">
             REDIBO
@@ -78,7 +102,7 @@ export default function Header() {
                 <div className="mt-4 border-t pt-4">
                 {user ? (
                     <>
-                      <Link href="/perfil">
+                      <Link href={getProfileRoute()}>
                         <div className="flex items-center gap-2 mb-4 hover:bg-accent hover:text-accent-foreground rounded-md p-2 cursor-pointer">
                           <Avatar className="h-8 w-8">
                             {user.foto && user.foto !== "default.jpg" ? (
@@ -101,7 +125,6 @@ export default function Header() {
                     </>
                   ) : (
                     <>
-                      
                       <Link href="/login">
                         <Button
                           variant="default"
@@ -162,10 +185,10 @@ export default function Header() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <Link href="/perfil">
+                <Link href={getProfileRoute()}>
                     <DropdownMenuItem>
                       <User className="mr-2 h-4 w-4" />
-                      <span>Mi perfil</span>
+                      <span>Mi {isAdmin ? "Panel de Admin" : "Perfil"}</span>
                     </DropdownMenuItem>
                 </Link>
                 <DropdownMenuSeparator />
