@@ -1,92 +1,70 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import PerfilHost from "@/components/recodeComponentes/perfilHost/infoHost/perfilHost";
 import TarjetaCar from "@/components/recodeComponentes/perfilHost/tarjetasAutos/tarjetaAuto";
-import { notFound } from "next/navigation";
-import { DetalleHost } from "@/interface/DetalleHost_Recode";
+import { getDetalleHost_Recode } from "@/service/services_Recode";
+import { useParams } from "next/navigation";
 import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
-import { useRef } from "react";
+import { DetalleHost } from "@/interface/DetalleHost_Recode";
 
-export default async function Page({ params }: { params: Promise<{ id: number }> }) {
+export default function Page() {
+  const params = useParams();
+  const id = Number(params?.id);
+  const [host, setHost] = useState<DetalleHost | null>(null);
 
-  const { id } = await params;
-  const id_host = id;
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getDetalleHost_Recode(id);
+      setHost(data);
+    };
 
-  if (isNaN(id_host) || id_host <= 0) {
-    notFound();
+    if (id) fetchData();
+  }, [id]);
+
+  if (!host) return <p>Cargando...</p>;
+
+  function formatearFecha(fechaISO: string): string {
+    const fecha = new Date(fechaISO);
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const año = fecha.getFullYear();
+  return `${dia}/${mes}/${año}`;
   }
 
-  const response = await fetch(`https://search-car-backend.vercel.app/detailHost/${id_host}`, {
-    cache: 'no-store',
-  });
-
-  if (!response.ok) {
-    notFound();
-  }
-
-  const data: DetalleHost = await response.json();
-
-  return <HostPerfilConCarrusel data={data} />;
-}
-
-function HostPerfilConCarrusel({ data }: { data: DetalleHost }) {
-  const carruselRef = useRef<HTMLDivElement>(null);
-
-  const scroll = (direction: "left" | "right") => {
-    if (carruselRef.current) {
-      const amount = 300;
-      carruselRef.current.scrollBy({
-        left: direction === "left" ? -amount : amount,
-        behavior: "smooth",
-      });
-    }
-  };
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex flex-col md:flex-row gap-6 items-start">
         <PerfilHost
-          nombreHost={data.nombre}
-          fotoPerfil={data.foto}
-          fechaNacimiento={data.fecha_nacimiento}
-          generoHost={data.genero}
-          ciudadHost={data.Ciudad.nombre}
-          correoHost={data.correo}
-          telefono={data.telefono.toString()}
+          nombreHost={host.nombre}
+          fotoPerfil={host.foto}
+          fechaNacimiento={formatearFecha(host.fecha_nacimiento)}
+          generoHost={host.genero}
+          ciudadHost={host.nombreCiudad}
+          correoHost={host.correo}
+          telefono={host.telefono.toString()}
         />
       </div>
 
       <div className="mt-10 relative">
         <h2 className="text-lg font-semibold mb-4">Mis Autos:</h2>
 
-        <button
-          onClick={() => scroll("left")}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-1 shadow hover:bg-gray-200"
-        >
-          <HiArrowCircleLeft size={36} />
-        </button>
-
-        <div
-          ref={carruselRef}
-          className="flex overflow-x-auto gap-4 pb-4 px-10 scroll-smooth no-scrollbar"
-        >
-          {data.Carro.map((carro, index) => (
-            <div key={index} className="min-w-[250px] flex-shrink-0">
-              <TarjetaCar
-                fotoAuto={[]}
-                modeloAuto={carro.modelo}
-                marcaAuto={carro.marca}
-              />
-            </div>
-          ))}
-        </div>
-
-        <button
-          onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-1 shadow hover:bg-gray-200"
-        >
-          <HiArrowCircleRight size={36} />
-        </button>
+        {host.carro.length === 0 ? (
+          <p>No tiene autos registrados.</p>
+        ) : (
+          <div className="flex gap-4 overflow-x-auto">
+            {host.carro.map((carro, index) => (
+              <div key={index} className="min-w-[250px] flex-shrink-0">
+                <TarjetaCar
+                  fotoAuto={[]} 
+                  modeloAuto={carro.modelo}
+                  marcaAuto={carro.marca}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

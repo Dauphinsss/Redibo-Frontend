@@ -61,6 +61,14 @@ const comentariosFiltrados = filtroCalificacion !== null
 
 
 
+  function formatearFecha(fechaISO: string): string {
+    const fecha = new Date(fechaISO);
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const año = fecha.getFullYear();
+  return `${dia}/${mes}/${año}`;
+  }
+
   return (
     
     <div>
@@ -82,7 +90,7 @@ const comentariosFiltrados = filtroCalificacion !== null
             <div
               className="overflow-y-auto px-6 pb-6"
               style={{
-                maxHeight: "calc(120vh - 160px)", // Altura máxima ajustable parte 120vh
+                maxHeight: "calc(120vh - 160px)", // Altura máxima ajustable parte de 120vh
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
               }}
@@ -127,9 +135,11 @@ const comentariosFiltrados = filtroCalificacion !== null
                     key={comentario.id}
                     nombreCompleto={comentario.Usuario.nombre}
                     fotoUser={fotoUser}
-                    fechaComentario={comentario.comentado_en}
+                    fechaComentario={formatearFecha(comentario.comentado_en)}
                     comentario={comentario.contenido}
                     calificacionUsr={comentario.Calificacion.calf_carro}
+                    cantDontlikes={comentario.dont_likes}
+                    cantLikes={comentario.likes}
                   />
                 ))}
               </div>
