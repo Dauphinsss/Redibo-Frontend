@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "@/utils/bakend";
 import {
   Card,
   CardContent,
@@ -66,7 +67,7 @@ export function ReservationsList() {
         }
 
         // En producción, esta sería la llamada real a la API
-        const response = await axios.get("http://localhost:4000/api/list-paymentOrder", {
+        const response = await axios.get(`${API_URL}/api/list-paymentOrder`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -92,7 +93,7 @@ export function ReservationsList() {
         return;
       }
 
-      const response = await axios.post("http://localhost:4000/api/paymentOrderbyCode", 
+      const response = await axios.post(`${API_URL}/api/paymentOrderbyCode`, 
         { codigo: orderCode },  // Enviamos el código en el cuerpo
         {
           headers: {
