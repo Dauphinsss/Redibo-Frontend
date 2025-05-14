@@ -106,19 +106,22 @@ function PopUpComentarios({
                 {error && <p>{error}</p>}
                 {!cargando && comentariosFiltrados.length === 0 && <p>No hay comentarios disponibles.</p>}
 
-                {comentariosFiltrados.map((comentario) => (
-                  
-                  <VerComentario
-                    key={comentario.id}
-                    nombreCompleto={comentario.Usuario.nombre}
-                    fotoUser={fotoUser}
-                    fechaComentario={formatearFecha(comentario.comentado_en)}
-                    comentario={comentario.contenido}
-                    calificacionUsr={comentario.Calificacion.calf_carro}
-                    cantDontlikes={comentario.dont_likes}
-                    cantLikes={comentario.likes}
-                  />
+                {comentariosFiltrados
+                  //.filter((comentario) => comentario.Calificacion !== null)
+                  .map((comentario) => (
+                  <div key={comentario.id} className="p-2 ">
+                    <VerComentario
+                      nombreCompleto={comentario.Usuario.nombre}
+                      fotoUser={""}
+                      fechaComentario={formatearFecha(comentario.comentado_en)}
+                      comentario={comentario.contenido}
+                      calificacionUsr={comentario.Calificacion?.calf_carro ?? 0}
+                      cantDontlikes={comentario.dont_likes ?? 0}
+                      cantLikes={comentario.likes ?? 0}
+                    />
+                  </div>
                 ))}
+
               </div>
             </div>
           </div>
