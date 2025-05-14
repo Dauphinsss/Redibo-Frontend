@@ -19,7 +19,7 @@ function RecodeCarCard(props: Auto) {
 
   const handleValidarCobertura = async () => {
     
-      router.push(`/formularioCobertura_Recode?id=${idAuto}`);
+      router.push(`/formularioCobertura_Recode/${idAuto}`);
     
   };
 

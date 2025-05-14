@@ -1,16 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
 import FormularioCobertura from "@/components/recodeComponentes/cobertura/FormularioRecode";
 import TablaCoberturas from "@/components/recodeComponentes/cobertura/TablaRecode";
 import PopupCobertura from "@/components/recodeComponentes/cobertura/PopUpCobertura";
 import BotonValidar from "@/components/recodeComponentes/cobertura/BotonValidacion";
 import { CoberturaInterface } from "@/interface/CoberturaForm_Interface_Recode";
 
-export default function CoberturaRecodeClient() {
-  const params = useSearchParams();
-  const idCarro = parseInt(params.get("id") || "0", 10);
+interface CoberturaGet{
+  id: string;
+}
+
+export default function CoberturaRecodeClient({ id }: CoberturaGet) {
+
+  const idCarro = parseInt(id);
+  
 
   const [coberturas, setCoberturas] = useState<CoberturaInterface[]>([]);
   const [showPopup, setShowPopup] = useState(false);
@@ -50,7 +54,7 @@ export default function CoberturaRecodeClient() {
       <div className="border rounded shadow">
         <div className="bg-black text-white p-2 font-semibold">Cobertura de seguro</div>
         <div className="p-4 space-y-4">
-          <FormularioCobertura />
+          <FormularioCobertura id = {idCarro}/>
 
           <TablaCoberturas
             coberturas={coberturas}

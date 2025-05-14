@@ -1,29 +1,21 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { getInsuranceByID } from '@/service/services_Recode';
 import { ValidarInterface } from '@/interface/CoberturaForm_Interface_Recode';
 
-export default function FormularioCobertura() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get('idAuto');
-  console.log('ID del carro:', id);
+interface FormularioCoberturaProps {
+  id: number;
+}
 
+export default function FormularioCobertura({ id }: FormularioCoberturaProps) {
   const [datos, setDatos] = useState<ValidarInterface | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!id) return;
-
     async function fetchDatos() {
       try {
-        const numericId = Number(id);
-        if (isNaN(numericId)) {
-          throw new Error('El id_carro no es un número válido.');
-        }
-        const data = await getInsuranceByID<ValidarInterface>(numericId);
-        console.log('Datos del seguro:', data);
+        const data = await getInsuranceByID(String(id));
         setDatos(data);
       } catch (error) {
         console.error('Error al obtener datos del seguro:', error);
@@ -35,17 +27,9 @@ export default function FormularioCobertura() {
     fetchDatos();
   }, [id]);
 
-  if (!id) {
-    return <div className="p-4 text-gray-700">No se encontró el parámetro id_carro en la URL.</div>;
-  }
+  if (loading) return <div className="p-4">Cargando datos...</div>;
 
-  if (loading) {
-    return <div className="p-4">Cargando datos...</div>;
-  }
-
-  if (!datos) {
-    return <div className="p-4 text-gray-700">No se encontraron datos del seguro.</div>;
-  }
+  if (!datos) return <div className="p-4 text-red-500">No se encontraron datos del seguro.</div>;
 
   return (
     <div className="space-y-4 p-4 max-w-xl mx-auto">
@@ -64,7 +48,7 @@ export default function FormularioCobertura() {
           <label className="block text-sm font-medium mb-1">Inicio:</label>
           <input
             type="date"
-            value={datos.fechaInicio || ''}
+            value={datos.fechaInicio?.slice(0, 10) || ''}
             readOnly
             className="w-full p-2 border rounded"
           />
@@ -73,7 +57,7 @@ export default function FormularioCobertura() {
           <label className="block text-sm font-medium mb-1">Fin:</label>
           <input
             type="date"
-            value={datos.fechaFin || ''}
+            value={datos.fechaFin?.slice(0, 10) || ''}
             readOnly
             className="w-full p-2 border rounded"
           />
