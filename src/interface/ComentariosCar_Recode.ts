@@ -1,13 +1,21 @@
-export interface ComentariosCar{
+export interface ComentariosCar {
     id: number;
     contenido: string;
     comentado_en: string;
-    Calificacion:{
+    Calificacion: {
         calf_carro: number;
-    }
-    likes: number;
-    dont_likes: number;
-    Usuario:{
+    } | null; 
+    likes: number | null; 
+    dont_likes: number | null;  
+    Usuario: {
         nombre: string;
-    }; 
+    };
+    respuestas: {
+        id: number;
+        contenido: string;
+        comentado_en: string;
+        Usuario: {
+            nombre: string;
+        };
+    }[];
 }

@@ -33,7 +33,7 @@ export default function Autoimag({ imagenes, nombre }: AutoImagProps) {
       <h2 className="text-xl sm:text-2xl font-bold mb-4">{nombre}</h2>
 
       <div className="relative rounded-lg overflow-hidden aspect-video bg-white">
-        {tieneImagenes ? (
+        {tieneImagenes && imagenes[currentImageIndex]?.data ? (
           <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={currentImageIndex}
@@ -65,6 +65,7 @@ export default function Autoimag({ imagenes, nombre }: AutoImagProps) {
             <span className="text-gray-400">Imagen no disponible</span>
           </div>
         )}
+
 
         {/* Flechas */}
         {tieneImagenes && imagenes.length > 1 && (
