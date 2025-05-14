@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import GeneralVisual_Recode from "./GeneralVisual_Recode";
 import EntregaVisual_Recode from "./EntregaVisual_Recode";
 import DevolucionVisual_Recode from "./DevolucionVisual_Recode";
+import NotificacionEnvioExitoso_recode from "./Notificacion_envio_exitoso_Recode";
 
 import { getCondicionesUsoVisual_Recode } from "@/service/services_Recode";
 import { CondicionesUsoResponse } from "@/interface/CondicionesUsoVisual_interface_Recode";
@@ -25,6 +26,8 @@ export default function TablaCondicionesVisual_Recode({ id_carro }: TablaCondici
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [showNotification, setShowNotification] = useState(false);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -44,6 +47,18 @@ export default function TablaCondicionesVisual_Recode({ id_carro }: TablaCondici
     fetchData();
   }, [id_carro]);
 
+  const handleEnviarSolicitud = async () => {
+    try {
+      //const response = await enviarSolicitud(id_carro);//funcion a implementar para q envie el sms
+      
+      if(200 === 200){
+        setShowNotification(true);
+      }
+    } catch (error) {
+      console.log("error al enviar la solicitud:", error);
+    }
+  }
+
   const renderContent = () => {
     if (loading) return <p className="text-center py-4">Cargando condiciones...</p>;
     if (error) return <p className="text-center text-red-600 py-4">{error}</p>;
@@ -60,27 +75,41 @@ export default function TablaCondicionesVisual_Recode({ id_carro }: TablaCondici
   };
 
   return (
-    <div className="w-full max-w-[760px] mx-auto border border-black rounded-[10px] overflow-hidden">
-      {/* Tabs */}
-      <div className="sticky top-0 z-10 bg-white">
-        <div className="flex">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`flex-1 text-sm font-medium py-2 border-r border-black last:border-r-0
-                first:rounded-tl-[10px] last:rounded-tr-[10px]
-                ${activeTab === tab.key ? "bg-black text-white" : "bg-white text-black"}`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        <div className="h-[1px] bg-black" />
-      </div>
+    <>
+      {showNotification && (
+        <NotificacionEnvioExitoso_recode onClose={() => setShowNotification(false)} />
+      )}
+      <div className="w-full max-w-[760px] mx-auto border border-black rounded-[10px] overflow-hidden">
+        {/* Tabs */}
+        <div className="sticky top-0 z-10 bg-white">
+          <div className="flex">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`flex-1 text-sm font-medium py-2 border-r border-black last:border-r-0
+                  first:rounded-tl-[10px] last:rounded-tr-[1  0px]
+                  ${activeTab === tab.key ? "bg-black text-white" : "bg-white text-black"}`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <div className="h-[1px] bg-black" />
+        </div>  
 
-      {/* Contenido */}
-      <div className="bg-white p-4 min-h-[300px]">{renderContent()}</div>
-    </div>
+        {/* Contenido */}
+        <div className="bg-white p-4 min-h-[300px]">{renderContent()}</div>
+
+      </div>
+      <div className="p-4 text-center">
+        <button
+          onClick={handleEnviarSolicitud}
+          className="bg-black text-white py-2 px-4 rounded hover:bg-gray-800"
+        >
+          Enviar Solicitud
+        </button>
+      </div>
+    </>
   );
 }

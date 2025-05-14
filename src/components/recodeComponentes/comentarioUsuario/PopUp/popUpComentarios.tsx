@@ -5,10 +5,10 @@ import { HiOutlineX } from "react-icons/hi";
 import FotoPerfilUsrRecode from "../realizarComentario/fotoPerfilUsrRecode";
 import CalificacionRecode from "../../calificacionAuto/calificacionRecode";
 import Autoimag from "../../detailsCar/RecodeAutoimag";
-import FiltroGenerico from "../filtrosComentariosRecode.tsx/filtroGenerico";
 import VerComentario from "../verComentario/verComentarioRecode";
 
 import { useComentariosAuto } from "@/hooks/useComentario_hook_Recode";
+import RecodeFilter from "../../seccionOrdenarMasResultados/RecodeFilter";
 
 interface Props {
   idCar: string;
@@ -22,52 +22,30 @@ interface Props {
   imagenes: { id: number; data: string }[];
   nombreUser: string;
   fotoUser: string;
-  fechaComentario: string;
-  comentario: string;
-  calificacionUsr: number;
 }
 
 function PopUpComentarios({
-  idCar,
-  nombreCompleto,
-  fotoHost,
-  modeloAuto,
-  marcaAuto,
-  calificaciones,
-  numComentarios,
-  comentariosConCalificacion,
-  imagenes,
-  fotoUser,
-  fechaComentario,
-  comentario,
-  calificacionUsr,
-
-}: Props) {
+  idCar,nombreCompleto,fotoHost,modeloAuto,calificaciones,
+  numComentarios,comentariosConCalificacion,imagenes,fotoUser}: Props) {
+    
   const [popUpOpen, setPopUpOpen] = useState(false);
   const ordenar = ["Mejor Calificación", "Peor Calificación", "Más valorado", "Menos valorado"];
+  const [ordenSeleccionado, setOrdenSeleccionado] = useState("Mejor Calificación");
+
   
   const closePopup = () => setPopUpOpen(false);
   const openPopup = () => setPopUpOpen(true);
 
   const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
   useEffect(() => {
-}, [filtroCalificacion]);
+  }, [filtroCalificacion]);
 
-
-  const { comentarios, cargando, error } = useComentariosAuto(Number(idCar));
-const comentariosFiltrados = filtroCalificacion !== null
-  ? comentarios.filter((comentario) => comentario.Calificacion.calf_carro === filtroCalificacion)
-  : comentarios;
-
-
-
-  function formatearFecha(fechaISO: string): string {
-    const fecha = new Date(fechaISO);
-    const dia = String(fecha.getDate()).padStart(2, "0");
-    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
-    const año = fecha.getFullYear();
-  return `${dia}/${mes}/${año}`;
-  }
+  const { 
+    comentariosFiltrados, 
+    cargando, 
+    error, 
+    formatearFecha 
+  } = useComentariosAuto(Number(idCar), filtroCalificacion, ordenSeleccionado);
 
   return (
     
@@ -112,22 +90,21 @@ const comentariosFiltrados = filtroCalificacion !== null
 
               <div className="mb-4">
                 <CalificacionRecode  
-                 calificaciones={calificaciones}
-               numComentarios={numComentarios} 
-               comentariosConCalificacion={comentariosConCalificacion}
-               onBarClick={setFiltroCalificacion}
-               
-               />
+                  calificaciones={calificaciones}
+                  numComentarios={numComentarios} 
+                  comentariosConCalificacion={comentariosConCalificacion}
+                  onBarClick={setFiltroCalificacion}
+                />
               </div>
 
               <div className="mb-4">
-                <FiltroGenerico lista={ordenar} tipo={"Ordenar por:"} />
+                <RecodeFilter lista={ordenar} nombre={"Ordenar por:"} onChange={(valor) => setOrdenSeleccionado(valor)}/>
               </div>
 
               <div className="space-y-4">
                 {cargando && <p>Cargando comentarios...</p>}
                 {error && <p>{error}</p>}
-                {!cargando && comentarios.length === 0 && <p>No hay comentarios disponibles.</p>}
+                {!cargando && comentariosFiltrados.length === 0 && <p>No hay comentarios disponibles.</p>}
 
                 {comentariosFiltrados.map((comentario) => (
                   

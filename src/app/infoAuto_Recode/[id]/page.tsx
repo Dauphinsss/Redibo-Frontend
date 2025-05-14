@@ -10,6 +10,8 @@ import NotFound from '@/app/not-found'
 import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode'
 import CalificaionRecode from "@/components/recodeComponentes/calificacionAuto/calificacionRecode"
 import PopUpComentarios from '@/components/recodeComponentes/comentarioUsuario/PopUp/popUpComentarios'
+import VerComentario from '@/components/recodeComponentes/comentarioUsuario/verComentario/verComentarioRecode'
+import { useComentariosAuto } from '@/hooks/useComentario_hook_Recode';
 
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
@@ -19,12 +21,16 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   if (!autoData) NotFound();
 
   const auto = transformAutoDetails_Recode(autoData);
- const calificacionesAuto = await getCarRatingsFromAuto(id);
-const calificacionesComentarios = await getCarRatingsFromComments(id);
-const numComentarios = calificacionesComentarios.filter(c => c > 0).length; 
-const comentariosConCalificacion = calificacionesComentarios.filter(c => c > 0);
-const calificaciones = [...calificacionesAuto, ...calificacionesComentarios];
+  const calificacionesAuto = await getCarRatingsFromAuto(id);
+  const calificacionesComentarios = await getCarRatingsFromComments(id);
+  const numComentarios = calificacionesComentarios.filter(c => c > 0).length; 
+  const comentariosConCalificacion = calificacionesComentarios.filter(c => c > 0);
+  const calificaciones = [...calificacionesAuto, ...calificacionesComentarios];
 
+  {/*const { 
+      comentariosFiltrados, 
+      formatearFecha 
+    } = useComentariosAuto(Number(id));*/}
 
   return (
     <>
@@ -56,9 +62,6 @@ const calificaciones = [...calificacionesAuto, ...calificacionesComentarios];
               imagenes={auto.imagenes}
               nombreUser={""}
               fotoUser={""}
-              fechaComentario={""}
-              comentario={""}
-              calificacionUsr={0}
               />
             </div>
             
@@ -94,6 +97,20 @@ const calificaciones = [...calificacionesAuto, ...calificacionesComentarios];
               />
             </div>
           </div>
+          
+          {/*{comentariosFiltrados.map((comentario) => (
+            <VerComentario
+            key={comentario.id}
+            nombreCompleto={comentario.Usuario.nombre}
+            fotoUser={""}
+            fechaComentario={formatearFecha(comentario.comentado_en)}
+            comentario={comentario.contenido}
+            calificacionUsr={comentario.Calificacion.calf_carro}
+            cantDontlikes={comentario.dont_likes}
+            cantLikes={comentario.likes}
+            />
+          ))}*/}
+
         </div>
       </main>
     </>
