@@ -13,5 +13,10 @@ export interface RawHostDetails_Recode{
     Carro:{
         modelo: string;
         marca: string;
+        Imagen:{
+            id: number;
+            data: string;
+            id_carro: number;
+        }[];
     }[];
 }
