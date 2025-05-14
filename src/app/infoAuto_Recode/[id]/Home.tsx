@@ -31,10 +31,12 @@ export default function Home({ id }: HomeProps) {
   const [calificaciones, setCalificaciones] = useState<number[]>([]);
   const [numComentarios, setNumComentarios] = useState(0);
   const [comentariosConCalificacion, setComentariosConCalificacion] = useState<number[]>([]);
-  const { 
-          comentariosFiltrados, 
-          formatearFecha 
-        } = useComentariosAuto(Number(id));
+  const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
+
+  const {
+    comentariosFiltrados,
+    formatearFecha
+  } = useComentariosAuto(Number(id), filtroCalificacion);
 
   useEffect(() => {
     (async () => {
@@ -52,10 +54,6 @@ export default function Home({ id }: HomeProps) {
     })();
   }, [id]);
 
-  const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
-  useEffect(() => {
-  }, [filtroCalificacion]);
-  
   if (!loaded || !auto) return null;
 
   return (
@@ -109,22 +107,22 @@ export default function Home({ id }: HomeProps) {
                 onBarClick={setFiltroCalificacion}
               />
             </div>
-            <div className="mt-6 mb-4 space-y-4"></div>
-            {comentariosFiltrados.map((comentario) => (
-              <div key={comentario.id} className="p-3 ">
-                <VerComentario
-                  nombreCompleto={comentario.Usuario.nombre}
-                  fotoUser={""}
-                  fechaComentario={formatearFecha(comentario.comentado_en)}
-                  comentario={comentario.contenido}
-                  calificacionUsr={comentario.Calificacion?.calf_carro ?? 0}
-                  cantDontlikes={comentario.dont_likes ?? 0}
-                  cantLikes={comentario.likes ?? 0}
-                />
-              </div>
-            ))}
-          <div/>
 
+            <div className="mt-6 mb-4 space-y-4">
+              {comentariosFiltrados.map((comentario) => (
+                <div key={comentario.id} className="p-3">
+                  <VerComentario
+                    nombreCompleto={comentario.Usuario.nombre}
+                    fotoUser=""
+                    fechaComentario={formatearFecha(comentario.comentado_en)}
+                    comentario={comentario.contenido}
+                    calificacionUsr={comentario.Calificacion?.calf_carro ?? 0}
+                    cantDontlikes={comentario.dont_likes ?? 0}
+                    cantLikes={comentario.likes ?? 0}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="lg:w-1/3">
