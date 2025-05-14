@@ -16,7 +16,7 @@ interface Props {
   fotoHost: string;
   modeloAuto: string;
   marcaAuto: string;
- calificaciones: number[];
+  calificaciones: number[];
   numComentarios: number;
   comentariosConCalificacion: number[];
   imagenes: { id: number; data: string }[];
@@ -107,7 +107,7 @@ function PopUpComentarios({
                 {!cargando && comentariosFiltrados.length === 0 && <p>No hay comentarios disponibles.</p>}
 
                 {comentariosFiltrados
-                  //.filter((comentario) => comentario.Calificacion !== null)
+                  //.filter((comentario) => comentario.Calificacion !== null)         para filtrar comentarios sin calificacion
                   .map((comentario) => (
                   <div key={comentario.id} className="p-2 ">
                     <VerComentario

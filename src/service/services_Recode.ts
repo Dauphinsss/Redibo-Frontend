@@ -8,7 +8,7 @@ import { ValidarInterface } from "@/interface/CoberturaForm_Interface_Recode";
 import {RawAuto_Interface_Recode as RawAuto} from "@/interface/RawAuto_Interface_Recode"
 import { RawCondicionesUsoResponse } from "@/interface/RawCondicionesUsoVisuali_Interface_Recode";
 import { transformCondiciones_Recode } from "@/utils/transformCondicionesVisuali_Recode";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { RawHostDetails_Recode } from "@/interface/RawHostDetails_Recode";
 import { transformDetailsHost_Recode } from "@/utils/transformDetailsHost_Recode";
 
@@ -26,11 +26,19 @@ export const getCarById = async (id: string) => {
     try {
         const response = await apiCarById.get(`/detailCar/${id}`);
         return response.data;
-    } catch (error) {
-        console.error(`Error al obtener el auto con ID ${id}:`, error);
+    } catch (error: unknown) {
+        // Si el error es 404 (auto no existe), devolvemos null
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+            console.warn(`Auto con ID ${id} no encontrado.`);
+            return null;
+        }
+
+        // Si es otro tipo de error, lo lanzamos para que lo maneje error.tsx
+        console.error(`Error inesperado al obtener el auto con ID ${id}:`, error);
         throw error;
     }
 };
+
 
 export const getCarsByModelDesc = async () => {
     try {

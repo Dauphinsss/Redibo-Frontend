@@ -1,34 +1,20 @@
-import { getCarById , getCarRatingsFromComments,getCarRatingsFromAuto} from '@/service/services_Recode'
-import NotFound from '@/app/not-found'
-import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode'
 import { notFound } from 'next/navigation';
-import Home from '@/app/infoAuto_Recode/[id]/Home';
+import Home from './Home';
+import { getCarById } from '@/service/services_Recode';
 
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const autoData = await getCarById(id);
-  
-  if (!autoData) NotFound();
+export default async function Page({ params }: { params: { id: string } }) {
+  const { id } = params;
 
-  const auto = transformAutoDetails_Recode(autoData);
-  const calificacionesAuto = await getCarRatingsFromAuto(id);
-  const calificacionesComentarios = await getCarRatingsFromComments(id);
-  const numComentarios = calificacionesComentarios.filter(c => c > 0).length; 
-  const comentariosConCalificacion = calificacionesComentarios.filter(c => c > 0);
-  const calificaciones = [...calificacionesAuto, ...calificacionesComentarios];
+  try {
+    const data = await getCarById(id);
 
-   const mostrarpagina = true;
-  if(!mostrarpagina) {
-    return notFound();
+    // Si el auto no existe, mostrar página 404
+    if (!data) return notFound();
+
+    // Si todo está bien, renderiza el componente Home con el ID
+    return <Home id={id} />;
+  } catch (error) {
+    console.error(`Error inesperado al cargar auto con ID ${id}:`, error);
+    throw error; // Activa automáticamente error.tsx
   }
-  
-    return (
-      <Home
-        id={id}
-        auto={auto} 
-        calificaciones={calificaciones}
-        numComentarios={numComentarios}
-        comentariosConCalificacion={comentariosConCalificacion}
-      />
-    );
 }
