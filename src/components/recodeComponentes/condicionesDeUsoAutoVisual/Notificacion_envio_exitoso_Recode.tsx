@@ -7,8 +7,8 @@ interface NotificacionEnvioExitosoProps {
 
 export default function NotificacionEnvioExitoso_recode({ onClose }: NotificacionEnvioExitosoProps) {
   return (
-    <div className="fixed inset-0 z-50 bg-black/20 pointer-events-none">
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 shadow-lg rounded-lg p-4 max-w-md w-full z-50 pointer-events-auto text-center">
+    <div className="fixed inset-0 z-50 bg-black/20 flex items-center justify-center pointer-events-none">
+      <div className="bg-white border border-gray-300 shadow-lg rounded-lg p-4 max-w-md w-full z-50 pointer-events-auto text-center mx-4">
         <div className="flex items-center justify-center mb-2">
           <FiBell className="text-black text-2xl mr-2" />
           <h2 className="text-black font-bold text-lg">Solicitud enviada con éxito</h2>
@@ -18,7 +18,7 @@ export default function NotificacionEnvioExitoso_recode({ onClose }: Notificacio
         </p>
         <button
           onClick={onClose}
-          className="bg-black text-white py-2 px-4 rounded hover:bg-gray-800"
+          className="bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition-colors"
         >
           Aceptar
         </button>

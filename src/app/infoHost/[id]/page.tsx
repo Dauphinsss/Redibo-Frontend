@@ -5,7 +5,7 @@ import PerfilHost from "@/components/recodeComponentes/perfilHost/infoHost/perfi
 import TarjetaCar from "@/components/recodeComponentes/perfilHost/tarjetasAutos/tarjetaAuto";
 import { getDetalleHost_Recode } from "@/service/services_Recode";
 import { useParams } from "next/navigation";
-import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
+//import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
 import { DetalleHost } from "@/interface/DetalleHost_Recode";
 
 export default function Page() {

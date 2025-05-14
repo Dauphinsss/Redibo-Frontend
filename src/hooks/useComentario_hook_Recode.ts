@@ -11,24 +11,18 @@ export function useComentariosAuto(
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-  const obtenerComentarios = async () => {
-    try {
-      setCargando(true);
-      const respuesta = await fetch(`https://search-car-backend.vercel.app/comments/${idCar}`);
-      const data = await respuesta.json();
-
-      const comentariosValidados = data.filter((comentario: any) =>
-        comentario.Calificacion && comentario.Calificacion.calf_carro !== undefined
-      );
-
-      setComentarios(comentariosValidados); 
-    } catch (err) {
-      setError("Error al cargar los comentarios");
-    } finally {
-      setCargando(false);
-    }
-  };
-
+    const obtenerComentarios = async () => {
+      try {
+        setCargando(true);
+        const respuesta = await fetch(`https://search-car-backend.vercel.app/comments/${idCar}`);
+        const data = await respuesta.json();
+        setComentarios(data);
+      } catch {
+        setError("Error al cargar los comentarios");
+      } finally {
+        setCargando(false);
+      }
+    };
 
     obtenerComentarios();
   }, [idCar]);
