@@ -26,7 +26,7 @@ export default function Page() {
 
   function formatearFecha(fechaISO: string): string {
     const fecha = new Date(fechaISO);
-    const dia = String(fecha.getDate()).padStart(2, "0");
+    const dia = String(fecha.getDate()+1).padStart(2, "0");
     const mes = String(fecha.getMonth() + 1).padStart(2, "0");
     const año = fecha.getFullYear();
   return `${dia}/${mes}/${año}`;
@@ -38,7 +38,7 @@ export default function Page() {
       <div className="flex flex-col md:flex-row gap-6 items-start">
         <PerfilHost
           nombreHost={host.nombre}
-          fotoPerfil={host.foto}
+          fotoPerfil={""}
           fechaNacimiento={formatearFecha(host.fecha_nacimiento)}
           generoHost={host.genero}
           ciudadHost={host.nombreCiudad}
