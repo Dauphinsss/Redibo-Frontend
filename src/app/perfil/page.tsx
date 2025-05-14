@@ -248,7 +248,7 @@ export default function ProfilePage() {
                 </h2>
                 </div>
 
-              <main className="flex-1  w-full sm:p-10">
+              <main className="flex-1  w-full mt-8 sm:p-10">
                 <ProfileHeader />
 
                 <div className="  p-4 md:p-6 lg:p-8">

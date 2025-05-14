@@ -52,23 +52,22 @@ export function RatingsInfo() {
   }
   return (
     <div className="p-4">
-  
       <div className="flex flex-col items-center space-y-6">
         {/* Fila superior: Propietario y Arrendatario */}
-        <div className="flex justify-center gap-10">
+        <div className="flex flex-col sm:flex-row justify-center gap-6 sm:gap-10 w-full">
           {showCalificarPropietario && (
             <div
-              className="w-64 h-40 bg-black text-white hover:bg-gray-900 rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
+              className="w-full sm:w-64 h-40 bg-black text-white hover:bg-gray-900 rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out mb-4 sm:mb-0"
               onClick={() => router.push("/calificaciones/calificacionesAlHost")}
             >
               <Star className="mx-auto mb-3 h-10 w-10" />
               <p className="text-lg font-semibold">Calificar Propietario</p>
             </div>
           )}
-  
+
           {showCalificarArrendatario && (
             <div
-              className="w-64 h-40 bg-black text-white hover:bg-gray-900 text-white rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
+              className="w-full sm:w-64 h-40 bg-black text-white hover:bg-gray-900 rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
               onClick={() => router.push("/calificaciones/calificacionesAlRenter")}
             >
               <Star className="mx-auto mb-3 h-10 w-10" />
@@ -76,11 +75,11 @@ export function RatingsInfo() {
             </div>
           )}
         </div>
-  
+
         {/* Fila inferior: Vehículo */}
         {showCalificarVehiculo && (
           <div
-            className="w-64 h-40 bg-black text-white hover:bg-gray-900 text-white rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
+            className="w-full sm:w-64 h-40 bg-black text-white hover:bg-gray-900 rounded-xl p-6 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
             onClick={() => router.push("/calificaciones/calificacionesAlVehiculo")}
           >
             <Star className="mx-auto mb-3 h-10 w-10" />
@@ -90,5 +89,4 @@ export function RatingsInfo() {
       </div>
     </div>
   )
-  
 }

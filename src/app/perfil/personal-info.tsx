@@ -93,22 +93,22 @@ export function PersonalInfo() {
           </div>
 
           <div className="grid col-span-2 md:col-span-1 gap-2">
-            <Label htmlFor="telefono">Número de Teléfono</Label>
+            <Label htmlFor="telefono" className="text-base">Número de Teléfono</Label>
             <a className="text-base">{userData?.telefono}</a>
           </div>
 
           <div className="grid col-span-2 md:col-span-1 gap-2">
-            <Label htmlFor="fecha_nacimiento">Fecha de Nacimiento</Label>
+            <Label htmlFor="fecha_nacimiento" className="text-base">Fecha de Nacimiento</Label>
             <a className="text-base">{formatDateToDDMMYYYY(userData?.fecha_nacimiento || "")}</a>
           </div>
 
           <div className="grid col-span-2 md:col-span-1 gap-2">
-            <Label htmlFor="genero">Género</Label>
+            <Label htmlFor="genero" className="text-base">Género</Label>
             <a className="text-base">{userData?.genero}</a>
           </div>
 
           <div className="grid col-span-2 md:col-span-1 gap-2">
-            <Label htmlFor="ciudad">Ciudad</Label>
+            <Label htmlFor="ciudad" className="text-base">Ciudad</Label>
             <a className="text-base">{userData?.ciudad.nombre}</a>
           </div>
         </div>
