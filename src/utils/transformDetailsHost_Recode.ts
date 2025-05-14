@@ -13,5 +13,5 @@ export const transformDetailsHost_Recode = (
     correo: item.correo,
     telefono: item.telefono,
     foto: item.foto,
-    carro: item.Carro?.map(({ modelo, marca }) => ({ modelo, marca })) || [],
+    carro: item.Carro?.map(({ modelo, marca,Imagen }) => ({ modelo, marca,Imagen })) || [],
 });

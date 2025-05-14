@@ -18,6 +18,8 @@ import DescripcionAuto from '@/components/recodeComponentes/detailsCar/RecodeDes
 import Reserva from '@/components/recodeComponentes/detailsCar/RecodeReserva';
 import CalificaionRecode from '@/components/recodeComponentes/calificacionAuto/calificacionRecode';
 import PopUpComentarios from '@/components/recodeComponentes/comentarioUsuario/PopUp/popUpComentarios';
+import { useComentariosAuto } from '@/hooks/useComentario_hook_Recode';
+import VerComentario from '@/components/recodeComponentes/comentarioUsuario/verComentario/verComentarioRecode';
 
 interface HomeProps {
   id: string;
@@ -29,6 +31,10 @@ export default function Home({ id }: HomeProps) {
   const [calificaciones, setCalificaciones] = useState<number[]>([]);
   const [numComentarios, setNumComentarios] = useState(0);
   const [comentariosConCalificacion, setComentariosConCalificacion] = useState<number[]>([]);
+  const { 
+          comentariosFiltrados, 
+          formatearFecha 
+        } = useComentariosAuto(Number(id));
 
   useEffect(() => {
     (async () => {
@@ -98,6 +104,22 @@ export default function Home({ id }: HomeProps) {
                 comentariosConCalificacion={comentariosConCalificacion}
               />
             </div>
+            <div className="mt-6 mb-4 space-y-4"></div>
+            {comentariosFiltrados.map((comentario) => (
+              <div key={comentario.id} className="p-3 ">
+                <VerComentario
+                  nombreCompleto={comentario.Usuario.nombre}
+                  fotoUser={""}
+                  fechaComentario={formatearFecha(comentario.comentado_en)}
+                  comentario={comentario.contenido}
+                  calificacionUsr={comentario.Calificacion?.calf_carro ?? 0}
+                  cantDontlikes={comentario.dont_likes ?? 0}
+                  cantLikes={comentario.likes ?? 0}
+                />
+              </div>
+            ))}
+          <div/>
+
           </div>
 
           <div className="lg:w-1/3">
