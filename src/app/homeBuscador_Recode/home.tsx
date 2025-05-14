@@ -36,22 +36,23 @@ export default function Home() {
 
   return (
     <div className="relative">
-      
-      <div className="sticky top-0 z-50 bg-white shadow">
-        <Header />
+      {/* Sticky Header + SearchBar visibles siempre */}
+      <div className="sticky top-0 z-50 bg-white shadow overflow-visible relative">
+        <div className="border-b px-4 sm:px-6 lg:px-8 py-7">
+          <Header />
+        </div>
+        <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center">
+          <div className="w-full max-w-2xl">
+            <SearchBar
+              placeholder="Buscar por modelo, marca"
+              onFiltrar={filtrarAutos}
+              obtenerSugerencia={obtenerSugerencia}
+            />
+          </div>
+        </div>
       </div>
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        {/* Buscador */}
-        <section className="mb-8 flex flex-col items-center text-center">
-          <SearchBar
-            placeholder="Buscar por modelo, marca"
-            onFiltrar={filtrarAutos}
-            obtenerSugerencia={obtenerSugerencia}
-          />
-          {/* <div className="mt-6">RecodeCarousel aquí (opcional)</div> */}
-        </section>
-
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         {/* Contenido principal */}
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Columna izquierda: lista */}
@@ -106,8 +107,10 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="w-full h-full">
-              <ViewMap posix={[4.79029, -75.69003]} />
+            <div className="hidden lg:flex lg:w-1/3">
+              <div className="w-full h-[calc(100vh-6rem)] sticky top-[6rem] bg-gray-100 rounded shadow-inner">
+                <ViewMap posix={[4.79029, -75.69003]} />
+              </div>
             </div>
           </div>
         </div>
