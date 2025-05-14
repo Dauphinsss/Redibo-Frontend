@@ -131,6 +131,7 @@ export function useAutos(cantidadPorLote = 8) {
       return busqueda + diferencia;
     };    
     
+    
 
     return {
         autos,

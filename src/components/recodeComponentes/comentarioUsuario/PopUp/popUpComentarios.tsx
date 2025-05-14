@@ -22,27 +22,12 @@ interface Props {
   imagenes: { id: number; data: string }[];
   nombreUser: string;
   fotoUser: string;
-  fechaComentario: string;
-  comentario: string;
-  calificacionUsr: number;
 }
 
 function PopUpComentarios({
-  idCar,
-  nombreCompleto,
-  fotoHost,
-  modeloAuto,
-  marcaAuto,
-  calificaciones,
-  numComentarios,
-  comentariosConCalificacion,
-  imagenes,
-  fotoUser,
-  fechaComentario,
-  comentario,
-  calificacionUsr,
-
-}: Props) {
+  idCar,nombreCompleto,fotoHost,modeloAuto,calificaciones,
+  numComentarios,comentariosConCalificacion,imagenes,fotoUser}: Props) {
+    
   const [popUpOpen, setPopUpOpen] = useState(false);
   const ordenar = ["Mejor Calificación", "Peor Calificación", "Más valorado", "Menos valorado"];
   const [ordenSeleccionado, setOrdenSeleccionado] = useState("Mejor Calificación");
@@ -55,42 +40,12 @@ function PopUpComentarios({
   useEffect(() => {
   }, [filtroCalificacion]);
 
-  const { comentarios, cargando, error } = useComentariosAuto(Number(idCar));
-
-  function formatearFecha(fechaISO: string): string {
-    const fecha = new Date(fechaISO);
-    const dia = String(fecha.getDate()).padStart(2, "0");
-    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
-    const año = fecha.getFullYear();
-    return `${dia}/${mes}/${año}`;
-  }
-
-  const comentariosFiltrados = [...comentarios]
-  .filter((comentario) =>
-    filtroCalificacion !== null
-      ? comentario.Calificacion.calf_carro === filtroCalificacion
-      : true
-  )
-  .sort((a, b) => {
-    const calA = a.Calificacion.calf_carro;
-    const calB = b.Calificacion.calf_carro;
-
-    const likesA = a.likes ?? 0;
-    const likesB = b.likes ?? 0;
-
-    switch (ordenSeleccionado) {
-      case "Mejor Calificación":
-        return calB - calA;
-      case "Peor Calificación":
-        return calA - calB;
-      case "Más valorado":
-        return likesB - likesA;
-      case "Menos valorado":
-        return likesA - likesB;
-      default:
-        return 0;
-    }
-  });
+  const { 
+    comentariosFiltrados, 
+    cargando, 
+    error, 
+    formatearFecha 
+  } = useComentariosAuto(Number(idCar), filtroCalificacion, ordenSeleccionado);
 
   return (
     
@@ -149,7 +104,7 @@ function PopUpComentarios({
               <div className="space-y-4">
                 {cargando && <p>Cargando comentarios...</p>}
                 {error && <p>{error}</p>}
-                {!cargando && comentarios.length === 0 && <p>No hay comentarios disponibles.</p>}
+                {!cargando && comentariosFiltrados.length === 0 && <p>No hay comentarios disponibles.</p>}
 
                 {comentariosFiltrados.map((comentario) => (
                   
