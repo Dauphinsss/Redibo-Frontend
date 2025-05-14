@@ -36,8 +36,8 @@ export default function Home() {
 
   return (
     <div className="relative">
-      {/* Sticky Header + SearchBar visibles siempre */}
-      <div className="sticky top-0 z-50 bg-white shadow overflow-visible relative">
+
+      <div className="sticky top-0 z-50 bg-white shadow overflow-visible">
         <div className="border-b px-4 sm:px-6 lg:px-8 py-7">
           <Header />
         </div>
