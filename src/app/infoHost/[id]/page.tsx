@@ -6,7 +6,7 @@ import TarjetaCar from "@/components/recodeComponentes/perfilHost/tarjetasAutos/
 import { getDetalleHost_Recode } from "@/service/services_Recode";
 import { useParams } from "next/navigation";
 //import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
-import { DetalleHost } from "@/interface/DetalleHost_Recode";
+import { DetalleHost_Recode as DetalleHost } from "@/interface/DetalleHost_Recode";
 
 export default function Page() {
   const params = useParams();
@@ -39,9 +39,9 @@ export default function Page() {
         <PerfilHost
           nombreHost={host.nombre}
           fotoPerfil={""}
-          fechaNacimiento={formatearFecha(host.fecha_nacimiento)}
+          fechaNacimiento={formatearFecha(host.edad)}
           generoHost={host.genero}
-          ciudadHost={host.nombreCiudad}
+          ciudadHost={host.ciudad}
           correoHost={host.correo}
           telefono={host.telefono.toString()}
         />
@@ -50,16 +50,16 @@ export default function Page() {
       <div className="mt-10 relative">
         <h2 className="text-lg font-semibold mb-4">Mis Autos:</h2>
 
-        {host.carro.length === 0 ? (
+        {host.autos.length === 0 ? (
           <p>No tiene autos registrados.</p>
         ) : (
           <div className="flex gap-4 overflow-x-auto">
-            {host.carro.map((carro, index) => (
+            {host.autos.map((auto, index) => (
               <div key={index} className="min-w-[250px] flex-shrink-0">
                 <TarjetaCar
-                  fotoAuto={[]} 
-                  modeloAuto={carro.modelo}
-                  marcaAuto={carro.marca}
+                  fotoAuto={auto.imagen} 
+                  modeloAuto={auto.modelo}
+                  marcaAuto={auto.marca}
                 />
               </div>
             ))}

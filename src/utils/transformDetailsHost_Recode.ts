@@ -6,7 +6,7 @@ export function transformDetailsHost_Recode(data: RawHostDetails_Recode): Detall
     return {
         id: data.id,
         nombre: data.nombre,
-        edad: differenceInYears(new Date(), new Date(data.fecha_nacimiento)),
+        edad: data.fecha_nacimiento,
         genero: data.genero,
         ciudad: data.Ciudad?.nombre || 'No definida',
         correo: data.correo,
