@@ -3,7 +3,7 @@ import { GiCarDoor } from "react-icons/gi";
 import { IoPeople } from "react-icons/io5";
 import { TbManualGearboxFilled } from "react-icons/tb";
 import { useCars } from '@/api/queries/useCars'
-const CarsByLocation = ({ latitude, longitude }: any) => {  
+const CarsByLocation = ({ latitude, longitude, radius}: any) => {  
   const { data: content = []} = useCars();
   const haversineDistance = (lat1: any, lon1: any, lat2: any, lon2: any) => {
     const R = 6371; // Radio de la tierra en kilometros
@@ -17,12 +17,12 @@ const CarsByLocation = ({ latitude, longitude }: any) => {
     const distance = Math.round(((R * c) + Number.EPSILON) * 100) / 100;
     return distance;
   };  
-  let count = 0;
+  let count = 0;  
   return (<div>
   <ul className="max-w-4xl divide-y divide-gray-200 dark:divide-gray-700">
     {content.map((item, i:number) => {
       const distance =  haversineDistance(latitude, longitude, item.latitud, item.longitud);      
-      if(distance <15){
+      if(distance < radius){
         count++;
         return(
       <li key={i} className="pb-3 sm:pb-4">
@@ -52,8 +52,8 @@ const CarsByLocation = ({ latitude, longitude }: any) => {
       }       
     }        
     )}    
-  </ul>  
-  {count == 0 ?<p>No hay vehiculos cercanos</p>:<p></p>}  
+  </ul>   
+  {(count == 0 ) && <p>No hay vehiculos cercanos</p>}
   </div>    
   );  
 };
