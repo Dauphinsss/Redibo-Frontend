@@ -51,7 +51,7 @@ export default function TablaCondicionesVisual_Recode({ id_carro }: TablaCondici
     try {
       //const response = await enviarSolicitud(id_carro);//funcion a implementar para q envie el sms
       
-      if(200 === 200){
+      if(201 === 201){
         setShowNotification(true);
       }
     } catch (error) {
