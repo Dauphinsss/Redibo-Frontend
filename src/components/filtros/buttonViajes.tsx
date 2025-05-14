@@ -17,6 +17,7 @@ interface ButtonViajesProps {
 
 export function ButtonViajes({ onFilterChange, disabled }: ButtonViajesProps) {
   const [minViajes, setMinViajes] = useState<string>("");
+  const [open, setOpen] = useState(false);
 
   const handleApply = () => {
     // Si minViajes es vacío, pasa 0 (sin filtro)
@@ -24,9 +25,13 @@ export function ButtonViajes({ onFilterChange, disabled }: ButtonViajesProps) {
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="w-[200px] justify-between" disabled={disabled}>
+        <Button
+          variant={open ? "secondary" : "outline"}
+          className={`w-[200px] justify-between ${open ? "bg-gray-100 hover:bg-gray-200 ring-2 ring-gray-300" : ""}`}
+          disabled={disabled}
+        >
           Filtro por Viajes
           <span className="ml-2">↓</span>
         </Button>

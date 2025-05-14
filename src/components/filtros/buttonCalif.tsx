@@ -17,15 +17,20 @@ interface ButtonCalifProps {
 
 export function ButtonCalif({ onFilterChange, disabled }: ButtonCalifProps) {
   const [calificacion, setCalificacion] = useState<string>("");
+  const [open, setOpen] = useState(false);
 
   const handleApply = () => {
     onFilterChange(parseFloat(calificacion));
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="w-[200px] justify-between" disabled={disabled}>
+        <Button
+          variant={open ? "secondary" : "outline"}
+          className={`w-[200px] justify-between ${open ? "bg-gray-100 hover:bg-gray-200 ring-2 ring-gray-300" : ""}`}
+          disabled={disabled}
+        >
           Filtro por Calificación
           <span className="ml-2">↓</span>
         </Button>

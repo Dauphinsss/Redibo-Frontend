@@ -25,6 +25,7 @@ export function useAutos(cantidadPorLote = 8) {
     const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
     const [cargandoFiltros, setCargandoFiltros] = useState(false);
     const [autosAntesFiltroViajes, setAutosAntesFiltroViajes] = useState<Auto[]>([]);
+    const [autosAntesFiltroPrecio, setAutosAntesFiltroPrecio] = useState<Auto[]>([]);
 
     const fetchAutos = async () => {
         try {
@@ -204,6 +205,18 @@ export function useAutos(cantidadPorLote = 8) {
             console.log('Aplicando filtro de precio:', { min, max });
             console.log('Autos antes del filtro:', autosFiltrados.length);
             
+            // Guardar el estado actual si es la primera vez que se aplica el filtro
+            if (!filtroPrecio) {
+                setAutosAntesFiltroPrecio(autosFiltrados);
+            }
+
+            // Si min y max son 0 e Infinity respectivamente, restaurar el estado anterior
+            if (min === 0 && max === Infinity) {
+                setAutosFiltrados(autosAntesFiltroPrecio);
+                setFiltroPrecio(null);
+                return;
+            }
+            
             const ids = autosFiltrados.map(a => parseInt(a.idAuto, 10));
             const datos = await filtrosAPI.filtrarPorPrecio({ 
                 minPrecio: min, 
@@ -216,15 +229,19 @@ export function useAutos(cantidadPorLote = 8) {
                 idsFiltrados.includes(parseInt(a.idAuto, 10))
             );
             
+            // Ordenar por precio de menor a mayor
+            nuevosFiltrados.sort((a, b) => a.precioPorDia - b.precioPorDia);
+            
             console.log('Autos después del filtro:', nuevosFiltrados.length);
             setAutosFiltrados(nuevosFiltrados);
             setFiltroPrecio({ min, max });
+            setOrdenSeleccionado('Precio bajo a alto');
         } catch (error) {
             console.error('Error al aplicar filtro de precio:', error);
         } finally {
             setCargandoFiltros(false);
         }
-    }, [autosFiltrados]);
+    }, [autosFiltrados, filtroPrecio, autosAntesFiltroPrecio]);
 
     const limpiarFiltros = useCallback(() => {
         setAutosFiltrados(autosBase);
