@@ -17,7 +17,7 @@ export function useComentariosAuto(
         const respuesta = await fetch(`https://search-car-backend.vercel.app/comments/${idCar}`);
         const data = await respuesta.json();
         setComentarios(data);
-      } catch (err) {
+      } catch {
         setError("Error al cargar los comentarios");
       } finally {
         setCargando(false);
