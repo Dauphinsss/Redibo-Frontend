@@ -10,8 +10,8 @@ import NotFound from '@/app/not-found'
 import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode'
 import CalificaionRecode from "@/components/recodeComponentes/calificacionAuto/calificacionRecode"
 import PopUpComentarios from '@/components/recodeComponentes/comentarioUsuario/PopUp/popUpComentarios'
-import VerComentario from '@/components/recodeComponentes/comentarioUsuario/verComentario/verComentarioRecode'
-import { useComentariosAuto } from '@/hooks/useComentario_hook_Recode';
+//import VerComentario from '@/components/recodeComponentes/comentarioUsuario/verComentario/verComentarioRecode'
+//import { useComentariosAuto } from '@/hooks/useComentario_hook_Recode';
 
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
