@@ -1,3 +1,4 @@
+"use client";
 import RecodeHeader from '@/components/recodeComponentes/detailsCar/RecodeHeader'
 import Autoimag from '@/components/recodeComponentes/detailsCar/RecodeAutoimag'
 import InfoPrincipal from '@/components/recodeComponentes/detailsCar/RecodeInfoPrincipal'
@@ -8,6 +9,8 @@ import Reserva from '@/components/recodeComponentes/detailsCar/RecodeReserva'
 import CalificaionRecode from "@/components/recodeComponentes/calificacionAuto/calificacionRecode"
 import PopUpComentarios from '@/components/recodeComponentes/comentarioUsuario/PopUp/popUpComentarios'
 import { AutoDetails_interface_Recode } from '@/interface/AutoDetails_interface_Recode'
+import { useComentariosAuto } from '@/hooks/useComentario_hook_Recode'
+import VerComentario from '@/components/recodeComponentes/comentarioUsuario/verComentario/verComentarioRecode'
 
 interface HomeProps {
   id: string;
@@ -20,10 +23,11 @@ interface HomeProps {
 
 export default function Home({ id, auto, calificaciones, numComentarios, comentariosConCalificacion }: HomeProps) {
     
-    {/*const { 
+    const { 
           comentariosFiltrados, 
           formatearFecha 
-        } = useComentariosAuto(Number(id));*/}
+        } = useComentariosAuto(Number(id));
+        
     return (
     <>
       <RecodeHeader />
@@ -73,6 +77,22 @@ export default function Home({ id, auto, calificaciones, numComentarios, comenta
               />
             </div >
 
+            <div className="mt-6 mb-4 space-y-4"></div>
+            {comentariosFiltrados.map((comentario) => (
+              <div key={comentario.id} className="p-3 ">
+                <VerComentario
+                  nombreCompleto={comentario.Usuario.nombre}
+                  fotoUser={""}
+                  fechaComentario={formatearFecha(comentario.comentado_en)}
+                  comentario={comentario.contenido}
+                  calificacionUsr={comentario.Calificacion?.calf_carro ?? 0}
+                  cantDontlikes={comentario.dont_likes ?? 0}
+                  cantLikes={comentario.likes ?? 0}
+                 />
+              </div>
+            ))}
+          <div/>
+
           </div>
           
           <div className="lg:w-1/3">
@@ -89,20 +109,6 @@ export default function Home({ id, auto, calificaciones, numComentarios, comenta
               />
             </div>
           </div>
-          
-          {/*{comentariosFiltrados.map((comentario) => (
-            <VerComentario
-            key={comentario.id}
-            nombreCompleto={comentario.Usuario.nombre}
-            fotoUser={""}
-            fechaComentario={formatearFecha(comentario.comentado_en)}
-            comentario={comentario.contenido}
-            calificacionUsr={comentario.Calificacion.calf_carro}
-            cantDontlikes={comentario.dont_likes}
-            cantLikes={comentario.likes}
-            />
-          ))}*/}
-
         </div>
       </main>
     </>
