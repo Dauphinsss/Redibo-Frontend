@@ -16,7 +16,7 @@ interface Props {
   fotoHost: string;
   modeloAuto: string;
   marcaAuto: string;
- calificaciones: number[];
+  calificaciones: number[];
   numComentarios: number;
   comentariosConCalificacion: number[];
   imagenes: { id: number; data: string }[];

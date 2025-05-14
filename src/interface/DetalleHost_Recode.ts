@@ -1,19 +1,15 @@
-export interface DetalleHost{
+export interface DetalleHost_Recode {
     id: number;
     nombre: string;
-    fecha_nacimiento: string;
+    edad: number;
     genero: string;
-    nombreCiudad: string;
+    ciudad: string;
     correo: string;
-    telefono: number;
-    foto: string;
-    carro:{
+    telefono: string;
+    foto: string | "Sin imagen";
+    autos: {
         modelo: string;
         marca: string;
-        Imagen:{
-            id: number;
-            data: string;
-            id_carro: number;
-        }[];
+        imagen: string | "Sin imagen"; 
     }[];
 }
