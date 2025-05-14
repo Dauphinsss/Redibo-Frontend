@@ -7,7 +7,7 @@ import { ValidarInterface } from '@/interface/CoberturaForm_Interface_Recode';
 
 export default function FormularioCobertura() {
   const searchParams = useSearchParams();
-  const id = searchParams.get('id_carro');
+  const id = searchParams.get('idAuto');
   console.log('ID del carro:', id);
 
   const [datos, setDatos] = useState<ValidarInterface | null>(null);
@@ -18,7 +18,11 @@ export default function FormularioCobertura() {
 
     async function fetchDatos() {
       try {
-        const data = await getInsuranceByID<ValidarInterface>(id as string);
+        const numericId = Number(id);
+        if (isNaN(numericId)) {
+          throw new Error('El id_carro no es un número válido.');
+        }
+        const data = await getInsuranceByID<ValidarInterface>(numericId);
         console.log('Datos del seguro:', data);
         setDatos(data);
       } catch (error) {
