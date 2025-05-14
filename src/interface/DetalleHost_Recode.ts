@@ -1,7 +1,7 @@
 export interface DetalleHost_Recode {
     id: number;
     nombre: string;
-    edad: number;
+    edad: string;
     genero: string;
     ciudad: string;
     correo: string;
