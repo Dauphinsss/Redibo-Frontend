@@ -54,12 +54,12 @@ export default function Page() {
           <p>No tiene autos registrados.</p>
         ) : (
           <div className="flex gap-4 overflow-x-auto">
-            {host.autos.map((autos, index) => (
+            {host.autos.map((auto, index) => (
               <div key={index} className="min-w-[250px] flex-shrink-0">
                 <TarjetaCar
-                  fotoAuto={autos.imagen} 
-                  modeloAuto={autos.modelo}
-                  marcaAuto={autos.marca}
+                  fotoAuto={auto.imagen} 
+                  modeloAuto={auto.modelo}
+                  marcaAuto={auto.marca}
                 />
               </div>
             ))}

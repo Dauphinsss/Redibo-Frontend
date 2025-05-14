@@ -52,6 +52,10 @@ export default function Home({ id }: HomeProps) {
     })();
   }, [id]);
 
+  const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
+  useEffect(() => {
+  }, [filtroCalificacion]);
+  
   if (!loaded || !auto) return null;
 
   return (
@@ -102,6 +106,7 @@ export default function Home({ id }: HomeProps) {
                 calificaciones={calificaciones}
                 numComentarios={numComentarios}
                 comentariosConCalificacion={comentariosConCalificacion}
+                onBarClick={setFiltroCalificacion}
               />
             </div>
             <div className="mt-6 mb-4 space-y-4"></div>
