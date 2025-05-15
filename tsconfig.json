@@ -28,6 +28,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "types"
-  ],
+, ".next/types/app/infoAuto_Recode/[id]/page.tsx"  ],
   "exclude": ["node_modules"]
 }

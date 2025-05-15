@@ -78,7 +78,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         setBusqueda(guardada);
         onFiltrar(guardada);
       }
-    }, []);
+    }, [onFiltrar]);
 
   //Agregado para el historial
   const handleFocus = () => {

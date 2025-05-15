@@ -26,7 +26,7 @@ interface Props {
 
 function PopUpComentarios({
   idCar,nombreCompleto,fotoHost,modeloAuto,calificaciones,
-  numComentarios,comentariosConCalificacion,imagenes,fotoUser}: Props) {
+  numComentarios,comentariosConCalificacion,imagenes}: Props) {
     
   const [popUpOpen, setPopUpOpen] = useState(false);
   const ordenar = ["Mejor Calificación", "Peor Calificación", "Más valorado", "Menos valorado"];
