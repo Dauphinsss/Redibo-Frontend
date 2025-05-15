@@ -1,47 +1,30 @@
 'use client';
 
-import { ValidarInterface } from '@/interface/CoberturaForm_Interface_Recode';
+import { ValidarInterface } from "@/interface/CoberturaForm_Interface_Recode";
 
-interface FormularioCoberturaProps {
-  initialData: ValidarInterface;
+interface Props {
+  initialDataFor: ValidarInterface;
 }
 
-export default function FormularioCobertura({ initialData }: FormularioCoberturaProps) {
-  if (!initialData) {
-    return <div className="p-4 text-red-500">No se encontraron datos del seguro.</div>;
-  }
-
+export default function FormularioCobertura({ initialDataFor }: Props) {
   return (
     <div className="space-y-4 p-4 max-w-xl mx-auto">
-      <div>
-        <label className="block text-sm font-medium mb-1">Aseguradora:</label>
-        <input
-          type="text"
-          value={initialData.Seguro?.empresa || ''}
-          readOnly
-          className="w-full p-2 border rounded"
-        />
-      </div>
+      <h2 className="text-lg font-bold mb-2">Formulario de Cobertura</h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Inicio:</label>
-          <input
-            type="date"
-            value={initialData.fechaInicio?.slice(0, 10) || ''}
-            readOnly
-            className="w-full p-2 border rounded"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Fin:</label>
-          <input
-            type="date"
-            value={initialData.fechaFin?.slice(0, 10) || ''}
-            readOnly
-            className="w-full p-2 border rounded"
-          />
-        </div>
+      <p>
+        ID del carro: <strong>{initialDataFor.id_carro}</strong>
+      </p>
+
+      <div className="space-y-2">
+        <p>
+          <strong>Empresa:</strong> {initialDataFor.Seguro.empresa}
+        </p>
+        <p>
+          <strong>Fecha inicio:</strong> {initialDataFor.fecha_inicio}
+        </p>
+        <p>
+          <strong>Fecha fin:</strong> {initialDataFor.fecha_fin}
+        </p>
       </div>
     </div>
   );

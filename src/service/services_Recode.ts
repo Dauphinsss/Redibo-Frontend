@@ -1,15 +1,15 @@
 import {apiAllCards,apiCarById, apiCobertura, apiFormularioCondicionesUsoAuto} from "@/api/apis_Recode";
 import { CondicionesUsoPayload_Recode } from "@/interface/CondicionesUsoFormu_interface_Recode";
 import { CondicionesUsoResponse } from "@/interface/CondicionesUsoVisual_interface_Recode";
-import { CoberturaInterface } from "@/interface/CoberturaForm_Interface_Recode";
+import { CoberturaInterface, SeguroRawRecode, ValidarInterface } from "@/interface/CoberturaForm_Interface_Recode";
 import { EnlaceInterface } from "@/interface/CoberturaForm_Interface_Recode";
-
 import {RawAuto_Interface_Recode as RawAuto} from "@/interface/RawAuto_Interface_Recode"
 import { RawCondicionesUsoResponse } from "@/interface/RawCondicionesUsoVisuali_Interface_Recode";
 import { transformCondiciones_Recode } from "@/utils/transformCondicionesVisuali_Recode";
 import axios, { AxiosError } from "axios";
 import { RawHostDetails_Recode } from "@/interface/RawHostDetails_Recode";
 import { transformDetailsHost_Recode } from "@/utils/transformDetailsHost_Recode";
+import { transformSeguroTodo_Recode } from "@/utils/transforSeguro_Recode";
 
 export const getAllCars = async (): Promise<RawAuto[]> => {
     try {
@@ -155,39 +155,44 @@ export const postCobertura = async (payload: CoberturaInterface): Promise<void> 
 };
 
 export const postCoberturaEnlace = async (payload: EnlaceInterface): Promise<void> => {
-  try {
-    const response = await apiCobertura.post("/insertedInsurance", payload);
-    console.log("Enviado el enlace de imagen:", response.data);
-  } catch (error) {
-    const axiosError = error as AxiosError;
+    try {
+        const response = await apiCobertura.post("/insertedInsurance", payload);
+        console.log("Enviado el enlace de imagen:", response.data);
+    } catch (error) {
+        const axiosError = error as AxiosError;
 
-    console.error("Error al enviar el enlace:");
-    console.error("Mensaje:", axiosError.message);
-    console.error("Código:", axiosError.code);
-    console.error("Status:", axiosError.response?.status);
-    console.error("Data:", axiosError.response?.data);
+        console.error("Error al enviar el enlace:");
+        console.error("Mensaje:", axiosError.message);
+        console.error("Código:", axiosError.code);
+        console.error("Status:", axiosError.response?.status);
+        console.error("Data:", axiosError.response?.data);
 
-    throw new Error("No se pudo guardar el enlace. Intenta de nuevo más tarde.");
-  }
+        throw new Error("No se pudo guardar el enlace. Intenta de nuevo más tarde.");
+    }
 };
 
-export const getInsuranceByID = async (id_carro: string)=> {
-  
-  try {
-        const response = await apiCobertura.get(`/insurance/${id_carro}`);
-        return response.data;
+export const getInsuranceByID = async (id_carro: string): Promise<ValidarInterface | null> => {
+    try {
+        const response = await apiCobertura.get<SeguroRawRecode[]>(`/insurance/${id_carro}`);
+
+        // Validar que sea array no vacío
+        if (!Array.isArray(response.data) || response.data.length === 0) {
+            console.warn(`No se encontró seguro para el ID ${id_carro}`);
+            return null;
+        }
+
+        return transformSeguroTodo_Recode(response.data);
     } catch (error: unknown) {
-        // Si el error es 404 (auto no existe), devolvemos null
         if (axios.isAxiosError(error) && error.response?.status === 404) {
             console.warn(`Auto con ID ${id_carro} no encontrado.`);
             return null;
         }
 
-        // Si es otro tipo de error, lo lanzamos para que lo maneje error.tsx
         console.error(`Error inesperado al obtener el auto con ID ${id_carro}:`, error);
         throw error;
     }
 };
+
 export const getDetalleHost_Recode = async (id_host: number) => {
     try {
         const response = await apiCarById.get<RawHostDetails_Recode>(`/detailHost/${id_host}`);
@@ -197,5 +202,3 @@ export const getDetalleHost_Recode = async (id_host: number) => {
         return null;
     }
 }; 
-
-
