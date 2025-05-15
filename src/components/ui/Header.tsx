@@ -104,18 +104,18 @@ export default function Header({
                   Buscar
                 </Link>
                 <Link
-                  href="/acerca"
+                  href="/condicionUsoAuto"
                   className={getLinkClassName("text-sm font-medium")}
                   {...linkDisabledAttrs}
                 >
-                  Acerca de
+                  CondicionUso
                 </Link>
                 <Link
-                  href="/contacto"
+                  href="/listadoPrueba"
                   className={getLinkClassName("text-sm font-medium")}
                   {...linkDisabledAttrs}
                 >
-                  Contacto
+                  Validacion
                 </Link>
                  <Link
                   href="/host"
