@@ -29,7 +29,7 @@ export default function CondicionesUsoAutoHome() {
 
     const fetchCar = async () => {
       try {
-        const data = await getCarById(""+id_carro);
+        const data = await getCarById("" + id_carro);
         if (!data) {
           router.replace("/not-found");
         } else {
@@ -44,8 +44,16 @@ export default function CondicionesUsoAutoHome() {
     fetchCar();
   }, [id_carro, router]);
 
-  if (id_carro === null || loading) {
+  if (id_carro === null) {
     return null;
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <span className="text-gray-600 text-lg">Cargando datos del auto...</span>
+      </div>
+    );
   }
 
   const handleGuardar = () => {
@@ -54,20 +62,22 @@ export default function CondicionesUsoAutoHome() {
 
   return (
     <div className="flex flex-col justify-between gap-2">
-      {/* Header */}
-      <div className="sticky top-0 z-50 bg-white shadow">
-        <Header />
-      </div>
-
-      {/* Título */}
-      <div className="w-full max-w-[760px] mx-auto mt-4">
-        <h2 className="text-3xl font-semibold text-center text-black py-2">
-          Condiciones de uso del auto
-        </h2>
-      </div>
+    
+      <div className="sticky top-0 z-50 bg-white shadow overflow-visible">
+          <div className="border-b px-4 sm:px-6 lg:px-8 py-7">
+            <Header />
+          </div>
+          <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center">
+            <div className="w-full max-w-2xl">
+              <h2 className="text-3xl font-semibold text-center text-black">
+                Condiciones de uso del auto
+              </h2>
+            </div>
+          </div>
+        </div>
 
       {/* Formulario */}
-      <main>
+      <main className="mt-2">
         <TablaComponentes_Recode
           ref={tablaRef}
           id_carro={id_carro}
