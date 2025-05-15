@@ -4,7 +4,6 @@ import React, { useRef, useState } from "react";
 import { notFound, useParams } from "next/navigation";
 import Header from "@/components/ui/Header";
 import TablaComponentes_Recode from "@/components/recodeComponentes/condicionesDeUsoAutoFormu/TablaComponentes_Recode";
-import BotonVolver from "@/components/recodeComponentes/condicionesDeUsoAutoFormu/BotonVolver";
 
 export default function CondicionesUsoAutoHome() {
   const tablaRef = useRef<{ enviarFormulario: () => void }>(null);
@@ -77,11 +76,6 @@ export default function CondicionesUsoAutoHome() {
             )}
             {isSubmitting ? "Guardando..." : "Guardar condiciones"}
           </button>
-        </div>
-
-        {/* Botón volver */}
-        <div className="w-full py-4 flex justify-center border-t mt-6">
-          <BotonVolver to="/formularioCobertura_Recode" />
         </div>
       </main>
     </div>

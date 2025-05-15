@@ -92,7 +92,7 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
     });
 
     const [genEdadRango, setGenEdadRango] = useState<[number, number]>([18, 70]);
-    const [genKmMax, setGenKmMax] = useState<number>(0);
+    const [genKmMax, setGenKmMax] = useState<number>(100);
 
     const handleEnviar = async () => {
       if (!entCombustible.value || entCombustible.value === "") {
@@ -178,7 +178,7 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
               valorCombustible={entCombustible}
               onChangeCombustible={(val) => {
                 setEntCombustible(val);
-                if (val.value !== "") setErrorCombustible(false); // ✅ limpia error al seleccionar
+                if (val.value !== "") setErrorCombustible(false);
               }}
               respuestas={entCheckboxes}
               onCheckboxChange={(k) => setEntCheckboxes((p) => ({ ...p, [k]: !p[k] }))}
