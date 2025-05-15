@@ -193,18 +193,18 @@ export default function Header({
             Buscar
           </Link>
           <Link
-            href="/acerca"
+            href="/condicionUsoAuto"
             className={getLinkClassName("text-sm font-medium")}
             {...linkDisabledAttrs}
           >
-            Acerca de
+            CondicionesUso
           </Link>
           <Link
-            href="/contacto"
+            href="/listadoPrueba"
             className={getLinkClassName("text-sm font-medium")}
             {...linkDisabledAttrs}
           >
-            Contacto
+            Validación
           </Link>
           <Link
             href="/host"

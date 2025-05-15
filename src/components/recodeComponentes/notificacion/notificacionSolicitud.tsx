@@ -5,7 +5,7 @@ interface NotificacionProps {
   tipo: "host" | "renter";
 }
 
-export const Notificacion: React.FC<NotificacionProps> = ({ tipo }) => {
+export const NotificacionHost: React.FC<NotificacionProps> = ({ tipo }) => {
   return (
     <div className="bg-gray-100 border rounded p-3 mb-3 shadow-sm">
       <div className="flex items-start gap-2">

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import GeneralVisual_Recode from "./GeneralVisual_Recode";
 import EntregaVisual_Recode from "./EntregaVisual_Recode";
 import DevolucionVisual_Recode from "./DevolucionVisual_Recode";
-import NotificacionEnvioExitoso_recode from "./Notificacion_envio_exitoso_Recode";
+import NotificacionEnvioExitoso_recode from "../notificacion/Notificacion_envio_exitoso_Recode";
 
 import { getCondicionesUsoVisual_Recode } from "@/service/services_Recode";
 import { CondicionesUsoResponse } from "@/interface/CondicionesUsoVisual_interface_Recode";
