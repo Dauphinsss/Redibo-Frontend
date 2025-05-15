@@ -1,20 +1,16 @@
-import { notFound } from 'next/navigation';
+'use client';
+
+import { useEffect, useState } from 'react';
 import Home from './Home';
-import { getCarById } from '@/service/services_Recode';
+import { useParams } from 'next/navigation';
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function Page() {
+  const { id } = useParams();
+  const [show, setShow] = useState(false);
 
-  try {
-    const data = await getCarById(id);
+  useEffect(() => {
+    if (id) setShow(true);
+  }, [id]);
 
-    // Si el auto no existe, mostrar página 404
-    if (!data) return notFound();
-
-    // Si todo está bien, renderiza el componente Home con el ID
-    return <Home id={id} />;
-  } catch (error) {
-    console.error(`Error inesperado al cargar auto con ID ${id}:`, error);
-    throw error; // Activa automáticamente error.tsx
-  }
+  return show ? <Home id={String(id)} /> : null;
 }

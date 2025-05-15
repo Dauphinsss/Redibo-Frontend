@@ -1,5 +1,5 @@
 import React from "react";
-import { NotificacionHost } from "./notificacionSolicitud";
+import { Notificacion } from "./notificacionSolicitud";
 import { NotificacionRenter } from "./notificacionRenter";
 
 export const NotificacionesCampana: React.FC = () => {
@@ -9,9 +9,9 @@ export const NotificacionesCampana: React.FC = () => {
 
       <div className="mb-4">
         <h3 className="text-sm font-bold mb-1">Solicitudes a t(Host)</h3>
-        <NotificacionHost tipo="host" />
-        <NotificacionHost tipo="host" />
-        <NotificacionHost tipo="host" />
+        <Notificacion tipo="host" />
+        <Notificacion tipo="host" />
+        <Notificacion tipo="host" />
       </div>
 
       <hr className="my-2 border-gray-400" />
