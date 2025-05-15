@@ -1,23 +1,52 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import { notFound, useParams } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Header from "@/components/ui/Header";
 import TablaComponentes_Recode from "@/components/recodeComponentes/condicionesDeUsoAutoFormu/TablaComponentes_Recode";
+import { getCarById } from "@/service/services_Recode";
 
 export default function CondicionesUsoAutoHome() {
   const tablaRef = useRef<{ enviarFormulario: () => void }>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const params = useParams();
+  const [loading, setLoading] = useState(true);
 
-  // Validar y parsear el ID del carro desde la URL
+  const params = useParams();
+  const router = useRouter();
+
   const id_carro = (() => {
     const raw = params?.id;
-    if (typeof raw !== "string") return notFound();
+    if (typeof raw !== "string") return null;
     const parsed = Number(raw);
-    if (isNaN(parsed)) return notFound();
-    return parsed;
+    return isNaN(parsed) ? null : parsed;
   })();
+
+  useEffect(() => {
+    if (id_carro === null) {
+      router.replace("/not-found");
+      return;
+    }
+
+    const fetchCar = async () => {
+      try {
+        const data = await getCarById(""+id_carro);
+        if (!data) {
+          router.replace("/not-found");
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching car data:", error);
+        router.replace("/not-found");
+      }
+    };
+
+    fetchCar();
+  }, [id_carro, router]);
+
+  if (id_carro === null || loading) {
+    return null;
+  }
 
   const handleGuardar = () => {
     tablaRef.current?.enviarFormulario();
