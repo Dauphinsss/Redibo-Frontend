@@ -17,6 +17,10 @@ function RecodeCarCard(props: Auto) {
     router.push(`/imagenUpload?id=${idAuto}`);
   };
 
+  const handleFormularioCondicionUso = () => {
+    router.push(`/condicionUsoAuto/${idAuto}`);
+  };
+
   const handleValidarCobertura = async () => {
     
       router.push(`/formularioCobertura_Recode/${idAuto}`);
@@ -43,6 +47,13 @@ function RecodeCarCard(props: Auto) {
           className="px-4 py-2 bg-black text-white rounded hover:bg-gray-300"
         >
           Validar cobertura
+        </button>
+
+        <button
+          onClick={handleFormularioCondicionUso}
+          className="px-4 py-2 bg-black text-white rounded hover:bg-gray-300"
+        >
+          Condiciones de uso
         </button>
       </div>
     </div>
