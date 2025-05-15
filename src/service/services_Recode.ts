@@ -3,7 +3,6 @@ import { CondicionesUsoPayload_Recode } from "@/interface/CondicionesUsoFormu_in
 import { CondicionesUsoResponse } from "@/interface/CondicionesUsoVisual_interface_Recode";
 import { CoberturaInterface } from "@/interface/CoberturaForm_Interface_Recode";
 import { EnlaceInterface } from "@/interface/CoberturaForm_Interface_Recode";
-import { ValidarInterface } from "@/interface/CoberturaForm_Interface_Recode";
 
 import {RawAuto_Interface_Recode as RawAuto} from "@/interface/RawAuto_Interface_Recode"
 import { RawCondicionesUsoResponse } from "@/interface/RawCondicionesUsoVisuali_Interface_Recode";
@@ -172,14 +171,22 @@ export const postCoberturaEnlace = async (payload: EnlaceInterface): Promise<voi
   }
 };
 
-export const getInsuranceByID = async <T = ValidarInterface>(id: string): Promise<T> => {
+export const getInsuranceByID = async (id_carro: string)=> {
+  
   try {
-    const response = await apiCarById.get(`/insurance/${id}`);
-    return response.data as T;
-  } catch (error) {
-    console.error(`Error al obtener el seguro con ID ${id}:`, error);
-    throw error;
-  }
+        const response = await apiCobertura.get(`/insurance/${id_carro}`);
+        return response.data;
+    } catch (error: unknown) {
+        // Si el error es 404 (auto no existe), devolvemos null
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+            console.warn(`Auto con ID ${id_carro} no encontrado.`);
+            return null;
+        }
+
+        // Si es otro tipo de error, lo lanzamos para que lo maneje error.tsx
+        console.error(`Error inesperado al obtener el auto con ID ${id_carro}:`, error);
+        throw error;
+    }
 };
 export const getDetalleHost_Recode = async (id_host: number) => {
     try {

@@ -21,6 +21,15 @@ export interface ValidarInterface {
   id_carro: number;
   fechaInicio: string;
   fechaFin: string;
-  empresa: string;
   enlace: string;
+  Seguro: {
+    empresa: string;
+    nombre: string;
+    tipoSeguro: string;
+  };
+  tiposeguro?: Array<{
+    tipoda_o: string | null;
+    descripcion: string | null;
+    valides: string | null;
+  }>;
 }
