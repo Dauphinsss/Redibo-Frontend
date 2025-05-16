@@ -79,6 +79,13 @@ export default function TablaCondicionesVisual_Recode({ id_carro }: TablaCondici
       {showNotification && (
         <NotificacionEnvioExitoso_recode onClose={() => setShowNotification(false)} />
       )}
+      <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center">
+        <div className="w-full max-w-2xl">
+          <h2 className="text-3xl font-semibold text-center text-black">
+            Condiciones de uso del auto
+          </h2>
+        </div>
+      </div>
       <div className="w-full max-w-[760px] mx-auto border border-black rounded-[10px] overflow-hidden">
         {/* Tabs */}
         <div className="sticky top-0 z-10 bg-white">
