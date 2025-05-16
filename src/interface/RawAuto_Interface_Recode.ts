@@ -26,6 +26,9 @@ export interface RawAuto_Interface_Recode {
   imagenes?: {
     data?: string;
   }[];
-  disponible_desde?: string;
-  disponible_hasta?: string;
+  reservas: {
+    fecha_inicio: string;
+    fecha_fin: string;
+    estado: string;
+  }[];
 }

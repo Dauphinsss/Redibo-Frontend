@@ -15,6 +15,9 @@ export interface AutoCard_Interfaces_Recode {
     precioOficial: number;
     precioDescuento: number;
     precioPorDia: number;
-    disponible_desde: string;
-    disponible_hasta: string;
+    reservas: {
+        fecha_inicio: string;
+        fecha_fin: string;
+        estado: string;
+    }[];
 }
