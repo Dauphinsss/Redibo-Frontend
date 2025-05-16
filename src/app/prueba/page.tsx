@@ -27,7 +27,7 @@ export default function FormularioSolicitud() {
     };
 
     try {
-      const response = await axios.post("https://search-car-backend.vercel.app/insertCondition", solicitud);
+      const response = await axios.post("https://search-car-backend.vercel.app/correoHost", solicitud);
       setMensaje("✅ Solicitud enviada correctamente.");
       console.log("Respuesta del servidor:", response.data);
     } catch (error: unknown) {

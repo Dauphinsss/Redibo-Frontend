@@ -6,13 +6,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const opcionesFechas = [
-  { inicio: '2025-05-17', fin: '2025-05-24', ciudad: 'Cochabamba' },
-  { inicio: '2025-05-18', fin: '2025-05-25', ciudad: 'Cochabamba' },
-  { inicio: '2025-05-19', fin: '2025-05-22', ciudad: 'Cochabamba' },
+  { inicio: '2025-05-19', fin: '2025-05-24', ciudad: 'Cochabamba' },
+  { inicio: '2025-05-20', fin: '2025-05-22', ciudad: 'Cochabamba' },
+  { inicio: '2025-05-24', fin: '2025-05-27', ciudad: 'Cochabamba' },
 ];
 
 export default function FechasAlquiler({
-  
   onFechasSeleccionadas,
 }: {
   onFechasSeleccionadas: (fechas: { inicio: string; fin: string }) => void;
@@ -20,16 +19,27 @@ export default function FechasAlquiler({
   const [seleccion, setSeleccion] = useState(opcionesFechas[0]);
   const [mostrandoPicker, setMostrandoPicker] = useState(false);
   const [rangoFechas, setRangoFechas] = useState<[Date | null, Date | null]>([
-    new Date(seleccion.inicio),
-    new Date(seleccion.fin),
+    null, null
   ]);
   const pickerRef = useRef<HTMLDivElement>(null);
+
+  const parseLocalDate = (dateString: string) => {
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  };
+
+  const formatDateToISO = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   useEffect(() => {
     const random = Math.floor(Math.random() * opcionesFechas.length);
     const fecha = opcionesFechas[random];
     setSeleccion(fecha);
-    setRangoFechas([new Date(fecha.inicio), new Date(fecha.fin)]);
+    setRangoFechas([parseLocalDate(fecha.inicio), parseLocalDate(fecha.fin)]);
     onFechasSeleccionadas(fecha);
   }, [onFechasSeleccionadas]);
 
@@ -47,21 +57,23 @@ export default function FechasAlquiler({
     };
   }, [mostrandoPicker]);
 
-  const formato = (fecha: string) =>
-    new Date(fecha).toLocaleDateString("es-BO", {
+  const formato = (fecha: string) => {
+    const localDate = parseLocalDate(fecha);
+    return localDate.toLocaleDateString("es-BO", {
       weekday: "long",
       day: "numeric",
       month: "long",
       year: "numeric",
     });
+  };
 
   const aplicarFechas = (dates: [Date | null, Date | null]) => {
     setRangoFechas(dates);
     const [inicio, fin] = dates;
     if (inicio && fin) {
       const nuevo = {
-        inicio: inicio.toISOString().split("T")[0],
-        fin: fin.toISOString().split("T")[0],
+        inicio: formatDateToISO(inicio),
+        fin: formatDateToISO(fin),
         ciudad: seleccion.ciudad,
       };
       setSeleccion(nuevo);

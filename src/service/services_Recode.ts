@@ -24,7 +24,7 @@ export const getAllCars = async (): Promise<RawAuto[]> => {
 export const getCarById = async (id: string) => {
     try {
         const response = await apiCarById.get(`/detailCar/${id}`);
-        return response.data;
+        return await response.data;
     } catch (error: unknown) {
         // Si el error es 404 (auto no existe), devolvemos null
         if (axios.isAxiosError(error) && error.response?.status === 404) {

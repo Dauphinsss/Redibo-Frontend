@@ -4,13 +4,17 @@ import { useEffect, useState } from 'react';
 import { getCarById } from '@/service/services_Recode';
 import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
 
+interface PrecioDesglosadoProps {
+  id_carro: number;
+  fechas: { inicio: string; fin: string };
+  onPrecioCalculado?: (precio: number) => void;
+}
+
 export default function PrecioDesglosado({
   id_carro,
   fechas,
-}: {
-  id_carro: number;
-  fechas: { inicio: string; fin: string };
-}) {
+  onPrecioCalculado,
+}: PrecioDesglosadoProps) {
   const [precioDiario, setPrecioDiario] = useState<number>(0);
 
   useEffect(() => {
@@ -21,10 +25,19 @@ export default function PrecioDesglosado({
     cargar();
   }, [id_carro]);
 
-  const dias =
-    (new Date(fechas.fin).getTime() - new Date(fechas.inicio).getTime()) /
-    (1000 * 60 * 60 * 24);
+  const dias = fechas.inicio && fechas.fin 
+    ? (new Date(fechas.fin).getTime() - new Date(fechas.inicio).getTime()) / 
+      (1000 * 60 * 60 * 24)
+    : 0;
+  
   const estimado = dias * precioDiario;
+
+  // Notificar al padre cuando cambie el precio estimado
+  useEffect(() => {
+    if (onPrecioCalculado && estimado > 0) {
+      onPrecioCalculado(estimado);
+    }
+  }, [estimado, onPrecioCalculado]);
 
   return (
     <div className="bg-white border border-gray-300 rounded-xl shadow p-6 w-full sm:w-80 h-50 space-y-4">
