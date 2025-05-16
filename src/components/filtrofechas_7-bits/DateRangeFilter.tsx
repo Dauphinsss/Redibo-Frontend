@@ -56,7 +56,7 @@ const DateRangeFilter: React.FC<Props> = ({
             {mostrarFiltro && (
                 <div className="absolute mt-2 p-4 border rounded shadow bg-white z-10">
                     <h2 className="text-sm font-semibold mb-2">Disponibilidad del Vehículo:</h2>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col md:flex-row gap-2">
                         {/* Fecha Inicio */}
                         <div className="flex flex-col">
                             <label className="text-xs font-bold">Fecha Inicio</label>
