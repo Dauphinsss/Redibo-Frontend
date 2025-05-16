@@ -7,7 +7,11 @@ const opcionesFechas = [
   { inicio: '2025-05-19', fin: '2025-05-22', ciudad: 'Cochabamba' },
 ];
 
-export default function FechasAlquiler({ onFechasSeleccionadas }: { onFechasSeleccionadas: (fechas: { inicio: string, fin: string }) => void }) {
+interface Props {
+  onFechasSeleccionadas: (fechas: { inicio: string; fin: string }) => void;
+}
+
+export default function FechasAlquiler({ onFechasSeleccionadas }: Props) {
   const [seleccion, setSeleccion] = useState(opcionesFechas[0]);
 
   useEffect(() => {

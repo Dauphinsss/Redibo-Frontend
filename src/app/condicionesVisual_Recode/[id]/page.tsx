@@ -1,17 +1,19 @@
-// src/app/condicionesVisual_Recode/[id]/page.tsx
+'use client';
 
+import { useState } from "react";
 import { notFound } from "next/navigation";
 import TablaCondicionesVisual_Recode from "@/components/recodeComponentes/condicionesDeUsoAutoVisual/TablaCondicionesVisual_Recode";
+import TablaCoberturas from "@/components/recodeComponentes/mostrarCobertura/tablaCoberShow";
+import PrecioDesglosado from "@/components/recodeComponentes/mostrarCobertura/precioDesglosado";
 import Header from "@/components/ui/Header";
-import FechasWrapper from "./condiHomeVisual";
+import FechasAlquiler from "@/components/recodeComponentes/mostrarCobertura/filtroIni";
 
-export default async function CondicionVisualPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const id_carro = parseInt(id, 10);
+export default function CondicionVisualPage({ params }: { params: { id: string } }) {
+  const id_carro = parseInt(params.id, 10);
+  const [fechas, setFechas] = useState<{ inicio: string; fin: string }>({
+    inicio: '',
+    fin: ''
+  });
 
   if (isNaN(id_carro) || id_carro <= 0) {
     notFound();
@@ -26,10 +28,15 @@ export default async function CondicionVisualPage({
       </h1>
 
       <div className="mb-6">
-        <FechasWrapper id_carro={id_carro} />
+        <FechasAlquiler onFechasSeleccionadas={setFechas} />
+
+        <div className="flex flex-col sm:flex-row justify-between gap-4 mt-4">
+          <TablaCoberturas id_carro={id_carro} />
+          <PrecioDesglosado id_carro={id_carro} fechas={fechas} />
+        </div>
       </div>
 
-      <TablaCondicionesVisual_Recode id_carro={id_carro} />
+      <TablaCondicionesVisual_Recode id_carro={id_carro} fechas={fechas} />
     </main>
   );
 }

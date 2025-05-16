@@ -2,7 +2,12 @@
 import { useEffect, useState } from 'react';
 import { getCarById } from '@/service/services_Recode';
 
-export default function PrecioDesglosado({ id_carro, fechas }: { id_carro: number, fechas: { inicio: string, fin: string } }) {
+interface Props {
+  id_carro: number;
+  fechas: { inicio: string; fin: string };
+}
+
+export default function PrecioDesglosado({ id_carro, fechas }: Props) {
   const [precioDiario, setPrecioDiario] = useState<number>(0);
 
   useEffect(() => {
@@ -13,7 +18,10 @@ export default function PrecioDesglosado({ id_carro, fechas }: { id_carro: numbe
     cargar();
   }, [id_carro]);
 
-  const dias = (new Date(fechas.fin).getTime() - new Date(fechas.inicio).getTime()) / (1000 * 60 * 60 * 24);
+  const dias = fechas && fechas.inicio && fechas.fin
+    ? (new Date(fechas.fin).getTime() - new Date(fechas.inicio).getTime()) / (1000 * 60 * 60 * 24)
+    : 0;
+
   const estimado = dias * precioDiario;
 
   return (
