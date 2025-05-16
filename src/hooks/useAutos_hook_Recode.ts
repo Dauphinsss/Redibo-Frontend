@@ -62,6 +62,33 @@ export function useAutos(cantidadPorLote = 8) {
         }
 
         {/* Filtro de fechas */}
+        if (fechaFiltroInicio && fechaFiltroFin) {
+          const inicioFiltro = new Date(fechaFiltroInicio);
+          const finFiltro = new Date(fechaFiltroFin);
+
+          resultado = resultado.filter (auto => {
+            {/* Si no tiene reservas, el auto se muestra */}
+            if (!auto.reservas || auto.reservas.length === 0) return true;
+
+            {/* Se revisa cada reserva */}
+            for (const reserva of auto.reservas) {
+              {/* Solo tomamos reservas "pendiente" o "confirmado" */}
+              if (reserva.estado !== "pendiente" && reserva.estado !== "confirmado") continue;
+
+              const inicioReserva = new Date(reserva.fecha_inicio);
+              const finReserva = new Date(reserva.fecha_fin);
+
+              {/* Si la reserva se cruza con el rango filtrado, el auto no debe mostrarse */}
+              const seCruza = (inicioReserva <= finFiltro && finReserva >= inicioFiltro);
+
+              if (seCruza) {
+                return false;
+              }
+            }
+
+            return true;
+          });
+        }
 
         switch (ordenSeleccionado) {
             case 'Modelo Ascendente':
