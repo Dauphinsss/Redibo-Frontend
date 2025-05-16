@@ -1,24 +1,60 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import { notFound, useParams } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Header from "@/components/ui/Header";
 import TablaComponentes_Recode from "@/components/recodeComponentes/condicionesDeUsoAutoFormu/TablaComponentes_Recode";
-import BotonVolver from "@/components/recodeComponentes/condicionesDeUsoAutoFormu/BotonVolver";
+import { getCarById } from "@/service/services_Recode";
 
 export default function CondicionesUsoAutoHome() {
   const tablaRef = useRef<{ enviarFormulario: () => void }>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const params = useParams();
+  const [loading, setLoading] = useState(true);
 
-  // Validar y parsear el ID del carro desde la URL
+  const params = useParams();
+  const router = useRouter();
+
   const id_carro = (() => {
     const raw = params?.id;
-    if (typeof raw !== "string") return notFound();
+    if (typeof raw !== "string") return null;
     const parsed = Number(raw);
-    if (isNaN(parsed)) return notFound();
-    return parsed;
+    return isNaN(parsed) ? null : parsed;
   })();
+
+  useEffect(() => {
+    if (id_carro === null) {
+      router.replace("/not-found");
+      return;
+    }
+
+    const fetchCar = async () => {
+      try {
+        const data = await getCarById("" + id_carro);
+        if (!data) {
+          router.replace("/not-found");
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching car data:", error);
+        router.replace("/not-found");
+      }
+    };
+
+    fetchCar();
+  }, [id_carro, router]);
+
+  if (id_carro === null) {
+    return null;
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <span className="text-gray-600 text-lg">Cargando datos del auto...</span>
+      </div>
+    );
+  }
 
   const handleGuardar = () => {
     tablaRef.current?.enviarFormulario();
@@ -26,20 +62,22 @@ export default function CondicionesUsoAutoHome() {
 
   return (
     <div className="flex flex-col justify-between gap-2">
-      {/* Header */}
-      <div className="sticky top-0 z-50 bg-white shadow">
-        <Header />
-      </div>
-
-      {/* Título */}
-      <div className="w-full max-w-[760px] mx-auto mt-4">
-        <h2 className="text-3xl font-semibold text-center text-black py-2">
-          Condiciones de uso del auto
-        </h2>
-      </div>
+    
+      <div className="sticky top-0 z-50 bg-white shadow overflow-visible">
+          <div className="border-b px-4 sm:px-6 lg:px-8 py-7">
+            <Header />
+          </div>
+          <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center">
+            <div className="w-full max-w-2xl">
+              <h2 className="text-3xl font-semibold text-center text-black">
+                Condiciones de uso del auto
+              </h2>
+            </div>
+          </div>
+        </div>
 
       {/* Formulario */}
-      <main>
+      <main className="mt-2">
         <TablaComponentes_Recode
           ref={tablaRef}
           id_carro={id_carro}
@@ -77,11 +115,6 @@ export default function CondicionesUsoAutoHome() {
             )}
             {isSubmitting ? "Guardando..." : "Guardar condiciones"}
           </button>
-        </div>
-
-        {/* Botón volver */}
-        <div className="w-full py-4 flex justify-center border-t mt-6">
-          <BotonVolver to="/formularioCobertura_Recode" />
         </div>
       </main>
     </div>

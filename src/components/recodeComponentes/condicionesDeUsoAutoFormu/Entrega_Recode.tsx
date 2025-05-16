@@ -31,6 +31,15 @@ const Entrada_Recode = forwardRef<HTMLButtonElement, EntradaRecodeProps>(
       { label: "Buen estado de llantas", key: "llanta_estado" },
       { label: "Daños en interior", key: "interior_da_o" },
     ];
+    const allChecked = condiciones.every(({ key }) => respuestas[key]);
+    const toggleAll = () => {
+      condiciones.forEach(({ key }) => {
+        const shouldBe = !allChecked;
+        if (respuestas[key] !== shouldBe) {
+          onCheckboxChange(key);
+        }
+      });
+    }
 
     return (
       <div className="space-y-6">
@@ -49,6 +58,18 @@ const Entrada_Recode = forwardRef<HTMLButtonElement, EntradaRecodeProps>(
         </div>
 
         {/* Checkboxes de condiciones */}
+        <div className="mb-2">
+            <label 
+                className="inline-flex items-center space-x-2">
+                <input
+                type="checkbox"
+                checked={allChecked}
+                onChange={toggleAll}
+                className="h-4 w-4 accent-black border-black rounded focus:ring-black"
+                />
+                <span className="font-semibold text-sm text-black">Seleccionar todos</span>
+            </label>
+        </div>
         <div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {condiciones.map(({ label, key }) => {

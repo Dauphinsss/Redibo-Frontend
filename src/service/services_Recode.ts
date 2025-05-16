@@ -31,7 +31,6 @@ export const getCarById = async (id: string) => {
             console.warn(`Auto con ID ${id} no encontrado.`);
             return null;
         }
-
         // Si es otro tipo de error, lo lanzamos para que lo maneje error.tsx
         console.error(`Error inesperado al obtener el auto con ID ${id}:`, error);
         throw error;

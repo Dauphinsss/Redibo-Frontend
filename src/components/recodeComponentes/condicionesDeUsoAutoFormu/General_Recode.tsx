@@ -13,6 +13,16 @@ export interface GeneralRecodeProps {
   onKmChange: (val: [number]) => void;
 }
 
+const condicionesGenerales = [
+  { label: "Fumar", key: "fumar" },
+  { label: "Mascotas permitidas", key: "mascota" },
+  { label: "Devolver mismo tipo de combustible", key: "dev_mismo_conb" },
+  { label: "Uso fuera de la ciudad permitido", key: "uso_fuera_ciudad" },
+  { label: "Multas por cuenta del conductor", key: "multa_conductor" },
+  { label: "Devolver auto en mismo lugar", key: "dev_mismo_lugar" },
+  { label: "Uso comercial permitido", key: "uso_comercial" },
+];
+
 function General_Recode({
   respuestas,
   onCheckboxChange,
@@ -21,6 +31,16 @@ function General_Recode({
   kmMax,
   onKmChange,
 }: GeneralRecodeProps) {
+  const allChecked = condicionesGenerales.every(({ key }) => respuestas[key]);
+  const toggleAll = () => {
+    condicionesGenerales.forEach(({ key }) => {
+      const shouldBe = !allChecked;
+      if (respuestas[key] !== shouldBe) {
+        onCheckboxChange(key);
+      }
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Rango de edad */}
@@ -54,16 +74,21 @@ function General_Recode({
 
       {/* Checkboxes generales */}
       <div>
+        <div className="mb-2">
+          <label 
+            className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={allChecked}
+              onChange={toggleAll}
+              className="h-4 w-4 accent-black border-black rounded focus:ring-black"
+            />
+            <span className="font-semibold text-sm text-black">Seleccionar todos</span>
+          </label>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-          {[
-            { label: "Fumar", key: "fumar" },
-            { label: "Mascotas permitidas", key: "mascota" },
-            { label: "Devolver mismo combustible", key: "dev_mismo_conb" },
-            { label: "Uso fuera de la ciudad permitido", key: "uso_fuera_ciudad" },
-            { label: "Multas por cuenta del conductor", key: "multa_conductor" },
-            { label: "Devolver auto en mismo lugar", key: "dev_mismo_lugar" },
-            { label: "Uso comercial permitido", key: "uso_comercial" },
-          ].map(({ label, key }) => {
+          {condicionesGenerales.map(({ label, key }) => {
             const checked = !!respuestas[key];
             return (
               <label

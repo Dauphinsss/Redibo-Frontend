@@ -40,6 +40,7 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
     const [modalSuccess, setModalSuccess] = useState(false);
     const [modalError, setModalError] = useState(false);
     const [mostrarAdvertencia, setMostrarAdvertencia] = useState(false);
+    const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
     const [errorCombustible, setErrorCombustible] = useState(false);
 
     const dropdownRef = useRef<HTMLButtonElement | null>(null);
@@ -92,16 +93,20 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
     });
 
     const [genEdadRango, setGenEdadRango] = useState<[number, number]>([18, 70]);
-    const [genKmMax, setGenKmMax] = useState<number>(0);
+    const [genKmMax, setGenKmMax] = useState<number>(100);
 
-    const handleEnviar = async () => {
+    const handleEnviar = () => {
       if (!entCombustible.value || entCombustible.value === "") {
         setActiveTab("entrega");
         setMostrarAdvertencia(true);
         setErrorCombustible(true);
         return;
       }
+      setMostrarConfirmacion(true);
+    };
 
+    const confirmarEnvio = async () => {
+      setMostrarConfirmacion(false);
       setIsSubmitting(true);
 
       const condiciones_generales: CondicionesGenerales_Recode = {
@@ -178,7 +183,7 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
               valorCombustible={entCombustible}
               onChangeCombustible={(val) => {
                 setEntCombustible(val);
-                if (val.value !== "") setErrorCombustible(false); // ✅ limpia error al seleccionar
+                if (val.value !== "") setErrorCombustible(false);
               }}
               respuestas={entCheckboxes}
               onCheckboxChange={(k) => setEntCheckboxes((p) => ({ ...p, [k]: !p[k] }))}
@@ -197,6 +202,31 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
 
     return (
       <>
+        {/* Modal de confirmación */}
+        <ModalRecode
+          isOpen={mostrarConfirmacion}
+          onClose={() => setMostrarConfirmacion(false)}
+          title="¿Confirmar condiciones?"
+          description="¿Estás seguro de que deseas guardar estas condiciones de uso?"
+          variant="question"
+        >
+          <div className="mt-5 flex justify-center gap-4">
+            <button
+              onClick={() => setMostrarConfirmacion(false)}
+              className="bg-gray-200 text-black px-4 py-2 rounded hover:bg-gray-300 transition"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={confirmarEnvio}
+              className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition"
+            >
+              Confirmar
+            </button>
+          </div>
+        </ModalRecode>
+
+        {/* Otros modales */}
         <ModalRecode
           isOpen={modalSuccess}
           onClose={() => setModalSuccess(false)}

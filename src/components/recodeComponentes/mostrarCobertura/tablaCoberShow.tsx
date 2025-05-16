@@ -1,6 +1,8 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import { getInsuranceByID } from '@/service/services_Recode';
+import { ShieldCheckIcon } from '@heroicons/react/24/outline';
 
 interface CoberturaItem {
   tipoda_o: string;
@@ -23,24 +25,41 @@ export default function TablaCoberturas({ id_carro }: { id_carro: number }) {
 
   const formatearValor = (valides: string) => {
     if (valides.endsWith('B')) return `${valides.slice(0, -1)} BOB`;
-    if (valides.endsWith('P')) return `${valides.slice(0, -1)} %`;
+    if (valides.endsWith('P')) return `${valides.slice(0, -1)}%`;
     return valides;
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-bold mb-2">Cobertura del Seguro</h2>
-      <table className="w-full text-left border-t">
-        <tbody>
-          {datos.map((item, idx) => (
-            <tr key={idx} className="border-b">
-              <td className="py-2 font-semibold">&lt;{item.tipoda_o}&gt;</td>
-              <td className="py-2">{item.descripcion}</td>
-              <td className="py-2 text-right font-bold">{formatearValor(item.valides)}</td>
+    <div className="w-full bg-white border border-gray-300 rounded-xl shadow p-6 h-full">
+      <div className="flex items-center gap-2 mb-4 text-gray-700">
+        <ShieldCheckIcon className="h-5 w-5" />
+        <h2 className="text-base font-semibold">Cobertura del seguro</h2>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm table-auto">
+          <thead>
+            <tr className="text-left text-gray-500 border-b border-gray-200">
+              <th className="py-2 font-medium">Tipo</th>
+              <th className="py-2 font-medium">Descripción</th>
+              <th className="py-2 font-medium text-right">Valor</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {datos.map((item, idx) => (
+              <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                <td className="py-3 font-semibold text-black">{item.tipoda_o}</td>
+                <td className="py-3 text-gray-700">{item.descripcion}</td>
+                <td className="py-3 text-right">
+                  <span className="inline-block bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1 rounded-full">
+                    {formatearValor(item.valides)}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

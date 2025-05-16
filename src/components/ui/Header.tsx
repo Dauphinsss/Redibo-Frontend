@@ -104,11 +104,11 @@ export default function Header({
                   Buscar
                 </Link>
                 <Link
-                  href="/condicionUsoAuto"
+                  href="#"
                   className={getLinkClassName("text-sm font-medium")}
                   {...linkDisabledAttrs}
                 >
-                  CondicionUso
+                  Acerca de
                 </Link>
                 <Link
                   href="/listadoPrueba"
@@ -193,11 +193,11 @@ export default function Header({
             Buscar
           </Link>
           <Link
-            href="/condicionUsoAuto"
+            href="#"
             className={getLinkClassName("text-sm font-medium")}
             {...linkDisabledAttrs}
           >
-            CondicionesUso
+            Acerca de
           </Link>
           <Link
             href="/listadoPrueba"

@@ -21,12 +21,11 @@ export default function CondicionVisualPage({ params }: { params: { id: string }
 
   return (
     <main className="p-4 max-w-4xl mx-auto">
-      <Header />
-
-      <h1 className="text-2xl font-bold mb-6 text-center">
-        Condiciones de Uso del Auto
-      </h1>
-
+      <div className="sticky top-0 z-50 bg-white shadow overflow-visible">
+        <div className="border-b px-4 sm:px-6 lg:px-8 py-7">
+          <Header />
+        </div>
+      </div>
       <div className="mb-6">
         <FechasAlquiler onFechasSeleccionadas={setFechas} />
 
