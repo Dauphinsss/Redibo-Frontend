@@ -40,7 +40,13 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-type SectionType = "personal" | "payments" | "driver" | "ratings" | "vehicles" | "orders";
+type SectionType =
+  | "personal"
+  | "payments"
+  | "driver"
+  | "ratings"
+  | "vehicles"
+  | "orders";
 
 export default function ProfilePage() {
   const [activeSection, setActiveSection] = useState<SectionType>("personal");
@@ -50,7 +56,9 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem("auth_token");
-      if (!token) return;
+      if (!token) {
+        window.location.href = "/login";
+      }
 
       try {
         const res = await axios.get(`${API_URL}/api/perfil`, {
@@ -136,7 +144,7 @@ export default function ProfilePage() {
   ];
 
   const handleLogout = () => {
-    localStorage.clear();       // Limpia toda la sesión
+    localStorage.clear(); // Limpia toda la sesión
     window.location.href = "/"; // Redirige a la página de inicio
   };
 
@@ -162,7 +170,10 @@ export default function ProfilePage() {
 
                 <SidebarMenu className="bg-white">
                   {menuItems.map((item) => {
-                    if (item.alwaysShow || (item.requiresRole && roles.includes(item.requiresRole))) {
+                    if (
+                      item.alwaysShow ||
+                      (item.requiresRole && roles.includes(item.requiresRole))
+                    ) {
                       return (
                         <SidebarMenuItem key={item.id}>
                           <SidebarMenuButton
@@ -238,7 +249,9 @@ export default function ProfilePage() {
             {/* Contenido principal con botón de menú para móvil */}
             <SidebarInset>
               <div className="flex items-center p-2 bg-white md:hidden border rounded-lg m-4 z-50 fixed ">
-                <SidebarTrigger onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+                <SidebarTrigger
+                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                >
                   <Menu className="h-5 w-5" />
                 </SidebarTrigger>
               </div>
@@ -253,7 +266,8 @@ export default function ProfilePage() {
                         {sectionTitles[activeSection]}
                       </h1>
                       <p className="text-sm text-gray-500 mt-1">
-                        Gestiona tu información personal y configuración de cuenta
+                        Gestiona tu información personal y configuración de
+                        cuenta
                       </p>
                     </div>
                     <div className="p-4 md:p-6">{renderContent()}</div>
