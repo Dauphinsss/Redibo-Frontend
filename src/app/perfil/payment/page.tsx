@@ -111,10 +111,10 @@ function PaymentPage() {
       <div className="relative h-2 bg-gray-200 rounded-full w-full max-w-lg mb-8">
         <div
           className={`absolute top-0 left-0 h-full bg-primary transition-all duration-300 ${currentStep === "bank-selection"
-              ? "w-1/3"
-              : currentStep === "qr-generation"
-                ? "w-2/3"
-                : "w-full"
+            ? "w-1/3"
+            : currentStep === "qr-generation"
+              ? "w-2/3"
+              : "w-full"
             }`}
         />
       </div>
@@ -122,28 +122,30 @@ function PaymentPage() {
       {/* Paso 1: Selección de banco */}
       <div
         className={`transition-transform duration-300 ${currentStep !== "bank-selection"
-            ? "-translate-x-full opacity-0 absolute"
-            : "opacity-100"
+          ? "-translate-x-full opacity-0 absolute"
+          : "opacity-100"
           }`}
       >
         <h2 className="text-3xl font-bold mb-6 text-center">Selecciona tu banco</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {BANK_DETAILS.map((bank) => (
-            <Button
-              key={bank.name}
-              variant="outline"
-              className="h-32 w-32 flex flex-col items-center justify-center gap-2 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
-              style={{ backgroundColor: bank.backgroundColor }}
-              onClick={() => handleBankSelect(bank.name)}
-            >
-              <img
-                src={bank.logo}
-                alt={bank.name}
-                className="h-16 w-16 object-contain"
-              />
-              <span className="text-lg font-medium text-white">{bank.name}</span>
-            </Button>
-          ))}
+        <div className="flex flex-col items-center w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {BANK_DETAILS.map((bank) => (
+              <Button
+                key={bank.name}
+                variant="outline"
+                className="h-32 w-32 flex flex-col items-center justify-center gap-2 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                style={{ backgroundColor: bank.backgroundColor }}
+                onClick={() => handleBankSelect(bank.name)}
+              >
+                <img
+                  src={bank.logo}
+                  alt={bank.name}
+                  className="h-16 w-16 object-contain"
+                />
+                <span className="text-lg font-medium text-white">{bank.name}</span>
+              </Button>
+            ))}
+          </div>
         </div>
         <div className="mt-6 flex justify-center">
           <Button
@@ -159,8 +161,8 @@ function PaymentPage() {
       {/* Paso 2: Generación de QR */}
       <div
         className={`transition-transform duration-300 ${currentStep !== "qr-generation"
-            ? "translate-x-full opacity-0 absolute"
-            : "opacity-100"
+          ? "translate-x-full opacity-0 absolute"
+          : "opacity-100"
           }`}
       >
         <h2 className="text-3xl font-bold mb-6 text-center">Pago con {selectedBank}</h2>
@@ -202,8 +204,8 @@ function PaymentPage() {
       {/* Paso 3: Registro de transacción */}
       <div
         className={`transition-transform duration-300 ${currentStep !== "transaction-registration"
-            ? "translate-x-full opacity-0 absolute"
-            : "opacity-100"
+          ? "translate-x-full opacity-0 absolute"
+          : "opacity-100"
           }`}
       >
         <h2 className="text-3xl font-bold mb-6 text-center">Registrar transacción</h2>
@@ -270,5 +272,5 @@ function PaymentPage() {
         </div>
       </div>
     </div>
-    );
+  );
 }
