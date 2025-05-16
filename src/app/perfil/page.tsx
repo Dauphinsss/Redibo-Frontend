@@ -240,12 +240,9 @@ export default function ProfilePage() {
             {/* Contenido principal con botón de menú para móvil */}
             <SidebarInset>
                 <div className="flex items-center p-2 bg-white md:hidden border rounded-lg m-4 z-50 fixed ">
-                <SidebarTrigger className="mr-3">
+                <SidebarTrigger>
                   <Menu className="h-5 w-5" />
                 </SidebarTrigger>
-                <h2 className="text-base font-medium">
-                  {sectionTitles[activeSection]}
-                </h2>
                 </div>
 
               <main className="flex-1  w-full mt-8 sm:p-10">
