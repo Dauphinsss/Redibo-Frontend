@@ -110,23 +110,21 @@ function PaymentPage() {
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-50">
       <div className="relative h-2 bg-gray-200 rounded-full w-full max-w-lg mb-8">
         <div
-          className={`absolute top-0 left-0 h-full bg-primary transition-all duration-300 ${
-            currentStep === "bank-selection"
+          className={`absolute top-0 left-0 h-full bg-primary transition-all duration-300 ${currentStep === "bank-selection"
               ? "w-1/3"
               : currentStep === "qr-generation"
-              ? "w-2/3"
-              : "w-full"
-          }`}
+                ? "w-2/3"
+                : "w-full"
+            }`}
         />
       </div>
 
       {/* Paso 1: Selección de banco */}
       <div
-        className={`transition-transform duration-300 ${
-          currentStep !== "bank-selection"
+        className={`transition-transform duration-300 ${currentStep !== "bank-selection"
             ? "-translate-x-full opacity-0 absolute"
             : "opacity-100"
-        }`}
+          }`}
       >
         <h2 className="text-3xl font-bold mb-6 text-center">Selecciona tu banco</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -160,11 +158,10 @@ function PaymentPage() {
 
       {/* Paso 2: Generación de QR */}
       <div
-        className={`transition-transform duration-300 ${
-          currentStep !== "qr-generation"
+        className={`transition-transform duration-300 ${currentStep !== "qr-generation"
             ? "translate-x-full opacity-0 absolute"
             : "opacity-100"
-        }`}
+          }`}
       >
         <h2 className="text-3xl font-bold mb-6 text-center">Pago con {selectedBank}</h2>
         <div className="text-center">
@@ -204,11 +201,10 @@ function PaymentPage() {
 
       {/* Paso 3: Registro de transacción */}
       <div
-        className={`transition-transform duration-300 ${
-          currentStep !== "transaction-registration"
+        className={`transition-transform duration-300 ${currentStep !== "transaction-registration"
             ? "translate-x-full opacity-0 absolute"
             : "opacity-100"
-        }`}
+          }`}
       >
         <h2 className="text-3xl font-bold mb-6 text-center">Registrar transacción</h2>
         <div className="space-y-4">
@@ -221,9 +217,18 @@ function PaymentPage() {
               type="text"
               value={transactionId}
               onChange={(e) => {
-                setTransactionId(e.target.value);
-                if (transactionIdError) setTransactionIdError("");
+                // Solo números
+                const value = e.target.value.replace(/\D/g, "");
+                setTransactionId(value);
+
+                // Validación en tiempo real
+                if (value.length > 0 && (value.length < 8 || value.length > 32)) {
+                  setTransactionIdError("El ID debe tener entre 8 y 32 dígitos numéricos.");
+                } else {
+                  setTransactionIdError("");
+                }
               }}
+              maxLength={32}
               placeholder="Ingrese el ID de transacción"
               className={`h-10 px-4 ${transactionIdError ? "border border-red-500" : ""}`}
             />
@@ -251,6 +256,10 @@ function PaymentPage() {
                   setTransactionIdError("ID de transacción obligatorio");
                   return;
                 }
+                if (!/^\d{8,32}$/.test(transactionId)) {
+                  setTransactionIdError("El ID debe tener entre 8 y 32 dígitos numéricos.");
+                  return;
+                }
                 handleTransactionSubmit();
               }}
               disabled={submitting}
@@ -261,5 +270,5 @@ function PaymentPage() {
         </div>
       </div>
     </div>
-  );
+    );
 }
