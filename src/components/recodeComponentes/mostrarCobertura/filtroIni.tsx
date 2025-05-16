@@ -1,32 +1,137 @@
 'use client';
-import { useEffect, useState } from 'react';
+
+import { useEffect, useState, useRef } from 'react';
+import { CalendarDaysIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const opcionesFechas = [
-  { inicio: '2025-05-16', fin: '2025-05-19', ciudad: 'Cochabamba' },
+  { inicio: '2025-05-17', fin: '2025-05-24', ciudad: 'Cochabamba' },
   { inicio: '2025-05-18', fin: '2025-05-25', ciudad: 'Cochabamba' },
   { inicio: '2025-05-19', fin: '2025-05-22', ciudad: 'Cochabamba' },
 ];
 
-export default function FechasAlquiler({ onFechasSeleccionadas }: { onFechasSeleccionadas: (fechas: { inicio: string, fin: string }) => void }) {
+export default function FechasAlquiler({
+  
+  onFechasSeleccionadas,
+}: {
+  onFechasSeleccionadas: (fechas: { inicio: string; fin: string }) => void;
+}) {
   const [seleccion, setSeleccion] = useState(opcionesFechas[0]);
+  const [mostrandoPicker, setMostrandoPicker] = useState(false);
+  const [rangoFechas, setRangoFechas] = useState<[Date | null, Date | null]>([
+    new Date(seleccion.inicio),
+    new Date(seleccion.fin),
+  ]);
+  const pickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const random = Math.floor(Math.random() * opcionesFechas.length);
-    setSeleccion(opcionesFechas[random]);
-    onFechasSeleccionadas(opcionesFechas[random]);
+    const fecha = opcionesFechas[random];
+    setSeleccion(fecha);
+    setRangoFechas([new Date(fecha.inicio), new Date(fecha.fin)]);
+    onFechasSeleccionadas(fecha);
   }, [onFechasSeleccionadas]);
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setMostrandoPicker(false);
+      }
+    };
+    if (mostrandoPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [mostrandoPicker]);
+
+  const formato = (fecha: string) =>
+    new Date(fecha).toLocaleDateString("es-BO", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+
+  const aplicarFechas = (dates: [Date | null, Date | null]) => {
+    setRangoFechas(dates);
+    const [inicio, fin] = dates;
+    if (inicio && fin) {
+      const nuevo = {
+        inicio: inicio.toISOString().split("T")[0],
+        fin: fin.toISOString().split("T")[0],
+        ciudad: seleccion.ciudad,
+      };
+      setSeleccion(nuevo);
+      onFechasSeleccionadas(nuevo);
+      setMostrandoPicker(false);
+    }
+  };
+
   return (
-    <div className="flex justify-center gap-4 border p-4 rounded">
-      <div className="text-center">
-        <strong>{seleccion.ciudad}</strong>
-        <p>{new Date(seleccion.inicio).toLocaleDateString('es-BO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
+    <div className="w-full max-w-[760px] mx-auto bg-white border border-gray-300 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+      {/* Resumen */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-6 w-full">
+        <div className="flex items-center gap-2">
+          <CalendarDaysIcon className="h-5 w-5 text-gray-600" />
+          <div>
+            <p className="text-xs text-gray-500">Desde</p>
+            <p className="text-sm font-medium text-black">{formato(seleccion.inicio)}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <CalendarDaysIcon className="h-5 w-5 text-gray-600" />
+          <div>
+            <p className="text-xs text-gray-500">Hasta</p>
+            <p className="text-sm font-medium text-black">{formato(seleccion.fin)}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-500">Ciudad</span>
+          <span className="text-sm font-semibold text-black">{seleccion.ciudad}</span>
+        </div>
       </div>
-      <div className="text-center">
-        <strong>{seleccion.ciudad}</strong>
-        <p>{new Date(seleccion.fin).toLocaleDateString('es-BO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
+
+      {/* Botón + Calendario */}
+      <div className="relative" ref={pickerRef}>
+        <button
+          className="flex items-center gap-1 text-sm font-medium bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition"
+          onClick={() => setMostrandoPicker((prev) => !prev)}
+        >
+          <PencilSquareIcon className="h-4 w-4" />
+          Editar
+        </button>
+
+        {mostrandoPicker && (
+          <div className="absolute top-full left-0 mt-2 z-50 bg-white p-4 rounded shadow border border-gray-300">
+            <DatePicker
+              selected={rangoFechas[0]}
+              onChange={(update) => aplicarFechas(update as [Date, Date])}
+              startDate={rangoFechas[0]}
+              endDate={rangoFechas[1]}
+              selectsRange
+              inline
+              calendarClassName="bg-white border border-gray-300 text-black rounded"
+              dayClassName={(date) => {
+                const [start, end] = rangoFechas;
+                const isSelected =
+                  start && end && date >= start && date <= end;
+                const isStart = start && date.toDateString() === start.toDateString();
+                const isEnd = end && date.toDateString() === end.toDateString();
+
+                if (isStart || isEnd) {
+                  return "bg-black text-white rounded-full font-semibold";
+                } else if (isSelected) {
+                  return "bg-neutral-800 text-white rounded-md";
+                }
+                return "text-black hover:bg-black hover:text-white transition rounded-md";
+              }}
+            />
+          </div>
+        )}
       </div>
-      <button className="bg-black text-white px-3 py-1 rounded">Edit</button>
     </div>
   );
 }
