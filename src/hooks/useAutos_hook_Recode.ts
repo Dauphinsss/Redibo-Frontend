@@ -62,28 +62,6 @@ export function useAutos(cantidadPorLote = 8) {
         }
 
         {/* Filtro de fechas */}
-        if (fechaFiltroInicio || fechaFiltroFin) {
-          resultado = resultado.filter(auto => {
-            const desde = new Date(auto.disponible_desde);
-            const hasta = new Date(auto.disponible_hasta);
-            console.log("Desde:", desde, "Hasta:", hasta);
-            console.log("Fecha Inicio:", fechaFiltroInicio, "Fecha Fin:", fechaFiltroFin);
-
-            if (fechaFiltroInicio && fechaFiltroFin) {
-              const inicio = new Date(fechaFiltroInicio);
-              const fin = new Date (fechaFiltroFin);
-              return desde <= inicio && hasta >= fin;
-            } else if (fechaFiltroInicio) {
-              const inicio = new Date(fechaFiltroInicio);
-              return desde <= inicio;
-            } else if (fechaFiltroFin) {
-              const fin = new Date(fechaFiltroFin);
-              return hasta >= fin;
-            }
-
-            return true;
-          });
-        }
 
         switch (ordenSeleccionado) {
             case 'Modelo Ascendente':
