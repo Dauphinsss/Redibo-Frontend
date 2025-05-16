@@ -140,13 +140,29 @@ export default function CompleteRegisterForm() {
     });
   };
   const handleCiudadChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = Number(e.target.value);
-    setCiudad(value);
+  const value = Number(e.target.value);
+  setCiudad(value);
+  setCiudadTouched(true);
+
+  setErrores(prev => {
+    const newErr = { ...prev };
+      if (value !== 0) {
+        // Elimina el error si ya eligió ciudad válida
+        delete newErr.ciudad;
+      } else {
+        // Vuelve a poner el error si sigue en la opción 0
+        newErr.ciudad = "Debes seleccionar una ciudad";
+      }
+      return newErr;
+    });
+  };
+  const handleCiudadBlur = () => {
     setCiudadTouched(true);
-    setErrores((prev) => {
+    setErrores(prev => {
       const newErr = { ...prev };
-      if (value && value !== 0) delete newErr.ciudad;
-      else if (ciudadTouched) newErr.ciudad = "Debes seleccionar una ciudad";
+      if (ciudad === 0) {
+        newErr.ciudad = "Debes seleccionar una ciudad";
+      }
       return newErr;
     });
   };
@@ -313,16 +329,10 @@ export default function CompleteRegisterForm() {
               <div className="flex flex-col gap-2">
                 <select
                   value={ciudad}
-                  onChange={(e) => {
-                    const value = Number(e.target.value);
-                    setCiudad(value);
-                    setCiudadTouched(true);
-                  }}
-                  onBlur={() => {
-                    setCiudadTouched(true);
-                  }}
+                  onChange={handleCiudadChange}
+                  onBlur={handleCiudadBlur}
                   className={`w-full h-10 px-3 border rounded-md text-sm ${
-                    ciudadTouched && ciudad === 0 ? "border-red-500" : ""
+                    ciudadTouched && errores.ciudad ? "border-red-500" : ""
                   }`}
                 >
                   <option value={0}>Selecciona una ciudad</option>
@@ -332,10 +342,9 @@ export default function CompleteRegisterForm() {
                     </option>
                   ))}
                 </select>
-                {ciudadTouched && ciudad === 0 && (
-                  <p className="text-sm text-red-500 mt-1">
-                    Debes seleccionar una ciudad
-                  </p>
+
+                {ciudadTouched && errores.ciudad && (
+                  <p className="text-sm text-red-500 mt-1">{errores.ciudad}</p>
                 )}
               </div>
             </div>
