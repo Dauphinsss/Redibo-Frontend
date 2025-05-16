@@ -45,6 +45,7 @@ type SectionType = "personal" | "payments" | "driver" | "ratings" | "vehicles" |
 export default function ProfilePage() {
   const [activeSection, setActiveSection] = useState<SectionType>("personal");
   const [roles, setRoles] = useState<string[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -138,7 +139,7 @@ export default function ProfilePage() {
     localStorage.clear();       // Limpia toda la sesión
     window.location.href = "/"; // Redirige a la página de inicio
   };
-  
+
   return (
     <div className="flex flex-col  w-full max-w-full overflow-hidden bg-gray-50">
       <div className="flex-1">
@@ -148,7 +149,9 @@ export default function ProfilePage() {
             <Sidebar
               side="left"
               collapsible="offcanvas"
-              className="border-r border-gray-100 shadow-sm bg-white "
+              className="border-r border-gray-100 shadow-sm bg-white"
+              open={isSidebarOpen}
+              onOpenChange={setIsSidebarOpen}
             >
               <SidebarContent className="p-2 bg-white">
                 <div className="mb-2 px-3 py-2">
@@ -161,17 +164,14 @@ export default function ProfilePage() {
 
                 <SidebarMenu className="bg-white">
                   {menuItems.map((item) => {
-                    // Mostrar el ítem si siempre debe mostrarse o si el usuario tiene el rol requerido
-                    if (
-                      item.alwaysShow ||
-                      (item.requiresRole && roles.includes(item.requiresRole))
-                    ) {
+                    if (item.alwaysShow || (item.requiresRole && roles.includes(item.requiresRole))) {
                       return (
                         <SidebarMenuItem key={item.id}>
                           <SidebarMenuButton
-                            onClick={() =>
-                              setActiveSection(item.id as SectionType)
-                            }
+                            onClick={() => {
+                              setActiveSection(item.id as SectionType);
+                              setIsSidebarOpen(false);
+                            }}
                             isActive={activeSection === item.id}
                             className={cn(
                               "justify-start rounded-lg transition-all duration-200 px-3 py-2 text-sm my-1",
@@ -226,24 +226,24 @@ export default function ProfilePage() {
               </SidebarContent>
 
               <SidebarFooter className="p-4 border-t border-gray-100">
-              <Button
-                variant="outline"
-                className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
-                onClick={handleLogout}
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Cerrar sesión
-              </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Cerrar sesión
+                </Button>
               </SidebarFooter>
             </Sidebar>
 
             {/* Contenido principal con botón de menú para móvil */}
             <SidebarInset>
-                <div className="flex items-center p-2 bg-white md:hidden border rounded-lg m-4 z-50 fixed ">
-                <SidebarTrigger>
+              <div className="flex items-center p-2 bg-white md:hidden border rounded-lg m-4 z-50 fixed ">
+                <SidebarTrigger onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
                   <Menu className="h-5 w-5" />
                 </SidebarTrigger>
-                </div>
+              </div>
 
               <main className="flex-1  w-full mt-8 sm:p-10">
                 <ProfileHeader />
@@ -255,7 +255,7 @@ export default function ProfilePage() {
                         {sectionTitles[activeSection]}
                       </h1>
                       <p className="text-sm text-gray-500 mt-1">
-                      Gestiona tu información personal y configuración de cuenta
+                        Gestiona tu información personal y configuración de cuenta
                       </p>
                     </div>
                     <div className="p-4 md:p-6">{renderContent()}</div>
