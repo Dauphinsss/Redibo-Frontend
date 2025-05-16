@@ -88,6 +88,8 @@ export default function Home() {
                 filtrarAutos(busqueda, fechaInicio, fecha)
               }}
               onAplicarFiltro={(inicio, fin) => filtrarAutos(busqueda, inicio, fin)}
+              autosActuales={autosActuales}
+              autosTotales={autosFiltrados}
             />
 
             <Link href="/filtrarAeropuerto"

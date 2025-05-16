@@ -7,6 +7,8 @@ interface Props {
     fechaFin: string;
     setFechaInicio: (fecha: string) => void;
     setFechaFin: (fecha: string) => void;
+    autosActuales: any[];
+    autosTotales: any[];
     onAplicarFiltro: (inicio: string, fin: string) => void;
 }
 
@@ -16,6 +18,8 @@ const DateRangeFilter: React.FC<Props> = ({
     setFechaInicio,
     setFechaFin,
     searchTerm,
+    autosActuales,
+    autosTotales,
 }) => {
     const [mostrarFiltro, setMostrarFiltro] = useState(false);
     const estaVacio = searchTerm.length === 0;
@@ -85,6 +89,10 @@ const DateRangeFilter: React.FC<Props> = ({
                             title={estaVacio ? "Primero ingrese un término de búsqueda" : ""}
                             />
                         </div>
+                    </div>
+
+                    <div className="mt-3 text-xs text-center text-gray-600 bg-gray-100 rounded p-2">
+                        Mostrando {autosActuales.length} de {autosTotales.length} resultados
                     </div>
                 </div>
             )}
