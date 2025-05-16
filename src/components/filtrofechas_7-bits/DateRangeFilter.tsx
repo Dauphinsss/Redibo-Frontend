@@ -44,7 +44,7 @@ const DateRangeFilter: React.FC<Props> = ({
         <div className="relative" ref={filtroRef}>
             <button
                 onClick={() => setMostrarFiltro(!mostrarFiltro)}
-                className="bg-gray-800 text-white font-semibold px-4 py-2 rounded-lg hover:bg-gray-700"
+                className="bg-white text-black font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100"
             >
                 Filtrar por Fechas
             </button>

@@ -91,7 +91,7 @@ export default function Home() {
             />
 
             <Link href="/filtrarAeropuerto"
-              className="text-white text-center font-semibold bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 rounded-lg text-md px-4 py-2 me-2 mb-2"
+              className="text-black text-center font-semibold bg-white hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-300 rounded-md text-md px-4 py-2 me-2 mb-2 border border-gray-300"
             >Filtrar por Aeropuerto</Link>
           </div>
 
