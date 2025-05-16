@@ -181,11 +181,11 @@ export function ReservationsList() {
                       <TableCell>{order.placa}</TableCell>
                       <TableCell>{formatCurrency(order.monto_a_pagar)}</TableCell>
                       <TableCell>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium text-white ${
-                          order.estado === "CANCELADO" ? "bg-red-600" : 
-                          order.estado === "PENDIENTE" ? "bg-yellow-600" : 
-                          order.estado === "COMPLETADO" ? "bg-green-600" :
-                          order.estado === "PROCESANDO" ? "bg-purple-600" : ""
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          order.estado === "CANCELADO" ? "text-white bg-red-600" : 
+                          order.estado === "PENDIENTE" ? "text-black bg-gray-300" : 
+                          order.estado === "COMPLETADO" ? "text-white bg-green-600" :
+                          order.estado === "PROCESANDO" ? "text-black bg-gray-300" : "text-white"
                         }`}>
                           {order.estado}
                         </span>
@@ -238,10 +238,10 @@ export function ReservationsList() {
                 <h3 className="font-medium">Información del Código</h3>
                 <p className="text-gray-700">Código: <span className="font-bold">{selectedOrder.codigo}</span></p>
                 <p className="text-gray-700">Estado: 
-                  <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium text-white ${
-                    selectedOrder.estado === "PAGADO" || selectedOrder.estado === "COMPLETADO" ? "bg-green-600" : 
-                    selectedOrder.estado === "PENDIENTE" ? "bg-yellow-600" : 
-                    selectedOrder.estado === "PROCESANDO" ? "bg-purple-600" : "bg-red-600"
+                  <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
+                    selectedOrder.estado === "PAGADO" || selectedOrder.estado === "COMPLETADO" ? "text-white bg-green-600" : 
+                    selectedOrder.estado === "PENDIENTE" ? "text-black bg-gray-300" : 
+                    selectedOrder.estado === "PROCESANDO" ? "text-black bg-gray-300" : "text-white bg-red-600"
                   }`}>
                     {selectedOrder.estado}
                   </span>
