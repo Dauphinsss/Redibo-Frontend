@@ -62,33 +62,39 @@ export function useAutos(cantidadPorLote = 8) {
         }
 
         {/* Filtro de fechas */}
-        if (fechaFiltroInicio && fechaFiltroFin) {
-          const inicioFiltro = new Date(fechaFiltroInicio);
-          const finFiltro = new Date(fechaFiltroFin);
+        resultado = resultado.filter(auto => {
+          
+          {/* Si no tiene reservas, siempre mostrar */}
+          if (!auto.reservas || auto.reservas.length === 0) return true;
 
-          resultado = resultado.filter (auto => {
-            {/* Si no tiene reservas, el auto se muestra */}
-            if (!auto.reservas || auto.reservas.length === 0) return true;
+          const filtroInicio = fechaFiltroInicio ? new Date(fechaFiltroInicio) : null;
+          const filtroFin = fechaFiltroFin ? new Date(fechaFiltroFin) : null;
 
-            {/* Se revisa cada reserva */}
-            for (const reserva of auto.reservas) {
-              {/* Solo tomamos reservas "pendiente" o "confirmado" */}
-              if (reserva.estado !== "pendiente" && reserva.estado !== "confirmado") continue;
+          {/* Devuelve TRUE si ninguna reserva interfiere, FALSE si alguna choca */}
+          return !auto.reservas.some(reserva => {
+            if (!['pendiente', 'confirmado'].includes(reserva.estado)) return false;
 
-              const inicioReserva = new Date(reserva.fecha_inicio);
-              const finReserva = new Date(reserva.fecha_fin);
+            const inicioReserva = new Date(reserva.fecha_inicio);
+            const finReserva = new Date(reserva.fecha_fin);
 
-              {/* Si la reserva se cruza con el rango filtrado, el auto no debe mostrarse */}
-              const seCruza = (inicioReserva <= finFiltro && finReserva >= inicioFiltro);
-
-              if (seCruza) {
-                return false;
-              }
+            if (filtroInicio && !filtroFin) {
+              return finReserva >= filtroInicio;
             }
 
-            return true;
+            if (!filtroInicio && filtroFin) {
+              return inicioReserva <= filtroFin;
+            }
+
+            if (filtroInicio && filtroFin) {
+              return (
+                inicioReserva <= filtroFin &&
+                finReserva >= filtroInicio
+              );
+            }
+            return false;
           });
-        }
+        });
+
 
         switch (ordenSeleccionado) {
             case 'Modelo Ascendente':
