@@ -310,19 +310,34 @@ export default function CompleteRegisterForm() {
 
             <div className="space-y-2">
               <Label>Ciudad *</Label>
-              <select
-                value={ciudad}
-                onChange={handleCiudadChange}
-                className="w-full h-10 px-3 border rounded-md"
-              >
-                <option value={0} disabled>Selecciona una ciudad</option>
-                {ciudades.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nombre}
-                  </option>
-                ))}
-              </select>
-              {ciudadTouched && errores.ciudad && <p className="text-sm text-red-500 mt-1">{errores.ciudad}</p>}
+              <div className="flex flex-col gap-2">
+                <select
+                  value={ciudad}
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    setCiudad(value);
+                    setCiudadTouched(true);
+                  }}
+                  onBlur={() => {
+                    setCiudadTouched(true);
+                  }}
+                  className={`w-full h-10 px-3 border rounded-md text-sm ${
+                    ciudadTouched && ciudad === 0 ? "border-red-500" : ""
+                  }`}
+                >
+                  <option value={0}>Selecciona una ciudad</option>
+                  {ciudades.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nombre}
+                    </option>
+                  ))}
+                </select>
+                {ciudadTouched && ciudad === 0 && (
+                  <p className="text-sm text-red-500 mt-1">
+                    Debes seleccionar una ciudad
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
