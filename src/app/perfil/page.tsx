@@ -150,8 +150,6 @@ export default function ProfilePage() {
               side="left"
               collapsible="offcanvas"
               className="border-r border-gray-100 shadow-sm bg-white"
-              open={isSidebarOpen}
-              onOpenChange={setIsSidebarOpen}
             >
               <SidebarContent className="p-2 bg-white">
                 <div className="mb-2 px-3 py-2">
