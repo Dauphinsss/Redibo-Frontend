@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { notFound } from "next/navigation";
 import FormularioSolicitud from "@/components/recodeComponentes/notificacionSoli/Notificacion_envio_host_Recode";
+import { NotificacionesCampana } from "@/components/recodeComponentes/notificacionSoli/campana";
 import Header from "@/components/ui/Header";
+import { Notificacion } from "@/interface/NotificacionSolicitud_Recode";
 
 interface PageParams {
   params: { id: string };
@@ -10,6 +13,7 @@ interface PageParams {
 
 export default function CondicionVisualPage({ params }: PageParams) {
   const id_carro = Number(params.id);
+  const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
 
   if (isNaN(id_carro) || id_carro <= 0) {
     notFound();
@@ -19,16 +23,36 @@ export default function CondicionVisualPage({ params }: PageParams) {
     console.log("Solicitud enviada con éxito");
   };
 
+  const handleNuevaNotificacion = (notificacion: Notificacion) => {
+    setNotificaciones(prev => [...prev, notificacion]);
+  };
+
   return (
-    <main className="p-4 max-w-4xl mx-auto">
+    <main className="p-4 max-w-7xl mx-auto">
       <Header />
-      <h1 className="text-2xl font-bold mb-6 text-center">
-        Formulario de Reserva
-      </h1>
-      <FormularioSolicitud 
-        id_carro={id_carro} 
-        onSolicitudExitosa={handleSolicitudExitosa} 
-      />
+      
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Columna izquierda - Formulario */}
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold mb-6 text-center">
+            Formulario de Reserva
+          </h1>
+          <FormularioSolicitud
+            id_carro={id_carro}
+            onSolicitudExitosa={handleSolicitudExitosa}
+            onNuevaNotificacion={handleNuevaNotificacion}
+          />
+        </div>
+        
+        {/* Columna derecha - Notificaciones */}
+        <div className="lg:w-96">
+          <NotificacionesCampana 
+            notificaciones={notificaciones}
+            onAceptar={(id) => console.log('Aceptar:', id)}
+            onRechazar={(id) => console.log('Rechazar:', id)}
+          />
+        </div>
+      </div>
     </main>
   );
 }
