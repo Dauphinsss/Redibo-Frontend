@@ -248,8 +248,6 @@ export default function FormularioSolicitud({
       {/* 4. Tabla de Condiciones */}
       <TablaCondicionesVisual_Recode 
         id_carro={id_carro}
-        showNotification={showNotification}
-        setShowNotification={setShowNotification}
       />
 
       {/* 5. Formulario de contacto */}
