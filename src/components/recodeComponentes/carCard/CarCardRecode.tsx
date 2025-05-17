@@ -24,7 +24,6 @@ function RecodeCarCard(props: Auto) {
     combustibles,
     estadoAlquiler,
     nombreHost,
-    calificacionAuto,
     ciudad,
     calle,
     precioOficial,
@@ -34,7 +33,7 @@ function RecodeCarCard(props: Auto) {
   } = props;
 
   const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(combustibles[0]);
-  const { calificaciones, promedioCalificacion } = useCalificaciones(idAuto);
+  const {promedioCalificacion } = useCalificaciones(idAuto);
 
   return (
     <div className="w-full max-w-[750px] md:h-[320px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-4">
