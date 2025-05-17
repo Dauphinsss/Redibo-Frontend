@@ -83,7 +83,12 @@ export default function TablaCondicionesVisual_Recode({
       <div className="mb-6">{renderContent()}</div>
 
       {showNotification && (
-        <NotificacionEnvioExitoso_recode onClose={() => setShowNotification(false)} />
+        <NotificacionEnvioExitoso_recode 
+          onClose={() => setShowNotification(false)}
+          hostNombre=""
+          fechaInicio=""
+          fechaFin=""
+        />
       )}
     </div>
   );

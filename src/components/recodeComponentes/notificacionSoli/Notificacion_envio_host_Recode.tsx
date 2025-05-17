@@ -260,6 +260,8 @@ export default function FormularioSolicitud({
             <label className="block text-sm font-medium mb-1">Tu nombre*</label>
             <input
               type="text"
+              title="Tu nombre completo"
+              placeholder="Ej. Juan Pérez"
               value={renterNombre}
               onChange={(e) => setRenterNombre(e.target.value)}
               className="w-full p-2 border rounded"
@@ -270,6 +272,8 @@ export default function FormularioSolicitud({
             <label className="block text-sm font-medium mb-1">Tu email*</label>
             <input
               type="email"
+              title="Tu correo electrónico"
+              placeholder="Ej. juan@email.com"
               value={renterEmail}
               onChange={(e) => setRenterEmail(e.target.value)}
               className="w-full p-2 border rounded"
@@ -280,6 +284,8 @@ export default function FormularioSolicitud({
             <label className="block text-sm font-medium mb-1">Nombre del dueño</label>
             <input
               type="text"
+              title="Nombre del dueño"
+              placeholder="Ej. Ana López"
               value={hostNombre}
               onChange={(e) => setHostNombre(e.target.value)}
               className="w-full p-2 border rounded"
@@ -289,6 +295,8 @@ export default function FormularioSolicitud({
             <label className="block text-sm font-medium mb-1">Email del dueño</label>
             <input
               type="email"
+              title="Correo del dueño"
+              placeholder="Ej. ana@email.com"
               value={hostEmail}
               onChange={(e) => setHostEmail(e.target.value)}
               className="w-full p-2 border rounded"
