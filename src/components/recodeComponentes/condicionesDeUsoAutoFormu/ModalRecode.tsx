@@ -1,32 +1,30 @@
 "use client";
 
-import { Dialog, Transition } from "@headlessui/react";
-import { BiHelpCircle } from "react-icons/bi";
-import { Fragment, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useEffect } from "react";
 import {
-    CheckCircleIcon,
-    ExclamationCircleIcon,
-    XCircleIcon,
-} from "@heroicons/react/24/outline";
+    CheckCircle,
+    XCircle,
+    AlertTriangle,
+    HelpCircle,
+} from "lucide-react";
 
-type Variant = "success" | "error" | "question" | "warning";
-
-interface ModalRecodeProps {
+interface Props {
     isOpen: boolean;
     onClose: () => void;
     title: string;
     description: string;
-    variant?: Variant;
+    variant: "success" | "error" | "warning" | "question";
     autoCloseAfter?: number;
+    showConfirm?: boolean;
+    onConfirm?: () => void;
     children?: React.ReactNode;
 }
 
-const iconByVariant: Record<Variant, React.ReactNode> = {
-    success: <CheckCircleIcon className="h-8 w-8 text-green-600" />,
-    error: <XCircleIcon className="h-8 w-8 text-red-600" />,
-    warning: <ExclamationCircleIcon className="h-8 w-8 text-yellow-500" />,
-    question: <BiHelpCircle className="h-8 w-8 text-blue-600" />,
+const icons = {
+    success: <CheckCircle className="h-6 w-6 text-green-600" />,
+    error: <XCircle className="h-6 w-6 text-red-600" />,
+    warning: <AlertTriangle className="h-6 w-6 text-yellow-600" />,
+    question: <HelpCircle className="h-6 w-6 text-blue-600" />,
 };
 
 export default function ModalRecode({
@@ -34,82 +32,51 @@ export default function ModalRecode({
     onClose,
     title,
     description,
-    variant = "success",
+    variant,
     autoCloseAfter,
+    showConfirm,
+    onConfirm,
     children,
-}: ModalRecodeProps) {
-    // Cierre automático si se indica
+}: Props) {
     useEffect(() => {
-        if (isOpen && autoCloseAfter) {
-        const timer = setTimeout(() => {
-            onClose();
+        if (!isOpen || !autoCloseAfter) return;
+        const timeout = setTimeout(() => {
+        onClose();
         }, autoCloseAfter);
-        return () => clearTimeout(timer);
-        }
+        return () => clearTimeout(timeout);
     }, [isOpen, autoCloseAfter, onClose]);
 
+    if (!isOpen) return null;
+
     return (
-        <Transition show={isOpen} as={Fragment}>
-            <Dialog onClose={onClose} className="relative z-50">
-                {/* Fondo oscuro */}
-                <Transition.Child
-                    as={Fragment}
-                    enter="ease-out duration-200"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="ease-in duration-150"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                >
-                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-                </Transition.Child>
-
-                {/* Contenido del modal */}
-                <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <Transition.Child
-                        as={Fragment}
-                        enter="ease-out duration-200"
-                        enterFrom="opacity-0 scale-95"
-                        enterTo="opacity-100 scale-100"
-                        leave="ease-in duration-150"
-                        leaveFrom="opacity-100 scale-100"
-                        leaveTo="opacity-0 scale-95"
-                    >
-                        <Dialog.Panel
-                            as={motion.div}
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl"
-                        >
-                            <div className="flex flex-col items-center text-center space-y-3">
-                                {iconByVariant[variant]}
-                                <Dialog.Title className="text-lg font-semibold text-black">
-                                    {title}
-                                </Dialog.Title>
-                                <Dialog.Description className="text-sm text-gray-700">
-                                    {description}
-                                </Dialog.Description>
-                            </div>
-
-                            {/*Renderiza contenido personalizado si se proporciona */}
-                            {children}
-
-                            {/*Botón por defecto solo si no se pasan children */}
-                            {!children && (
-                                <div className="mt-5 flex justify-center">
-                                    <button
-                                        onClick={onClose}
-                                        className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition"
-                                    >
-                                        Cerrar
-                                    </button>
-                                </div>
-                            )}
-                        </Dialog.Panel>
-                    </Transition.Child>
+        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center px-4">
+            <div className="bg-white max-w-sm w-full p-6 rounded-lg shadow-lg relative animate-fadeIn scale-100 transition-transform">
+                <div className="flex items-center gap-3 mb-4">
+                    {icons[variant]}
+                    <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
                 </div>
-            </Dialog>
-        </Transition>
+
+                <p className="text-sm text-gray-600 mb-4">{description}</p>
+
+                {showConfirm ? (
+                <div className="flex justify-end gap-3">
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300 transition"
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        onClick={onConfirm}
+                        className="px-4 py-2 text-sm bg-black text-white rounded hover:bg-gray-800 transition"
+                    >
+                        Confirmar
+                    </button>
+                </div>
+                ) : (
+                    children
+                )}
+            </div>
+        </div>
     );
 }
