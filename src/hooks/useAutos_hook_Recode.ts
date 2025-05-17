@@ -90,6 +90,19 @@ export function useAutos(cantidadPorLote = 8) {
         setAutosVisibles(prev => prev + cantidadPorLote);
     };
     
+    const aplicarFormatoOriginal = (base: string, sugerenciaCompleta: string): string => {
+      if (base === base.toLowerCase()) {
+        return sugerenciaCompleta.toLowerCase();
+      } else if (base === base.toUpperCase()) {
+        return sugerenciaCompleta.toUpperCase();
+      } else {
+        return sugerenciaCompleta.replace(/\w\S*/g, (txt) =>
+          txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
+        );
+      }
+    };
+
+
     const obtenerSugerencia = (busqueda: string): string => {
       if (!busqueda.trim()) return "";
     
@@ -128,7 +141,7 @@ export function useAutos(cantidadPorLote = 8) {
     
       const diferencia = sugerencia.slice(textoSinEspaciosExtra.length);
     
-      return busqueda + diferencia;
+      return aplicarFormatoOriginal(busqueda, busqueda + diferencia);
     };    
     
     
