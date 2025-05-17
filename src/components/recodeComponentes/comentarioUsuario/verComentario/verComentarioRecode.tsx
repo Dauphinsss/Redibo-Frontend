@@ -45,7 +45,7 @@ function VerComentario({nombreCompleto, fotoUser, fechaComentario, comentario, c
       </div>*/}
 
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 ">
-        <button className="flex items-center gap-2 px-4 py-2 text-black hover:bg-stone-300 rounded-lg self-start sm:self-auto">
+        <button className="flex items-center gap-2 px-4 py-2 text-gray-600 rounded-lg self-start sm:self-auto">{/*hover:bg-stone-300*/}
           <HiOutlineChat />
           Comentar
         </button>

@@ -34,7 +34,9 @@ export default function Home({ id }: HomeProps) {
   const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
  const promedioCalificacion = calificaciones.length > 0
   ? (calificaciones.reduce((acc, cal) => acc + cal, 0) / calificaciones.length).toFixed(1)
-  : "0.0";  const [ordenSeleccionado, setOrdenSeleccionado] = useState("Más reciente");
+  : "0.0";  
+  
+  const [ordenSeleccionado, setOrdenSeleccionado] = useState("Más reciente");
 
   const {
   comentariosFiltrados,
