@@ -26,7 +26,7 @@ function Devolucion_Recode({ respuestas, onCheckboxChange }: DevolucionRecodePro
         });
     };
     return (
-        <div className="space-y-4 px-4 py-4 bg-white rounded-lg shadow">
+        <div className="space-y-4 px-4 py-4 bg-white ">
             
             <div className="mb-2">
                 <label 
