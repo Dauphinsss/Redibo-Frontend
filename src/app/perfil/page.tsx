@@ -52,6 +52,8 @@ export default function ProfilePage() {
   const [activeSection, setActiveSection] = useState<SectionType>("personal");
   const [roles, setRoles] = useState<string[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [touchStartX, setTouchStartX] = useState(0);
+  const touchThreshold = 70; // deslizamiento válido
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -73,6 +75,42 @@ export default function ProfilePage() {
 
     fetchUserData();
   }, []);
+
+  const handleTouchStart = (e: TouchEvent): void => {
+    // detectar deslizamientos borde izquierdo
+    if (e.touches[0].clientX <= 30) {
+      setTouchStartX(e.touches[0].clientX);
+    }
+  };
+
+  const handleTouchEnd = (e: TouchEvent): void => {
+    if (touchStartX > 0) {
+      const touchEndX = e.changedTouches[0].clientX;
+      const deltaX = touchEndX - touchStartX;
+      if (deltaX > touchThreshold) {
+        // Emular un clic
+        const sidebarTrigger = document.querySelector('[data-sidebar-trigger="true"]') as HTMLElement;
+        if (sidebarTrigger) {
+          sidebarTrigger.click();
+        }
+        setIsSidebarOpen(!isSidebarOpen);
+      }
+      setTouchStartX(0);
+    }
+  };
+
+  useEffect(() => {
+    const handleTouchStartEvent = (e: TouchEvent): void => handleTouchStart(e);
+    const handleTouchEndEvent = (e: TouchEvent): void => handleTouchEnd(e);
+    
+    document.addEventListener('touchstart', handleTouchStartEvent, { passive: true });
+    document.addEventListener('touchend', handleTouchEndEvent, { passive: true });
+    
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStartEvent);
+      document.removeEventListener('touchend', handleTouchEndEvent);
+    };
+  }, [touchStartX]);
 
   const renderContent = () => {
     switch (activeSection) {
@@ -248,9 +286,16 @@ export default function ProfilePage() {
 
             {/* Contenido principal con botón de menú para móvil */}
             <SidebarInset>
+              <div 
+                className="fixed left-0 top-0 bottom-0 w-8 z-40 md:hidden" 
+                style={{ backgroundColor: 'transparent' }}
+                aria-hidden="true"
+              />
+              
               <div className="flex items-center p-2 bg-white md:hidden border rounded-lg m-4 z-50 fixed ">
                 <SidebarTrigger
                   onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                  data-sidebar-trigger="true"
                 >
                   <Menu className="h-5 w-5" />
                 </SidebarTrigger>
