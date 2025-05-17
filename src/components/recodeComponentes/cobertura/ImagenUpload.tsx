@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 
 interface Props {
   imagen: string;
@@ -6,6 +9,8 @@ interface Props {
 }
 
 export default function SubirImagenCloudinary({ imagen, setImagen }: Props) {
+  const [cargando, setCargando] = useState(false);
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -15,13 +20,16 @@ export default function SubirImagenCloudinary({ imagen, setImagen }: Props) {
     formData.append("upload_preset", "auto_cobertura");
 
     try {
-      const response = await fetch("https://api.cloudinary.com/v1_1/dzoeeaovz/image/upload", {
-        method: "POST",
-        body: formData,
-      });
+      setCargando(true);
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/dzoeeaovz/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const data = await response.json();
-      console.log(data);
       if (data.secure_url) {
         setImagen(data.secure_url);
       } else {
@@ -31,30 +39,32 @@ export default function SubirImagenCloudinary({ imagen, setImagen }: Props) {
     } catch (err) {
       console.error("Upload failed:", err);
       alert("Falló la subida a Cloudinary");
+    } finally {
+      setCargando(false);
     }
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center w-full">
       <label
         htmlFor="file-upload"
-        className="w-full flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition p-6"
+        className="w-full max-w-md flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition p-6"
       >
         {imagen ? (
           <div className="relative w-64 h-64 border border-black rounded overflow-hidden">
             <Image
               src={imagen}
               alt="Imagen de cobertura"
-              width={256}
-              height={256}
+              fill
               className="object-cover"
               unoptimized
-          />
-
+            />
           </div>
         ) : (
           <div className="text-center">
-            <p className="text-gray-500 font-medium">Haz clic para subir una imagen</p>
+            <p className="text-gray-500 font-medium">
+              {cargando ? "Subiendo imagen..." : "Haz clic para subir una imagen"}
+            </p>
             <p className="text-sm text-gray-400">Formatos soportados: JPG, PNG</p>
           </div>
         )}

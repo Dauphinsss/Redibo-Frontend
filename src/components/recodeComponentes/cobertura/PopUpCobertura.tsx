@@ -29,13 +29,16 @@ function PopupCobertura({
   const [tocado, setTocado] = useState({ tipodaño: false, valor: false });
 
   const actualizarValides = (nuevoValor: string, tipo: string) => {
-    setValor(nuevoValor);
     const sufijo = tipo === "BOB" ? "B" : "P";
     setCobertura({ ...cobertura, valides: `${nuevoValor}${sufijo}` });
   };
 
   const tipodañoInvalido = tocado.tipodaño && cobertura.tipodaño.trim().length < 3;
-  const valorInvalido = tocado.valor && (Number(valor) <= 0 || isNaN(Number(valor)));
+  const valorInvalido = tocado.valor && (
+    isNaN(Number(valor)) ||
+    Number(valor) <= 0 ||
+    (tipoMonto === "%" && Number(valor) > 100)
+  );
 
   const handleGuardar = async () => {
     setTocado({ tipodaño: true, valor: true });
@@ -111,19 +114,25 @@ function PopupCobertura({
             <label className="block text-sm font-medium mb-1">Monto *</label>
             <div className="flex gap-2">
               <input
-                type="number"
-                min={1}
-                placeholder="Ej. 1000"
-                title="Monto en BOB o porcentaje"
+                type="text"
+                inputMode="numeric"
+                placeholder={tipoMonto === "%" ? "Ej. 40 (máx. 100)" : "Ej. 1000"}
+                title="Monto numérico"
                 className={`flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
                   valorInvalido
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-black"
                 }`}
                 value={valor}
-                onChange={(e) =>
-                  actualizarValides(e.target.value, tipoMonto)
-                }
+                onChange={(e) => {
+                  const val = e.target.value;
+                  // solo permitir números y máximo 3 dígitos si es %
+                  if (/^\d*$/.test(val)) {
+                    if (tipoMonto === "%" && val.length > 3) return;
+                    setValor(val);
+                    actualizarValides(val, tipoMonto);
+                  }
+                }}
                 onBlur={() => setTocado((prev) => ({ ...prev, valor: true }))}
               />
               <select
@@ -141,7 +150,11 @@ function PopupCobertura({
             </div>
             {valorInvalido && (
               <p className="text-xs text-red-500 mt-1">
-                Ingresa un valor numérico mayor a 0.
+                {isNaN(Number(valor)) || Number(valor) <= 0
+                  ? "Ingresa un valor numérico mayor a 0."
+                  : tipoMonto === "%" && Number(valor) > 100
+                  ? "El porcentaje no puede ser mayor a 100%."
+                  : ""}
               </p>
             )}
           </div>

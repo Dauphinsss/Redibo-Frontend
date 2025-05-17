@@ -1,6 +1,6 @@
 "use client";
 import Link from 'next/link';
-import { FaUserCircle, FaStar, FaCar, FaWhatsapp } from 'react-icons/fa';
+import { FaStar, FaCar, FaWhatsapp } from 'react-icons/fa';
 import { DetalleHost_Recode as DetalleHost } from "@/interface/DetalleHost_Recode";
 import { useEffect, useState } from 'react';
 import { getDetalleHost_Recode } from '@/service/services_Recode';
