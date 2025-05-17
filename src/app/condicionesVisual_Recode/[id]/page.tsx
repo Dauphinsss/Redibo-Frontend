@@ -1,15 +1,10 @@
-'use client';
-
 import { notFound } from "next/navigation";
 import FormularioSolicitud from "@/components/recodeComponentes/notificacionSoli/Notificacion_envio_host_Recode";
 import Header from "@/components/ui/Header";
 
-interface PageParams {
-  params: { id: string };
-}
-
-export default function CondicionVisualPage({ params }: PageParams) {
-  const id_carro = Number(params.id);
+export default async function CondicionVisualPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const id_carro = Number(id);
 
   if (isNaN(id_carro) || id_carro <= 0) {
     notFound();
