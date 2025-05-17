@@ -49,11 +49,11 @@ function SliderRangeDualRecode({
 
     return (
         <div className="flex flex-col items-center w-full">
-            <div className="py-8 px-6 w-full">
-                <h2 className="text-center text-base font-medium text-gray-900 mb-8">
+            <div className="py-4 px-6 w-full">
+                <h2 className="mb-12 text-base font-medium text-gray-900 text-center">
                     {label}
                 </h2>
-                <div className="w-full py-6">
+                <div className="w-full py-2">
                     <Range
                         values={internalValues}
                         step={step}

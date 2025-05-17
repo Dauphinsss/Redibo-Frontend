@@ -37,11 +37,11 @@ function SliderRangeSimple_Recode({
 
     return (
         <div className="flex flex-col items-center w-full">
-            <div className="py-8 px-6 w-full">
-                <h2 className="mb-7 text-base font-medium text-gray-900 text-center">
+            <div className="py-4 px-6 w-full">
+                <h2 className="mb-8 text-base font-medium text-gray-900 text-center">
                     {label}
                 </h2>
-                <div className="w-full py-4">
+                <div className="w-full py-2">
                     <Range
                         values={internalValue}
                         step={step}
