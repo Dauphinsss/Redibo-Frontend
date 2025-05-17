@@ -27,7 +27,22 @@ function SliderRangeDualRecode({
     }, [values])
 
     const handleChange = (vals: number[]) => {
-        const next: [number, number] = [vals[0], vals[1]]
+        let [start, end] = vals
+        if (end - start < 2) {
+        if (internalValues[0] !== start) {
+            start = end - 5
+        } else {
+            end = start + 5
+        }
+        if (start < min) {
+            start = min
+            end = min + 5
+        } else if (end > max) {
+            end = max
+            start = max - 5
+        }
+    }
+        const next: [number, number] = [start, end]
         setInternalValues(next)
         onChange?.(next)
     }

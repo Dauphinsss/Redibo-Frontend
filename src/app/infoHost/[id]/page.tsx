@@ -37,7 +37,7 @@ export default function Page() {
       <div className="flex flex-col md:flex-row gap-6 items-start">
         <PerfilHost
           nombreHost={host.nombre}
-          fotoPerfil={""}
+          fotoPerfil={host.foto}
           fechaNacimiento={formatearFecha(host.edad)}
           generoHost={host.genero}
           ciudadHost={host.ciudad}

@@ -4,6 +4,7 @@ import { FaUserCircle, FaStar, FaCar, FaWhatsapp } from 'react-icons/fa';
 import { DetalleHost_Recode as DetalleHost } from "@/interface/DetalleHost_Recode";
 import { useEffect, useState } from 'react';
 import { getDetalleHost_Recode } from '@/service/services_Recode';
+import FotoPerfilUsrRecode from '../comentarioUsuario/realizarComentario/fotoPerfilUsrRecode';
 interface DescriHostProps {
   nombreHost: string;
   calificacion: number;
@@ -36,7 +37,7 @@ export default function DescriHost({
     <section className="w-full border border-gray-200 rounded-lg p-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
-          <FaUserCircle className="w-12 h-12 text-gray-400" />
+          <FotoPerfilUsrRecode imagenUrl={host.foto} ancho={70} alto={70} />
           <div>
             <h3 className="text-lg font-semibold">Conoce a tu host</h3>
             <div className="space-y-1 mt-1">
