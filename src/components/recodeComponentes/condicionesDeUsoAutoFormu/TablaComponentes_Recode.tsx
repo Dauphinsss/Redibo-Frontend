@@ -8,12 +8,13 @@ import React, {
   useRef,
   useEffect,
 } from "react";
+import { useRouter } from "next/navigation";
 
 import General_Recode from "./General_Recode";
 import Entrada_Recode from "./Entrega_Recode";
 import Devolucion_Recode from "./Devolucion_Recode";
-
 import ModalRecode from "./ModalRecode";
+
 import { postCondicionesUso_Recode } from "@/service/services_Recode";
 import { transformCondicionesUso_Recode } from "@/utils/transformCondicionesUsoFormu_Recode";
 import {
@@ -43,6 +44,7 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
     const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
     const [errorCombustible, setErrorCombustible] = useState(false);
 
+    const router = useRouter();
     const dropdownRef = useRef<HTMLButtonElement | null>(null);
 
     useEffect(() => {
@@ -150,6 +152,9 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
       try {
         await postCondicionesUso_Recode(payload);
         setModalSuccess(true);
+        setTimeout(() => {
+          router.push("/listadoPrueba");
+        }, 3000);
       } catch (error) {
         console.error("Error al guardar condiciones:", error);
         setModalError(true);
@@ -202,7 +207,6 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
 
     return (
       <>
-        {/* Modal de confirmación */}
         <ModalRecode
           isOpen={mostrarConfirmacion}
           onClose={() => setMostrarConfirmacion(false)}
@@ -226,7 +230,6 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
           </div>
         </ModalRecode>
 
-        {/* Otros modales */}
         <ModalRecode
           isOpen={modalSuccess}
           onClose={() => setModalSuccess(false)}
