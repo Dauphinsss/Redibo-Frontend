@@ -37,7 +37,7 @@ export default function DescriHost({
     <section className="w-full border border-gray-200 rounded-lg p-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
-          <FotoPerfilUsrRecode imagenUrl={host.foto} ancho={70} alto={70} />
+          <FotoPerfilUsrRecode imagenUrl={host.foto} ancho={90} alto={90} />
           <div>
             <h3 className="text-lg font-semibold">Conoce a tu host</h3>
             <div className="space-y-1 mt-1">
