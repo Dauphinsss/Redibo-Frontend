@@ -38,13 +38,13 @@ export const NotificacionHost: React.FC<NotificacionHostProps> = ({
             <div className="flex gap-2 mt-3">
               <button 
                 onClick={onAceptar}
-                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition-colors"
+                className="bg-black text-white px-3 py-1 rounded hover:bg-green-600 transition-colors"
               >
                 Aceptar
               </button>
               <button 
                 onClick={onRechazar}
-                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
+                className="bg-black text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
               >
                 Rechazar
               </button>
