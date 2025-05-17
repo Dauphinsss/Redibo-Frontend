@@ -7,11 +7,7 @@ import { NotificacionesCampana } from "@/components/recodeComponentes/notificaci
 import Header from "@/components/ui/Header";
 import { Notificacion } from "@/interface/NotificacionSolicitud_Recode";
 
-interface PageParams {
-  params: { id: string };
-}
-
-export default function CondicionVisualPage({ params }: PageParams) {
+export default function CondicionVisualPage({ params }: { params: { id: string } }) {
   const id_carro = Number(params.id);
   const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
 

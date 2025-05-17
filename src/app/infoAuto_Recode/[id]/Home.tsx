@@ -32,7 +32,9 @@ export default function Home({ id }: HomeProps) {
   const [numComentarios, setNumComentarios] = useState(0);
   const [comentariosConCalificacion, setComentariosConCalificacion] = useState<number[]>([]);
   const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
-
+ const promedioCalificacion = calificaciones.length > 0
+  ? (calificaciones.reduce((acc, cal) => acc + cal, 0) / calificaciones.length).toFixed(1)
+  : "0.0";
   const {
     comentariosFiltrados,
     formatearFecha
@@ -69,7 +71,8 @@ export default function Home({ id }: HomeProps) {
               puertas={4}
               transmision={auto.transmision}
               combustible={auto.combustibles.join(', ')}
-              calificacion={4.5}
+              calificacion={promedioCalificacion}
+              numComentario={numComentarios}
               direccion={`${auto.ciudad}, ${auto.calle}`}
             />
 
