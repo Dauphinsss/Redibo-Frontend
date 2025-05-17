@@ -32,11 +32,12 @@ export default function Home({ id }: HomeProps) {
   const [numComentarios, setNumComentarios] = useState(0);
   const [comentariosConCalificacion, setComentariosConCalificacion] = useState<number[]>([]);
   const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
+  const [ordenSeleccionado, setOrdenSeleccionado] = useState("Más reciente");
 
   const {
-    comentariosFiltrados,
-    formatearFecha
-  } = useComentariosAuto(Number(id), filtroCalificacion);
+  comentariosFiltrados,
+  formatearFecha
+  } = useComentariosAuto(Number(id), filtroCalificacion, ordenSeleccionado);
 
   useEffect(() => {
     (async () => {
@@ -122,9 +123,8 @@ export default function Home({ id }: HomeProps) {
                   />
                 </div>
               ))}
-            </div>
           </div>
-
+        </div>
           <div className="lg:w-1/3">
             <div className="sticky top-4 flex flex-col gap-4">
               <InfoDestacable
