@@ -8,6 +8,8 @@ import CarCardSpecs from "./CarCardSpecsRecode";
 import CarCardHost from "./CarCardHostRecode";
 import CarCardUbicacion from "./CarCardUbicacionRecode";
 import CarCardPrice from "./CarCardPriceRecode";
+import { useCalificaciones } from "@/hooks/useCalifPromedio";
+
 
 export type RecodeCarCardProps = Auto;
 
@@ -32,6 +34,7 @@ function RecodeCarCard(props: Auto) {
   } = props;
 
   const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(combustibles[0]);
+  const { calificaciones, promedioCalificacion } = useCalificaciones(idAuto);
 
   return (
     <div className="w-full max-w-[750px] md:h-[320px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-4">
@@ -53,7 +56,7 @@ function RecodeCarCard(props: Auto) {
             combustibleSeleccionado={combustibleSeleccionado}
             onCombustibleChange={setCombustibleSeleccionado}
           />
-          <CarCardHost nombreHost={nombreHost} calificacion={calificacionAuto} />
+          <CarCardHost nombreHost={nombreHost} calificacion={parseFloat(promedioCalificacion)} />
           <CarCardUbicacion ciudad={ciudad} calle={calle} />
         </div>
       </div>
