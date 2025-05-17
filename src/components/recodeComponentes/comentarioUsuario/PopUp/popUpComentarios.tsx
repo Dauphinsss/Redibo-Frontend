@@ -29,8 +29,9 @@ function PopUpComentarios({
   numComentarios,comentariosConCalificacion,imagenes}: Props) {
     
   const [popUpOpen, setPopUpOpen] = useState(false);
-  const ordenar = ["Mejor Calificación", "Peor Calificación", "Más valorado", "Menos valorado"];
-  const [ordenSeleccionado, setOrdenSeleccionado] = useState("Mejor Calificación");
+  const ordenar = ["Mejor Calificación","Peor Calificación","Más valorado","Menos valorado","Más reciente","Más antiguo"];
+  const [ordenSeleccionado, setOrdenSeleccionado] = useState("Más reciente");
+
 
   
   const closePopup = () => setPopUpOpen(false);

@@ -71,7 +71,7 @@ function PopupCobertura({ cobertura, setCobertura, onClose, onSave, isEditing = 
           <button onClick={onClose} className="px-4 py-2 border rounded">Cancelar</button>
           <button
             onClick={onSave}
-            className="px-4 py-2 bg-blue-600 text-white rounded"
+            className="px-4 py-2 bg-black text-white rounded"
             disabled={!cobertura.tipodaño || !cobertura.valides}
           >
             {isEditing ? "Actualizar" : "Guardar"}

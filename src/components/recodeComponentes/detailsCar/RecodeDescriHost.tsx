@@ -1,5 +1,10 @@
+"use client";
+import { IdCardIcon } from 'lucide-react';
 import Link from 'next/link';
 import { FaUserCircle, FaStar, FaCar, FaWhatsapp } from 'react-icons/fa';
+import { DetalleHost_Recode as DetalleHost } from "@/interface/DetalleHost_Recode";
+import { useEffect, useState } from 'react';
+import { getDetalleHost_Recode } from '@/service/services_Recode';
 interface DescriHostProps {
   nombreHost: string;
   calificacion: number;
@@ -16,7 +21,19 @@ export default function DescriHost({
   idHost
 }: DescriHostProps) {
   const mensaje = `Hola ${nombreHost}, estoy interesado en tu auto publicado en Redibo.`;
+  const [host, setHost] = useState<DetalleHost | null>(null);
 
+   useEffect(() => {
+      const fetchData = async () => {
+        const data = await getDetalleHost_Recode(idHost);
+        setHost(data);
+      };
+  
+      if (idHost) fetchData();
+    }, [idHost]);
+  
+    if (!host) return <p>Cargando...</p>;
+    
   return (
     <section className="w-full border border-gray-200 rounded-lg p-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -36,7 +53,7 @@ export default function DescriHost({
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <FaCar className="text-gray-500" />
-                <span>{numAuto} autos</span>
+                <span>{host.autos.length} autos</span>
               </div>
             </div>
           </div>
