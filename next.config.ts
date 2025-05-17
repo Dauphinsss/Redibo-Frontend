@@ -17,6 +17,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'cdn-datak.motork.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'vivolabs.es',
       },    
     ],
   }

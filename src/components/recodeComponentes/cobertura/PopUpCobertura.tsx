@@ -1,5 +1,8 @@
+"use client";
+
 import { memo, useState } from "react";
 import { CoberturaInterface } from "@/interface/CoberturaForm_Interface_Recode";
+import { X } from "lucide-react";
 
 interface PopupProps {
   cobertura: CoberturaInterface;
@@ -9,9 +12,21 @@ interface PopupProps {
   isEditing?: boolean;
 }
 
-function PopupCobertura({ cobertura, setCobertura, onClose, onSave, isEditing = false }: PopupProps) {
-  const [tipoMonto, setTipoMonto] = useState(cobertura.valides.endsWith("P") ? "%" : "BOB");
-  const [valor, setValor] = useState(cobertura.valides.replace(/[BP]$/, ""));
+function PopupCobertura({
+  cobertura,
+  setCobertura,
+  onClose,
+  onSave,
+  isEditing = false,
+}: PopupProps) {
+  const [tipoMonto, setTipoMonto] = useState(
+    cobertura.valides.endsWith("P") ? "%" : "BOB"
+  );
+  const [valor, setValor] = useState(
+    cobertura.valides.replace(/[BP]$/, "")
+  );
+  const [isSaving, setIsSaving] = useState(false);
+  const [tocado, setTocado] = useState({ tipodaño: false, valor: false });
 
   const actualizarValides = (nuevoValor: string, tipo: string) => {
     setValor(nuevoValor);
@@ -19,62 +34,155 @@ function PopupCobertura({ cobertura, setCobertura, onClose, onSave, isEditing = 
     setCobertura({ ...cobertura, valides: `${nuevoValor}${sufijo}` });
   };
 
+  const tipodañoInvalido = tocado.tipodaño && cobertura.tipodaño.trim().length < 3;
+  const valorInvalido = tocado.valor && (Number(valor) <= 0 || isNaN(Number(valor)));
+
+  const handleGuardar = async () => {
+    setTocado({ tipodaño: true, valor: true });
+
+    if (tipodañoInvalido || valorInvalido) return;
+
+    setIsSaving(true);
+    setTimeout(() => {
+      onSave();
+      setIsSaving(false);
+    }, 800);
+  };
+
   return (
-    <div className="fixed top-0 right-0 h-full bg-white shadow-lg w-full max-w-md md:w-[400px] z-50 overflow-y-auto transition-transform duration-300">
-      <div className="p-6">
-        <h3 className="text-lg font-medium mb-4">{isEditing ? "Editar cobertura" : "Añadir nueva cobertura"}</h3>
+    <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-md rounded-lg shadow-lg p-6 relative">
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-500 hover:text-black"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        <h3 className="text-lg font-semibold mb-4">
+          {isEditing ? "Editar cobertura" : "Nueva cobertura"}
+        </h3>
+
         <div className="space-y-4">
+          {/* Tipo de daño */}
           <div>
-            <label className="block mb-1 font-medium">Tipo de daño*</label>
+            <label className="block text-sm font-medium mb-1">
+              Tipo de daño *
+            </label>
             <input
               type="text"
-              className="w-full p-2 border rounded"
+              placeholder="Ej. Golpe frontal"
+              title="Tipo de daño"
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
+                tipodañoInvalido
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-black"
+              }`}
               value={cobertura.tipodaño}
-              onChange={(e) => setCobertura({ ...cobertura, tipodaño: e.target.value })}
-              required
+              onChange={(e) =>
+                setCobertura({ ...cobertura, tipodaño: e.target.value })
+              }
+              onBlur={() => setTocado((prev) => ({ ...prev, tipodaño: true }))}
             />
+            {tipodañoInvalido && (
+              <p className="text-xs text-red-500 mt-1">
+                Mínimo 3 caracteres requeridos.
+              </p>
+            )}
           </div>
+
+          {/* Descripción */}
           <div>
-            <label className="block mb-1 font-medium">Descripción</label>
+            <label className="block text-sm font-medium mb-1">Descripción</label>
             <textarea
-              className="w-full p-2 border rounded"
+              placeholder="Describe brevemente el daño"
+              title="Descripción del daño"
+              className="w-full border border-gray-300 rounded px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-black"
               rows={3}
               value={cobertura.descripcion}
-              onChange={(e) => setCobertura({ ...cobertura, descripcion: e.target.value })}
+              onChange={(e) =>
+                setCobertura({ ...cobertura, descripcion: e.target.value })
+              }
             />
           </div>
+
+          {/* Monto */}
           <div>
-            <label className="block mb-1 font-medium">Monto*</label>
+            <label className="block text-sm font-medium mb-1">Monto *</label>
             <div className="flex gap-2">
               <input
                 type="number"
-                className="w-full p-2 border rounded"
+                min={1}
+                placeholder="Ej. 1000"
+                title="Monto en BOB o porcentaje"
+                className={`flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
+                  valorInvalido
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-black"
+                }`}
                 value={valor}
-                onChange={(e) => actualizarValides(e.target.value, tipoMonto)}
+                onChange={(e) =>
+                  actualizarValides(e.target.value, tipoMonto)
+                }
+                onBlur={() => setTocado((prev) => ({ ...prev, valor: true }))}
               />
               <select
                 value={tipoMonto}
+                title="Tipo de valor"
                 onChange={(e) => {
                   setTipoMonto(e.target.value);
                   actualizarValides(valor, e.target.value);
                 }}
-                className="p-2 border rounded"
+                className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
               >
                 <option value="BOB">BOB</option>
                 <option value="%">%</option>
               </select>
             </div>
+            {valorInvalido && (
+              <p className="text-xs text-red-500 mt-1">
+                Ingresa un valor numérico mayor a 0.
+              </p>
+            )}
           </div>
         </div>
 
+        {/* Botones */}
         <div className="mt-6 flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 border rounded">Cancelar</button>
           <button
-            onClick={onSave}
-            className="px-4 py-2 bg-black text-white rounded"
-            disabled={!cobertura.tipodaño || !cobertura.valides}
+            onClick={onClose}
+            className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300 transition"
           >
-            {isEditing ? "Actualizar" : "Guardar"}
+            Cancelar
+          </button>
+          <button
+            onClick={handleGuardar}
+            disabled={isSaving}
+            className="px-4 py-2 text-sm bg-black text-white rounded hover:bg-gray-800 transition flex items-center gap-2 disabled:opacity-50"
+          >
+            {isSaving && (
+              <svg
+                className="animate-spin h-4 w-4 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8z"
+                />
+              </svg>
+            )}
+            {isSaving ? "Guardando..." : isEditing ? "Actualizar" : "Guardar"}
           </button>
         </div>
       </div>
