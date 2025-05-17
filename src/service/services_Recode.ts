@@ -155,7 +155,7 @@ export const postCobertura = async (payload: CoberturaInterface): Promise<void> 
 
 export const postCoberturaEnlace = async (payload: EnlaceInterface): Promise<void> => {
     try {
-        const response = await apiCobertura.post("/insertedInsurance", payload);
+        const response = await apiCobertura.post("/insertEnlace", payload);
         console.log("Enviado el enlace de imagen:", response.data);
     } catch (error) {
         const axiosError = error as AxiosError;

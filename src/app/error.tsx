@@ -11,7 +11,7 @@ export default function NotFound() {
         <div className="flex flex-col-reverse md:flex-row items-center justify-center gap-8 max-w-4xl">
           <div className="md:w-1/2 text-center md:text-left">
             <h1 className="text-4xl font-bold text-gray-800 mb-2">¿Buscando lo que no existe?</h1>
-            <h2 className="text-5xl font-extrabold text-red-500 mb-8">ERROR 500 DEL SERVIDOR</h2>
+            <h2 className="text-5xl font-extrabold text-black mb-8">ERROR 500 DEL SERVIDOR</h2>
             
             <div className="mb-8">
               <p className="text-lg text-gray-600 mb-4">Si quieres puedes ir a:</p>
@@ -32,7 +32,7 @@ export default function NotFound() {
                 <p className="text-gray-500">Resultados de búsqueda:</p>
                 <Link 
                   href="https://rebo-re.vercel.app/homeBuscador_Recode" 
-                  className="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                  className="inline-block px-4 py-2 bg-black text-white rounded hover:bg-gray-400 transition-colors"
                 >
                   Ver resultados
                 </Link>
