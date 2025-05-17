@@ -24,6 +24,8 @@ export default function CoberturaRecodeClient({ id_carro }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [coberturaActual, setCoberturaActual] = useState<CoberturaInterface | null>(null);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -118,7 +120,12 @@ export default function CoberturaRecodeClient({ id_carro }: Props) {
           />
 
           <div className="mt-6 flex justify-center">
-            <BotonValidar coberturas={coberturas} />
+            <BotonValidar
+              coberturas={coberturas}
+              isSubmitting={isSubmitting}
+              setIsSubmitting={setIsSubmitting}
+            />
+
           </div>
         </div>
       </div>

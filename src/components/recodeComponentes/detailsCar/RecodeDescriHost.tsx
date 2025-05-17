@@ -1,5 +1,4 @@
 "use client";
-import { IdCardIcon } from 'lucide-react';
 import Link from 'next/link';
 import { FaUserCircle, FaStar, FaCar, FaWhatsapp } from 'react-icons/fa';
 import { DetalleHost_Recode as DetalleHost } from "@/interface/DetalleHost_Recode";
@@ -15,15 +14,14 @@ interface DescriHostProps {
 
 export default function DescriHost({ 
   nombreHost, 
-  calificacion, 
-  numAuto, 
+  calificacion,
   telefono,
   idHost
 }: DescriHostProps) {
   const mensaje = `Hola ${nombreHost}, estoy interesado en tu auto publicado en Redibo.`;
   const [host, setHost] = useState<DetalleHost | null>(null);
 
-   useEffect(() => {
+  useEffect(() => {
       const fetchData = async () => {
         const data = await getDetalleHost_Recode(idHost);
         setHost(data);

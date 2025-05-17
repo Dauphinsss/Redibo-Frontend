@@ -6,8 +6,10 @@ import FormularioSolicitud from "@/components/recodeComponentes/notificacionSoli
 import { NotificacionesCampana } from "@/components/recodeComponentes/notificacionSoli/campana";
 import Header from "@/components/ui/Header";
 import { Notificacion } from "@/interface/NotificacionSolicitud_Recode";
+import { useParams } from 'next/navigation';
 
-export default function CondicionVisualPage({ params }: { params: { id: string } }) {
+export default function CondicionVisualPage() {
+  const params = useParams();
   const id_carro = Number(params.id);
   const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
 
