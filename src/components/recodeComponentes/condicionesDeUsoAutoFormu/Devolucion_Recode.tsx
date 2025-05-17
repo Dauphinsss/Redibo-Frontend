@@ -28,9 +28,8 @@ function Devolucion_Recode({ respuestas, onCheckboxChange }: DevolucionRecodePro
     return (
         <div className="space-y-4 px-4 py-4 bg-white ">
             
-            <div className="mb-2">
-                <label 
-                    className="inline-flex items-center space-x-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                <label className="flex items-center space-x-2 p-2 rounded">
                     <input
                     type="checkbox"
                     checked={allChecked}

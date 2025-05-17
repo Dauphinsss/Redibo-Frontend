@@ -58,17 +58,16 @@ const Entrada_Recode = forwardRef<HTMLButtonElement, EntradaRecodeProps>(
         </div>
 
         {/* Checkboxes de condiciones */}
-        <div className="mb-2">
-            <label 
-                className="inline-flex items-center space-x-2">
-                <input
-                type="checkbox"
-                checked={allChecked}
-                onChange={toggleAll}
-                className="h-4 w-4 accent-black border-black rounded focus:ring-black"
-                />
-                <span className="font-semibold text-sm text-black">Seleccionar todos</span>
-            </label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          <label className="flex items-center space-x-2 p-2 rounded">
+            <input
+              type="checkbox"
+              checked={allChecked}
+              onChange={toggleAll}
+              className="h-4 w-4 accent-black border-black rounded focus:ring-black"
+            />
+              <span className="font-semibold text-sm text-black">Seleccionar todos</span>
+          </label>
         </div>
         <div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">

@@ -74,9 +74,8 @@ function General_Recode({
 
       {/* Checkboxes generales */}
       <div>
-        <div className="mb-2">
-          <label 
-            className="inline-flex items-center space-x-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          <label className="flex items-center space-x-2 p-2 rounded">
             <input
               type="checkbox"
               checked={allChecked}
