@@ -18,7 +18,6 @@ export default function Page() {
       const data = await getDetalleHost_Recode(id);
       setHost(data);
     };
-
     if (id) fetchData();
   }, [id]);
 
