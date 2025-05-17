@@ -8,6 +8,7 @@ import FechasAlquiler from "../mostrarCobertura/filtroIni";
 import PrecioDesglosado from "@/components/recodeComponentes/mostrarCobertura/precioDesglosado";
 import TablaCondicionesVisual_Recode from "../condicionesDeUsoAutoVisual/TablaCondicionesVisual_Recode";
 import TablaCoberturas from "../mostrarCobertura/tablaCoberShow";
+import NotificacionEnvioExitoso_recode from "./Notificacion_envio_exitoso_Recode";
 
 interface Props {
   id_carro: number;
@@ -128,6 +129,8 @@ export default function FormularioSolicitud({
       estado: 'pendiente'
     };
 
+    
+    //Solicitud para insertar
     try {
       const solicitud: Solicitud = {
         fecha: new Date().toISOString(),
@@ -160,7 +163,7 @@ export default function FormularioSolicitud({
         throw new Error(errorData?.message || `Error HTTP ${response.status}`);
       }
 
-      // Enviar notificaciones al componente padre
+      // Enviar notificaciones a la campana
       if (onNuevaNotificacion) {
         onNuevaNotificacion(notificacionRenter);
         onNuevaNotificacion(notificacionHost);
@@ -172,7 +175,6 @@ export default function FormularioSolicitud({
       console.error("Error al enviar solicitud:", e);
       setError(e instanceof Error ? e.message : "Error desconocido");
       
-      // Notificación de error
       if (onNuevaNotificacion) {
         onNuevaNotificacion({
           id: `notif-err-${Date.now()}`,
@@ -297,7 +299,7 @@ export default function FormularioSolicitud({
 
       {/* 6. Resumen y botón */}
       <div className="bg-white p-4 rounded-lg shadow">
-        {error && <div className="text-red-600 mb-4">{error}</div>}
+        {error && <div className="text-black mb-4">{error}</div>}
         
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div>
@@ -318,6 +320,15 @@ export default function FormularioSolicitud({
           </Button>
         </div>
       </div>
+      {/* Notificación de envío exitoso */}
+    {showNotification && (
+      <NotificacionEnvioExitoso_recode 
+        onClose={() => setShowNotification(false)}
+        hostNombre={hostNombre}
+        fechaInicio={fechas.inicio}
+        fechaFin={fechas.fin}
+      />
+    )}
     </div>
   );
 }

@@ -28,7 +28,6 @@ export default function CondicionVisualPage({ params }: { params: { id: string }
       <Header />
       
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* Columna izquierda - Formulario */}
         <div className="flex-1">
           <h1 className="text-2xl font-bold mb-6 text-center">
             Formulario de Reserva
@@ -40,7 +39,6 @@ export default function CondicionVisualPage({ params }: { params: { id: string }
           />
         </div>
         
-        {/* Columna derecha - Notificaciones */}
         <div className="lg:w-96">
           <NotificacionesCampana 
             notificaciones={notificaciones}

@@ -23,7 +23,7 @@ export const NotificacionesCampana: React.FC<NotificacionesCampanaProps> = ({
       ) : (
         <>
           <div className="mb-4">
-            <h3 className="text-sm font-bold mb-2">Solicitudes a ti (Host)</h3>
+            <h3 className="text-sm font-bold mb-2">Solicitudes al Host</h3>
             {notificaciones
               .filter(n => n.tipo === 'host')
               .map(notif => (
@@ -39,7 +39,7 @@ export const NotificacionesCampana: React.FC<NotificacionesCampanaProps> = ({
           <hr className="my-4 border-gray-200" />
 
           <div>
-            <h3 className="text-sm font-bold mb-2">Tus solicitudes (Renter)</h3>
+            <h3 className="text-sm font-bold mb-2">Solicitudes de Renter</h3>
             {notificaciones
               .filter(n => n.tipo === 'renter')
               .map(notif => (
