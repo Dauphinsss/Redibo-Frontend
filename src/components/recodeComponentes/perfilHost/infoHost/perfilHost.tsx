@@ -12,26 +12,35 @@ interface Props {
   telefono: string;
 }
 
-function PerfilHost({nombreHost,fotoPerfil,fechaNacimiento,generoHost,ciudadHost,correoHost,telefono,}: Props) {
+function PerfilHost({
+  nombreHost,
+  fotoPerfil,
+  fechaNacimiento,
+  generoHost,
+  ciudadHost,
+  correoHost,
+  telefono,
+}: Props) {
   const mensaje = `Hola ${nombreHost}, estoy interesado en tu auto publicado en Redibo.`;
 
   return (
     <div className="flex items-start gap-6">
-      <div className="relative">
-        <FotoPerfilUsrRecode imagenUrl={fotoPerfil} ancho={180} alto={180} />
-        <Link
-          href={`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <button
-            type="button"
-            className="absolute bottom-0 left-1/2 transform -translate-x-1/2 mt-2 flex items-center gap-2 px-3 py-1 bg-black text-white text-sm rounded hover:bg-gray-600 transition"
+      <div className="flex flex-col items-center gap-4">
+
+        <FotoPerfilUsrRecode imagenUrl={fotoPerfil} ancho={140} alto={140} />
+         <Link
+            href={`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`}
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <FaWhatsapp className="text-lg" />
-            Contáctalo
-          </button>
-        </Link>
+            <button
+              type="button"
+              className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm rounded hover:bg-gray-600 transition"
+            >
+              <FaWhatsapp className="text-lg" />
+              Contáctalo
+            </button>
+          </Link>  
       </div>
 
       <div>
