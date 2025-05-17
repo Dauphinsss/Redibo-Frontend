@@ -1,3 +1,4 @@
+'use client'
 import { notFound } from "next/navigation";
 import FormularioSolicitud from "@/components/recodeComponentes/notificacionSoli/Notificacion_envio_host_Recode";
 import Header from "@/components/ui/Header";
@@ -20,9 +21,9 @@ export default async function CondicionVisualPage({ params }: { params: Promise<
       <h1 className="text-2xl font-bold mb-6 text-center">
         Formulario de Reserva
       </h1>
-      <FormularioSolicitud 
-        id_carro={id_carro} 
-        onSolicitudExitosa={handleSolicitudExitosa} 
+      <FormularioSolicitud
+        id_carro={id_carro}
+        onSolicitudExitosa={handleSolicitudExitosa}
       />
     </main>
   );

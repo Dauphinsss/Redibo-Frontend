@@ -8,7 +8,8 @@ interface InfoPrincipalProps {
     puertas: number;
     transmision: string;
     combustible: string;
-    calificacion: number;
+    calificacion: string;
+    numComentario:number;
     direccion: string;
 }
 
@@ -18,6 +19,7 @@ export default function InfoPrincipal({
     transmision,
     combustible,
     calificacion,
+    numComentario,
     direccion,
 }: InfoPrincipalProps) {
     return (
@@ -38,8 +40,8 @@ export default function InfoPrincipal({
             </div>
             
             <div className="flex items-center gap-1 text-gray-700">
-                <FaStar className="text-gray-300" />
-                <span>{calificacion} - 1000 evaluaciones</span>
+                <FaStar className="text-black" />
+                <span>{calificacion} - {numComentario || 0} comentarios</span>
             </div>
             
             <div className="flex items-center gap-1 text-gray-700">
