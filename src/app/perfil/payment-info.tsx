@@ -1,12 +1,41 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { API_URL } from "@/utils/bakend";
+
 export function PaymentInfo() {
+  const [balance, setBalance] = useState<number | null>(null);
+  const [loadingBalance, setLoadingBalance] = useState(true);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        if (!token) {
+          console.error("No se encontró el token de autenticación");
+          return;
+        }
+
+        const response = await axios.get(`${API_URL}/api/get-saldo`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        setBalance(response.data.saldo);
+      } catch (error) {
+        console.error("Error al obtener el saldo del usuario:", error);
+      } finally {
+        setLoadingBalance(false);
+      }
+    };
+
+    fetchBalance();
+  }, []);
+
   return (
     <div className="w-full m-0 p-0">
-
-      {/* Eliminado el contenedor flex justify-end que podría estar causando el espacio */}
       <div className="w-full m-0 p-0 flex justify-center">
-        {/* Cambiado max-w-xl por max-w-md para hacer la tarjeta más pequeña */}
         <div className="w-full max-w-md m-0 p-0 mx-auto">
-          {/* Tarjeta de crédito */}
           <div className="w-full m-0 p-0">
             <div className="aspect-[1.58/1] rounded-lg overflow-hidden bg-blue-600 relative shadow-md">
               {/* Patrón de cuadrados en el fondo */}
@@ -39,8 +68,19 @@ export function PaymentInfo() {
             <p className="text-gray-500">Tarjeta terminada en 9010</p>
             <p className="text-gray-500">Expira: 12/25</p>
           </div>
+
+          {/* User Balance Section */}
+          <div className="mt-6 text-center">
+            {loadingBalance ? (
+              <p className="text-gray-500">Cargando saldo...</p>
+            ) : (
+              <p className="text-lg font-semibold text-gray-800">
+                Saldo disponible: <span className="text-green-600">{balance?.toFixed(2)} BOB</span>
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

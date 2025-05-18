@@ -140,13 +140,29 @@ export default function CompleteRegisterForm() {
     });
   };
   const handleCiudadChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = Number(e.target.value);
-    setCiudad(value);
+  const value = Number(e.target.value);
+  setCiudad(value);
+  setCiudadTouched(true);
+
+  setErrores(prev => {
+    const newErr = { ...prev };
+      if (value !== 0) {
+        // Elimina el error si ya eligió ciudad válida
+        delete newErr.ciudad;
+      } else {
+        // Vuelve a poner el error si sigue en la opción 0
+        newErr.ciudad = "Debes seleccionar una ciudad";
+      }
+      return newErr;
+    });
+  };
+  const handleCiudadBlur = () => {
     setCiudadTouched(true);
-    setErrores((prev) => {
+    setErrores(prev => {
       const newErr = { ...prev };
-      if (value && value !== 0) delete newErr.ciudad;
-      else if (ciudadTouched) newErr.ciudad = "Debes seleccionar una ciudad";
+      if (ciudad === 0) {
+        newErr.ciudad = "Debes seleccionar una ciudad";
+      }
       return newErr;
     });
   };
@@ -199,8 +215,14 @@ export default function CompleteRegisterForm() {
       console.log("🧪 Enviando al backend:", userData);
       console.log("🧪 Clave fecha_nacimiento:", userData.fechaNacimiento,);
   
-      // Enviar al backend (registro real)
-      const response = await axios.post(`${API_URL}/api/auth/complete-profile`, userData, {withCredentials:true});
+      const axiosConfig = {
+        // withCredentials: true, <-- Eliminar o establecer en false
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      };
+      // Modificación del código frontend para quitar withCredentials
+      const response = await axios.post(`${API_URL}/api/auth/complete-profile`, userData, axiosConfig);
       if (response.data.error) {
         toast.error(response.data.error);
         return;
@@ -267,7 +289,7 @@ export default function CompleteRegisterForm() {
                 value={telefono}
                 onChange={handleTelefonoChange}
                 maxLength={8}
-                placeholder="Ingresa tu teléfono"
+                placeholder="Ingrese su número de teléfono"
               />
               {errores.telefono && <p className="text-sm text-red-500 mt-1">{errores.telefono}</p>}
             </div>
@@ -304,19 +326,27 @@ export default function CompleteRegisterForm() {
 
             <div className="space-y-2">
               <Label>Ciudad *</Label>
-              <select
-                value={ciudad}
-                onChange={handleCiudadChange}
-                className="w-full h-10 px-3 border rounded-md"
-              >
-                <option value={0} disabled>Selecciona una ciudad</option>
-                {ciudades.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nombre}
-                  </option>
-                ))}
-              </select>
-              {ciudadTouched && errores.ciudad && <p className="text-sm text-red-500 mt-1">{errores.ciudad}</p>}
+              <div className="flex flex-col gap-2">
+                <select
+                  value={ciudad}
+                  onChange={handleCiudadChange}
+                  onBlur={handleCiudadBlur}
+                  className={`w-full h-10 px-3 border rounded-md text-sm ${
+                    ciudadTouched && errores.ciudad ? "border-red-500" : ""
+                  }`}
+                >
+                  <option value={0}>Selecciona una ciudad</option>
+                  {ciudades.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nombre}
+                    </option>
+                  ))}
+                </select>
+
+                {ciudadTouched && errores.ciudad && (
+                  <p className="text-sm text-red-500 mt-1">{errores.ciudad}</p>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">

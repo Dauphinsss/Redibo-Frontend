@@ -25,6 +25,9 @@ export function LoginForm() {
   const [resendDisabled, setResendDisabled] = useState(true);
   const [resendTimer, setResendTimer] = useState(30);
   const router = useRouter();
+  const [codigoSolicitadoEn, setCodigoSolicitadoEn] = useState<Date | null>(null);
+  const [codeError, setCodeError] = useState("");
+  const [emailError, setEmailError] = useState("");
 
   // Efecto para manejar el temporizador
   useEffect(() => {
@@ -76,7 +79,14 @@ export function LoginForm() {
   // Maneja el envío del correo para solicitar código
   const handleRequestCode = async (e: React.FormEvent) => {
     e.preventDefault();
+    setEmailError("");
     setIsLoading(true);
+
+    if (!email.trim()) {
+      setEmailError("El correo electrónico es obligatorio");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       // Llamada al backend para solicitar el código de verificación
@@ -84,10 +94,15 @@ export function LoginForm() {
         correo: email
       });
       if (response.data.error) {
-        toast.error(response.data.error);
+          const errorMsg = response.data.error === "Correo electrónico no registrado"
+          ? "Usuario no encontrado"
+          : response.data.error;
+        toast.error(errorMsg);
         return;
       }
       toast.success("Código de verificación enviado. Revisa tu correo electrónico.");
+      setCodigoSolicitadoEn(new Date());
+
       setStep("code");
     } catch (error: unknown) {
       console.error("Error al solicitar código:", error);
@@ -127,10 +142,11 @@ export function LoginForm() {
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setCodeError("");
 
     const codeString = verificationCode.join("");
-    if (codeString.length !== 6) {
-      toast.error("Por favor ingresa el código de 6 dígitos completo");
+    if (codeString.length !== 6 || verificationCode.some(char => char.trim() === "")) {
+      setCodeError("Debes completar todos los campos del código");
       setIsLoading(false);
       return;
     }
@@ -142,7 +158,24 @@ export function LoginForm() {
         codigo: codeString
       });
       if (response.data.error) {
-        toast.error(response.data.error);
+        const msg = response.data.error;
+        if (msg === "Código inválido o expirado") {
+          if (codigoSolicitadoEn) {
+            const ahora = new Date();
+            const segundosTranscurridos = (ahora.getTime() - codigoSolicitadoEn.getTime()) / 1000;
+  
+            const errorMsg = segundosTranscurridos > 900
+            ? "El código ingresado ha expirado. Por favor, solicita uno nuevo"
+            : "Código incorrecto. Vuelve a intentarlo";
+
+            toast.error(errorMsg);
+          } else {
+            toast.error("Código inválido o expirado");
+          }
+        } else {
+          toast.error(msg);
+        }
+  
         return;
       }
       toast.success("Código verificado correctamente");
@@ -216,11 +249,15 @@ export function LoginForm() {
           id="email"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          maxLength={50}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (emailError) setEmailError(""); // Limpiar error al escribir
+          }}
           placeholder="correo@ejemplo.com"
-          className="h-10 px-4"
-          required
+          className={`h-10 px-4 ${emailError ? "border border-red-500" : ""}`}
         />
+        {emailError && <p className="text-sm text-red-500 mt-1">{emailError}</p>}
       </div>
 
       <Button type="submit" className="w-full h-10" disabled={isLoading}>
@@ -258,10 +295,15 @@ export function LoginForm() {
               onChange={(e) => handleCodeChange(index, e.target.value)}
               onPaste={index === 0 ? handleCodePaste : undefined}
               className="h-12 w-12 text-center text-lg font-bold"
-              required
+              
             />
           ))}
         </div>
+          {codeError && (
+          <p className="text-sm text-red-500 mt-2">
+            {codeError}
+          </p>
+          )}
       </div>
 
       <Button type="submit" className="w-full h-10" disabled={isLoading}>
@@ -416,6 +458,15 @@ export function LoginForm() {
       <Button type="submit" className="w-full h-10" disabled={isLoading}>
         {isLoading ? "Cambiando contraseña..." : "Cambiar contraseña"}
       </Button>
+      {/* Botón de volver atrás con el mismo estilo que en el paso de código */}
+    <Button
+      type="button"
+      variant="outline"
+      className="w-full h-10"
+      onClick={() => setStep("code")}
+    >
+      Volver atrás
+    </Button>
     </form>
   );
 

@@ -20,6 +20,7 @@ import { PaymentInfo } from "./payment-info";
 import { DriverInfo } from "./driver-info";
 import { RatingsInfo } from "./ratings-info";
 import { VehiclesInfo } from "./vehicles-info";
+import { ReservationsList } from "./orders-info"; // Importamos el nuevo componente
 import {
   CreditCard,
   User,
@@ -30,6 +31,7 @@ import {
   LogOut,
   Settings,
   HelpCircle,
+  Receipt, // Importamos icono para órdenes de pago
 } from "lucide-react";
 import { SteeringWheel } from "./steering-wheel-icon";
 import { Footer } from "@/components/ui/footer";
@@ -38,16 +40,27 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-type SectionType = "personal" | "payments" | "driver" | "ratings" | "vehicles";
+type SectionType =
+  | "personal"
+  | "payments"
+  | "driver"
+  | "ratings"
+  | "vehicles"
+  | "orders";
 
 export default function ProfilePage() {
   const [activeSection, setActiveSection] = useState<SectionType>("personal");
   const [roles, setRoles] = useState<string[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [touchStartX, setTouchStartX] = useState(0);
+  const touchThreshold = 70; // deslizamiento válido
 
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem("auth_token");
-      if (!token) return;
+      if (!token) {
+        window.location.href = "/login";
+      }
 
       try {
         const res = await axios.get(`${API_URL}/api/perfil`, {
@@ -63,6 +76,42 @@ export default function ProfilePage() {
     fetchUserData();
   }, []);
 
+  const handleTouchStart = (e: TouchEvent): void => {
+    // detectar deslizamientos borde izquierdo
+    if (e.touches[0].clientX <= 30) {
+      setTouchStartX(e.touches[0].clientX);
+    }
+  };
+
+  const handleTouchEnd = (e: TouchEvent): void => {
+    if (touchStartX > 0) {
+      const touchEndX = e.changedTouches[0].clientX;
+      const deltaX = touchEndX - touchStartX;
+      if (deltaX > touchThreshold) {
+        // Emular un clic
+        const sidebarTrigger = document.querySelector('[data-sidebar-trigger="true"]') as HTMLElement;
+        if (sidebarTrigger) {
+          sidebarTrigger.click();
+        }
+        setIsSidebarOpen(!isSidebarOpen);
+      }
+      setTouchStartX(0);
+    }
+  };
+
+  useEffect(() => {
+    const handleTouchStartEvent = (e: TouchEvent): void => handleTouchStart(e);
+    const handleTouchEndEvent = (e: TouchEvent): void => handleTouchEnd(e);
+    
+    document.addEventListener('touchstart', handleTouchStartEvent, { passive: true });
+    document.addEventListener('touchend', handleTouchEndEvent, { passive: true });
+    
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStartEvent);
+      document.removeEventListener('touchend', handleTouchEndEvent);
+    };
+  }, [touchStartX]);
+
   const renderContent = () => {
     switch (activeSection) {
       case "personal":
@@ -75,6 +124,8 @@ export default function ProfilePage() {
         return <RatingsInfo />;
       case "vehicles":
         return <VehiclesInfo />;
+      case "orders":
+        return <ReservationsList />;
       default:
         return <PersonalInfo />;
     }
@@ -86,6 +137,7 @@ export default function ProfilePage() {
     driver: "Conductor",
     ratings: "Calificaciones",
     vehicles: "Vehículos",
+    orders: "Órdenes de Pago",
   };
 
   const menuItems = [
@@ -120,7 +172,19 @@ export default function ProfilePage() {
       icon: Car,
       alwaysShow: true,
     },
+    {
+      id: "orders",
+      title: "Órdenes de Pago",
+      icon: Receipt,
+      alwaysShow: false,
+      requiresRole: "RENTER",
+    },
   ];
+
+  const handleLogout = () => {
+    localStorage.clear(); // Limpia toda la sesión
+    window.location.href = "/"; // Redirige a la página de inicio
+  };
 
   return (
     <div className="flex flex-col  w-full max-w-full overflow-hidden bg-gray-50">
@@ -131,7 +195,7 @@ export default function ProfilePage() {
             <Sidebar
               side="left"
               collapsible="offcanvas"
-              className="border-r border-gray-100 shadow-sm bg-white "
+              className="border-r border-gray-100 shadow-sm bg-white"
             >
               <SidebarContent className="p-2 bg-white">
                 <div className="mb-2 px-3 py-2">
@@ -144,7 +208,6 @@ export default function ProfilePage() {
 
                 <SidebarMenu className="bg-white">
                   {menuItems.map((item) => {
-                    // Mostrar el ítem si siempre debe mostrarse o si el usuario tiene el rol requerido
                     if (
                       item.alwaysShow ||
                       (item.requiresRole && roles.includes(item.requiresRole))
@@ -152,9 +215,10 @@ export default function ProfilePage() {
                       return (
                         <SidebarMenuItem key={item.id}>
                           <SidebarMenuButton
-                            onClick={() =>
-                              setActiveSection(item.id as SectionType)
-                            }
+                            onClick={() => {
+                              setActiveSection(item.id as SectionType);
+                              setIsSidebarOpen(false);
+                            }}
                             isActive={activeSection === item.id}
                             className={cn(
                               "justify-start rounded-lg transition-all duration-200 px-3 py-2 text-sm my-1",
@@ -212,6 +276,7 @@ export default function ProfilePage() {
                 <Button
                   variant="outline"
                   className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
+                  onClick={handleLogout}
                 >
                   <LogOut className="h-4 w-4 mr-2" />
                   Cerrar sesión
@@ -221,16 +286,22 @@ export default function ProfilePage() {
 
             {/* Contenido principal con botón de menú para móvil */}
             <SidebarInset>
-                <div className="flex items-center p-2 bg-white md:hidden border rounded-lg m-4 z-50 fixed ">
-                <SidebarTrigger className="mr-3">
+              <div 
+                className="fixed left-0 top-0 bottom-0 w-8 z-40 md:hidden" 
+                style={{ backgroundColor: 'transparent' }}
+                aria-hidden="true"
+              />
+              
+              <div className="flex items-center p-2 bg-white md:hidden border rounded-lg m-4 z-50 fixed ">
+                <SidebarTrigger
+                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                  data-sidebar-trigger="true"
+                >
                   <Menu className="h-5 w-5" />
                 </SidebarTrigger>
-                <h2 className="text-base font-medium">
-                  {sectionTitles[activeSection]}
-                </h2>
-                </div>
+              </div>
 
-              <main className="flex-1  w-full sm:p-10">
+              <main className="flex-1  w-full mt-8 sm:p-10">
                 <ProfileHeader />
 
                 <div className="  p-4 md:p-6 lg:p-8">
@@ -240,8 +311,8 @@ export default function ProfilePage() {
                         {sectionTitles[activeSection]}
                       </h1>
                       <p className="text-sm text-gray-500 mt-1">
-                        Gestiona tu información de{" "}
-                        {sectionTitles[activeSection].toLowerCase()}
+                        Gestiona tu información personal y configuración de
+                        cuenta
                       </p>
                     </div>
                     <div className="p-4 md:p-6">{renderContent()}</div>
