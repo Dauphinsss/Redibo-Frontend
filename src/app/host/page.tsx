@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function hostRedirect() {
+export default function HostRedirect() {
     const router = useRouter();
 
     useEffect(() => {

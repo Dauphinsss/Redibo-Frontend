@@ -5,13 +5,13 @@ import { getToken } from './authService';
 // Configuración de logger basado en entorno
 const isDev = process.env.NODE_ENV === 'development';
 const logger = {
-  info: (message: string, ...args: any[]) => {
+  info: (message: string, ...args: unknown[]) => {
     if (isDev) console.log(`[IMG-INFO] ${message}`, ...args);
   },
-  error: (message: string, ...args: any[]) => {
+  error: (message: string, ...args: unknown[]) => {
     console.error(`[IMG-ERROR] ${message}`, ...args);
   },
-  warn: (message: string, ...args: any[]) => {
+  warn: (message: string, ...args: unknown[]) => {
     if (isDev) console.warn(`[IMG-WARN] ${message}`, ...args);
   }
 };

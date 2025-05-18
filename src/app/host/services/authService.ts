@@ -70,7 +70,8 @@ export function isTokenValid(token: string): boolean {
     // Verificación básica de estructura JWT
     const parts = token.split('.');
     return parts.length === 3;
-  } catch (e) {
+  } catch {
+    
     return false;
   }
 }

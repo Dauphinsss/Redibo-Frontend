@@ -113,7 +113,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const validateForm = useCallback(() => {
-    const { direccion, datosPrincipales, caracteristicas, caracteristicasAdicionales, finalizacion } = formData;
+    const { direccion, datosPrincipales, caracteristicas, finalizacion } = formData;
     return (
       direccion.id_provincia !== null &&
       datosPrincipales.vim.trim() !== "" &&

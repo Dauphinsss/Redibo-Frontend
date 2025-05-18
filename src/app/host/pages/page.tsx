@@ -44,6 +44,7 @@ export default function ViewCarsPage() {
       await deleteCar(carId);
       alert("Vehículo eliminado correctamente");
     } catch (error) {
+      console.error(error)
       alert("Error al eliminar el vehículo");
     }
   };
