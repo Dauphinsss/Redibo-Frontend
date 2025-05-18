@@ -22,7 +22,9 @@ import {
 } from "@/components/ui/sheet";
 
 export default function Header() {
-  const [user, setUser] = useState<{ nombre: string; foto: string } | null>(null);
+  const [user, setUser] = useState<{ nombre: string; foto: string } | null>(
+    null
+  );
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
 
@@ -33,18 +35,18 @@ export default function Header() {
 
     if (nombre && foto) {
       setUser({ nombre, foto });
-      
+
       // Verificar si el usuario es administrador
       if (rolesStr) {
         try {
           // Intentar parsear como JSON si es un array
-          const roles = rolesStr.includes("[") ? 
-            JSON.parse(rolesStr) : 
-            rolesStr.split(",").map(role => role.trim());
-          
+          const roles = rolesStr.includes("[")
+            ? JSON.parse(rolesStr)
+            : rolesStr.split(",").map((role) => role.trim());
+
           setIsAdmin(roles.includes("ADMIN"));
         } catch (error) {
-          console.log(error)
+          console.log(error);
           // Si no se puede parsear como JSON, verificar si el string contiene "ADMIN"
           setIsAdmin(rolesStr.includes("ADMIN"));
         }
@@ -101,18 +103,26 @@ export default function Header() {
                   Contacto
                 </Link>
                 <div className="mt-4 border-t pt-4">
-                {user ? (
+                  {user ? (
                     <>
                       <Link href={getProfileRoute()}>
                         <div className="flex items-center gap-2 mb-4 hover:bg-accent hover:text-accent-foreground rounded-md p-2 cursor-pointer">
                           <Avatar className="h-8 w-8">
                             {user.foto && user.foto !== "default.jpg" ? (
-                              <img src={user.foto} alt={user.nombre} className="h-8 w-8 rounded-full" />
+                              <img
+                                src={user.foto}
+                                alt={user.nombre}
+                                className="h-8 w-8 rounded-full"
+                              />
                             ) : (
-                              <AvatarFallback>{user.nombre.charAt(0)}</AvatarFallback>
+                              <AvatarFallback>
+                                {user.nombre.charAt(0)}
+                              </AvatarFallback>
                             )}
                           </Avatar>
-                          <div className="text-sm font-medium">{user.nombre}</div>
+                          <div className="text-sm font-medium">
+                            {user.nombre}
+                          </div>
                         </div>
                       </Link>
                       <Button
@@ -175,11 +185,15 @@ export default function Header() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
-                      {user.foto && user.foto !== "default.jpg" ? (
-                        <img src={user.foto} alt={user.nombre} className="h-8 w-8 rounded-full" />
-                      ) : (
-                        <AvatarFallback>{user.nombre.charAt(0)}</AvatarFallback>
-                      )}
+                    {user.foto && user.foto !== "default.jpg" ? (
+                      <img
+                        src={user.foto}
+                        alt={user.nombre}
+                        className="h-8 w-8 rounded-full"
+                      />
+                    ) : (
+                      <AvatarFallback>{user.nombre.charAt(0)}</AvatarFallback>
+                    )}
                   </Avatar>
                   <span className="text-sm font-medium">{user.nombre}</span>
                   <ChevronDown className="h-4 w-4 opacity-50" />
@@ -187,10 +201,10 @@ export default function Header() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <Link href={getProfileRoute()}>
-                    <DropdownMenuItem>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Mi {isAdmin ? "Panel de Admin" : "Perfil"}</span>
-                    </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Mi {isAdmin ? "Panel de Admin" : "Perfil"}</span>
+                  </DropdownMenuItem>
                 </Link>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
