@@ -1,14 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 interface BotonesFormularioProps {
   isFormValid: boolean;
   onNext?: () => void;
 }
 
 export default function BotonesFormulario({ isFormValid, onNext }: BotonesFormularioProps) {
-  const router = useRouter();
   return (
     <div className="flex flex-col sm:flex-row w-full max-w-5xl mx-auto mt-10 px-4 sm:px-10">
       <div className="w-full sm:w-auto sm:ml-auto">
