@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../axios";
-import { Car } from "@/types/apitypes";
+import { Car } from "@/app/busqueda/types/apitypes";
 
 export function useMostRentedCars() {
   return useQuery<Car[]>({
