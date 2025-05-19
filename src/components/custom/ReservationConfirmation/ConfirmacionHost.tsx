@@ -10,9 +10,9 @@ interface Props {
   returnDate?: Date;
   //user: any;
   id: string;
-  modelo:string;
-  marca:string;
-  precio:number;
+  modelo: string;
+  marca: string;
+  precio: number;
 }
 console.log("estamos en ConfirmationHost")
 const ConfirmacionReservaOpciones: React.FC<Props> = ({
@@ -34,18 +34,19 @@ const ConfirmacionReservaOpciones: React.FC<Props> = ({
         <p>El anfitrión ha aceptado tu solicitud de reserva. Elige cómo deseas continuar:</p>
 
         <div className="mt-6 flex flex-col gap-4">
-        <ReservationConfirmedMessage
+          <ReservationConfirmedMessage
             //user={user}
             pickupDate={pickupDate}
             returnDate={returnDate}
             id={id}
             marca={marca}
             modelo={modelo}
-            precio = {precio}
+            precio={precio}
           />
           <button
             onClick={onPagarCompleto}
-            className="bg-green-600 text-white px-4 py-2 rounded"
+            disabled
+            className="bg-black/50 text-white px-4 py-2 rounded"
           >
             Pagar 100%
           </button>

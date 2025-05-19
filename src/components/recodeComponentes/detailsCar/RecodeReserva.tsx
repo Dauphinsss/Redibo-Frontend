@@ -22,9 +22,8 @@ import { useRouter } from "next/navigation";
 
 export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
   const [showModal, setShowModal] = useState(false);
-  const [showReservationDialog, setShowReservationDialog] = useState(false);//mostrarReserva
 
-  // Suponiendo que puedes obtener la fecha actual o que el usuario la selecciona
+  // Suponiendo obtener la fecha actual o que el usuario la seleccionam
   //const [fechaSeleccionada, setFechaSeleccionada] = useState<string>('');
   const [fechasSeleccionadas, setFechasSeleccionadas] = useState<{
     pickupDate?: Date;
@@ -35,8 +34,6 @@ export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
   console.log(":::: Usuario que se pasa a ConfirmacionReservaOpciones:", user); //
 
   const [showConfirmationOptions, setShowConfirmationOptions] = useState(false);
-  const [mostrarReserva, setMostrarReserva] = useState(false);
-
 
   const router = useRouter();
   console.log("Usuario en Reserva:", user); ///////
@@ -55,11 +52,10 @@ export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
           }
           setShowModal(true);
         }}
-        className="mt-2 w-full py-2 bg-blue-600 text-white rounded-lg"
+        className="mt-2 w-full py-2 bg-black text-white rounded-lg"
       >
         Reserva
       </button>
-      
 
 
       {showModal && (
@@ -94,7 +90,7 @@ export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
               <li>Juan Pérez</li>
               <li>María García</li>
             </ul>
-            <div className="mt-4 flex justify-end gap-2">
+            <div className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-center">{/*centalizar los botones en responsive*/}
               <button
                 onClick={() => setShowModal(false)}
                 className="bg-gray-300 px-4 py-2 rounded"
@@ -106,7 +102,7 @@ export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
                   setShowModal(false);
                   setShowConfirmationOptions(true); //  Aqui activa lsegunda modal
                 }}
-                className="bg-green-600 text-white px-4 py-2 rounded"
+                className="bg-black text-white px-4 py-2 rounded"
               >
                 Confirmar
               </button>
@@ -136,9 +132,6 @@ export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
           onCancelar={() => setShowConfirmationOptions(false)}
         />
       )}
-
-     
-
     </div>
   );
 }

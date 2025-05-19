@@ -16,7 +16,7 @@ export function SuccessModal({ show, onClose }: Props) {
         <h2 className="text-xl font-semibold mb-2">¡Reserva exitosa!</h2>
         <p className="text-gray-600 mb-4">Tu reserva ha sido creada correctamente.</p>
         <button
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+          className="bg-black text-white px-4 py-2 rounded hover:bg-[#333333] transition"
           onClick={onClose}
         >
           Cerrar

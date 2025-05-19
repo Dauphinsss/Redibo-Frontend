@@ -15,6 +15,7 @@ import { SuccessModal } from "./SuccessNotification";
 import axiosInstance from "@/api/axios";
 import axios from "axios";
 import { useUserProfile } from "./hooks/useProfile";
+import ErrorModal from "./ErrorModal";
 
 interface ReservationDialogProps {
   showDialog: boolean;
@@ -53,6 +54,9 @@ export default function ReservationDialog({
 }: ReservationDialogProps) {
   const [reservaId, setReservaId] = useState<number | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  //para los mensajes de error una modal
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   const profile = useUserProfile();
   if (!profile) return <div>Cargando datos del usuario...</div>;
@@ -65,7 +69,8 @@ export default function ReservationDialog({
     estado: string = "pendiente"
   ): Promise<boolean> => {
     if (!pickupDate || !returnDate) {
-      alert("Las fechas no pueden estar vacías");
+      setModalMessage("Las fechas no pueden estar vacías");
+      setModalVisible(true);
       return false;
     }
 
@@ -79,15 +84,18 @@ export default function ReservationDialog({
       });
 
       const data = response.data;
-      console.log("✔ Reserva creada correctamente:", data);
+      console.log("Reserva creada correctamente:", data);
       setReservaId(data.id);
       return true;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        const backendError = error.response?.data?.error || "Error al crear la reserva";
-        alert(backendError);
+        const backendError =
+          error.response?.data?.error || "Error al crear la reserva";
+        setModalMessage(backendError);
+        setModalVisible(true);
       } else {
-        alert("Error de red al intentar crear la reserva");
+        setModalMessage("Error de red al intentar crear la reserva");
+        setModalVisible(true);
       }
       return false;
     }
@@ -98,21 +106,29 @@ export default function ReservationDialog({
     nuevoEstado: string
   ): Promise<boolean> => {
     try {
-      const response = await axiosInstance.patch(`/api/reservations/${id}/state`, {
-        estado: nuevoEstado,
-      });
+      const response = await axiosInstance.patch(
+        `/api/reservations/${id}/state`,
+        {
+          estado: nuevoEstado,
+        }
+      );
 
       const data = response.data;
       console.log("Estado actualizado:", data);
-      alert(`Estado actualizado a: ${data.estado}`);
+      //alert(`Estado actualizado a: ${data.estado}`);
+      setModalMessage(`La reserva fue: ${data.estado}`);
+      setModalVisible(true);
       return true;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        const backendError = error.response?.data?.error || "Error al actualizar el estado";
+        const backendError =
+          error.response?.data?.error || "Error al actualizar el estado";
         alert(backendError);
       } else {
         console.error("Error de red al actualizar estado:", error);
-        alert("Error de red al actualizar el estado");
+        // alert("Error de red al actualizar el estado");
+        setModalMessage("Error de red al actualizar el estado");
+        setModalVisible(true);
       }
       return false;
     }
@@ -120,21 +136,32 @@ export default function ReservationDialog({
 
   return (
     <>
-      <SuccessModal show={showSuccessModal} onClose={() =>{ setShowSuccessModal(false); setShowDialog(true);} }/>
+      <SuccessModal
+        show={showSuccessModal}
+        onClose={() => {
+          setShowSuccessModal(false);
+          setShowDialog(true);
+        }}
+      />
+      <ErrorModal
+        visible={modalVisible}
+        message={modalMessage}
+        onClose={() => setModalVisible(false)}
+      />
       <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
         <AlertDialogTrigger asChild>
           <Button
-            variant="outline"
+            //variant="outline"
             size="sm"
             onClick={handleClick}
             disabled={loading}
-            className="border-gray-500"
+            className="bg-black text-white hover:bg-[#333333] border-none"
           >
             {loading ? (
               <Loader2 className="animate-spin" />
             ) : (
               <>
-                <CheckCircle className="w-4 h-4 mr-2 text-green-600" />
+                <CheckCircle className="w-4 h-4 mr-2 text-white" />
                 Reservar
               </>
             )}
@@ -143,13 +170,15 @@ export default function ReservationDialog({
 
         <AlertDialogContent className="max-w-md w-full">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-center bg-[#11295B] text-white p-4 rounded-t-xl">
+            <AlertDialogTitle className="text-center bg-black text-white p-4 rounded-t-xl">
               Reserva Temporal
             </AlertDialogTitle>
 
-            <div className="text-sm space-y-2 mt-2 ml-10">
+            <div className="text-sm space-y-2 mt-2 ml-0 md:ml-10">
               <div>
-                <h3 className="font-bold text-base mb-1 text-[#11295B]">Datos del usuario</h3>
+                <h3 className="font-bold text-base mb-1 text-black">
+                  Datos del usuario
+                </h3>
                 <strong>Nombre:</strong> {profile.nombre}
                 <br />
                 <strong>Ciudad:</strong> {profile.ciudad.nombre}
@@ -159,17 +188,21 @@ export default function ReservationDialog({
                 <strong>Teléfono:</strong> {profile.telefono}
               </div>
               <div className="pt-0">
-                <h3 className="font-bold text-base mb-1 text-[#11295B]">Datos del vehículo</h3>
+                <h3 className="font-bold text-base mb-1 text-black">
+                  Datos del vehículo
+                </h3>
                 <strong>Vehículo:</strong> {modelo}
                 <br />
                 <strong>Marca:</strong> {marca}
                 <br />
-                <strong>Precio:</strong> {precio}
+                <strong>Precio día:</strong> {precio} BOB
               </div>
             </div>
           </AlertDialogHeader>
           <div className="border border-[#000000] rounded-lg py-4 mt-4 text-center">
-            <p className="text-sm text-gray-600 mb-1">Tiempo restante para pagar</p>
+            <p className="text-sm text-gray-600 mb-1">
+              Tiempo restante para pagar
+            </p>
             <p className="text-4xl font-bold">
               {confirmed
                 ? timeLeft > 0
@@ -178,12 +211,13 @@ export default function ReservationDialog({
                 : "--:--:--"}
             </p>
             <p className="text-sm text-gray-600 mt-1">
-              Reserva válida por 48 horas
+              Reserva válida por 12 horas
             </p>
           </div>
 
           <p className="text-xs text-red-500 mt-4">
-            Si no realiza el pago en ese plazo, la reserva será cancelada automáticamente.
+            Si no realiza el pago en ese plazo, la reserva será cancelada
+            automáticamente.
           </p>
 
           <AlertDialogFooter className="mt-4 justify-between flex-row-reverse">
@@ -192,13 +226,16 @@ export default function ReservationDialog({
                 <Button
                   onClick={async () => {
                     if (reservaId) {
-                      const success = await actualizarEstadoReserva(reservaId, "confirmado");
+                      const success = await actualizarEstadoReserva(
+                        reservaId,
+                        "confirmado"
+                      );
                       if (success) {
                         handleCancelReservation();
                       }
                     }
                   }}
-                  className="bg-[#11295B] text-[#E4D5C1] hover:bg-[#2f487a] font-medium"
+                  className="bg-black text-[#E4D5C1] hover:bg-[#333333] font-medium"//
                 >
                   Pagar
                 </Button>
@@ -206,13 +243,16 @@ export default function ReservationDialog({
                 <Button
                   onClick={async () => {
                     if (reservaId) {
-                      const success = await actualizarEstadoReserva(reservaId, "cancelado");
+                      const success = await actualizarEstadoReserva(
+                        reservaId,
+                        "cancelado"
+                      );
                       if (success) {
                         handleCancelReservation();
                       }
                     }
                   }}
-                  className="bg-[#11295B] text-[#E4D5C1] hover:bg-[#2f487a] font-medium"
+                  className="bg-black text-[#E4D5C1] hover:bg-[#333333] font-medium"
                 >
                   Cancelar
                 </Button>
@@ -235,10 +275,9 @@ export default function ReservationDialog({
                     if (success) {
                       setShowSuccessModal(true);
                       handleConfirm();
-                     
                     }
                   }}
-                  className="bg-[#11295B] text-[#E4D5C1] hover:bg-[#2f487a] font-medium"
+                  className="bg-black text-[#E4D5C1] hover:bg-[#333333] font-medium"
                 >
                   Aceptar
                 </AlertDialogAction>
