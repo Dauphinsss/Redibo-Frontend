@@ -7,7 +7,7 @@ interface RadioControlProps {
 export default function Radio({ radio, setRadio, punto }: RadioControlProps) {
   const isDisabled = punto.alt === 0 && punto.lon === 0;
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRadio(parseInt(e.target.value));
   };
 

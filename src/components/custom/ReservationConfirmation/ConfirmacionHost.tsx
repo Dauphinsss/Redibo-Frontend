@@ -8,7 +8,6 @@ interface Props {
   onCancelar: () => void;
   pickupDate?: Date;
   returnDate?: Date;
-  //user: any;
   id: string;
   modelo: string;
   marca: string;
@@ -16,10 +15,8 @@ interface Props {
 }
 console.log("estamos en ConfirmationHost")
 const ConfirmacionReservaOpciones: React.FC<Props> = ({
-  onReservarSinPagar,
   onPagarCompleto,
   onCancelar,
-  //user,
   pickupDate,
   returnDate,
   id,
@@ -35,7 +32,6 @@ const ConfirmacionReservaOpciones: React.FC<Props> = ({
 
         <div className="mt-6 flex flex-col gap-4">
           <ReservationConfirmedMessage
-            //user={user}
             pickupDate={pickupDate}
             returnDate={returnDate}
             id={id}

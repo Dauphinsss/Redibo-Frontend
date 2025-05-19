@@ -8,16 +8,13 @@ interface HijoProps {
   setpunto: (punto: { lon: number, alt: number }) => void;
   estaActivoGPS: boolean;
 }
-const MapPunto = ({ radio, punto, setpunto, estaActivoGPS }: HijoProps) => {
+const MapPunto = ({ radio, setpunto, estaActivoGPS }: HijoProps) => {
   const [position, setPosition] = useState<LatLng | null>(null)
-  const [ubicacionEnviada, setUbicacionEnviada] = useState(false);
   function actualizarPunto(lon: number, alt: number) {
     setpunto({ lon, alt })
   }
   function borrarDibujo() {
     setPosition(null);
-    setUbicacionEnviada(false);
-    // Reinicia el punto a valores predeterminados o nulos según lo que necesites
     setpunto({ lon: 0, alt: 0 });
   }
   useEffect(() => {

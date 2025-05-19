@@ -4,13 +4,6 @@ import { AutoCancelNotification } from "./AutoCancelNotification";
 import { useReservationTimer } from "./hooks/useReservationTimer";
 
 interface ReservationConfirmedMessageProps {
-  /*user: {
-    id: number;
-    nombre: string;
-    ciudad: string;
-    correo: string;
-    telefono: number;
-  };*/
   pickupDate?: Date;
   returnDate?: Date;
   id: string;
@@ -20,7 +13,6 @@ interface ReservationConfirmedMessageProps {
 }
 
 export default function ReservationConfirmedMessage({
-  //user,
   pickupDate,
   returnDate,
   id,
@@ -39,13 +31,6 @@ export default function ReservationConfirmedMessage({
     cancelReservation,
     setAutoCancelled,
   } = useReservationTimer(12 * 60 * 60 * 1000);
-
-  const vehicle = {
-    id: 1,
-    marca: "Toyota",
-    modelo: "Corolla 2021",
-    precio: "Bs. 500",
-  };
 
   const handleClick = () => {
     setLoading(true);
@@ -71,11 +56,9 @@ export default function ReservationConfirmedMessage({
         setShowDialog={setShowDialog}
         loading={loading}
         handleClick={handleClick}
-        handleConfirm={startTimer} //es lo importante para iniciar el reloj
+        handleConfirm={startTimer}
         confirmed={confirmed}
         handleCancelReservation={cancelReservation}
-        //user={user}
-
         timeLeft={timeLeft}
         formatTime={formatTime}
         pickupDate={pickupDate}

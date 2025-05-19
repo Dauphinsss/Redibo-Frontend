@@ -110,7 +110,8 @@ export default function Page() {
         <CarsByLocation
           latitude={selectedLatitude}
           longitude={selectedLongitude}
-          radius={selectedRadius}></CarsByLocation>
+          radius={selectedRadius}>
+        </CarsByLocation>
       </div>
     </div>
   );

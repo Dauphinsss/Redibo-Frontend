@@ -63,16 +63,13 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
       resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
     }
 
-    {/* Filtro de fechas */ }
     resultado = resultado.filter(auto => {
 
-      {/* Si no tiene reservas, siempre mostrar */ }
       if (!auto.reservas || auto.reservas.length === 0) return true;
 
       const filtroInicio = fechaFiltroInicio ? new Date(fechaFiltroInicio) : null;
       const filtroFin = fechaFiltroFin ? new Date(fechaFiltroFin) : null;
 
-      {/* Devuelve TRUE si ninguna reserva interfiere, FALSE si alguna choca */ }
       return !auto.reservas.some(reserva => {
         if (!['pendiente', 'confirmado'].includes(reserva.estado)) return false;
 

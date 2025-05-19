@@ -30,6 +30,9 @@ export default function Home() {
     obtenerSugerencia,
   } = useAutos(8, radio, punto);
 
+  console.log("Autos actuales", autosActuales);
+  console.log("Autos Filtrados", autosFiltrados)
+
   const [busqueda, setBusqueda] = useState("");
 
   const [fechaInicio, setFechaInicio] = useState("");
