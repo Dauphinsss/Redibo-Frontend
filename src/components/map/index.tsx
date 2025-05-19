@@ -264,7 +264,7 @@ const Map = ({ zoom = defaults.zoom, posix, autos = [], radio, punto, setpunto, 
         }
         return null;
       })}
-      <PuntoDinamico radio={radio} punto={punto} setpunto={setpunto} estaActivoGPS={estaActivoGPS} />
+      <PuntoDinamico radio={radio} setpunto={setpunto} estaActivoGPS={estaActivoGPS} />
       <PuntoUsuario />
     </MapContainer>
   );

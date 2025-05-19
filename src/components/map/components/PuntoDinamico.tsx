@@ -1,27 +1,28 @@
 import { LatLng } from 'leaflet'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Marker, useMapEvents, Circle } from 'react-leaflet'
 
 interface HijoProps {
   radio: number,
-  punto: { lon: number, alt: number },
+  punto?: { lon: number, alt: number },
   setpunto: (punto: { lon: number, alt: number }) => void;
   estaActivoGPS: boolean;
 }
 const MapPunto = ({ radio, setpunto, estaActivoGPS }: HijoProps) => {
   const [position, setPosition] = useState<LatLng | null>(null)
-  function actualizarPunto(lon: number, alt: number) {
+  const actualizarPunto = useCallback((lon: number, alt: number) => {
     setpunto({ lon, alt })
-  }
-  function borrarDibujo() {
+  }, [setpunto]);
+
+  const borrarDibujo = useCallback(() => {
     setPosition(null);
     setpunto({ lon: 0, alt: 0 });
-  }
+  }, [setpunto]);
   useEffect(() => {
     if (!estaActivoGPS) {
       borrarDibujo();
     }
-  }, [estaActivoGPS]);
+  }, [estaActivoGPS, borrarDibujo]);
   const map = useMapEvents({
     click(e) {
       if (estaActivoGPS) {
