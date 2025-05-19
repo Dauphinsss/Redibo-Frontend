@@ -27,7 +27,7 @@ export default function Home() {
   const [showMap, setShowMap] = useState(false);
 
   const ViewMap = useMemo(() => dynamic(
-    () => import('@/components/map/'),
+    () => import('@/app/busqueda/components/map'),
     {
       loading: () => <p>A map is loading</p>,
       ssr: false,

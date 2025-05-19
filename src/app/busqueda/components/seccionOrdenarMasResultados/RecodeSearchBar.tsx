@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MagnifyingGlassIcon,XMarkIcon } from "@heroicons/react/24/solid"; // XMarkIcon, Aqui se agrego el icono de eliminar
+import { MagnifyingGlassIcon,XMarkIcon } from "@heroicons/react/24/solid";
 
 interface SearchBarProps {
   placeholder: string;
