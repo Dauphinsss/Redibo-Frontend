@@ -66,3 +66,20 @@ export const getCarsByPriceDesc = async () => {
         throw error;
     }
 };
+
+export async function getCarRatingsFromComments(idCar: string): Promise<number[]> {
+    const response = await fetch(`https://search-car-backend.vercel.app/comments/${idCar}`);
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    
+    return data.map((comentario: { Calificacion?: { calf_carro: number } }) => 
+        comentario.Calificacion?.calf_carro ?? 0 // Si no tiene calificación, asigna 0
+    );
+}
+export async function getCarRatingsFromAuto(id: string): Promise<number[]> {
+    const response = await fetch(`https://search-car-backend.vercel.app/detailCar/${id}`);
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.Calificacion.map((c: { calf_carro: number }) => c.calf_carro);
+};

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getCarRatingsFromAuto, getCarRatingsFromComments } from "@/service/services_Recode";
+import { getCarRatingsFromAuto, getCarRatingsFromComments } from "@/app/busqueda/service/service_auto_recode";
 
 export function useCalificaciones(idAuto: string) {
   const [calificaciones, setCalificaciones] = useState<number[]>([]);
