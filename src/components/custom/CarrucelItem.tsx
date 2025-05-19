@@ -16,12 +16,20 @@ function CarrucelItem({ car }: CarrucelItemProps) {
         <Card className='p-0 rounded-t-2xl bg-black border-0'>
           <CardContent className="flex flex-col items-center justify-items-start p-0 text-white">
             <div className="relative w-full h-40">
-              <Image
-                src={car.imagenes}
-                alt={`${car.marca} ${car.modelo}`}
-                fill
-                className="object-cover rounded-t-2xl"
-              />
+              {
+                car.imagenes ? (
+                  <Image
+                    src={car.imagenes}
+                    alt={`${car.marca} ${car.modelo}`}
+                    fill
+                    className="object-cover rounded-t-2xl"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-800 rounded-t-2xl">
+                    <span className="text-md font-medium bg-gray-700 text-white py-2 px-4 rounded">Sin imagen</span>
+                  </div>
+                )
+              }
             </div>
             <div className='w-full flex justify-between items-center'>
               <span className='text-2xl font-bold px-2'>{car.marca}</span>
