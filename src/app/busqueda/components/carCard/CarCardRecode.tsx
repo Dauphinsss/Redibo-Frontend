@@ -1,14 +1,14 @@
 "use client";
 
 import { memo, useState } from "react";
-import { AutoCard_Interfaces_Recode as Auto } from "@/interface/AutoCard_Interface_Recode";
+import { AutoCard_Interfaces_Recode as Auto } from "@/app/busqueda/interface/AutoCard_Interface_Recode";
 import CarCardImage from "./CarCardImgRecode";
 import CarCardHeader from "./CarCardHeaderRecode";
 import CarCardSpecs from "./CarCardSpecsRecode";
 import CarCardHost from "./CarCardHostRecode";
 import CarCardUbicacion from "./CarCardUbicacionRecode";
 import CarCardPrice from "./CarCardPriceRecode";
-import { useCalificaciones } from "@/hooks/useCalifPromedio";
+import { useCalificaciones } from "@/app/reserva/hooks/useCalifPromedio";
 
 
 export type RecodeCarCardProps = Auto;

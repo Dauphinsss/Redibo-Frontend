@@ -1,4 +1,4 @@
-import { InfoDestacableProps } from '@/interface/autosInterface_Recode';
+import { InfoDestacableProps } from '@/app/reserva/interface/autosInterface_Recode';
 
 export default function InfoDestacable({ marca, modelo, anio, soat }: InfoDestacableProps) {
   return (

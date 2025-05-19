@@ -1,7 +1,7 @@
 "use client";
 
 import ListCar from "../cobertura/ListCar";
-import { AutoCard_Interfaces_Recode as Auto } from "@/interface/AutoCard_Interface_Recode";
+import { AutoCard_Interfaces_Recode as Auto } from "@/app/busqueda/interface/AutoCard_Interface_Recode";
 
 interface Props {
   autos: Auto[];

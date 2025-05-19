@@ -6,7 +6,7 @@ import TarjetaCar from "@/components/recodeComponentes/perfilHost/tarjetasAutos/
 import { getDetalleHost_Recode } from "@/service/services_Recode";
 import { useParams } from "next/navigation";
 //import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
-import { DetalleHost_Recode as DetalleHost } from "@/interface/DetalleHost_Recode";
+import { DetalleHost_Recode as DetalleHost } from "@/app/reserva/interface/DetalleHost_Recode";
 
 export default function Page() {
   const params = useParams();

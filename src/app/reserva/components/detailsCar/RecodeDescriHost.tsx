@@ -1,10 +1,10 @@
 "use client";
 import Link from 'next/link';
 import { FaStar, FaCar, FaWhatsapp } from 'react-icons/fa';
-import { DetalleHost_Recode as DetalleHost } from "@/interface/DetalleHost_Recode";
+import { DetalleHost_Recode as DetalleHost } from "@/app/reserva/interface/DetalleHost_Recode";
 import { useEffect, useState } from 'react';
 import { getDetalleHost_Recode } from '@/service/services_Recode';
-import FotoPerfilUsrRecode from '../comentarioUsuario/realizarComentario/fotoPerfilUsrRecode';
+import FotoPerfilUsrRecode from '@/app/reserva/components/realizarComentario/fotoPerfilUsrRecode';
 interface DescriHostProps {
   nombreHost: string;
   calificacion: number;

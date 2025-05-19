@@ -1,4 +1,4 @@
-import { ComentariosCar } from '@/interface/ComentariosCar_Recode';
+import { ComentariosCar } from '@/app/reserva/interface/ComentariosCar_Recode';
 import { useEffect, useMemo, useState } from "react";
 
 export function useComentariosAuto(

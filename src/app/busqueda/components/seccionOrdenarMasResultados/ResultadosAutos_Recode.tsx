@@ -1,8 +1,8 @@
 "use client";
 
-import RecodeCarList from "../carCard/CarListRecode";
-import AutoSkeletonList from "../carCard/CarSkeletonListRecode";
-import { AutoCard_Interfaces_Recode as Auto } from "@/interface/AutoCard_Interface_Recode";
+import RecodeCarList from "@/app/busqueda/components/carCard/CarListRecode";
+import AutoSkeletonList from "@/app/busqueda/components/carCard/CarSkeletonListRecode";
+import { AutoCard_Interfaces_Recode as Auto } from "@/app/busqueda/interface/AutoCard_Interface_Recode";
 
 interface Props {
     cargando: boolean;

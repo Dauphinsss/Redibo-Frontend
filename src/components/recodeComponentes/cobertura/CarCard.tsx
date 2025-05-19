@@ -2,9 +2,9 @@
 
 import { memo } from "react";
 import { useRouter } from "next/navigation";
-import { AutoCard_Interfaces_Recode as Auto } from "@/interface/AutoCard_Interface_Recode";
-import CarCardImg from "@/components/recodeComponentes/carCard/CarCardImgRecode";
-import CarCardHeader from "@/components/recodeComponentes/carCard/CarCardHeaderRecode";
+import { AutoCard_Interfaces_Recode as Auto } from "@/app/busqueda/interface/AutoCard_Interface_Recode";
+import CarCardImg from "@/app/busqueda/components/carCard/CarCardImgRecode";
+import CarCardHeader from "@/app/busqueda/components/carCard/CarCardHeaderRecode";
 
 export type RecodeCarCardProps = Auto;
 

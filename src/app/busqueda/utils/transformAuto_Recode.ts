@@ -1,5 +1,5 @@
-import { RawAuto_Interface_Recode as RawAuto } from "@/interface/RawAuto_Interface_Recode";
-import { AutoCard_Interfaces_Recode as AutoCard } from "@/interface/AutoCard_Interface_Recode";
+import { RawAuto_Interface_Recode as RawAuto } from "@/app/busqueda/interface/RawAuto_Interface_Recode";
+import { AutoCard_Interfaces_Recode as AutoCard } from "@/app/busqueda/interface/AutoCard_Interface_Recode";
 
 export const transformAuto = (item: RawAuto): AutoCard => ({
     idAuto: String(item.id),
