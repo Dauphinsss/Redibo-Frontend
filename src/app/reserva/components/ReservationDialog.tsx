@@ -14,7 +14,6 @@ import React, { useState } from "react";
 import { SuccessModal } from "./SuccessNotification";
 import axiosInstance from "@/api/axios";
 import axios from "axios";
-import { useUserProfile } from "./hooks/useProfile";
 import ErrorModal from "./ErrorModal";
 
 interface ReservationDialogProps {
@@ -58,9 +57,6 @@ export default function ReservationDialog({
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
-  const profile = useUserProfile();
-  if (!profile) return <div>Cargando datos del usuario...</div>;
-  console.log("estamos en ReservationDialog", profile);
   const crearReserva = async (
     userId: number,
     carId: number,
@@ -115,7 +111,6 @@ export default function ReservationDialog({
 
       const data = response.data;
       console.log("Estado actualizado:", data);
-      //alert(`Estado actualizado a: ${data.estado}`);
       setModalMessage(`La reserva fue: ${data.estado}`);
       setModalVisible(true);
       return true;
@@ -126,7 +121,6 @@ export default function ReservationDialog({
         alert(backendError);
       } else {
         console.error("Error de red al actualizar estado:", error);
-        // alert("Error de red al actualizar el estado");
         setModalMessage("Error de red al actualizar el estado");
         setModalVisible(true);
       }
@@ -151,7 +145,6 @@ export default function ReservationDialog({
       <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
         <AlertDialogTrigger asChild>
           <Button
-            //variant="outline"
             size="sm"
             onClick={handleClick}
             disabled={loading}
@@ -179,13 +172,13 @@ export default function ReservationDialog({
                 <h3 className="font-bold text-base mb-1 text-black">
                   Datos del usuario
                 </h3>
-                <strong>Nombre:</strong> {profile.nombre}
+                <strong>Nombre:</strong> Juan Perez
                 <br />
-                <strong>Ciudad:</strong> {profile.ciudad.nombre}
+                <strong>Ciudad:</strong> Cochabamba
                 <br />
-                <strong>Correo:</strong> {profile.correo}
+                <strong>Correo:</strong> juan.p@gmail.com
                 <br />
-                <strong>Teléfono:</strong> {profile.telefono}
+                <strong>Teléfono:</strong> 76852535
               </div>
               <div className="pt-0">
                 <h3 className="font-bold text-base mb-1 text-black">
@@ -266,7 +259,7 @@ export default function ReservationDialog({
                 <AlertDialogAction
                   onClick={async () => {
                     const success = await crearReserva(
-                      profile.id,
+                      1,
                       Number(id),
                       pickupDate,
                       returnDate,

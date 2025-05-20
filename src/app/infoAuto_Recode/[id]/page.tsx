@@ -1,13 +1,13 @@
-import RecodeHeader from "@/components/recodeComponentes/detailsCar/RecodeHeader";
-import Autoimag from "@/components/recodeComponentes/detailsCar/RecodeAutoimag";
-import InfoPrincipal from "@/components/recodeComponentes/detailsCar/RecodeInfoPrincipal";
-import InfoDestacable from "@/components/recodeComponentes/detailsCar/RecodeInfoDestacable";
-import DescriHost from "@/components/recodeComponentes/detailsCar/RecodeDescriHost";
-import DescripcionAuto from "@/components/recodeComponentes/detailsCar/RecodeDescripcionAuto";
-import Reserva from "@/components/recodeComponentes/detailsCar/RecodeReserva";
-import { getCarById } from "@/service/services_Recode";
+import RecodeHeader from "@/app/infoAuto_Recode/components//RecodeHeader";
+import Autoimag from "@/app/infoAuto_Recode/components/RecodeAutoimag";
+import InfoPrincipal from "@/app/infoAuto_Recode/components/RecodeInfoPrincipal";
+import InfoDestacable from "@/app/infoAuto_Recode/components/RecodeInfoDestacable";
+import DescriHost from "@/app/infoAuto_Recode/components/RecodeDescriHost";
+import DescripcionAuto from "@/app/infoAuto_Recode/components/RecodeDescripcionAuto";
+import Reserva from "@/app/infoAuto_Recode/components/RecodeReserva";
+import { getCarById } from "@/app/infoAuto_Recode/service/services_Recode";
 import NotFound from "@/app/not-found";
-import { transformAutoDetails_Recode } from "@/utils/transformAutoDetails_Recode";
+import { transformAutoDetails_Recode } from "@/app/infoAuto_Recode/utils/transformAutoDetails_Recode";
 
 export default async function Page({
   params,

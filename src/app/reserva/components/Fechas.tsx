@@ -23,10 +23,8 @@ export default function ElegirFechas({ onChange }: ElegirFechasProps) {
   const clearPickupDate = () => setPickupDate(undefined);
   const clearReturnDate = () => setReturnDate(undefined);
 
-  // ✅ Aquí está el return que faltaba
   return (
     <div className="flex flex-col justify-center sm:flex-row gap-4 w-full">
-      {/* Fecha de Recogida */}
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -51,10 +49,7 @@ export default function ElegirFechas({ onChange }: ElegirFechasProps) {
             onSelect={(date) => {
               setPickupDate(date);
               if (date) {
-                //const fechaFormateada = format(date, "dd '/' MMMM '/' yyyy", {
-                //  locale: es,
-                //});
-                onChange({ pickupDate: date, returnDate });///cambiao
+                onChange({ pickupDate: date, returnDate });
               }
             }}
             disabled={(date) => date < new Date()}
@@ -73,7 +68,6 @@ export default function ElegirFechas({ onChange }: ElegirFechasProps) {
         </PopoverContent>
       </Popover>
 
-      {/* Fecha de Devolución */}
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -98,9 +92,6 @@ export default function ElegirFechas({ onChange }: ElegirFechasProps) {
             onSelect={(date) => {
               setReturnDate(date);
               if (date) {
-                //const fechaFormateada = format(date, "dd '/' MMMM '/' yyyy", {
-                //  locale: es,
-                //});
                 onChange({ pickupDate, returnDate: date });
               }
             }}

@@ -1,5 +1,5 @@
-import {apiAllCards,apiCarById} from "@/api/apis_Recode";
-import {RawAuto_Interface_Recode as RawAuto} from "@/interface/RawAuto_Interface_Recode"
+import { apiAllCards, apiCarById } from "@/api/apis_Recode";
+import { RawAuto_Interface_Recode as RawAuto } from "@/app/infoAuto_Recode/interface/RawAuto_Interface_Recode"
 
 export const getAllCars = async (): Promise<RawAuto[]> => {
     try {
@@ -24,9 +24,9 @@ export const getCarById = async (id: string) => {
 export const getCarsByModelDesc = async () => {
     try {
         const response = await apiAllCards.get("/filterCar", {
-        params: {
-            ordenar: "modelo_desc",
-        },
+            params: {
+                ordenar: "modelo_desc",
+            },
         });
         return response.data;
     } catch (error) {
@@ -38,9 +38,9 @@ export const getCarsByModelDesc = async () => {
 export const getCarsByModelAsc = async () => {
     try {
         const response = await apiAllCards.get("/filterCar", {
-        params: {
-            ordenar: "modelo_asc",
-        },
+            params: {
+                ordenar: "modelo_asc",
+            },
         });
         return response.data;
     } catch (error) {
@@ -52,9 +52,9 @@ export const getCarsByModelAsc = async () => {
 export const getCarsByPriceAsc = async () => {
     try {
         const response = await apiAllCards.get("/filterCar", {
-        params: {
-            ordenar: "precio_asc",
-        },
+            params: {
+                ordenar: "precio_asc",
+            },
         });
         return response.data;
     } catch (error) {
@@ -66,9 +66,9 @@ export const getCarsByPriceAsc = async () => {
 export const getCarsByPriceDesc = async () => {
     try {
         const response = await apiAllCards.get("/filterCar", {
-        params: {
-            ordenar: "precio_desc",
-        },
+            params: {
+                ordenar: "precio_desc",
+            },
         });
         return response.data;
     } catch (error) {

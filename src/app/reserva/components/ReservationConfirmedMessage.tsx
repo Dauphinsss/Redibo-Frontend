@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ReservationDialog from "./ReservationDialog";
 import { AutoCancelNotification } from "./AutoCancelNotification";
-import { useReservationTimer } from "./hooks/useReservationTimer";
+import { useReservationTimer } from "../hooks/useReservationTimer";
 
 interface ReservationConfirmedMessageProps {
   pickupDate?: Date;

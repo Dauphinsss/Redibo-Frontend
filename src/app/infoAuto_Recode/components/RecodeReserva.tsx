@@ -1,55 +1,26 @@
-/*import { ReservaProps } from '@/interface/autosInterface_Recode';
-
-export default function Reserva({ precio }: ReservaProps) {
-  return (
-    <div className="w-full border border-gray-300 rounded-lg p-4 text-center">
-      <p className="text-lg font-bold">BOB. {precio}</p>
-      <p className="text-sm text-gray-500">Precio por dia</p>
-      <button className="mt-2 w-full py-2 bg-gray-200 text-white rounded-lg">
-        Reserva
-      </button>
-    </div>
-  );
-}*/
 "use client";
 import { useState } from "react";
-import { ReservaProps } from "@/interface/autosInterface_Recode";
-import ElegirFechas from "@/components/custom/ReservationConfirmation/Fechas";
-import ConfirmacionReservaOpciones from "@/components/custom/ReservationConfirmation/ConfirmacionHost";
-import { useAuth } from "@/context/authContext";
-import { useRouter } from "next/navigation";
-//import ReservationConfirmedMessage from "@/components/custom/ReservationConfirmation/MostrarReserva";
+import { ReservaProps } from "@/app/infoAuto_Recode/interface/autosInterface_Recode";
+import ElegirFechas from "@/app/reserva/components/Fechas";
+import ConfirmacionReservaOpciones from "@/app/reserva/components/ConfirmacionHost";
 
 export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
   const [showModal, setShowModal] = useState(false);
 
-  // Suponiendo obtener la fecha actual o que el usuario la seleccionam
-  //const [fechaSeleccionada, setFechaSeleccionada] = useState<string>('');
   const [fechasSeleccionadas, setFechasSeleccionadas] = useState<{
     pickupDate?: Date;
     returnDate?: Date;
   }>({});
-  const { user } = useAuth();
 
-  console.log(":::: Usuario que se pasa a ConfirmacionReservaOpciones:", user); //
 
   const [showConfirmationOptions, setShowConfirmationOptions] = useState(false);
 
-  const router = useRouter();
-  console.log("Usuario en Reserva:", user); ///////
   return (
     <div className="w-full border border-gray-300 rounded-lg p-4 text-center">
       <p className="text-lg font-bold">BOB. {precio}</p>
       <p className="text-sm text-gray-500">Precio por día</p>
       <button
         onClick={() => {
-          if (!user) {
-            const currentUrl = window.location.href;
-            console.log("🔁 Guardando redirectAfterLogin:", currentUrl);
-            localStorage.setItem("redirectAfterLogin", currentUrl);
-            router.push("/login");
-            return;
-          }
           setShowModal(true);
         }}
         className="mt-2 w-full py-2 bg-black text-white rounded-lg"
@@ -90,7 +61,7 @@ export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
               <li>Juan Pérez</li>
               <li>María García</li>
             </ul>
-            <div className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-center">{/*centalizar los botones en responsive*/}
+            <div className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-center">
               <button
                 onClick={() => setShowModal(false)}
                 className="bg-gray-300 px-4 py-2 rounded"
@@ -100,7 +71,7 @@ export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
               <button
                 onClick={() => {
                   setShowModal(false);
-                  setShowConfirmationOptions(true); //  Aqui activa lsegunda modal
+                  setShowConfirmationOptions(true);
                 }}
                 className="bg-black text-white px-4 py-2 rounded"
               >
@@ -110,7 +81,6 @@ export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
           </div>
         </div>
       )}
-      {/* Segunda Modal harcodeao*/}
 
       {showConfirmationOptions && (
         <ConfirmacionReservaOpciones
@@ -123,7 +93,6 @@ export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
           precio={precio}
           onReservarSinPagar={() => {
             setShowConfirmationOptions(false);
-            //alert("Reserva confirmada sin pago.");
           }}
           onPagarCompleto={() => {
             setShowConfirmationOptions(false);
