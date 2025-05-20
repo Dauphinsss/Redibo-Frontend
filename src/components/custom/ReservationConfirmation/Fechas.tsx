@@ -25,7 +25,7 @@ export default function ElegirFechas({ onChange }: ElegirFechasProps) {
 
   // ✅ Aquí está el return que faltaba
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-col justify-center sm:flex-row gap-4 w-full">
       {/* Fecha de Recogida */}
       <Popover>
         <PopoverTrigger asChild>

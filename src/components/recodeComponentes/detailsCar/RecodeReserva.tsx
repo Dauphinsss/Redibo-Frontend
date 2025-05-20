@@ -60,7 +60,7 @@ export default function Reserva({ id, precio, marca, modelo }: ReservaProps) {
 
       {showModal && (
         <div className="fixed inset-0 bg-[rgba(0,0,0,0.3)] flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-[90%] max-w-md">
+          <div className="bg-white rounded-lg p-6 w-[90%] max-w-md flex flex-col gap-2">
             <h2 className="text-xl font-bold mb-4">Confirmación de Reserva</h2>
             <ElegirFechas
               onChange={(fechas) => setFechasSeleccionadas(fechas)}
