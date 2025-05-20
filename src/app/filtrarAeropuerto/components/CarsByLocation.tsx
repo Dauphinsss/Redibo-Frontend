@@ -2,7 +2,7 @@ import Link from "next/link";
 import { GiCarDoor } from "react-icons/gi";
 import { IoPeople } from "react-icons/io5";
 import { TbManualGearboxFilled } from "react-icons/tb";
-import { useCars } from '@/api/queries/useCars'
+import { useCars } from '@/app/filtrarAeropuerto/hooks/useCars'
 
 interface Props {
   latitude: number;

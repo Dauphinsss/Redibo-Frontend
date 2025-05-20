@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "../axios";
+import axiosInstance from "../../../api/axios";
 import { Car } from "@/app/home/types/apitypes";
 
 export function useCars() {

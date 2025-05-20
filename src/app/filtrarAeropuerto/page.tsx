@@ -1,7 +1,7 @@
 "use client"
 import React, { ChangeEvent } from 'react';
 import { useState } from 'react';
-import { useAirports } from '@/api/queries/useAirports'
+import { useAirports } from '@/app/filtrarAeropuerto/hooks/useAirports'
 import { Button } from "@/components/ui/button"
 import CarsByLocation from '@/app/filtrarAeropuerto/components/CarsByLocation';
 import Header from "@/components/ui/Header";
