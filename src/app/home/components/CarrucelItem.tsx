@@ -1,7 +1,7 @@
 import React from 'react'
 import { CarouselItem } from '@/components/ui/carousel';
 import { Card, CardContent } from '@/components/ui/card';
-import { Car } from '@/types/apitypes';
+import { Car } from '@/app/home/types/apitypes';
 import Image from 'next/image';
 
 type CarrucelItemProps = {

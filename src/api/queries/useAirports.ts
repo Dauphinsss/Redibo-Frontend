@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../axios";
-import { Aeropuerto } from "@/types/apitypes";
+import { Aeropuerto } from "@/app/home/types/apitypes";
 
 export function useAirports() {
   return useQuery<Aeropuerto[]>({

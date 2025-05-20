@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../axios";
-import { Car } from "@/types/apitypes";
+import { Car } from "@/app/home/types/apitypes";
 
 export function useCars() {
   return useQuery<Car[]>({
