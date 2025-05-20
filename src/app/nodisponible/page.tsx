@@ -18,7 +18,7 @@ export default function Page() {
           <hr />
           <div className="flex justify-end gap-2 mt-4">
             <Button variant="outline" onClick={() => router.back()}>Volver Atrás</Button>
-            <Button variant="default" onClick={() => router.push('/reservas')}>
+            <Button variant="default" onClick={() => router.push('/busqueda')}>
               Elegir otro auto
             </Button>
           </div>
