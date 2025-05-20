@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function TerminosYCondicionesPage() {
   return (
     <>
-      
+
       <Header />
       <main className="container mx-auto py-12 px-4">
         <div className="max-w-3xl mx-auto">

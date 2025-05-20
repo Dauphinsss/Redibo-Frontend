@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import type React from "react";
 import { useState, useEffect } from "react";
@@ -107,7 +107,7 @@ export default function Form() {
     fetchCiudades();
 
   }, []);
-  
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -208,8 +208,8 @@ export default function Form() {
         userType === "HOST"
           ? "Propietario"
           : userType === "RENTER"
-          ? "Arrendatario"
-          : "";
+            ? "Arrendatario"
+            : "";
 
       const response = await axios.post(`${API_URL}/api/registro`, usuario);
       console.log(response.data);
@@ -235,7 +235,7 @@ export default function Form() {
         localStorage.setItem("foto", finalUser.foto || "default.jpg");
         localStorage.setItem("roles", loginResponse.data.usuario.roles || "");
         localStorage.setItem("auth_token", finalToken);
-        
+
         toast.success(`Registro exitoso como ${user}.`);
         window.location.href = "/";
       } else {
@@ -450,9 +450,9 @@ export default function Form() {
                     placeholder="Ingrese su nombre"
                     className={
                       nameTouched &&
-                      (name.length < 3 ||
-                        name.length > 50 ||
-                        !/^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$/.test(name.trim()))
+                        (name.length < 3 ||
+                          name.length > 50 ||
+                          !/^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$/.test(name.trim()))
                         ? "border-red-500"
                         : ""
                     }
@@ -475,11 +475,11 @@ export default function Form() {
                             No debe contener caracteres especiales
                           </p>
                         )}
-                        {!name.trim().includes(" ") && name.trim().length >= 3 && (
-                                  <p className="text-sm text-red-500">
-                                    Debe ingresar al menos nombre y apellido
-                                  </p>
-                                )}
+                      {!name.trim().includes(" ") && name.trim().length >= 3 && (
+                        <p className="text-sm text-red-500">
+                          Debe ingresar al menos nombre y apellido
+                        </p>
+                      )}
                     </>
                   )}
                 </div>
@@ -499,11 +499,11 @@ export default function Form() {
                     placeholder="correo@ejemplo.com"
                     className={
                       emailTouched &&
-                      (!email ||
-                        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(
-                          email
-                        ) ||
-                        email.includes(".."))
+                        (!email ||
+                          !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(
+                            email
+                          ) ||
+                          email.includes(".."))
                         ? "border-red-500"
                         : ""
                     }
@@ -563,7 +563,7 @@ export default function Form() {
                     maxLength={8}
                     className={
                       phoneTouched &&
-                      (!/^[467]\d{7}$/.test(phone) || phone.length !== 8)
+                        (!/^[467]\d{7}$/.test(phone) || phone.length !== 8)
                         ? "border-red-500"
                         : ""
                     }
@@ -599,10 +599,10 @@ export default function Form() {
                     onBlur={() => setBirthdateTouched(true)}
                     className={
                       (!birthdate && birthdateTouched) ||
-                      (birthdate &&
-                        (isUnderage(birthdate) ||
-                          birthdate > today ||
-                          birthdate < "1895-01-01"))
+                        (birthdate &&
+                          (isUnderage(birthdate) ||
+                            birthdate > today ||
+                            birthdate < "1895-01-01"))
                         ? "border-red-500"
                         : ""
                     }
@@ -636,9 +636,8 @@ export default function Form() {
                 <Label htmlFor="gender">Género *</Label>
                 <div className="flex flex-col gap-2">
                   <div
-                    className={`w-full border rounded-md p-3 ${
-                      genderTouched && !gender ? "border-red-500" : ""
-                    }`}
+                    className={`w-full border rounded-md p-3 ${genderTouched && !gender ? "border-red-500" : ""
+                      }`}
                   >
                     <RadioGroup
                       id="gender"
@@ -691,9 +690,8 @@ export default function Form() {
                         toast.error("Debes seleccionar una ciudad");
                       }
                     }}
-                    className={`w-full border rounded-md h-10 px-3 text-sm ${
-                      (cityTouched || isFormDirty) && (!city || city === 0) ? "border-red-500" : ""
-                    }`}
+                    className={`w-full border rounded-md h-10 px-3 text-sm ${(cityTouched || isFormDirty) && (!city || city === 0) ? "border-red-500" : ""
+                      }`}
 
 
 
@@ -739,14 +737,13 @@ export default function Form() {
                     }}
                     onBlur={() => setPasswordTouched(true)}
                     placeholder="Ingrese su contraseña"
-                    className={`pr-10 ${
-                      passwordTouched &&
-                      (password.length === 0 ||
-                        password.length < 8 ||
-                        !isPasswordStrong(password))
+                    className={`pr-10 ${passwordTouched &&
+                        (password.length === 0 ||
+                          password.length < 8 ||
+                          !isPasswordStrong(password))
                         ? "border-red-500"
                         : ""
-                    }`}
+                      }`}
                   />
                   <Button
                     type="button"
@@ -800,11 +797,10 @@ export default function Form() {
                     maxLength={20}
                     onChange={handleConfirmPasswordChange}
                     onBlur={() => setPasswordTouched(true)}
-                    className={`pr-10 ${
-                      passwordError || (passwordTouched && !confirmPassword)
+                    className={`pr-10 ${passwordError || (passwordTouched && !confirmPassword)
                         ? "border-red-500"
                         : ""
-                    }`}
+                      }`}
                   />
                   <Button
                     type="button"
@@ -880,16 +876,16 @@ export default function Form() {
             <div className="relative w-full text-center">
               <hr className="border-gray-300" />
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-3 text-gray-500 text-sm">
-             
+
               </span>
             </div>
 
-           
+
 
             <p className="text-sm text-gray-600">
               ¿Ya tienes una cuenta?{" "}
               <a href="/login" className="text-primary hover:underline">
-              Iniciar sesion
+                Iniciar sesion
               </a>
             </p>
           </CardFooter>
