@@ -21,7 +21,7 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'vivolabs.es',
-      },    
+      },
     ],
   }
 };

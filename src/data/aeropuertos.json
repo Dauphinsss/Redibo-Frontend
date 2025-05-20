@@ -1,0 +1,254 @@
+[
+    {
+        "name": "Aeropuerto Apolo",
+        "location": "La Paz",
+        "latitude": -14.7333,
+        "longitude": -68.4167
+    },
+    {
+        "name": "Aeropuerto Ascensión de Guarayos",
+        "location": "Santa Cruz",
+        "latitude": -15.7167,
+        "longitude": -63.1
+    },
+    {
+        "name": "Aeropuerto de Bella Unión",
+        "location": "Beni",
+        "latitude": -13.6267,
+        "longitude": -65.2738
+    },
+    {
+        "name": "Aeropuerto Bermejo",
+        "location": "Tarija",
+        "latitude": -22.773333,
+        "longitude": -64.312778
+    },
+    {
+        "name": "Aeropuerto Grán Parapetí Camiri",
+        "location": "Santa Cruz",
+        "latitude": -20.0071,
+        "longitude": -63.5275
+    },
+    {
+        "name": "Aeropuerto Charaña",
+        "location": "La Paz",
+        "latitude": -17.5947,
+        "longitude": -69.433
+    },
+    {
+        "name": "Aeropuerto de Chimoré",
+        "location": "Cochabamba",
+        "latitude": -16.969444,
+        "longitude": -65.15
+    },
+    {
+        "name": "Aeropuerto Capitán Aníbal Arab",
+        "location": "Pando",
+        "latitude": -11.040278,
+        "longitude": -68.782778
+    },
+    {
+        "name": "Aeropuerto Internacional Jorge Wilstermann",
+        "location": "Cochabamba",
+        "latitude": -17.420833,
+        "longitude": -66.176944
+    },
+    {
+        "name": "Aeropuerto de Concepción",
+        "location": "Santa Cruz",
+        "latitude": -16.147222,
+        "longitude": -62.021667
+    },
+    {
+        "name": "Aeropuerto de Copacabana",
+        "location": "La Paz.",
+        "latitude": -16.1922,
+        "longitude": -69.0974
+    },
+    {
+        "name": "Aeropuerto Apiaguaiki Tumpa",
+        "location": "Chuquisaca",
+        "latitude": -19.8238,
+        "longitude": -63.9624
+    },
+    {
+        "name": "Aeropuerto Ernesto Roca Barbadillo",
+        "location": "Beni",
+        "latitude": -10.884321,
+        "longitude": -65.380441
+    },
+    {
+        "name": "Aeropuerto Internacional El Alto",
+        "location": "La Paz",
+        "latitude": -16.513333,
+        "longitude": -68.192222
+    },
+    {
+        "name": "Aeropuerto de Magdalena",
+        "location": "Beni",
+        "latitude": -13.258055,
+        "longitude": -64.063333
+    },
+    {
+        "name": "Aeropuerto Juan Mendoza",
+        "location": "Oruro",
+        "latitude": -17.9625,
+        "longitude": -67.076111
+    },
+    {
+        "name": "Aeropuerto Capitán Nicolás Rojas",
+        "location": "Potosí",
+        "latitude": -19.543056,
+        "longitude": -65.723611
+    },
+    {
+        "name": "Aeropuerto de Puerto Rico",
+        "location": "Pando",
+        "latitude": -11.1075,
+        "longitude": -67.5483
+    },
+    {
+        "name": "Aeropuerto de Puerto Suárez",
+        "location": "Santa Cruz",
+        "latitude": -18.975278,
+        "longitude": -57.820556
+    },
+    {
+        "name": "Aeropuerto de Reyes",
+        "location": "Beni",
+        "latitude": -14.3058,
+        "longitude": -67.3536
+    },
+    {
+        "name": "Aeropuerto Capitán Av. Selin Zeitun López",
+        "location": "Beni",
+        "latitude": -11.016667,
+        "longitude": -66.116667
+    },
+    {
+        "name": "Aeropuerto de Roboré",
+        "location": "Santa Cruz",
+        "latitude": -18.318888,
+        "longitude": -59.765833
+    },
+    {
+        "name": "Aeropuerto Rurrenabaque",
+        "location": "Beni",
+        "latitude": -14.4275,
+        "longitude": -67.498056
+    },
+    {
+        "name": "Aeropuerto Capitán Germán Quiroga Guardia",
+        "location": "Beni ",
+        "latitude": -14.866667,
+        "longitude": -66.75
+    },
+    {
+        "name": "Aeropuerto de San Ignacio de Moxos",
+        "location": "Beni ",
+        "latitude": -14.9656,
+        "longitude": -65.6335
+    },
+    {
+        "name": "Aeropuerto de San Ignacio de Velasco",
+        "location": "Santa Cruz",
+        "latitude": -16.393889,
+        "longitude": -61.044722
+    },
+    {
+        "name": "Aeropuerto de San Javier",
+        "location": "Santa Cruz",
+        "latitude": -16.2647,
+        "longitude": -62.4704
+    },
+    {
+        "name": "Aeropuerto de San Joaquín",
+        "location": "Beni",
+        "latitude": -13.0529,
+        "longitude": -64.6616
+    },
+    {
+        "name": "Aeropuerto de San José de Chiquitos",
+        "location": "Santa Cruz",
+        "latitude": -17.8322,
+        "longitude": -60.7431
+    },
+    {
+        "name": "Aeropuerto de San Matías",
+        "location": "Santa Cruz",
+        "latitude": -16.3379,
+        "longitude": -58.4015
+    },
+    {
+        "name": "Aeropuerto de San Ramón",
+        "location": "Beni",
+        "latitude": -13.264,
+        "longitude": -64.604
+    },
+    {
+        "name": "Aeropuerto José Chávez Suárez",
+        "location": "Beni",
+        "latitude": -13.762222,
+        "longitude": -65.435278
+    },
+    {
+        "name": "Aeropuerto El Trompillo",
+        "location": "Santa Cruz ",
+        "latitude": -17.811389,
+        "longitude": -63.171389
+    },
+    {
+        "name": "Aeropuerto Internacional Viru Viru",
+        "location": "Santa Cruz ",
+        "latitude": -17.644722,
+        "longitude": -63.135278
+    },
+    {
+        "name": "Aeropuerto Internacional de Alcantarí",
+        "location": "Sucre",
+        "latitude": -19.238297,
+        "longitude": -65.149132
+    },
+    {
+        "name": "Aeropuerto Capitán Oriel Lea Plaza",
+        "location": "Tarija",
+        "latitude": -21.555736,
+        "longitude": -64.701325
+    },
+    {
+        "name": "Aeropuerto Teniente Jorge Henrich Arauz",
+        "location": "Beni",
+        "latitude": -14.818611,
+        "longitude": -64.918056
+    },
+    {
+        "name": "Aeropuerto Joya Andina",
+        "location": "Potosí",
+        "latitude": -20.45,
+        "longitude": -66.8422
+    },
+    {
+        "name": "Aeropuerto Capitán Av. Vidal Villagomez Toledo",
+        "location": "Santa Cruz",
+        "latitude": -18.470278,
+        "longitude": -64.098888
+    },
+    {
+        "name": "Aeropuerto Teniente Coronel Rafael Pabón",
+        "location": "Tarija",
+        "latitude": -21.255,
+        "longitude": -63.405556
+    },
+    {
+        "name": "Aeropuerto de Ventilla",
+        "location": "Potosí",
+        "latitude": -21.1745,
+        "longitude": -67.1685
+    },
+    {
+        "name": "Aeropuerto de Yacuiba",
+        "location": "Tarija",
+        "latitude": -21.960833,
+        "longitude": -63.651667
+    }
+]
