@@ -5,6 +5,7 @@ export interface AutoCard_Interfaces_Recode {
     asientos: number;
     puertas: number;
     transmision: string;
+    anio: number;
     combustibles: string[];
     estadoAlquiler: string;
     nombreHost: string;
@@ -15,4 +16,11 @@ export interface AutoCard_Interfaces_Recode {
     precioOficial: number;
     precioDescuento: number;
     precioPorDia: number;
+    latitud: number;
+    longitud: number;
+    reservas: {
+        fecha_inicio: string;
+        fecha_fin: string;
+        estado: string;
+    }[];
 }

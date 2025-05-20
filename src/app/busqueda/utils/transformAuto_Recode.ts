@@ -8,6 +8,7 @@ export const transformAuto = (item: RawAuto): AutoCard => ({
     asientos: item.asientos,
     puertas: item.puertas,
     transmision: item.transmicion,
+    anio: item.a_o,
     combustibles: Array.isArray(item.CombustibleCarro)
         ? item.CombustibleCarro
             .map((c) => c?.TipoCombustible?.tipoDeCombustible)
@@ -22,4 +23,7 @@ export const transformAuto = (item: RawAuto): AutoCard => ({
     precioDescuento: Number(item.precio_por_dia),
     precioPorDia: Number(item.precio_por_dia),
     imagenURL: item.Imagen?.[0]?.data || "",
+    latitud: item.Direccion.latitud || -17.37398,
+    longitud: item.Direccion.longitud || -66.25434,
+    reservas: item.Reserva,
 });

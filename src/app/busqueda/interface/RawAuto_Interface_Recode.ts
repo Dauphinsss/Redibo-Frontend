@@ -6,6 +6,7 @@ export interface RawAuto_Interface_Recode {
     puertas: number;
     transmicion: string;
     precio_por_dia: number;
+    a_o: number;
     CombustibleCarro: {
         TipoCombustible: {
             tipoDeCombustible: string;
@@ -17,9 +18,11 @@ export interface RawAuto_Interface_Recode {
     };
     Direccion: {
         calle: string;
+        latitud: number;
+        longitud: number;
         Provincia: {
             Ciudad: {
-            nombre: string;
+                nombre: string;
             };
         };
     };
@@ -32,5 +35,10 @@ export interface RawAuto_Interface_Recode {
         caracteristicas_adicionales?: {
             nombre: string;
         };
+    }[];
+    Reserva: {
+        fecha_inicio: string;
+        fecha_fin: string;
+        estado: string;
     }[];
 }

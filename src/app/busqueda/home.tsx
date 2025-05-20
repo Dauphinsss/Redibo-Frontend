@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from "react";
-import { X, Map } from "lucide-react";
+import { Map } from "lucide-react";
 import { useAutos } from '@/app/busqueda/hooks/useAutos_hook_Recode';
 import SearchBar from '@/app/busqueda/components/seccionOrdenarMasResultados/RecodeSearchBar';
 import HeaderBusquedaRecode from '@/app/busqueda/components/seccionOrdenarMasResultados/HeaderBusquedaRecode';
@@ -9,7 +9,14 @@ import ResultadosAutos from '@/app/busqueda/components/seccionOrdenarMasResultad
 import Header from '@/components/ui/Header';
 import dynamic from "next/dynamic";
 
+import DateRangeFilter from "@/app/busqueda/components/filtrofechas_7-bits/DateRangeFilter"
+import Radio from "@/app/busqueda/components/map/Radio"
+import MapViwMobile from "@/app/busqueda/components/map/MapViewMobile";
+import Link from "next/link";
+
 export default function Home() {
+  const [radio, setradio] = useState(1)
+  const [punto, setpunto] = useState({ lon: 0, alt: 0 })
   const {
     autos,
     autosFiltrados,
@@ -22,12 +29,22 @@ export default function Home() {
     cargando,
     filtrarAutos,
     obtenerSugerencia,
-  } = useAutos(8);
+  } = useAutos(8, radio, punto);
 
-  const [showMap, setShowMap] = useState(false);
+  const [busqueda, setBusqueda] = useState("");
+
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaFin, setFechaFin] = useState("");
+  const [gpsFilterActive, setGpsFilterActive] = useState(false);
+  const toggleGPSFilter = () => {
+    if (gpsFilterActive) {
+      setpunto({ lon: 0, alt: 0 })
+    }
+    setGpsFilterActive(!gpsFilterActive);
+  };
 
   const ViewMap = useMemo(() => dynamic(
-    () => import('@/app/busqueda/components/map'),
+    () => import('@/components/map/'),
     {
       loading: () => <p>A map is loading</p>,
       ssr: false,
@@ -45,18 +62,58 @@ export default function Home() {
           <div className="w-full max-w-2xl">
             <SearchBar
               placeholder="Buscar por modelo, marca"
-              onFiltrar={filtrarAutos}
+              onFiltrar={(query) => {
+                setBusqueda(query);
+                filtrarAutos(query, fechaInicio, fechaFin);
+              }}
               obtenerSugerencia={obtenerSugerencia}
             />
           </div>
         </div>
       </div>
 
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        {/* Contenido principal */}
-        <div className="flex flex-col lg:flex-row gap-8">
+      {/* Contenido principal */}
+      <div className="flex flex-col lg:flex-row">
+        <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Columna izquierda: lista */}
-          <div className="flex-1 max-w-full">
+          <div className="max-w-full pt-6 gap-8">
+
+            <div className="grid grid-cols-1 justify-items-center md:items-start md:grid-cols-[1fr_1fr_1fr] gap-2 mb-4 w-full">
+              <DateRangeFilter
+                searchTerm={busqueda}
+                fechaInicio={fechaInicio}
+                fechaFin={fechaFin}
+                setFechaInicio={(fecha) => {
+                  setFechaInicio(fecha);
+                  filtrarAutos(busqueda, fecha, fechaFin);
+                }}
+                setFechaFin={(fecha) => {
+                  setFechaFin(fecha);
+                  filtrarAutos(busqueda, fechaInicio, fecha)
+                }}
+                onAplicarFiltro={(inicio, fin) => filtrarAutos(busqueda, inicio, fin)}
+                autosActuales={autosActuales}
+                autosTotales={autosFiltrados}
+              />
+
+              <Link href="/filtrarAeropuerto"
+                className="text-black text-center font-semibold bg-white hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-300 rounded-md text-md px-4 py-2 me-2 mb-2 border border-gray-300"
+              >
+                Filtrar por Aeropuerto
+              </Link>
+              <button
+                onClick={toggleGPSFilter}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium shadow-md border ${gpsFilterActive ? 'bg-black text-white' : 'bg-white text-black border-black'} transition-colors duration-300`}
+              >
+                <Map size={20} />
+                <span className="font-bold">GPS: {gpsFilterActive ? 'ON' : 'OFF'}</span>
+              </button>
+              <Radio
+                radio={radio}
+                setRadio={setradio}
+                punto={punto}
+              />
+            </div>
             <div className="w-full max-w-4xl mx-auto">
               <HeaderBusquedaRecode
                 autosTotales={autos}
@@ -76,45 +133,33 @@ export default function Home() {
               />
             </div>
           </div>
-
-          <div className="hidden lg:block lg:w-1/3">
-            <div className="sticky top-20 h-[690px] bg-gray-100 rounded shadow-inner">
-              <ViewMap posix={[4.79029, -75.69003]} />
-            </div>
+        </main>
+        <div className="hidden lg:block w-[40%]">
+          <div className="sticky top-[195px] h-[calc(100vh-195px)]">
+            <ViewMap
+              posix={[-17.39438, -66.16018]}
+              autos={autosFiltrados}
+              radio={radio}
+              punto={punto}
+              setpunto={setpunto}
+              estaActivoGPS={gpsFilterActive}
+            />
           </div>
         </div>
-      </main>
-
-      <div className="fixed bottom-0 right-6 z-50  lg:hidden">
-        <button
-          onClick={() => setShowMap(true)}
-          className="bg-black  text-white p-3 rounded-full shadow-lg mb-6"
-        >
-          <Map size={24} />
-        </button>
       </div>
 
-      {showMap && (
-        <div className="fixed inset-0 bg-white bg-opacity-70 z-50 flex items-center justify-center lg:hidden">
-          <div className="relative w-full h-full bg-white rounded-t-xl overflow-hidden">
 
-            <div className="w-full flex justify-center pt-8 pb-2">
-              <button
-                className="absolute top-0.5 right-4 p-2 bg-white rounded-full shadow-md z-50"
-                onClick={() => setShowMap(false)}
-              >
-                <X size={20} className="text-black" />
-              </button>
-            </div>
-
-            <div className="hidden lg:flex lg:w-1/3">
-              <div className="w-full h-[calc(100vh-6rem)] sticky top-[6rem] bg-gray-100 rounded shadow-inner">
-                <ViewMap posix={[4.79029, -75.69003]} />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <MapViwMobile
+      >
+        <ViewMap
+          posix={[-17.39438, -66.16018]}
+          autos={autosFiltrados}
+          radio={radio}
+          punto={punto}
+          setpunto={setpunto}
+          estaActivoGPS={gpsFilterActive}
+        />
+      </MapViwMobile>
 
     </div>
   );
