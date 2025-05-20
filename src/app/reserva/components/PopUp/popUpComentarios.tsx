@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { HiOutlineX } from "react-icons/hi";
 import FotoPerfilUsrRecode from "../comentarioUsuario/realizarComentario/fotoPerfilUsrRecode";
-import CalificacionRecode from "../../../app/busqueda/homeBuscador_Recode/components/calificacionAuto/calificacionRecode";
+import CalificacionRecode from "../../../components/calificacionAuto/calificacionRecode";
 import Autoimag from "../../detailsCar/RecodeAutoimag";
-import VerComentario from "../comentarioUsuario/verComentario/verComentarioRecode";
+import VerComentario from "../../../../../components/recodeComponentes/verComentario/verComentarioRecode";
 
 import { useComentariosAuto } from "@/app/reserva/hooks/useComentario_hook_Recode";
 import RecodeFilter from "../../seccionOrdenarMasResultados/RecodeFilter";

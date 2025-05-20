@@ -7,7 +7,7 @@ import {
   getCarRatingsFromComments
 } from '@/service/services_Recode';
 import { transformAutoDetails_Recode } from '@/utils/transformAutoDetails_Recode';
-import { AutoDetails_interface_Recode } from '@/interface/AutoDetails_interface_Recode';
+import { AutoDetails_interface_Recode } from '@/app/reserva/interface/AutoDetails_interface_Recode';
 
 import RecodeHeader from '@/components/recodeComponentes/detailsCar/RecodeHeader';
 import Autoimag from '@/components/recodeComponentes/detailsCar/RecodeAutoimag';
@@ -16,10 +16,10 @@ import InfoDestacable from '@/components/recodeComponentes/detailsCar/RecodeInfo
 import DescriHost from '@/components/recodeComponentes/detailsCar/RecodeDescriHost';
 import DescripcionAuto from '@/components/recodeComponentes/detailsCar/RecodeDescripcionAuto';
 import Reserva from '@/components/recodeComponentes/detailsCar/RecodeReserva';
-import CalificaionRecode from '@/components/recodeComponentes/calificacionAuto/calificacionRecode';
-import PopUpComentarios from '@/components/recodeComponentes/comentarioUsuario/PopUp/popUpComentarios';
-import { useComentariosAuto } from '@/hooks/useComentario_hook_Recode';
-import VerComentario from '@/components/recodeComponentes/comentarioUsuario/verComentario/verComentarioRecode';
+import CalificaionRecode from '@/app/reserva/components/calificacionAuto/calificacionRecode';
+import PopUpComentarios from '@/app/busqueda/homeBuscador_Recode/components/PopUp/popUpComentarios';
+import { useComentariosAuto } from '@/app/reserva/hooks/useComentario_hook_Recode';
+import VerComentario from '@/components/recodeComponentes/verComentario/verComentarioRecode';
 
 interface HomeProps {
   id: string;

@@ -1,98 +1,19 @@
-import {apiAllCards,apiCarById, apiCobertura, apiFormularioCondicionesUsoAuto} from "@/api/apis_Recode";
+import {apiCarById, apiCobertura, apiFormularioCondicionesUsoAuto} from "@/api/apis_Recode";
 import { CondicionesUsoPayload_Recode } from "@/interface/CondicionesUsoFormu_interface_Recode";
 import { CondicionesUsoResponse } from "@/interface/CondicionesUsoVisual_interface_Recode";
 import { CoberturaInterface, SeguroRawRecode, ValidarInterface } from "@/interface/CoberturaForm_Interface_Recode";
 import { EnlaceInterface } from "@/interface/CoberturaForm_Interface_Recode";
-import {RawAuto_Interface_Recode as RawAuto} from "@/interface/RawAuto_Interface_Recode"
+
 import { RawCondicionesUsoResponse } from "@/interface/RawCondicionesUsoVisuali_Interface_Recode";
 import { transformCondiciones_Recode } from "@/utils/transformCondicionesVisuali_Recode";
 import axios, { AxiosError } from "axios";
-import { RawHostDetails_Recode } from "@/interface/RawHostDetails_Recode";
+import { RawHostDetails_Recode } from "@/app/reserva/interface/RawHostDetails_Recode";
 import { transformDetailsHost_Recode } from "@/utils/transformDetailsHost_Recode";
 import { transformSeguroTodo_Recode } from "@/utils/transforSeguro_Recode";
 
-export const getAllCars = async (): Promise<RawAuto[]> => {
-    try {
-        const response = await apiAllCards.get("/autos");
-        return response.data;
-    } catch (error) {
-        console.error("Error al obtener los autos:", error);
-        throw new Error("No se pudo cargar los autos. Intenta de nuevo más tarde.");
-    }
-};
-
-export const getCarById = async (id: string) => {
-    try {
-        const response = await apiCarById.get(`/detailCar/${id}`);
-        return await response.data;
-    } catch (error: unknown) {
-        // Si el error es 404 (auto no existe), devolvemos null
-        if (axios.isAxiosError(error) && error.response?.status === 404) {
-            console.warn(`Auto con ID ${id} no encontrado.`);
-            return null;
-        }
-        // Si es otro tipo de error, lo lanzamos para que lo maneje error.tsx
-        console.error(`Error inesperado al obtener el auto con ID ${id}:`, error);
-        throw error;
-    }
-};
 
 
-export const getCarsByModelDesc = async () => {
-    try {
-        const response = await apiAllCards.get("/filterCar", {
-        params: {
-            ordenar: "modelo_desc",
-        },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("Error al filtrar autos por modelo descendente:", error);
-        throw error;
-    }
-};
 
-export const getCarsByModelAsc = async () => {
-    try {
-        const response = await apiAllCards.get("/filterCar", {
-        params: {
-            ordenar: "modelo_asc",
-        },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("Error al filtrar autos por modelo ascendente:", error);
-        throw error;
-    }
-};
-
-export const getCarsByPriceAsc = async () => {
-    try {
-        const response = await apiAllCards.get("/filterCar", {
-        params: {
-            ordenar: "precio_asc",
-        },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("Error al filtrar autos por precio ascendente:", error);
-        throw error;
-    }
-};
-
-export const getCarsByPriceDesc = async () => {
-    try {
-        const response = await apiAllCards.get("/filterCar", {
-        params: {
-            ordenar: "precio_desc",
-        },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("Error al filtrar autos por precio descendente:", error);
-        throw error;
-    }
-};
 export async function getCarRatingsFromComments(idCar: string): Promise<number[]> {
     const response = await fetch(`https://search-car-backend.vercel.app/comments/${idCar}`);
     if (!response.ok) return [];

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import Filter from '@/components/recodeComponentes/seccionOrdenarMasResultados/RecodeFilter';
-import { AutoCard_Interfaces_Recode as Auto } from '@/interface/AutoCard_Interface_Recode';
+import Filter from '@/app/busqueda/components/seccionOrdenarMasResultados/RecodeFilter';
+import { AutoCard_Interfaces_Recode as Auto } from '@/app/busqueda/interface/AutoCard_Interface_Recode';
 
 interface Props {
     autos: Auto[];

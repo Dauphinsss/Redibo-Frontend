@@ -2,10 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { X, Map } from "lucide-react";
-import { useAutos } from '@/hooks/useAutos_hook_Recode';
-import SearchBar from '@/components/recodeComponentes/seccionOrdenarMasResultados/RecodeSearchBar';
-import HeaderBusquedaRecode from '@/components/recodeComponentes/seccionOrdenarMasResultados/HeaderBusquedaRecode';
-import ResultadosAutos from '@/components/recodeComponentes/seccionOrdenarMasResultados/ResultadosAutos_Recode';
+import { useAutos } from '@/app/busqueda/hooks/useAutos_hook_Recode';
+import SearchBar from '@/app/busqueda/components/seccionOrdenarMasResultados/RecodeSearchBar';
+import HeaderBusquedaRecode from '@/app/busqueda/components/seccionOrdenarMasResultados/HeaderBusquedaRecode';
+import ResultadosAutos from '@/app/busqueda/components/seccionOrdenarMasResultados/ResultadosAutos_Recode';
 import Header from '@/components/ui/Header';
 import dynamic from "next/dynamic";
 

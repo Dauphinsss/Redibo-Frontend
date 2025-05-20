@@ -1,5 +1,5 @@
-import { RawHostDetails_Recode } from '@/interface/RawHostDetails_Recode';
-import { DetalleHost_Recode } from '@/interface/DetalleHost_Recode';
+import { RawHostDetails_Recode } from '@/app/reserva/interface/RawHostDetails_Recode';
+import { DetalleHost_Recode } from '@/app/reserva/interface/DetalleHost_Recode';
 
 export function transformDetailsHost_Recode(data: RawHostDetails_Recode): DetalleHost_Recode {
     return {

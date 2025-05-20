@@ -1,5 +1,5 @@
-import { RawAutoDetails_Interface_Recode } from "@/interface/RawAutoDetails_Interface_Recode";
-import { AutoDetails_interface_Recode } from "@/interface/AutoDetails_interface_Recode";
+import { RawAutoDetails_Interface_Recode } from "@/app/reserva/interface/RawAutoDetails_Interface_Recode";
+import { AutoDetails_interface_Recode } from "@/app/reserva/interface/AutoDetails_interface_Recode";
 
 export const transformAutoDetails_Recode = (
     item: RawAutoDetails_Interface_Recode

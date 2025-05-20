@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { AutoCard_Interfaces_Recode as Auto } from "@/interface/AutoCard_Interface_Recode";
-import { RawAuto_Interface_Recode as RawAuto } from "@/interface/RawAuto_Interface_Recode";
-import { getAllCars } from "@/service/services_Recode";
-import { transformAuto } from "@/utils/transformAuto_Recode";
+import { AutoCard_Interfaces_Recode as Auto } from "@/app/busqueda/interface/AutoCard_Interface_Recode";
+import { RawAuto_Interface_Recode as RawAuto } from "@/app/busqueda/interface/RawAuto_Interface_Recode";
+import { getAllCars } from "@/app/busqueda/service/service_auto_recode";
+import { transformAuto } from "@/app/busqueda/utils/transformAuto_Recode";
 
 export function useAutosSimplificado() {
   const [autos, setAutos] = useState<Auto[]>([]);
