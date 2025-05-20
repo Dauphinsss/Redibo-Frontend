@@ -7,8 +7,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import Autoplay from 'embla-carousel-autoplay'
-import CarrucelItem from './CarrucelItem'
-import { useMostRentedCars } from '@/hooks/useMostRentedCars'
+import CarrucelItem from '../components/CarrucelItem'
+import { useMostRentedCars } from '@/app/home/hooks/useMostRentedCars'
 
 function Carrucel() {
   const { data: content = [], isLoading, isError } = useMostRentedCars();

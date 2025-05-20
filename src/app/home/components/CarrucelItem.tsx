@@ -1,6 +1,6 @@
 import React from 'react'
-import { CarouselItem } from '../ui/carousel';
-import { Card, CardContent } from '../ui/card';
+import { CarouselItem } from '@/components/ui/carousel';
+import { Card, CardContent } from '@/components/ui/card';
 import { Car } from '@/types/apitypes';
 import Image from 'next/image';
 

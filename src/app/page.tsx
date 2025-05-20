@@ -1,5 +1,5 @@
 'use client';
-import Carrucel from "@/components/custom/Carrucel";
+import Carrucel from "@/app/home/components/Carrucel";
 import Header from "@/components/ui/Header";
 
 export default function Home() {
