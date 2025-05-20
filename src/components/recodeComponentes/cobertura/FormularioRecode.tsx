@@ -29,22 +29,25 @@ export default function FormularioCobertura({ initialDataFor }: Props) {
 
   useEffect(() => {
     const fetchAuto = async () => {
-      const data = await getCarById(id_carro.toString());
+      try {
+        const data = await getCarById(id_carro.toString());
 
-      const imagenPrincipal = data?.Imagen && Array.isArray(data.Imagen)
-        ? data.Imagen[0]?.data
-        : "/placeholder.jpg";
+        const imagenPrincipal =
+          data?.Imagen && Array.isArray(data.Imagen) && data.Imagen[0]?.data
+            ? data.Imagen[0].data
+            : "/placeholder.jpg";
 
-      if (data) {
         setAuto({
-          modelo: data.modelo,
-          marca: data.marca,
+          modelo: data?.modelo || "No definido",
+          marca: data?.marca || "No definido",
           imagenURL: imagenPrincipal,
           usuario: {
-            nombre: data.Usuario?.nombre || "Sin nombre",
-            foto: data.Usuario?.foto || "/default-profile.png",
+            nombre: data?.Usuario?.nombre || "Sin nombre",
+            foto: data?.Usuario?.foto || "",
           },
         });
+      } catch (error) {
+        console.error("Error al obtener datos del auto:", error);
       }
     };
     fetchAuto();
@@ -97,25 +100,29 @@ export default function FormularioCobertura({ initialDataFor }: Props) {
       <div className="flex items-center gap-2 text-sm text-gray-700">
         <ShieldCheckIcon className="h-5 w-5 text-black" />
         <span>ID del carro:</span>
-        <strong className="text-black">{id_carro}</strong>
+        <strong className="text-black">{id_carro ?? "-"}</strong>
       </div>
 
       <div className="flex items-center gap-2 text-sm text-gray-700">
         <BuildingOffice2Icon className="h-5 w-5 text-black" />
         <span>Empresa aseguradora:</span>
-        <strong className="text-black">{Seguro.empresa}</strong>
+        <strong className="text-black">{Seguro?.empresa ?? "No disponible"}</strong>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700 pt-2">
         <div className="flex items-center gap-2">
           <CalendarDaysIcon className="h-5 w-5 text-black" />
           <span>Inicio:</span>
-          <strong className="text-black">{fecha_inicio}</strong>
+          <strong className="text-black">
+            {fecha_inicio ? new Date(fecha_inicio).toLocaleDateString() : "-"}
+          </strong>
         </div>
         <div className="flex items-center gap-2">
           <CalendarDaysIcon className="h-5 w-5 text-black" />
           <span>Fin:</span>
-          <strong className="text-black">{fecha_fin}</strong>
+          <strong className="text-black">
+            {fecha_fin ? new Date(fecha_fin).toLocaleDateString() : "-"}
+          </strong>
         </div>
       </div>
     </div>

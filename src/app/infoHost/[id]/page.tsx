@@ -7,6 +7,7 @@ import { getDetalleHost_Recode } from "@/service/services_Recode";
 import { useParams } from "next/navigation";
 //import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
 import { DetalleHost_Recode as DetalleHost } from "@/interface/DetalleHost_Recode";
+import Header from "@/components/ui/Header";
 
 export default function Page() {
   const params = useParams();
@@ -34,6 +35,11 @@ export default function Page() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
+      <div className="sticky top-0 z-50 bg-white shadow overflow-visible">
+              <div className="border-b px-4 sm:px-6 lg:px-8 py-7">
+                <Header />
+              </div>
+            </div>
       <div className="flex flex-col md:flex-row gap-6 items-start">
         <PerfilHost
           nombreHost={host.nombre}

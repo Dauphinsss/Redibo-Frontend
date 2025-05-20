@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import FormularioCobertura from "@/components/recodeComponentes/cobertura/FormularioRecode";
@@ -23,22 +23,40 @@ export default function CoberturaRecodeClient({ id_carro }: Props) {
   const [showPopup, setShowPopup] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [coberturaActual, setCoberturaActual] = useState<CoberturaInterface | null>(null);
-
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      if (isNaN(Number(id_carro))) {
+        router.replace("/not-found");
+        return;
+      }
+
       try {
         const data = await getInsuranceByID(id_carro);
         if (!data) {
-          router.replace("/not-found"); // redirige a página 404
+          router.replace("/not-found");
           return;
         }
+
+        // Validación profunda de los campos esperados
+        const tieneCamposValidos = data.Seguro &&
+          typeof data.Seguro.empresa === "string" &&
+          typeof data.Seguro.nombre === "string" &&
+          typeof data.Seguro.tipoSeguro === "string" &&
+          typeof data.fecha_inicio === "string" &&
+          typeof data.fecha_fin === "string";
+
+        if (!tieneCamposValidos) {
+          router.replace("/not-found");
+          return;
+        }
+
         setInitialData(data);
         setCoberturaActual(crearCoberturaVacia(data.id_carro));
       } catch (error) {
         console.error("Error al cargar seguro:", error);
-        router.replace("/error"); // activa error.tsx
+        router.replace("/error");
       } finally {
         setLoading(false);
       }
@@ -85,15 +103,15 @@ export default function CoberturaRecodeClient({ id_carro }: Props) {
     setIsEditing(false);
   }
 
-  if (loading) return <p className="text-center py-10">Cargando cobertura...</p>;
+  if (loading) return <p className="text-center py-10">Cargando datos del seguro...</p>;
 
   return (
     <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Cobertura de uso del auto</h1>
+      <h1 className="text-2xl font-bold mb-4">Registro de coberturas</h1>
 
       <div className="border rounded shadow">
         <div className="bg-black text-white p-2 font-semibold">
-          Cobertura de seguro
+          Datos del seguro
         </div>
 
         <div className="p-4 space-y-4">
@@ -125,7 +143,6 @@ export default function CoberturaRecodeClient({ id_carro }: Props) {
               isSubmitting={isSubmitting}
               setIsSubmitting={setIsSubmitting}
             />
-
           </div>
         </div>
       </div>

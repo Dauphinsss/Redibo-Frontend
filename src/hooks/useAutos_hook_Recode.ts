@@ -38,7 +38,7 @@ export function useAutos(cantidadPorLote = 8) {
             .replace(/[\u0300-\u036f]/g, "") 
             .toLowerCase(); 
     };
-
+    
     const filtrarYOrdenarAutos = useCallback(() => {
         let resultado = [...autos];
 
