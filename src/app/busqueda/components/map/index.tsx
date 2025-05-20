@@ -8,15 +8,15 @@ import L, { DivIcon, LatLngExpression, LatLngTuple } from "leaflet"
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
-import "@/styles/priceMarker.css"
+import "@/app/busqueda/styles/priceMarker.css"
 
 import PuntoDinamico from "./components/PuntoDinamico";
 import { estaDentroDelRadio } from "./filtroGPS";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { AutoCard_Interfaces_Recode as Auto } from '@/interface/AutoCard_Interface_Recode';
-import { useMapStore } from "@/store/mapStore";
+import { AutoCard_Interfaces_Recode as Auto } from '@/app/busqueda/interface/AutoCard_Interface_Recode';
+import { useMapStore } from "@/app/busqueda/store/mapStore";
 import PuntoUsuario from "./components/PuntoUsuario";
 
 interface MapProps {

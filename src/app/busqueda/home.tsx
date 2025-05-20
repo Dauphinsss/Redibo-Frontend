@@ -44,7 +44,7 @@ export default function Home() {
   };
 
   const ViewMap = useMemo(() => dynamic(
-    () => import('@/components/map/'),
+    () => import('@/app/busqueda/components/map/'),
     {
       loading: () => <p>A map is loading</p>,
       ssr: false,
@@ -135,7 +135,7 @@ export default function Home() {
           </div>
         </main>
         <div className="hidden lg:block w-[40%]">
-          <div className="sticky top-[195px] h-[calc(100vh-195px)]">
+          <div className="sticky top-[195px] h-[calc(100vh-195px)] bg-gray-100 rounded shadow-inner">
             <ViewMap
               posix={[-17.39438, -66.16018]}
               autos={autosFiltrados}

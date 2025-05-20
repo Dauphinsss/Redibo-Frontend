@@ -1,5 +1,5 @@
 import haversine from 'haversine-distance'
-import { AutoCard_Interfaces_Recode as Auto } from '@/interface/AutoCard_Interface_Recode';
+import { AutoCard_Interfaces_Recode as Auto } from '@/app/busqueda/interface/AutoCard_Interface_Recode';
 
 export function estaDentroDelRadio(latUsuario: number, lonUsuario: number, latAuto: number, lonAuto: number, radioKm: number) {
     const a = { lat: latUsuario, lng: lonUsuario }
