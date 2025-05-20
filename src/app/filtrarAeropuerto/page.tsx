@@ -3,7 +3,7 @@ import React, { ChangeEvent } from 'react';
 import { useState } from 'react';
 import { useAirports } from '@/api/queries/useAirports'
 import { Button } from "@/components/ui/button"
-import CarsByLocation from '@/components/custom/CarsByLocation';
+import CarsByLocation from '@/app/filtrarAeropuerto/components/CarsByLocation';
 import Header from "@/components/ui/Header";
 
 export default function Page() {
