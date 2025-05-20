@@ -38,7 +38,7 @@ function CarrucelItem({ car }: CarrucelItemProps) {
             </div>
             <div className='w-full flex justify-between items-center'>
               <span className='text-2xl font-bold px-2'>{car.marca}</span>
-              <span className='text-ms font-bold opacity-60 px-2'>{car.marca} {car.anio}</span>
+              <span className='text-ms font-bold opacity-60 px-2'>{car.modelo} {car.anio}</span>
             </div>
             <span className='font-bold'> <span className='text-sm opacity-60'>Alquilado:</span> {car.veces_alquilado}</span>
             <div className='w-15 py-1 px-3 font-bold bg-white text-black rounded-md flex gap-0.5 justify-items-center items-center m-1'>
