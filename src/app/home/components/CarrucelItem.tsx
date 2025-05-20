@@ -12,9 +12,6 @@ type CarrucelItemProps = {
 function CarrucelItem({ car }: CarrucelItemProps) {
   const router = useRouter();
 
-  const handleReservaClick = () => {
-    router.push('/nodisponible');
-  }
   return (
     <CarouselItem className="pl-1 sm:basis-1/2 md:basis-1/3 lg:basis-1/3 xl:basis-1/4">
       <div className="p-1 ">
@@ -46,8 +43,8 @@ function CarrucelItem({ car }: CarrucelItemProps) {
               <span className=' text-center'>{car.precio_por_dia}</span>
             </div>
             <button
-              className='text-black bg-white px-9 py-1 rounded-sm m-2 font-bold'
-              onClick={handleReservaClick}
+              className='text-black bg-white px-9 py-1 rounded-sm m-2 font-bold cursor-pointer'
+              onClick={() => router.push(`/infoAuto_Recode/${car.id}`)}
             >
               Reservar
             </button>
