@@ -97,7 +97,7 @@ export default function Header({
                   Inicio
                 </Link>
                 <Link
-                  href="/homeBuscador_Recode"
+                  href="/busqueda"
                   className={getLinkClassName("text-sm font-medium")}
                   {...linkDisabledAttrs}
                 >
