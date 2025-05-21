@@ -8,7 +8,7 @@ import CarCardSpecs from "./CarCardSpecsRecode";
 import CarCardHost from "./CarCardHostRecode";
 import CarCardUbicacion from "./CarCardUbicacionRecode";
 import CarCardPrice from "./CarCardPriceRecode";
-import { useCalificaciones } from "@/app/reserva/hooks/useCalifPromedio";
+import { useCalificaciones } from "@/app/busqueda/hooks/useCalifPromedio";
 
 
 export type RecodeCarCardProps = Auto;
