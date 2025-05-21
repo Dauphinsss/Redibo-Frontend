@@ -8,8 +8,8 @@ import {
 } from '@/app/reserva/services/services_reserva';
 import { transformAutoDetails_Recode } from '@/app/reserva/utils/transformAutoDetails_Recode';
 import { AutoDetails_interface_Recode } from '@/app/reserva/interface/AutoDetails_interface_Recode';
+import Header from '@/components/ui/Header';
 
-import RecodeHeader from '@/app/reserva/components/componentes_InfoAutp_Recode/detailsCar/RecodeHeader'; //@/components/recodeComponentes/detailsCar/RecodeHeader
 import Autoimag from '@/app/reserva/components/componentes_InfoAutp_Recode/detailsCar/RecodeAutoimag'; //@/components/recodeComponentes/detailsCar/RecodeAutoimag
 import InfoPrincipal from '@/app/reserva/components/componentes_InfoAutp_Recode/detailsCar/RecodeInfoPrincipal';
 import InfoDestacable from '@/app/reserva/components/componentes_InfoAutp_Recode/detailsCar/RecodeInfoDestacable';
@@ -63,7 +63,7 @@ export default function Home({ id }: HomeProps) {
 
   return (
     <>
-      <RecodeHeader />
+      <Header />
       <main className="w-full flex flex-col items-center px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8 py-6">
           <div className="flex-1">

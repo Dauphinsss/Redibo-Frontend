@@ -8,6 +8,7 @@ import BotonValidar from "@/components/recodeComponentes/cobertura/BotonValidaci
 import { CoberturaInterface, ValidarInterface } from "@/interface/CoberturaForm_Interface_Recode";
 import { getInsuranceByID } from "@/service/services_Recode";
 import { useRouter } from "next/navigation";
+import Header from "@/components/ui/Header";
 
 interface Props {
   id_carro: string;
@@ -106,6 +107,8 @@ export default function CoberturaRecodeClient({ id_carro }: Props) {
   if (loading) return <p className="text-center py-10">Cargando datos del seguro...</p>;
 
   return (
+    <div className="border-b px-4 sm:px-6 lg:px-8 py-7">
+              <Header />           
     <div className="max-w-5xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">Registro de coberturas</h1>
 
@@ -156,6 +159,7 @@ export default function CoberturaRecodeClient({ id_carro }: Props) {
           isEditing={isEditing}
         />
       )}
+    </div>
     </div>
   );
 }

@@ -26,7 +26,7 @@ export default function CondicionVisualPage() {
   };
 
   return (
-    <main className="p-4 max-w-7xl mx-auto">
+    <main className="border-b px-4 sm:px-6 lg:px-8 py-7">
       <Header />
       
       <div className="flex flex-col lg:flex-row gap-6">
