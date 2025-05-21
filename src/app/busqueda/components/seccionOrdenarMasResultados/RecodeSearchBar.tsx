@@ -75,8 +75,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
 
       const guardada = sessionStorage.getItem("ultimaBusqueda");
       if (guardada) {
-        setBusqueda(guardada);
-        onFiltrar(guardada);
+      setBusqueda(guardada);
+      onFiltrar(guardada);
       }
     }, [onFiltrar]);
 
@@ -134,7 +134,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         aria-label="Campo de búsqueda de autos por modelo, marca"
         value={busqueda}
         maxLength={50}
-        onChange={(e) => setBusqueda(e.target.value)}
+        onChange={(e) => { 
+          setBusqueda(e.target.value);
+          if (e.target.value.trim() === "") {
+            sessionStorage.removeItem("ultimaBusqueda");
+          }
+        }}
         //onFocus={() => setMostrarBoton(false)}
         //onBlur={() => setMostrarBoton(true)}
         //Se cambio por 
