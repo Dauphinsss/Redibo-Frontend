@@ -48,7 +48,7 @@ export function VehiclesInfo() {
       {roles.includes("HOST") && (
         <div
         className="w-full max-w-xs mx-auto h-28 sm:h-32 bg-black text-white hover:bg-gray-900 rounded-xl p-3 text-center shadow-md cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out flex flex-col justify-center"
-        onClick={() => router.push("/vehicles/misVehicles")}
+        onClick={() => router.push("/host")}
         >
         <SteeringWheel className="mx-auto mb-2 sm:mb-3 h-8 w-8 sm:h-10 sm:w-10" />
         <p className="text-base sm:text-lg font-semibold">Mis Vehículos</p>
@@ -58,7 +58,7 @@ export function VehiclesInfo() {
       {roles.includes("RENTER") && (
         <div
         className="w-full max-w-xs mx-auto h-28 sm:h-32 bg-black text-white hover:bg-gray-900 rounded-xl p-3 text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out flex flex-col justify-center"
-        onClick={() => router.push("/vehicles/vehiclesRentados")}
+        onClick={() => router.push("/host")}
         >
         <SteeringWheel className="mx-auto mb-2 sm:mb-3 h-8 w-8 sm:h-10 sm:w-10" />
         <p className="text-base sm:text-lg font-semibold">Vehículos Rentados</p>
