@@ -91,14 +91,14 @@ export default function CompleteRegisterForm() {
 
     fetchData();
   }, [router]);
-  
+
 
   // Validaciones en tiempo real
   useEffect(() => {
     const nuevosErrores: { [key: string]: string } = {};
     if (telefono && telefono.length !== 8) nuevosErrores.telefono = "El teléfono debe tener exactamente 8 números";
-      else if (telefono && !/^[467]/.test(telefono))
-        nuevosErrores.telefono = "El teléfono debe comenzar con 4, 6 o 7";
+    else if (telefono && !/^[467]/.test(telefono))
+      nuevosErrores.telefono = "El teléfono debe comenzar con 4, 6 o 7";
     if (fechaNacimiento && isUnderage(fechaNacimiento)) nuevosErrores.fechaNacimiento = "Debes ser mayor de 18 años.";
     if (ciudadTouched && ciudad === 0) nuevosErrores.ciudad = "Debes seleccionar una ciudad";
     setErrores((prev) => ({ ...prev, ...nuevosErrores }));
@@ -111,13 +111,13 @@ export default function CompleteRegisterForm() {
     setErrores((prev) => {
       const newErr = { ...prev };
       if (value.length === 8 && /^[467]/.test(value)) delete newErr.telefono;
-        else newErr.telefono = value
+      else newErr.telefono = value
         ? value.length !== 8
-        ? "El teléfono debe tener exactamente 8 números"
+          ? "El teléfono debe tener exactamente 8 números"
           : "El teléfono debe comenzar con 4, 6 o 7"
-          : "El teléfono es obligatorio.";
-    return newErr;
-  });
+        : "El teléfono es obligatorio.";
+      return newErr;
+    });
   };
   const handleFechaNacimientoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -140,12 +140,12 @@ export default function CompleteRegisterForm() {
     });
   };
   const handleCiudadChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  const value = Number(e.target.value);
-  setCiudad(value);
-  setCiudadTouched(true);
+    const value = Number(e.target.value);
+    setCiudad(value);
+    setCiudadTouched(true);
 
-  setErrores(prev => {
-    const newErr = { ...prev };
+    setErrores(prev => {
+      const newErr = { ...prev };
       if (value !== 0) {
         // Elimina el error si ya eligió ciudad válida
         delete newErr.ciudad;
@@ -199,7 +199,7 @@ export default function CompleteRegisterForm() {
     setErrores(nuevosErrores);
     if (Object.keys(nuevosErrores).length > 0) return;
     setIsSubmitting(true);
-  
+
     // Datos que espera el backend (nombres exactos con snake_case)
     const userData = {
       nombre: nombre || "",
@@ -210,11 +210,11 @@ export default function CompleteRegisterForm() {
       telefono,
       rol
     };
-  
+
     try {
       console.log("🧪 Enviando al backend:", userData);
       console.log("🧪 Clave fecha_nacimiento:", userData.fechaNacimiento,);
-  
+
       const axiosConfig = {
         // withCredentials: true, <-- Eliminar o establecer en false
         headers: {
@@ -247,7 +247,7 @@ export default function CompleteRegisterForm() {
       } else {
         router.push("/");
       }
-    } catch (error: unknown ) {
+    } catch (error: unknown) {
       console.error("❌ Error al completar registro con Google:", error);
       const mensajeError = "Error al completar el registro. Por favor, intenta nuevamente.";
       toast.error(mensajeError);
@@ -255,7 +255,7 @@ export default function CompleteRegisterForm() {
       setIsSubmitting(false);
     }
   };
-  
+
 
   return (
     <div className="flex justify-center min-h-screen items-center p-4">
@@ -263,108 +263,107 @@ export default function CompleteRegisterForm() {
         // Spinner de carga
         <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-2 border-black"></div>
       ) : (
-    //<div className="flex justify-center min-h-screen items-center p-4">
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Completa tu registro</CardTitle>
-          <CardDescription>
-          {nombre}, necesitamos un poco más de información para terminar.
-          </CardDescription>
-        </CardHeader>
+        //<div className="flex justify-center min-h-screen items-center p-4">
+        <Card className="w-full max-w-lg">
+          <CardHeader>
+            <CardTitle>Completa tu registro</CardTitle>
+            <CardDescription>
+              {nombre}, necesitamos un poco más de información para terminar.
+            </CardDescription>
+          </CardHeader>
 
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Nombre completo</Label>
-              <Input value={nombre || ""} disabled />
-            </div>
-            <div className="space-y-2">
-              <Label>Correo</Label>
-              <Input value={correo || ""} disabled />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Teléfono *</Label>
-              <Input
-                value={telefono}
-                onChange={handleTelefonoChange}
-                maxLength={8}
-                placeholder="Ingrese su número de teléfono"
-              />
-              {errores.telefono && <p className="text-sm text-red-500 mt-1">{errores.telefono}</p>}
-            </div>
-
-            <div className="space-y-2">
-              <Label>Fecha de nacimiento *</Label>
-              <Input
-                type="date"
-                value={fechaNacimiento}
-                onChange={handleFechaNacimientoChange}
-                max={today}
-              />
-              {errores.fechaNacimiento && <p className="text-sm text-red-500 mt-1">{errores.fechaNacimiento}</p>}
-            </div>
-
-            <div className="space-y-2">
-              <Label>Género *</Label>
-              <RadioGroup value={genero} onValueChange={handleGeneroChange} className="flex gap-4">
-            <div className="flex items-center gap-4">
-            <RadioGroupItem value="MASCULINO" id="masc" />
-              <Label htmlFor="masc">Masculino</Label>
-            </div>
-            <div className="flex items-center gap-4">
-            <RadioGroupItem value="FEMENINO" id="fem" />
-              <Label htmlFor="fem">Femenino</Label>
-            </div>
-            <div className="flex items-center gap-4">
-            <RadioGroupItem value="OTRO" id="otro" />
-              <Label htmlFor="otro">Otro</Label>
-            </div>
-          </RadioGroup>
-              {errores.genero && <p className="text-sm text-red-500 mt-1">{errores.genero}</p>}
-            </div>
-
-            <div className="space-y-2">
-              <Label>Ciudad *</Label>
-              <div className="flex flex-col gap-2">
-                <select
-                  value={ciudad}
-                  onChange={handleCiudadChange}
-                  onBlur={handleCiudadBlur}
-                  className={`w-full h-10 px-3 border rounded-md text-sm ${
-                    ciudadTouched && errores.ciudad ? "border-red-500" : ""
-                  }`}
-                >
-                  <option value={0}>Selecciona una ciudad</option>
-                  {ciudades.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.nombre}
-                    </option>
-                  ))}
-                </select>
-
-                {ciudadTouched && errores.ciudad && (
-                  <p className="text-sm text-red-500 mt-1">{errores.ciudad}</p>
-                )}
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Nombre completo</Label>
+                <Input value={nombre || ""} disabled />
               </div>
-            </div>
+              <div className="space-y-2">
+                <Label>Correo</Label>
+                <Input value={correo || ""} disabled />
+              </div>
 
-            <div className="space-y-2">
-              <Label>Rol *</Label>
-              <RadioGroup value={rol || ""} onValueChange={handleRolChange} className="flex gap-4">
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="HOST" id="host" />
-                  <Label htmlFor="host">Propietario</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="RENTER" id="renter" />
-                  <Label htmlFor="renter">Arrendatario</Label>
-                </div>
-              </RadioGroup>
-              {errores.rol && <p className="text-sm text-red-500 mt-1">{errores.rol}</p>}
-            </div>
+              <div className="space-y-2">
+                <Label>Teléfono *</Label>
+                <Input
+                  value={telefono}
+                  onChange={handleTelefonoChange}
+                  maxLength={8}
+                  placeholder="Ingrese su número de teléfono"
+                />
+                {errores.telefono && <p className="text-sm text-red-500 mt-1">{errores.telefono}</p>}
+              </div>
 
-            <div>
+              <div className="space-y-2">
+                <Label>Fecha de nacimiento *</Label>
+                <Input
+                  type="date"
+                  value={fechaNacimiento}
+                  onChange={handleFechaNacimientoChange}
+                  max={today}
+                />
+                {errores.fechaNacimiento && <p className="text-sm text-red-500 mt-1">{errores.fechaNacimiento}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label>Género *</Label>
+                <RadioGroup value={genero} onValueChange={handleGeneroChange} className="flex gap-4">
+                  <div className="flex items-center gap-4">
+                    <RadioGroupItem value="MASCULINO" id="masc" />
+                    <Label htmlFor="masc">Masculino</Label>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <RadioGroupItem value="FEMENINO" id="fem" />
+                    <Label htmlFor="fem">Femenino</Label>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <RadioGroupItem value="OTRO" id="otro" />
+                    <Label htmlFor="otro">Otro</Label>
+                  </div>
+                </RadioGroup>
+                {errores.genero && <p className="text-sm text-red-500 mt-1">{errores.genero}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label>Ciudad *</Label>
+                <div className="flex flex-col gap-2">
+                  <select
+                    value={ciudad}
+                    onChange={handleCiudadChange}
+                    onBlur={handleCiudadBlur}
+                    className={`w-full h-10 px-3 border rounded-md text-sm ${ciudadTouched && errores.ciudad ? "border-red-500" : ""
+                      }`}
+                  >
+                    <option value={0}>Selecciona una ciudad</option>
+                    {ciudades.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.nombre}
+                      </option>
+                    ))}
+                  </select>
+
+                  {ciudadTouched && errores.ciudad && (
+                    <p className="text-sm text-red-500 mt-1">{errores.ciudad}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Rol *</Label>
+                <RadioGroup value={rol || ""} onValueChange={handleRolChange} className="flex gap-4">
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="HOST" id="host" />
+                    <Label htmlFor="host">Propietario</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="RENTER" id="renter" />
+                    <Label htmlFor="renter">Arrendatario</Label>
+                  </div>
+                </RadioGroup>
+                {errores.rol && <p className="text-sm text-red-500 mt-1">{errores.rol}</p>}
+              </div>
+
+              <div>
                 <Link href="/terminos-y-condiciones ">
                   <Button
                     variant="link"
@@ -380,49 +379,49 @@ export default function CompleteRegisterForm() {
                 </Link>
               </div>
 
-            <div className="flex items-center gap-4">
-              <Checkbox id="terms" checked={acceptTerms} onCheckedChange={handleTermsChange} />
-              <Label htmlFor="terms" className="text-sm">
-                He leído y acepto los terminos y condiciones
-              </Label>
-            </div>
-            {/*{errores.terms && <p className="text-sm text-red-500 mt-1">{errores.terms}</p>} */}
-          </CardContent>
+              <div className="flex items-center gap-4">
+                <Checkbox id="terms" checked={acceptTerms} onCheckedChange={handleTermsChange} />
+                <Label htmlFor="terms" className="text-sm">
+                  He leído y acepto los terminos y condiciones
+                </Label>
+              </div>
+              {/*{errores.terms && <p className="text-sm text-red-500 mt-1">{errores.terms}</p>} */}
+            </CardContent>
 
-          <CardFooter className="flex justify-between pt-6">
-            <Button
-              ref={btnRef}
-              type="submit"
-              className="w-full flex items-center justify-center"
-              disabled={!acceptTerms || isSubmitting}
-              style={{ position: "relative" }}
-            >
-              {isSubmitting ? (
-                <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-                  <svg className="animate-spin" width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ display: "block" }}>
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="#fff"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="#fff"
-                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                    />
-                  </svg>
-                </span>
-              ) : (
-                "Finalizar Registro"
-              )}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
-    )}
-  </div>
-);
+            <CardFooter className="flex justify-between pt-6">
+              <Button
+                ref={btnRef}
+                type="submit"
+                className="w-full flex items-center justify-center"
+                disabled={!acceptTerms || isSubmitting}
+                style={{ position: "relative" }}
+              >
+                {isSubmitting ? (
+                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+                    <svg className="animate-spin" width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ display: "block" }}>
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="#fff"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="#fff"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      />
+                    </svg>
+                  </span>
+                ) : (
+                  "Finalizar Registro"
+                )}
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
+      )}
+    </div>
+  );
 }
