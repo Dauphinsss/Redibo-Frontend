@@ -39,8 +39,8 @@ export default function CampoTransmision({
           <SelectValue placeholder="Seleccione" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="manual">Manual</SelectItem>
-          <SelectItem value="automatica">Automático</SelectItem>
+          <SelectItem value="Manual">Manual</SelectItem>
+          <SelectItem value="Automatica">Automático</SelectItem>
         </SelectContent>
       </Select>
       {error && <p className="text-sm text-red-600 mt-1">{error}</p>}

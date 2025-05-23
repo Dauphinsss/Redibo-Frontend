@@ -193,14 +193,13 @@ export interface CreateFullCarPayload {
   asientos: number;
   puertas: number;
   soat: boolean;
-  transmicion: "manual" | "automatica";
+  transmicion: "Manual" | "Automatica";
   combustibleIds: number[];
   extraIds: number[];
   precio_por_dia: number;
   num_mantenimientos: number;
   estado: string;
   descripcion?: string;
-  segurosAdicionales?: Array<{ id: number; nombre: string; tipoSeguro: string; empresa: string; fechaInicio: string; fechaFin?: string; }>;
 }
 
 export interface CreateFullCarResponse {

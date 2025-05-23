@@ -3,32 +3,22 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { useFormContext } from "../context/FormContext";
+import { useFormContext } from "../context/form";
 import { Button } from "@/components/ui/button";
 import CampoCombustible from "../../../components/CarCoche/CampoCombustible";
 import CampoAsientos from "../../../components/CarCoche/CampoAsientos";
 import CampoPuertas from "../../../components/CarCoche/CampoPuertas";
 import CampoTransmision from "../../../components/CarCoche/CampoTransmision";
 import CampoSeguro from "../../../components/CarCoche/CampoSeguro";
-import CampoSeguroMultiple from "../../../components/CarCoche/CampoSeguroMultiple";
-import BotonesFormulario from "../../../components/CarCoche/BotonesFormulario";
+import { SeguroAdicional, useSegurosContext , SegurosProvider } from "@/app/host/home/add/context/seguros";
+import CampoSeguroMultiple from "@/app/host/components/CarCoche/CampoSeguroMultiple";
+import BotonesFormulario from "@/app/host/components/CarCoche/BotonesFormulario";
 
-interface Seguro {
-  id: number;
-  nombre: string;
-  tipoSeguro: string;
-  empresa: string;
-}
-
-interface SeguroAdicional extends Seguro {
-  fechaInicio: string;
-  fechaFin?: string;
-}
-
-export default function CaracteristicasCoche() {
+function CaracteristicasCocheInner() {
   const router = useRouter();
   const { formData, updateCaracteristicas } = useFormContext();
   const { caracteristicas } = formData;
+  const { segurosAdicionales, setSegurosAdicionales } = useSegurosContext();
 
   // Estados locales
   const [combustibles, setCombustibles] = useState<number[]>(caracteristicas?.combustibleIds || []);
@@ -36,7 +26,6 @@ export default function CaracteristicasCoche() {
   const [puertas, setPuertas] = useState<number>(caracteristicas?.puertas || 0);
   const [transmision, setTransmision] = useState<string>(caracteristicas?.transmicion || "");
   const [seguro, setSeguro] = useState<boolean>(caracteristicas?.soat || false);
-  const [segurosAdicionales, setSegurosAdicionales] = useState<SeguroAdicional[]>(caracteristicas?.segurosAdicionales || []);
 
   // Estados de error
   const [combustiblesError, setCombustiblesError] = useState<string>("");
@@ -75,13 +64,7 @@ export default function CaracteristicasCoche() {
   }, []);
 
   const handleSegurosAdicionalesChange = useCallback((items: SeguroAdicional[]) => {
-    // Normalizamos los datos para mantener consistencia
-    const normalizedItems = items.map(item => ({
-      ...item,
-      fechaInicio: item.fechaInicio || new Date().toISOString(),
-      fechaFin: item.fechaFin || undefined
-    }));
-    setSegurosAdicionales(normalizedItems);
+    setSegurosAdicionales(items);
   }, []);
 
   // Validación del formulario
@@ -113,7 +96,6 @@ export default function CaracteristicasCoche() {
       setPuertas(caracteristicas.puertas || 0);
       setTransmision(caracteristicas.transmicion || "");
       setSeguro(caracteristicas.soat || false);
-      setSegurosAdicionales(caracteristicas.segurosAdicionales || []);
     }
   }, [caracteristicas]);
 
@@ -124,14 +106,13 @@ export default function CaracteristicasCoche() {
         combustibleIds: combustibles,
         asientos,
         puertas,
-        transmicion: transmision as "automatica" | "manual",
-        soat: seguro,
-        segurosAdicionales: segurosAdicionales,
+        transmicion: transmision as "Automatica" | "Manual",
+        soat: seguro
       });
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [combustibles, asientos, puertas, transmision, seguro, segurosAdicionales, updateCaracteristicas]);
+  }, [combustibles, asientos, puertas, transmision, seguro, updateCaracteristicas]);
 
   return (
     <main className="p-6 min-h-screen bg-gray-100">
@@ -189,12 +170,12 @@ export default function CaracteristicasCoche() {
         />
         
         <CampoSeguroMultiple
-          apiUrl="http://localhost:4000"
-          seleccionados={segurosAdicionales}
-          onChange={handleSegurosAdicionalesChange}
+          apiUrl="https://redibo-backends2.onrender.com"
           error={segurosAdicionalesError}
           setError={setSegurosAdicionalesError}
+          onChange={handleSegurosAdicionalesChange}
         />
+
       </section>
 
       {/* FOOTER: Botón Siguiente alineado a la derecha */}
@@ -205,5 +186,13 @@ export default function CaracteristicasCoche() {
         />
       </div>
     </main>
+  );
+}
+
+export default function CaracteristicasCoche() {
+  return (
+    <SegurosProvider>
+      <CaracteristicasCocheInner />
+    </SegurosProvider>
   );
 }
