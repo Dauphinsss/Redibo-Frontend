@@ -63,6 +63,6 @@ export interface CreateFullCarResult {
   message?: string;
   data?: {
     id: number;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }

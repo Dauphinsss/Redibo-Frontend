@@ -137,10 +137,10 @@ class SegurosService {
   }
 
   // Método auxiliar para manejo de errores
-  private handleError(error: any): void {
+  private handleError(error: unknown): void {
     if (axios.isAxiosError(error)) {
-      const status = error.response?.status;
-      const message = error.response?.data?.message || 'Error desconocido';
+      const status: number | undefined = error.response?.status;
+      const message: string = error.response?.data?.message || 'Error desconocido';
 
       switch (status) {
         case 400:

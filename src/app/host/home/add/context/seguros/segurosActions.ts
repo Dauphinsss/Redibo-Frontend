@@ -64,7 +64,7 @@ export function toSeguroAdicionalPayloads(): SeguroAdicionalPayload[] {
     id_seguro: seguro.id,
     fechaInicio: seguro.fechaInicio,
     fechaFin: seguro.fechaFin,
-    enlace: (seguro as any).enlace || undefined,
+    enlace: seguro.enlace || undefined,
   }));
 }
 
@@ -75,7 +75,8 @@ export async function enviarSegurosAlBackend(carId: number): Promise<{ success: 
   try {
     const result = await segurosService.createSegurosCarroBatch(carId, payloads);
     return result;
-  } catch (error: any) {
-    return { success: false, error: error?.message || 'Error al asociar seguros' };
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Error al asociar seguros';
+    return { success: false, error: errorMessage };
   }
 }
