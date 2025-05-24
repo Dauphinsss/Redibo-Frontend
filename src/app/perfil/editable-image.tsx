@@ -17,10 +17,17 @@ import { API_URL } from "@/utils/bakend";
 import { getCroppedImg } from "@/utils/cropImagen";
 import { Button } from "@/components/ui/button";
 
+interface Response {
+  menssaje?: string;
+  url?: string;
+}
+
 export default function EditableProfileImage({
   initialImage,
+  refresh,
 }: {
   initialImage?: string;
+  refresh: () => void;
 }) {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -67,11 +74,11 @@ export default function EditableProfileImage({
     try {
       const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
       const formData = new FormData();
-      formData.append("file", croppedBlob, `${uuidv4()}.jpg`);
+      formData.append("image", croppedBlob, `${uuidv4()}.jpg`);
 
       const token = localStorage.getItem("auth_token");
-      const response = await axios.post(
-        `${API_URL}/api/upload-foto`,
+      const response = await axios.post<Response>(
+        `${API_URL}/api/upload`,
         formData,
         {
           headers: {
@@ -80,10 +87,13 @@ export default function EditableProfileImage({
           },
         }
       );
-
+      if (response.data.url) {
+        setPreviewUrl(response.data.url);
+      }
       toast.success("Imagen actualizada");
-      setPreviewUrl(response.data.fotoUrl);
+
       setDialogOpen(false);
+      refresh();
     } catch (err) {
       console.error(err);
       toast.error("Error al subir la imagen");

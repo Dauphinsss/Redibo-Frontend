@@ -50,30 +50,30 @@ export function ProfileHeader() {
   const [modalOpen, setModalOpen] = useState(false);
   const [rolSeleccionado, setRolSeleccionado] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const authToken = localStorage.getItem("auth_token");
-        if (!authToken) {
-          console.error("No se encontró el token de autenticación");
-          return;
-        }
-
-        const response = await axios.get<UserProfile>(`${API_URL}/api/perfil`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-
-        console.log("Roles del usuario:", response.data.roles);
-        setUserData(response.data);
-      } catch (error) {
-        console.error("Error al obtener el perfil:", error);
-      } finally {
-        setLoading(false);
+  const fetchUserProfile = async () => {
+    try {
+      const authToken = localStorage.getItem("auth_token");
+      if (!authToken) {
+        console.error("No se encontró el token de autenticación");
+        return;
       }
-    };
 
+      const response = await axios.get<UserProfile>(`${API_URL}/api/perfil`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      console.log("Roles del usuario:", response.data.roles);
+      setUserData(response.data);
+    } catch (error) {
+      console.error("Error al obtener el perfil:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchUserProfile();
   }, []);
 
@@ -120,7 +120,10 @@ export function ProfileHeader() {
   return (
     <div className="flex flex-col md:flex-row items-center gap-6 p-4">
       <div className="relative">
-        <EditableProfileImage initialImage={userData?.foto || undefined} />
+        <EditableProfileImage
+          initialImage={userData?.foto || undefined}
+          refresh={fetchUserProfile}
+        />
       </div>
 
       <div className="text-center md:text-left ">
