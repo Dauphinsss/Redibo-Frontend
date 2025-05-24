@@ -6,7 +6,6 @@ import {
   CaracteristicasData, 
   CaracteristicasAdicionalesData, 
   FinalizacionData, 
-  CreateFullCarResult 
 } from './types';
 import { validateForm } from './formValidation';
 import { createFullCar, CreateFullCarPayload } from "@/app/host/services/carService";
