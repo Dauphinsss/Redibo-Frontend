@@ -2,9 +2,26 @@
 
 import { useCoberturasStore } from "@/hooks/useCoberturasStore";
 import { Pencil, Trash2 } from "lucide-react";
+import { deleteCobertura } from "@/service/services_Recode";
 
 export default function TablaRecode() {
   const { lista, abrirPopup, eliminar } = useCoberturasStore();
+
+  const handleEliminar = async (index: number, id?: number) => {
+    const confirmar = window.confirm("¿Estás seguro de que deseas eliminar esta cobertura?");
+    if (!confirmar) return;
+
+    try {
+      if (id) {
+        await deleteCobertura(id);
+        console.log(`Cobertura ${id} eliminada del backend.`);
+      }
+    } catch (error) {
+      console.error("Error al eliminar cobertura en backend:", error);
+    } finally {
+      eliminar(index); // actualizar local
+    }
+  };
 
   return (
     <section>
@@ -49,7 +66,7 @@ export default function TablaRecode() {
                     <Pencil size={16} />
                   </button>
                   <button
-                    onClick={() => eliminar(i)}
+                    onClick={() => handleEliminar(i, c.id)}
                     className="text-red-600 hover:text-red-800 transition"
                     title="Eliminar"
                   >

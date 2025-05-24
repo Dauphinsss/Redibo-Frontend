@@ -6,36 +6,40 @@ export function transformSeguroTodo_Recode(
 ): SeguroConCoberturas_Interface_Recode | null {
     if (!Array.isArray(datos) || datos.length === 0) return null;
 
-    const item = datos[0];
+    const carro = datos[0];
+    const seguroData = carro.SeguroCarro?.[0];
+
+    if (!carro.Usuario || !seguroData || !seguroData.Seguro) return null;
+
     return {
-        // Carro
-        id_carro: item?.Carro?.id ?? 0,
-        modelo_carro: item?.Carro?.modelo ?? "Modelo desconocido",
-        marca_carro: item?.Carro?.marca ?? "Marca desconocida",
-        imagenURL_carro: "Sin imagen",
+        // Datos del carro
+        id_carro: carro.id,
+        modelo_carro: carro.modelo || "Modelo desconocido",
+        marca_carro: carro.marca || "Marca desconocida",
+        imagenURL_carro: carro.Imagen?.[0]?.data || "/images/Auto_Default.png",
 
-        // Propietario
-        id_propietario: item?.Carro?.Usuario?.id ?? 0,
-        nombre_propietario: item?.Carro?.Usuario?.nombre ?? "No especificado",
-        telefono_propietario: item?.Carro?.Usuario?.telefono ?? "Sin telefono",
-        fotoURL_propietario: item?.Carro?.Usuario?.foto ?? "Sin imagen",
+        // Datos del propietario
+        id_propietario: carro.Usuario.id,
+        nombre_propietario: carro.Usuario.nombre || "No especificado",
+        telefono_propietario: carro.Usuario.telefono || "",
+        fotoURL_propietario: carro.Usuario.foto || "/images/User_Default.png",
 
-        // Seguro
-        fecha_inicio: item?.fechaInicio ?? "Sin fecha inicio",
-        fecha_fin: item?.fechaFin ?? "Sin fecha fin",
-        enlaceSeguroURL: item?.enlaceSeguro ?? "Sin enlace",
-        id_seguro: item?.Seguro?.id ?? 0,
-        nombre_empresa_seguro: item?.Seguro?.empresa ?? "Desconocida",
-        nombre_seguro: item?.Seguro?.nombre ?? "Sin nombre",
-        tipo_seguro: item?.Seguro?.tipoSeguro ?? "No definido",
+        // Datos del seguro
+        id_seguro: seguroData.Seguro.id,
+        nombre_seguro: seguroData.Seguro.nombre || "Sin nombre",
+        tipo_seguro: seguroData.Seguro.tipoSeguro || "Sin tipo",
+        nombre_empresa_seguro: seguroData.Seguro.empresa || "Desconocida",
+        enlaceSeguroURL: seguroData.enlaceSeguro || "#",
+        fecha_inicio: seguroData.fechaInicio || "",
+        fecha_fin: seguroData.fechaFin || "",
 
         // Coberturas
-        coberturas: Array.isArray(item?.tiposeguro)
-            ? item.tiposeguro.map((c) => ({
-                id_cobertura: c?.id ?? 0,
-                tipodanio_cobertura: c?.tipoda_o ?? "Desconocido",
-                descripcion_cobertura: c?.descripcion ?? "",
-                cantida_cobertura: c?.cantidadCobertura ?? "0",
+        coberturas: Array.isArray(seguroData.tiposeguro)
+        ? seguroData.tiposeguro.map((c) => ({
+            id_cobertura: c.id,
+            tipodanio_cobertura: c.tipoda_o,
+            descripcion_cobertura: c.descripcion,
+            cantida_cobertura: c.cantidadCobertura,
             }))
         : [],
     };

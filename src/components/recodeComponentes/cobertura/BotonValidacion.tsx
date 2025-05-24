@@ -3,26 +3,52 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCoberturasStore } from "@/hooks/useCoberturasStore";
-import { postCobertura } from "@/service/services_Recode";
+import { postCobertura, putCobertura } from "@/service/services_Recode";
 
-export default function BotonValidacion() {
-  const router = useRouter();
+interface Props {
+  idSeguro: number;
+}
+
+export default function BotonValidacion({ idSeguro }: Props) {
   const { lista } = useCoberturasStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async () => {
-    if (lista.length === 0) {
-      alert("Debes registrar al menos una cobertura.");
+    const nuevas = lista.filter((c) => c.isNew);
+    const existentes = lista.filter((c) => !c.isNew);
+
+    if (nuevas.length === 0 && existentes.length === 0) {
+      alert("No hay cambios para guardar.");
       return;
     }
 
     try {
       setIsSubmitting(true);
-      await Promise.all(lista.map(c => postCobertura(c)));
+
+      await Promise.all([
+        ...nuevas.map((c) =>
+          postCobertura({
+            id_SeguroCarro: idSeguro,
+            tipodaño: c.tipodaño,
+            descripcion: c.descripcion ?? "",
+            cantidadCobertura: c.valides,
+          })
+        ),
+        ...existentes.map((c) =>
+          putCobertura(c.id!, {
+            id_seguro: idSeguro,
+            tipoda_o: c.tipodaño,
+            descripcion: c.descripcion ?? "",
+            cantidadCobertura: c.valides,
+          })
+        ),
+      ]);
+
       router.push("/listadoPrueba");
-    } catch (error) {
-      console.error("Error al guardar coberturas:", error);
-      alert("Hubo un error. Intenta de nuevo.");
+    } catch (err) {
+      console.error("Error al guardar coberturas:", err);
+      alert("Hubo un error al guardar las coberturas.");
     } finally {
       setIsSubmitting(false);
     }

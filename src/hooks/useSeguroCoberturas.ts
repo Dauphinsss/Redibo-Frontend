@@ -2,6 +2,7 @@ import useSWR from "swr";
 import { z } from "zod";
 import { getInsuranceByID } from "@/service/services_Recode";
 import { SeguroConCoberturas_Interface_Recode } from "@/interface/SeguroConCoberturas_Interface_Recode";
+import { useCoberturasStore } from "@/hooks/useCoberturasStore";
 
 const SeguroSchema: z.ZodType<SeguroConCoberturas_Interface_Recode> = z.object({
   id_carro: z.number(),
@@ -33,5 +34,24 @@ export const useSeguroCoberturas = (id_carro: string) =>
   useSWR(id_carro ? ["seguro", id_carro] : null, async () => {
     const raw = await getInsuranceByID(id_carro);
     if (!raw) return null;
-    return SeguroSchema.parse(raw);
+
+    const parsed = SeguroSchema.safeParse(raw);
+    if (!parsed.success) {
+      console.warn("Error al validar el seguro con Zod:", parsed.error.format());
+      return null;
+    }
+
+    const setLista = useCoberturasStore.getState().setLista;
+    setLista(
+      parsed.data.coberturas.map((cob) => ({
+        id: cob.id_cobertura,
+        id_carro: parsed.data.id_carro,
+        tipodaño: cob.tipodanio_cobertura,
+        descripcion: cob.descripcion_cobertura ?? "",
+        valides: cob.cantida_cobertura,
+      })),
+      parsed.data.id_carro
+    );
+
+    return parsed.data;
   });
