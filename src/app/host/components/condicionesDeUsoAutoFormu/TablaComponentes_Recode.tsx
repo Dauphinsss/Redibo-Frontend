@@ -15,13 +15,13 @@ import Entrada_Recode from "./Entrega_Recode";
 import Devolucion_Recode from "./Devolucion_Recode";
 import ModalRecode from "./ModalRecode";
 
-import { postCondicionesUso_Recode } from "@/service/services_Recode";
-import { transformCondicionesUso_Recode } from "@/utils/transformCondicionesUsoFormu_Recode";
+import { transformCondicionesUso_Recode } from "@/app/host/utils/transformCondicionesUsoFormu_Recode";
 import {
   CondicionesGenerales_Recode,
   EntregaAuto_Recode,
   DevolucionAuto_Recode,
-} from "@/interface/CondicionesUsoFormu_interface_Recode";
+} from "@/app/host/interface/CondicionesUsoFormu_interface_Recode";
+import { postCondicionesUso_Recode } from "@/app/host/services/condicionesUsoForm";
 
 type Tab = "generales" | "entrega" | "devolucion";
 const tabs: { key: Tab; label: string }[] = [

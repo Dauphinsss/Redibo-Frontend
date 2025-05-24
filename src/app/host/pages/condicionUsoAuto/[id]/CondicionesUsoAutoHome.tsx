@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Header from "@/components/ui/Header";
-import TablaComponentes_Recode from "@/components/recodeComponentes/condicionesDeUsoAutoFormu/TablaComponentes_Recode";
+import TablaComponentes_Recode from "@/app/host/components/condicionesDeUsoAutoFormu/TablaComponentes_Recode";
 import { getCarById } from "@/service/services_Recode";
 
 export default function CondicionesUsoAutoHome() {

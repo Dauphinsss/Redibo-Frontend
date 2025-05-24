@@ -1,5 +1,4 @@
-import {apiCarById, apiCobertura, apiFormularioCondicionesUsoAuto} from "@/api/apis_Recode";
-import { CondicionesUsoPayload_Recode } from "@/interface/CondicionesUsoFormu_interface_Recode";
+import {apiCarById, apiCobertura} from "@/api/apis_Recode";
 import { CondicionesUsoResponse } from "@/app/reserva/interface/CondicionesUsoVisual_interface_Recode";
 import {EnlaceInterface } from "@/interface/CoberturaForm_Interface_Recode";
 
@@ -47,22 +46,7 @@ export async function getCarRatingsFromAuto(id: string): Promise<number[]> {
     const data = await response.json();
     return data.Calificacion.map((c: { calf_carro: number }) => c.calf_carro);
 };
-export const postCondicionesUso_Recode = async (payload: CondicionesUsoPayload_Recode): Promise<void> => {
-    try {
-        const response = await apiFormularioCondicionesUsoAuto.post("/insertCondition", payload);
-        console.log("Condiciones enviadas correctamente:", response.data);
-    } catch (error) {
-        const axiosError = error as AxiosError;
 
-        console.error("Error al enviar las condiciones de uso:");
-        console.error("Mensaje:", axiosError.message);
-        console.error("Código:", axiosError.code);
-        console.error("Status:", axiosError.response?.status);
-        console.error("Data:", axiosError.response?.data);
-
-        throw new Error("No se pudo enviar las condiciones de uso. Intenta de nuevo más tarde.");
-    }
-};
 
 export async function getCondicionesUsoVisual_Recode(id_carro: number): Promise<CondicionesUsoResponse | null> {
     try {

@@ -16,9 +16,16 @@ export default function TablaCoberturas({ id_carro }: { id_carro: number }) {
   useEffect(() => {
     const cargar = async () => {
       const seguro = await getInsuranceByID(id_carro.toString());
-      if (seguro?.tiposeguro) {
-        setDatos(seguro.tiposeguro);
+      if (seguro?.coberturas) {
+        // Adaptamos los nombres para que coincidan con CoberturaItem
+        const adaptado = seguro.coberturas.map((c) => ({
+          tipoda_o: c.tipodanio_cobertura,
+          descripcion: c.descripcion_cobertura ?? "",
+          valides: c.cantida_cobertura,
+        }));
+        setDatos(adaptado);
       }
+
     };
     cargar();
   }, [id_carro]);

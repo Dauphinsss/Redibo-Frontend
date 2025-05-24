@@ -3,7 +3,7 @@ import {
     EntregaAuto_Recode,
     DevolucionAuto_Recode,
     CondicionesUsoPayload_Recode
-} from "@/interface/CondicionesUsoFormu_interface_Recode";
+} from "@/app/host/interface/CondicionesUsoFormu_interface_Recode";
 
 export function transformCondicionesUso_Recode(
     id_carro: number,
