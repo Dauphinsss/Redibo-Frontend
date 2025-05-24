@@ -10,8 +10,6 @@ interface Props {
     transmision: string;
     combustibles: string[];
     estado: string;
-    combustibleSeleccionado: string;
-    onCombustibleChange: (val: string) => void;
 }
 
 function CarCardSpecs({
@@ -20,8 +18,6 @@ function CarCardSpecs({
     transmision,
     combustibles,
     estado,
-    combustibleSeleccionado,
-    onCombustibleChange,
 }: Props) {
     return (
         <div className="flex flex-col gap-1 text-sm mt-2">
@@ -33,15 +29,9 @@ function CarCardSpecs({
             <div className="flex items-center gap-2 flex-wrap mt-2">
                 <FaGasPump />
                 <span>Tipo de combustible:</span>
-                <select
-                value={combustibleSeleccionado}
-                onChange={(e) => onCombustibleChange(e.target.value)}
-                className="border px-2 py-1 rounded"
-                >
-                {combustibles.map((c, i) => (
-                    <option key={i}>{c}</option>
-                ))}
-                </select>
+                <span className="font-semibold">
+                    {combustibles.join(", ")}
+                </span>
             </div>
         <p className="mt-1">Estado: <strong>{estado}</strong></p>
         </div>

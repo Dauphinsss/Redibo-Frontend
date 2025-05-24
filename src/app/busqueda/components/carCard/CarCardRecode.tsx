@@ -54,8 +54,6 @@ function RecodeCarCard(props: Auto) {
             transmision={transmision}
             combustibles={combustibles}
             estado={estadoAlquiler}
-            combustibleSeleccionado={combustibleSeleccionado}
-            onCombustibleChange={setCombustibleSeleccionado}
           />
           <CarCardHost nombreHost={nombreHost} calificacion={parseFloat(promedioCalificacion)} />
           <CarCardUbicacion ciudad={ciudad} calle={calle} />
