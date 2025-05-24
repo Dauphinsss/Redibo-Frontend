@@ -28,19 +28,19 @@ function PerfilHost({
       <div className="flex flex-col items-center gap-4">
 
         <FotoPerfilUsrRecode imagenUrl={fotoPerfil} ancho={140} alto={140} />
-         <Link
-            href={`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`}
-            target="_blank"
-            rel="noopener noreferrer"
+        <Link
+          href={`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button
+            type="button"
+            className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm rounded hover:bg-gray-600 transition"
           >
-            <button
-              type="button"
-              className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm rounded hover:bg-gray-600 transition"
-            >
-              <FaWhatsapp className="text-lg" />
-              Contáctalo
-            </button>
-          </Link>  
+            <FaWhatsapp className="text-lg" />
+            Contáctalo
+          </button>
+        </Link>
       </div>
 
       <div>
