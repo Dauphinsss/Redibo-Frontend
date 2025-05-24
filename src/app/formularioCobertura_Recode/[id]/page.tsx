@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
 import { useParams } from "next/navigation";
-import CoberturaRecodeClient from "./CoberturaRecodeClient";
 import { useEffect, useState } from "react";
+import CoberturaRecodeClient from "./CoberturaRecodeClient";
 
 export default function Page() {
   const { id } = useParams();
-  const [show, setShow] = useState(false);
+  const [mostrar, setMostrar] = useState(false);
 
   useEffect(() => {
-    if (id) setShow(true);
+    if (id) setMostrar(true);
   }, [id]);
 
-  return show ? <CoberturaRecodeClient id_carro={String(id)} /> : null;
+  return mostrar ? <CoberturaRecodeClient id_carro={String(id)} /> : null;
 }

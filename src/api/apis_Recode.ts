@@ -23,13 +23,19 @@ const apiFormularioCondicionesUsoAuto = axios.create({
 
 const apiCobertura = axios.create({
     baseURL: "https://search-car-backend.vercel.app",
-    headers:{
+    headers: {
         "Content-Type": "application/json",
-    }
+    },
 });
 
 const getCondicionesUsoAutoAPI = (id_carro: number) => {
     return apiCarById.get(`/useConditon/${id_carro}`);
 };
 
-export { apiAllCards, apiCarById, apiFormularioCondicionesUsoAuto, getCondicionesUsoAutoAPI, apiCobertura };
+export {
+    apiAllCards,
+    apiCarById,
+    apiFormularioCondicionesUsoAuto,
+    apiCobertura,
+    getCondicionesUsoAutoAPI,
+};

@@ -1,8 +1,7 @@
 import {apiCarById, apiCobertura, apiFormularioCondicionesUsoAuto} from "@/api/apis_Recode";
 import { CondicionesUsoPayload_Recode } from "@/interface/CondicionesUsoFormu_interface_Recode";
 import { CondicionesUsoResponse } from "@/app/reserva/interface/CondicionesUsoVisual_interface_Recode";
-import { CoberturaInterface, SeguroRawRecode, ValidarInterface } from "@/interface/CoberturaForm_Interface_Recode";
-import { EnlaceInterface } from "@/interface/CoberturaForm_Interface_Recode";
+import { CoberturaInterface, EnlaceInterface } from "@/interface/CoberturaForm_Interface_Recode";
 
 import { RawCondicionesUsoResponse } from "@/app/reserva/interface/RawCondicionesUsoVisuali_Interface_Recode";
 import { transformCondiciones_Recode } from "@/app/reserva/utils/transformCondicionesVisuali_Recode";
@@ -10,6 +9,8 @@ import axios, { AxiosError } from "axios";
 import { RawHostDetails_Recode } from "@/app/reserva/interface/RawHostDetails_Recode";
 import { transformDetailsHost_Recode } from "@/app/reserva/utils/transformDetailsHost_Recode";
 import { transformSeguroTodo_Recode } from "@/utils/transforSeguro_Recode";
+import { SeguroConCoberturas_Interface_Recode } from "@/interface/SeguroConCoberturas_Interface_Recode";
+import { SeguroRaw_Recode } from "@/interface/SeguroRaw_Recode";
 
 
 
@@ -107,24 +108,23 @@ export const postCoberturaEnlace = async (payload: EnlaceInterface): Promise<voi
     }
 };
 
-export const getInsuranceByID = async (id_carro: string): Promise<ValidarInterface | null> => {
+export const getInsuranceByID = async (
+    id_carro: string
+): Promise<SeguroConCoberturas_Interface_Recode | null> => {
     try {
-        const response = await apiCobertura.get<SeguroRawRecode[]>(`/insurance/${id_carro}`);
+        const response = await apiCobertura.get<SeguroRaw_Recode[]>(`/infoSeguro/${id_carro}`);
 
-        // Validar que sea array no vacío
         if (!Array.isArray(response.data) || response.data.length === 0) {
             console.warn(`No se encontró seguro para el ID ${id_carro}`);
-            return null;
+        return null;
         }
 
         return transformSeguroTodo_Recode(response.data);
-    } catch (error: unknown) {
+    } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 404) {
-            console.warn(`Auto con ID ${id_carro} no encontrado.`);
-            return null;
+        return null;
         }
-
-        console.error(`Error inesperado al obtener el auto con ID ${id_carro}:`, error);
+        console.error(`Error al obtener seguro del carro ${id_carro}:`, error);
         throw error;
     }
 };

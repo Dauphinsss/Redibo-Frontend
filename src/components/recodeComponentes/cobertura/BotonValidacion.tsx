@@ -1,33 +1,28 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CoberturaInterface } from "@/interface/CoberturaForm_Interface_Recode";
-import { postCobertura} from "@/service/services_Recode";
+import { useCoberturasStore } from "@/hooks/useCoberturasStore";
+import { postCobertura } from "@/service/services_Recode";
 
-interface BotonValidarProps {
-  coberturas: CoberturaInterface[];
-  isSubmitting: boolean;
-  setIsSubmitting: (value: boolean) => void;
-}
-
-export default function BotonValidar({
-  coberturas,
-  isSubmitting,
-  setIsSubmitting,
-}: BotonValidarProps) {
+export default function BotonValidacion() {
   const router = useRouter();
+  const { lista } = useCoberturasStore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleGuardar = async () => {
-    if (coberturas.length === 0) return;
+  const handleSubmit = async () => {
+    if (lista.length === 0) {
+      alert("Debes registrar al menos una cobertura.");
+      return;
+    }
 
     try {
       setIsSubmitting(true);
-      for (const cobertura of coberturas) {
-        await postCobertura(cobertura);
-      }
+      await Promise.all(lista.map(c => postCobertura(c)));
       router.push("/listadoPrueba");
     } catch (error) {
       console.error("Error al guardar coberturas:", error);
+      alert("Hubo un error. Intenta de nuevo.");
     } finally {
       setIsSubmitting(false);
     }
@@ -35,32 +30,10 @@ export default function BotonValidar({
 
   return (
     <button
-      onClick={handleGuardar}
-      className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition disabled:opacity-50 flex items-center gap-2"
+      onClick={handleSubmit}
       disabled={isSubmitting}
+      className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition disabled:opacity-50"
     >
-      {isSubmitting && (
-        <svg
-          className="animate-spin h-5 w-5 text-white"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v8z"
-          />
-        </svg>
-      )}
       {isSubmitting ? "Guardando..." : "Guardar condiciones"}
     </button>
   );

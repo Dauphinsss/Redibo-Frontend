@@ -1,4 +1,5 @@
 export interface CoberturaInterface {
+  id: number;
   id_carro: number;
   tipodaño: string;
   descripcion: string;
