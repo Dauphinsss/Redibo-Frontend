@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 interface ButtonPrecioProps {
   onFilterChange: (min: number, max: number) => void;
