@@ -89,6 +89,7 @@ export default function EditableProfileImage({
       );
       if (response.data.url) {
         setPreviewUrl(response.data.url);
+        localStorage.setItem("foto",response.data.url)
       }
       toast.success("Imagen actualizada");
 
