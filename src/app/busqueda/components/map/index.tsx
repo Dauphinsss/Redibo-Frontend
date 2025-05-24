@@ -252,7 +252,7 @@ const Map = ({ zoom = defaults.zoom, posix, autos = [], radio, punto, setpunto, 
                     </div>
                     <Button
                       className="mt-2 w-full cursor-pointer"
-                      onClick={() => router.push(`/infoAuto_Recode/${currentAuto.idAuto}`)}
+                      onClick={() => router.push(`/reserva/page/infoAuto_Recode/${currentAuto.idAuto}`)}
                     >
                       Ver oferta
                     </Button>

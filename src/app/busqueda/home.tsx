@@ -55,7 +55,7 @@ export default function Home() {
     <div className="relative">
 
       <div className="sticky top-0 z-50 bg-white shadow overflow-visible">
-        <div className="border-b px-4 sm:px-6 lg:px-8 py-7">
+        <div className="border-b">
           <Header />
         </div>
         <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center">
@@ -135,7 +135,7 @@ export default function Home() {
           </div>
         </main>
         <div className="hidden lg:block w-[40%]">
-          <div className="sticky top-[195px] h-[calc(100vh-195px)] bg-gray-100 rounded shadow-inner">
+          <div className="sticky top-[140px] h-[calc(100vh-140px)] bg-gray-100 rounded shadow-inner">
             <ViewMap
               posix={[-17.39438, -66.16018]}
               autos={autosFiltrados}
@@ -149,8 +149,7 @@ export default function Home() {
       </div>
 
 
-      <MapViwMobile
-      >
+      <MapViwMobile>
         <ViewMap
           posix={[-17.39438, -66.16018]}
           autos={autosFiltrados}

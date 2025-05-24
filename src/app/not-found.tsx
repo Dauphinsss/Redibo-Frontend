@@ -9,14 +9,14 @@ export default function NotFound() {
           <div className="md:w-1/2 text-center md:text-left">
             <h1 className="text-4xl font-bold text-gray-800 mb-2">Ups algo pasó acá</h1>
             <h2 className="text-5xl font-extrabold text-red-500 mb-8">ERROR 404</h2>
-            
+
             <div className="mb-8">
               <p className="text-lg text-gray-600 mb-4">Si quieres puedes ir a:</p>
-              
+
               <div className="space-y-2">
                 <p className="text-gray-500">Link del home:</p>
                 <a
-                  href="https://rebo-re.vercel.app"
+                  href="https://redibo.up.railway.app"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
@@ -24,11 +24,11 @@ export default function NotFound() {
                   Página de inicio
                 </a>
               </div>
-              
+
               <div className="space-y-2 mt-4">
                 <p className="text-gray-500">Resultados de búsqueda:</p>
-                <Link 
-                  href="https://rebo-re.vercel.app/homeBuscador_Recode" 
+                <Link
+                  href="https://redibo.up.railway.app/busqueda"
                   className="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
                 >
                   Ver resultados
@@ -36,7 +36,7 @@ export default function NotFound() {
               </div>
             </div>
           </div>
-          
+
           <div className="md:w-1/2 flex justify-center">
             <Image
               src="/Error404_ffbvg7.png"
