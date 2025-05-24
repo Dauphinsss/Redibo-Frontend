@@ -25,15 +25,26 @@ export default function EditableProfileImage({
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<{ x: number; y: number; width: number; height: number; } | null>(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     initialImage ?? null
   );
 
-  const onCropComplete = useCallback((_: unknown, croppedPixels: { x: number; y: number; width: number; height: number; }) => {
-    setCroppedAreaPixels(croppedPixels);
-  }, []);
+  const onCropComplete = useCallback(
+    (
+      _: unknown,
+      croppedPixels: { x: number; y: number; width: number; height: number }
+    ) => {
+      setCroppedAreaPixels(croppedPixels);
+    },
+    []
+  );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -43,6 +54,9 @@ export default function EditableProfileImage({
     reader.onload = () => {
       setImageSrc(reader.result as string);
       setDialogOpen(true);
+
+      // Limpia el input para permitir volver a seleccionar el mismo archivo
+      e.target.value = "";
     };
     reader.readAsDataURL(file);
   };
