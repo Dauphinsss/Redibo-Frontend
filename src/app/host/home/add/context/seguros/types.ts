@@ -8,6 +8,7 @@ export interface SeguroAdicional {
   fechaInicio: string;
   fechaFin: string;
   descripcion?: string;
+  enlace?: string
 }
 
 export interface SegurosContextType {

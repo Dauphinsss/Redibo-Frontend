@@ -4,7 +4,6 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useFormContext } from "../context/form";
-import { useSegurosContext } from "../context/seguros";
 
 import CampoImagen from "../../../components/inputimagen/CampoImagen";
 import CampoMantenimientos from "../../../components/inputimagen/CampoMantenimientos";
@@ -14,7 +13,6 @@ import BotonesFormulario from "../../../components/inputimagen/BotonesFormulario
 
 export default function InputImagen() {
   const { formData, updateFinalizacion, submitForm } = useFormContext();
-  const { segurosAdicionales } = useSegurosContext();
   const { finalizacion } = formData;
 
   // Para inicializar solo una vez localmente 
