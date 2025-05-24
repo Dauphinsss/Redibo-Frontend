@@ -1,8 +1,7 @@
 import {apiCarById, apiCobertura, apiFormularioCondicionesUsoAuto} from "@/api/apis_Recode";
 import { CondicionesUsoPayload_Recode } from "@/interface/CondicionesUsoFormu_interface_Recode";
 import { CondicionesUsoResponse } from "@/app/reserva/interface/CondicionesUsoVisual_interface_Recode";
-import { CoberturaInterface, SeguroRawRecode, ValidarInterface } from "@/interface/CoberturaForm_Interface_Recode";
-import { EnlaceInterface } from "@/interface/CoberturaForm_Interface_Recode";
+import {EnlaceInterface } from "@/interface/CoberturaForm_Interface_Recode";
 
 import { RawCondicionesUsoResponse } from "@/app/reserva/interface/RawCondicionesUsoVisuali_Interface_Recode";
 import { transformCondiciones_Recode } from "@/app/reserva/utils/transformCondicionesVisuali_Recode";
@@ -10,6 +9,8 @@ import axios, { AxiosError } from "axios";
 import { RawHostDetails_Recode } from "@/app/reserva/interface/RawHostDetails_Recode";
 import { transformDetailsHost_Recode } from "@/app/reserva/utils/transformDetailsHost_Recode";
 import { transformSeguroTodo_Recode } from "@/utils/transforSeguro_Recode";
+import { PostCoberturaPayload, PutCoberturaPayload, SeguroConCoberturas_Interface_Recode } from "@/interface/SeguroConCoberturas_Interface_Recode";
+import { SeguroRaw_Recode } from "@/interface/SeguroRaw_Recode";
 
 
 
@@ -72,24 +73,6 @@ export async function getCondicionesUsoVisual_Recode(id_carro: number): Promise<
         return null;
     }
 };
-
-export const postCobertura = async (payload: CoberturaInterface): Promise<void> => {
-    try {
-        const response = await apiCobertura.post("/insertedInsurance", payload);
-        console.log("Enviado los datos de Cobertura", response.data);
-    } catch (error) {
-        const axiosError = error as AxiosError;
-
-        console.error("Error al enviar las condiciones de uso:");
-        console.error("Mensaje:", axiosError.message);
-        console.error("Código:", axiosError.code);
-        console.error("Status:", axiosError.response?.status);
-        console.error("Data:", axiosError.response?.data);
-
-        throw new Error("No se pudo enviar las condiciones de uso. Intenta de nuevo más tarde.");
-    }
-};
-
 export const postCoberturaEnlace = async (payload: EnlaceInterface): Promise<void> => {
     try {
         const response = await apiCobertura.post("/insertEnlace", payload);
@@ -107,13 +90,14 @@ export const postCoberturaEnlace = async (payload: EnlaceInterface): Promise<voi
     }
 };
 
-export const getInsuranceByID = async (id_carro: string): Promise<ValidarInterface | null> => {
+export const getInsuranceByID = async (
+    id_carro: string
+): Promise<SeguroConCoberturas_Interface_Recode | null> => {
     try {
-        const response = await apiCobertura.get<SeguroRawRecode[]>(`/insurance/${id_carro}`);
+        const response = await apiCobertura.get<SeguroRaw_Recode[]>(`/infoSeguro/${id_carro}`);
 
-        // Validar que sea array no vacío
         if (!Array.isArray(response.data) || response.data.length === 0) {
-            console.warn(`No se encontró seguro para el ID ${id_carro}`);
+            console.warn(`No se encontró información de seguro para el ID ${id_carro}`);
             return null;
         }
 
@@ -124,8 +108,62 @@ export const getInsuranceByID = async (id_carro: string): Promise<ValidarInterfa
             return null;
         }
 
-        console.error(`Error inesperado al obtener el auto con ID ${id_carro}:`, error);
+        console.error(`Error inesperado al obtener el seguro del carro ${id_carro}:`, error);
         throw error;
+    }
+};
+
+export const postCobertura = async (payload: PostCoberturaPayload): Promise<void> => {
+    try {
+        const response = await apiCobertura.post("/insertSeguro", payload);
+        console.log("Cobertura enviada:", response.data);
+    } catch (error) {
+        const axiosError = error as AxiosError;
+
+        console.error("Error al enviar cobertura:");
+        console.error("Mensaje:", axiosError.message);
+        console.error("Código:", axiosError.code);
+        console.error("Status:", axiosError.response?.status);
+        console.error("Data:", axiosError.response?.data);
+
+        throw new Error("No se pudo registrar la cobertura.");
+    }
+};
+
+export const putCobertura = async (
+    idCobertura: number,
+    payload: PutCoberturaPayload
+): Promise<void> => {
+    try {
+        const response = await apiCobertura.put(`/updateSeguro/${idCobertura}`, payload);
+        console.log("Cobertura actualizada:", response.data);
+    } catch (error) {
+        const axiosError = error as AxiosError;
+
+        console.error("Error al actualizar la cobertura:");
+        console.error("Mensaje:", axiosError.message);
+        console.error("Código:", axiosError.code);
+        console.error("Status:", axiosError.response?.status);
+        console.error("Data:", axiosError.response?.data);
+
+        throw new Error("No se pudo actualizar la cobertura.");
+    }
+};
+
+export const deleteCobertura = async (idCobertura: number): Promise<void> => {
+    try {
+        const response = await apiCobertura.delete(`/deleteSeguro/${idCobertura}`);
+        console.log("Cobertura eliminada:", response.data);
+    } catch (error) {
+        const axiosError = error as AxiosError;
+
+        console.error("Error al eliminar cobertura:");
+        console.error("Mensaje:", axiosError.message);
+        console.error("Código:", axiosError.code);
+        console.error("Status:", axiosError.response?.status);
+        console.error("Data:", axiosError.response?.data);
+
+        throw new Error("No se pudo eliminar la cobertura.");
     }
 };
 
