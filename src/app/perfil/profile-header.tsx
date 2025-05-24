@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { toast } from "sonner";
 import { MoreHorizontal, User, Car, Home } from "lucide-react";
 import {
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import axios from "axios";
 import { API_URL } from "@/utils/bakend";
+import EditableProfileImage from "./editable-image";
 
 interface UserProfile {
   id: number;
@@ -47,7 +47,6 @@ const RoleIcon = ({ role }: { role: string }) => {
 export function ProfileHeader() {
   const [userData, setUserData] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [imageError, setImageError] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [rolSeleccionado, setRolSeleccionado] = useState<string | null>(null);
 
@@ -121,26 +120,7 @@ export function ProfileHeader() {
   return (
     <div className="flex flex-col md:flex-row items-center gap-6 p-4">
       <div className="relative">
-        <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
-          {userData?.foto && !imageError ? (
-            <Image
-              src={userData.foto}
-              alt="Foto de perfil"
-              width={128}
-              height={128}
-              className="object-cover w-full h-full"
-              onError={() => setImageError(true)}
-              unoptimized
-            />
-          ) : userData?.nombre ? (
-            <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600 text-4xl font-semibold">
-              {userData.nombre.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase()}
-            </div>
-          ) : (
-            <User size={64} className="text-gray-400" />
-          )}
-
-        </div>
+        <EditableProfileImage initialImage={userData?.foto || undefined} />
       </div>
 
       <div className="text-center md:text-left ">
