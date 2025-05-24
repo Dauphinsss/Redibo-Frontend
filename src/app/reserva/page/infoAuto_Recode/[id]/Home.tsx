@@ -20,7 +20,8 @@ import CalificaionRecode from '@/app/reserva/components/componentes_InfoAutp_Rec
 import PopUpComentarios from '@/app/reserva/components/componentes_InfoAutp_Recode/PopUp/popUpComentarios'; //@/app/busqueda/homeBuscador_Recode/components/PopUp/popUpComentarios
 import { useComentariosAuto } from '@/app/reserva/hooks/useComentario_hook_Recode';
 import VerComentario from '@/app/reserva/components/componentes_InfoAutp_Recode/verComentario/verComentarioRecode';
-
+import { getDetalleHost_Recode } from '@/service/services_Recode';
+import { DetalleHost_Recode as DetalleHost } from "@/app/reserva/interface/DetalleHost_Recode";
 interface HomeProps {
   id: string;
 }
@@ -37,6 +38,8 @@ export default function Home({ id }: HomeProps) {
   : "0.0";  
   
   const [ordenSeleccionado] = useState("Más reciente");
+
+  const [host, setHost] = useState<DetalleHost | null>(null);
 
   const {
   comentariosFiltrados,
@@ -59,8 +62,19 @@ export default function Home({ id }: HomeProps) {
     })();
   }, [id]);
 
-  if (!loaded || !auto) return null;
+  useEffect(() => {
+    if (!auto?.idHost) return;
 
+    const fetchData = async () => {
+      const hostData = await getDetalleHost_Recode(Number(auto.idHost));
+      setHost(hostData);
+    };
+
+    fetchData();
+  }, [auto]);
+
+  if (!loaded || !auto) return null;
+  const fotoHost = ""+ host?.foto;
   return (
     <>
       <Header />
@@ -85,7 +99,7 @@ export default function Home({ id }: HomeProps) {
               <PopUpComentarios
                 idCar={id}
                 nombreCompleto={auto.nombreHost}
-                fotoHost=""
+                fotoHost={fotoHost}
                 modeloAuto={auto.modelo}
                 marcaAuto={auto.marca}
                 calificaciones={calificaciones}
