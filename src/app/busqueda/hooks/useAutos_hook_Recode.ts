@@ -14,7 +14,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
   const [textoBusqueda, setTextoBusqueda] = useState('');
   const [fechaFiltroInicio, setFechaFiltroInicio] = useState("");
   const [fechaFiltroFin, setFechaFiltroFin] = useState("");
-
+  const [filtroCiudad, setFiltroCiudad] = useState<string>(''); //editado Sprinteros
   const fetchAutos = async () => {
     try {
       setCargando(true);
@@ -90,6 +90,16 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
         return false;
       });
     });
+
+
+    //editado Sprinteros
+    if (filtroCiudad && filtroCiudad.trim()) {
+        console.log("Aplicando filtro de ciudad:", filtroCiudad);
+        resultado = resultado.filter(auto =>
+            normalizarTexto(auto.ciudad).includes(normalizarTexto(filtroCiudad))
+        );
+        }
+
 
     if (punto.alt !== 0 && punto.lon !== 0) {
       resultado = autosCercanosOrdenados(resultado, punto, radio * 1000)
@@ -197,7 +207,10 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
       setTextoBusqueda(termino);
       setFechaFiltroInicio(fechaInicio || "");
       setFechaFiltroFin(fechaFin || "");
+      
     },
-    obtenerSugerencia
+    obtenerSugerencia,
+    filtroCiudad,
+    setFiltroCiudad
   };
 }
