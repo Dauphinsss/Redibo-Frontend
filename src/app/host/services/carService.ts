@@ -6,7 +6,6 @@ import type { Image } from "./imageService";
 
 // Configuración de logger basado en entorno (simplificado)
 const logger = {
-  //se puso unknown en vez any daba error para deployar
   info: (message: string, ...args: unknown[]) => {
     console.log(`[INFO] ${message}`, ...args);
   },
@@ -194,14 +193,13 @@ export interface CreateFullCarPayload {
   asientos: number;
   puertas: number;
   soat: boolean;
-  transmicion: "manual" | "automatica";
+  transmicion: "Manual" | "Automatica";
   combustibleIds: number[];
   extraIds: number[];
   precio_por_dia: number;
   num_mantenimientos: number;
   estado: string;
   descripcion?: string;
-  segurosAdicionales?: Array<{ id: number; nombre: string; tipoSeguro: string; empresa: string; fechaInicio: string; fechaFin?: string; }>;
 }
 
 export interface CreateFullCarResponse {

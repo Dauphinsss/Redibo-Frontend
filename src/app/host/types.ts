@@ -21,15 +21,3 @@ export interface Car {
     take: number;
     hostId: number;
   }
-
-  export interface Seguro {
-  id: number;
-  nombre: string;
-  tipoSeguro: string;
-  empresa: string;
-}
-
-export interface SeguroAdicional extends Seguro {
-  fechaInicio: string;
-  fechaFin?: string;
-}

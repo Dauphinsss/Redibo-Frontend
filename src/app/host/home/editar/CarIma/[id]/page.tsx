@@ -9,7 +9,6 @@ import {
 } from "@/app/host/services/imageService";
 import {
   AlertDialog,
-  //AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -114,8 +113,9 @@ export default function EditarCarroImagen() {
         { file: sec1, prev: refOriginal.current.sec1, id: refImagesId.current[1] },
         { file: sec2, prev: refOriginal.current.sec2, id: refImagesId.current[2] },
       ];
-      //prev
-      for (const { file , id } of updates) {
+
+      for (const { file, prev, id } of updates) {
+        console.log(prev)
         if (typeof file !== "string" && file instanceof File) {
           await updateImage(id, file);
         }

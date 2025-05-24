@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -8,236 +8,218 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-import { Seguro, SeguroAdicional } from "../../types";
+import { useSegurosContext } from "@/app/host/home/add/context/seguros";
+
+interface Seguro {
+  id: number;
+  nombre: string;
+  tipoSeguro: string;
+  empresa: string;
+}
+
+interface SeguroAdicional extends Seguro {
+  fechaInicio: string;
+  fechaFin: string;
+}
 
 interface CampoSeguroMultipleProps {
   apiUrl: string;
   endpointPrefix?: string;
-  seleccionados: SeguroAdicional[];
-  onChange: (items: SeguroAdicional[]) => void;
   error?: string;
   setError?: (msg: string) => void;
+  onChange?: (seguros: SeguroAdicional[]) => void;
 }
 
-export default function CampoSeguroMultiple({ 
+export default function CampoSeguroMultiple({
   apiUrl,
   endpointPrefix = "/api/v3",
-  seleccionados = [], 
-  onChange, 
-  error, 
-  setError 
+  error,
+  setError,
+  onChange,
 }: CampoSeguroMultipleProps) {
+  const { segurosAdicionales, setSegurosAdicionales } = useSegurosContext();
   const [seguros, setSeguros] = useState<Seguro[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dateErrors, setDateErrors] = useState<Record<number, string>>({});
 
-  // Función para convertir string a Date
-  const parseDate = (dateString: string | undefined): Date | undefined => {
+  const parseDate = useCallback((dateString: string | undefined): Date | undefined => {
     if (!dateString) return undefined;
-    try {
-      return new Date(dateString);
-    } catch {
-      return undefined;
-    }
-  };
+    const parsed = new Date(dateString);
+    return isNaN(parsed.getTime()) ? undefined : parsed;
+  }, []);
 
-  // Fetch seguros disponibles
+  // obtener seguros
   useEffect(() => {
     const fetchSeguros = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${apiUrl}${endpointPrefix}/seguros`);
-        const segurosData = response.data.success ? response.data.data : [];
-        setSeguros(segurosData);
+        const url = `${apiUrl}${endpointPrefix}/seguros`;
+        const response = await axios.get(url);
+        const data = response.data.success ? response.data.data : [];
+        setSeguros(data);
         setError?.("");
       } catch (err) {
         console.error("Error fetching seguros:", err);
-        const errorMessage = axios.isAxiosError(err) 
+        const msg = axios.isAxiosError(err)
           ? err.response?.data?.message || "Error al cargar los seguros disponibles"
           : "Error desconocido al obtener seguros";
-        setError?.(errorMessage);
+        setError?.(msg);
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchSeguros();
   }, [apiUrl, endpointPrefix, setError]);
 
-  // Validar fechas
-  const validateDates = (seguro: SeguroAdicional): boolean => {
-    if (!seguro.fechaInicio || !seguro.fechaFin) {
-      setDateErrors(prev => ({
-        ...prev,
-        [seguro.id]: "Ambas fechas son obligatorias"
-      }));
+  const validateDates = useCallback((seg: SeguroAdicional): boolean => {
+    const { fechaInicio, fechaFin, id } = seg;
+    if (!fechaInicio || !fechaFin) {
+      setDateErrors(prev => ({ ...prev, [id]: "Ambas fechas son obligatorias" }));
       return false;
     }
-    
-    const inicio = new Date(seguro.fechaInicio);
-    const fin = new Date(seguro.fechaFin);
-    
-    if (fin <= inicio) {
-      setDateErrors(prev => ({
-        ...prev,
-        [seguro.id]: "La fecha fin debe ser posterior a la fecha inicio"
-      }));
+    const start = new Date(fechaInicio);
+    const end = new Date(fechaFin);
+    if (end <= start) {
+      setDateErrors(prev => ({ ...prev, [id]: "La fecha fin debe ser posterior a la fecha inicio" }));
       return false;
     }
-    
     setDateErrors(prev => {
-      const newErrors = {...prev};
-      delete newErrors[seguro.id];
-      return newErrors;
+      const next = { ...prev };
+      delete next[id];
+      return next;
     });
     return true;
-  };
+  }, []);
 
-  // Handlers
-  const handleAddSeguro = (seguro: Seguro) => {
-    if (!seleccionados.some(s => s.id === seguro.id)) {
+  const updateParent = useCallback((list: SeguroAdicional[]) => {
+    onChange?.(list);
+  }, [onChange]);
+
+  const handleAddSeguro = useCallback((seg: Seguro) => {
+    if (!segurosAdicionales.find(s => s.id === seg.id)) {
       const today = new Date();
-      const tomorrow = new Date();
+      const tomorrow = new Date(today);
       tomorrow.setDate(today.getDate() + 1);
-      
-      const nuevoSeguro: SeguroAdicional = {
-        ...seguro,
+      const nuevo: SeguroAdicional = {
+        ...seg,
         fechaInicio: today.toISOString(),
-        fechaFin: tomorrow.toISOString() // Establecer fecha fin por defecto (1 día después)
+        fechaFin: tomorrow.toISOString(),
       };
-      
-      onChange([...seleccionados, nuevoSeguro]);
+      const updated = [...segurosAdicionales, nuevo];
+      setSegurosAdicionales(updated);
+      updateParent(updated);
     }
-  };
+  }, [segurosAdicionales, setSegurosAdicionales, updateParent]);
 
-  const handleRemoveSeguro = (id: number) => {
-    onChange(seleccionados.filter(s => s.id !== id));
+  const handleRemoveSeguro = useCallback((id: number) => {
+    const updated = segurosAdicionales.filter(s => s.id !== id);
+    setSegurosAdicionales(updated);
+    updateParent(updated);
     setDateErrors(prev => {
-      const newErrors = {...prev};
-      delete newErrors[id];
-      return newErrors;
+      const next = { ...prev };
+      delete next[id];
+      return next;
     });
-  };
+  }, [segurosAdicionales, setSegurosAdicionales, updateParent]);
 
-  const handleDateChange = (id: number, field: 'fechaInicio' | 'fechaFin', date: Date | undefined) => {
-    if (!date) return; // No permitir fechas indefinidas
-    
-    const updated = seleccionados.map(seguro => 
-      seguro.id === id ? { 
-        ...seguro, 
-        [field]: date.toISOString(),
-        // Si cambiamos la fecha inicio, asegurarnos que la fecha fin sea posterior
-        ...(field === 'fechaInicio' && seguro.fechaFin && new Date(seguro.fechaFin) <= date ? {
-          fechaFin: new Date(date.getTime() + 86400000).toISOString() // +1 día
-        } : {})
-      } : seguro
-    );
-    
-    onChange(updated);
-    validateDates(updated.find(s => s.id === id)!);
-  };
+  const handleDateChange = useCallback((id: number, field: 'fechaInicio' | 'fechaFin', date?: Date) => {
+    if (!date) return;
+    const updated = segurosAdicionales.map(s => {
+      if (s.id !== id) return s;
+      const base = { ...s, [field]: date.toISOString() };
+      if (field === 'fechaInicio') {
+        const fin = new Date(s.fechaFin);
+        if (fin <= date) {
+          base.fechaFin = new Date(date.getTime() + 86400000).toISOString();
+        }
+      }
+      return base;
+    });
+    setSegurosAdicionales(updated);
+    updateParent(updated);
+    // validar nueva fecha
+    const changed = updated.find(s => s.id === id);
+    if (changed) validateDates(changed);
+  }, [segurosAdicionales, setSegurosAdicionales, updateParent, validateDates]);
 
   return (
     <div className="space-y-4">
       <Label className="text-lg font-medium">Seguros Adicionales</Label>
-      
+
       {isLoading ? (
         <p className="text-sm text-gray-500">Cargando seguros...</p>
       ) : error ? (
         <p className="text-red-500 text-sm">{error}</p>
       ) : (
         <div className="space-y-3">
-          {seguros.map(seguro => (
-            <div key={seguro.id} className="flex items-center space-x-2">
+          {seguros.map(seg => (
+            <div key={seg.id} className="flex items-center space-x-2">
               <Checkbox
-                id={`seguro-${seguro.id}`}
-                checked={seleccionados.some(s => s.id === seguro.id)}
-                onCheckedChange={(checked: boolean) => {
-                  if (checked) {
-                    handleAddSeguro(seguro);
-                  } else {
-                    handleRemoveSeguro(seguro.id);
-                  }
-                }}
+                id={`seguro-${seg.id}`}
+                checked={!!segurosAdicionales.find(s => s.id === seg.id)}
+                onCheckedChange={checked => checked ? handleAddSeguro(seg) : handleRemoveSeguro(seg.id)}
               />
-              <Label htmlFor={`seguro-${seguro.id}`}>
-                {seguro.nombre} - {seguro.empresa} ({seguro.tipoSeguro})
+              <Label htmlFor={`seguro-${seg.id}`}>
+                {seg.nombre} - {seg.empresa} ({seg.tipoSeguro})
               </Label>
             </div>
           ))}
         </div>
       )}
 
-      {seleccionados.length > 0 && (
-        <div className="space-y-3 mt-4">
-          {seleccionados.map(seguro => (
-            <div key={seguro.id} className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800">
+      {segurosAdicionales.length > 0 && (
+        <div className="space-y-4 mt-6">
+          {segurosAdicionales.map(seg => (
+            <div key={seg.id} className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800">
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h4 className="font-medium">{seguro.nombre} - {seguro.empresa}</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{seguro.tipoSeguro}</p>
+                  <h4 className="font-medium">{seg.nombre} - {seg.empresa}</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{seg.tipoSeguro}</p>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemoveSeguro(seguro.id)}
-                  className="text-red-500 hover:text-red-700"
-                >
+                <Button variant="ghost" size="sm" onClick={() => handleRemoveSeguro(seg.id)} className="text-red-500 hover:text-red-700">
                   Eliminar
                 </Button>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm">Fecha Inicio*</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant={"outline"}
-                        className="w-full justify-start text-left font-normal"
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {seguro.fechaInicio ? format(parseDate(seguro.fechaInicio)!, "PPP") : <span>Seleccione fecha</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={parseDate(seguro.fechaInicio)}
-                        onSelect={(date) => handleDateChange(seguro.id, 'fechaInicio', date || new Date())}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label className="text-sm">Fecha Fin*</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant={"outline"}
-                        className="w-full justify-start text-left font-normal"
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {seguro.fechaFin ? format(parseDate(seguro.fechaFin)!, "PPP") : <span>Seleccione fecha</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={parseDate(seguro.fechaFin)}
-                        onSelect={(date) => handleDateChange(seguro.id, 'fechaFin', date || new Date(new Date(seguro.fechaInicio).getTime() + 86400000))}
-                        initialFocus
-                        fromDate={new Date(new Date(seguro.fechaInicio).getTime() + 86400000)} // +1 día
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  {dateErrors[seguro.id] && (
-                    <p className="text-red-500 text-xs">{dateErrors[seguro.id]}</p>
-                  )}
-                </div>
+
+              <div className="flex space-x-4">
+                {/* Fecha Inicio */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="flex items-center">
+                      {format(parseDate(seg.fechaInicio)!, "dd/MM/yyyy")}
+                      <CalendarIcon className="ml-2 h-4 w-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start">
+                    <Calendar
+                      mode="single"
+                      selected={parseDate(seg.fechaInicio)}
+                      onSelect={date => handleDateChange(seg.id, 'fechaInicio', date)}
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                {/* Fecha Fin */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="flex items-center">
+                      {format(parseDate(seg.fechaFin)!, "dd/MM/yyyy")}
+                      <CalendarIcon className="ml-2 h-4 w-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start">
+                    <Calendar
+                      mode="single"
+                      selected={parseDate(seg.fechaFin)}
+                      onSelect={date => handleDateChange(seg.id, 'fechaFin', date)}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
+
+              {dateErrors[seg.id] && (
+                <p className="text-red-500 text-sm mt-2">{dateErrors[seg.id]}</p>
+              )}
             </div>
           ))}
         </div>

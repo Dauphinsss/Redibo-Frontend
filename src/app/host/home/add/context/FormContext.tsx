@@ -11,7 +11,6 @@ import {
 } from "react";
 import { createFullCar, CreateFullCarPayload } from "@/app/host/services/carService";
 import { uploadImage } from "@/app/host/services/imageService";
-import { SeguroAdicional } from "@/app/host/types";
 
 interface DireccionData {
   id_provincia: number | null;
@@ -33,9 +32,8 @@ interface CaracteristicasData {
   combustibleIds: number[];
   asientos: number;
   puertas: number;
-  transmicion: "automatica" | "manual";
+  transmicion: "Automatica" | "Manual";
   soat: boolean;
-  segurosAdicionales: SeguroAdicional[];
 }
 
 interface CaracteristicasAdicionalesData {
@@ -77,7 +75,7 @@ const FormContext = createContext<FormContextType | undefined>(undefined);
 const initialFormData: FormData = {
   direccion: { id_provincia: null, ciudadId: null, calle: "", zona: "", num_casa: "" },
   datosPrincipales: { vim: "", año: 0, marca: "", modelo: "", placa: "" },
-  caracteristicas: { combustibleIds: [], asientos: 0, puertas: 0, transmicion: "automatica", soat: false, segurosAdicionales: [] },
+  caracteristicas: { combustibleIds: [], asientos: 0, puertas: 0, transmicion: "Automatica", soat: false},
   caracteristicasAdicionales: { extraIds: [] },
   finalizacion: { imagenes: [], num_mantenimientos: 0, precio_por_dia: 0, estado: "Disponible", descripcion: "" }
 };
@@ -115,7 +113,6 @@ export function FormProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const validateForm = useCallback(() => {
-    //caracteristicasAdicionales
     const { direccion, datosPrincipales, caracteristicas, finalizacion } = formData;
     return (
       direccion.id_provincia !== null &&

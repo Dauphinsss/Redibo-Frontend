@@ -5,7 +5,6 @@ import { getToken } from './authService';
 // Configuración de logger basado en entorno
 const isDev = process.env.NODE_ENV === 'development';
 const logger = {
-  //se puso unknown en vez any daba error para deployar
   info: (message: string, ...args: unknown[]) => {
     if (isDev) console.log(`[IMG-INFO] ${message}`, ...args);
   },

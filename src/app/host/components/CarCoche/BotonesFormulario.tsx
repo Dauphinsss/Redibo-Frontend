@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-//import { useRouter } from "next/navigation";
 interface BotonesFormularioProps {
   isFormValid: boolean;
   onNext?: () => void;
@@ -11,7 +10,6 @@ export default function BotonesFormulario({
   isFormValid,
   onNext,
 }: BotonesFormularioProps) {
-  //const router = useRouter();
   return (
     // ⬇ Contenedor ajustado para mover el botón más a la derecha
     <div className="flex flex-col sm:flex-row justify-between w-full max-w-5xl mx-auto mt-10 px-4 sm:px-10 gap-4">
