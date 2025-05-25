@@ -22,7 +22,6 @@ import { RatingsInfo } from "./ratings-info";
 import { VehiclesInfo } from "./vehicles-info";
 import { ReservationsList } from "./orders-info"; // Importamos el nuevo componente
 import {
-  CreditCard,
   User,
   Star,
   Car,
@@ -31,7 +30,9 @@ import {
   LogOut,
   Settings,
   HelpCircle,
-  Receipt, // Importamos icono para órdenes de pago
+  Receipt,
+  BadgeDollarSign,
+  CarFront, // Importamos icono para órdenes de pago
 } from "lucide-react";
 import { SteeringWheel } from "./steering-wheel-icon";
 import { Footer } from "@/components/ui/footer";
@@ -39,11 +40,13 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { BecomeDriver } from "./become-driver";
 
 type SectionType =
   | "personal"
   | "payments"
   | "driver"
+  | "becomeDriver"
   | "ratings"
   | "vehicles"
   | "orders";
@@ -120,6 +123,8 @@ export default function ProfilePage() {
         return <PaymentInfo />;
       case "driver":
         return <DriverInfo />;
+      case "becomeDriver":
+        return <BecomeDriver />;
       case "ratings":
         return <RatingsInfo />;
       case "vehicles":
@@ -133,8 +138,9 @@ export default function ProfilePage() {
 
   const sectionTitles = {
     personal: "Información Personal",
-    payments: "Tarjetas",
+    payments: "Mi Billetera",
     driver: "Conductor",
+    becomeDriver: "Soy Conductor",
     ratings: "Calificaciones",
     vehicles: "Vehículos",
     orders: "Órdenes de Pago",
@@ -149,8 +155,8 @@ export default function ProfilePage() {
     },
     {
       id: "payments",
-      title: "Tarjetas",
-      icon: CreditCard,
+      title: "Mi Billetera",
+      icon: BadgeDollarSign,
       alwaysShow: true,
     },
     {
@@ -159,6 +165,12 @@ export default function ProfilePage() {
       icon: SteeringWheel,
       alwaysShow: false,
       requiresRole: "DRIVER",
+    },
+    {
+      id: "becomeDriver",
+      title: "Soy Conductor",
+      icon: CarFront,
+      alwaysShow: true,
     },
     {
       id: "ratings",
