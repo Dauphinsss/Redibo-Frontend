@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import CarsByLocation from '@/app/filtrarAeropuerto/components/CarsByLocation';
 import Header from "@/components/ui/Header";
 
-export default function Page() {
+export default function Page() {        
   const cities = [
     ["Cochabamba"],
     ["Beni"],
@@ -19,100 +19,98 @@ export default function Page() {
     ["Tarija"]
   ]
 
-  const radius = [5, 10, 15, 20]
+  const radius =[5,10,15,20]
   const { data: content = [], isLoading, isError } = useAirports();
   const [selectedValue, setSelectedValue] = useState('');
   const [selectedCity, setSelectedCity] = useState(cities[0].toString());
   const [selectedLatitude, setSelectedLatitude] = useState(0);
-  const [selectedLongitude, setSelectedLongitude] = useState(0);
-  const [selectedRadius, setSelectedRadius] = useState(5);
+  const [selectedLongitude, setSelectedLongitude] = useState(0);  
+  const [selectedRadius, setSelectedRadius] = useState(5);    
 
-  const handleCityChange = (e: ChangeEvent<HTMLSelectElement>) => {
+  const handleCityChange = (e: ChangeEvent<HTMLSelectElement>) => {    
     setSelectedCity(e.target.value)
     setSelectedValue('');
     setSelectedLatitude(0);
     setSelectedLongitude(0);
-  }
+  }  
 
-  const handleClick = () => {
-    if (selectedValue != '') {
+  const handleClick = () => { 
+    if(selectedValue != ''){      
       const index = parseInt(selectedValue);
-      const latitude = content[index].latitud
+      const latitude = content[index].latitud    
       setSelectedLatitude(latitude);
       const longitude = content[index].longitud
-      setSelectedLongitude(longitude);
+      setSelectedLongitude(longitude);        
     }
   }
 
   if (isLoading) {
     return (
-      <p className="text-center text-md mt-4 font-semibold text-muted-foreground">
-        Cargando Aeropuertos...
-      </p>
+    <p className="text-center text-md mt-4 font-semibold text-muted-foreground">
+    Cargando Aeropuertos...
+    </p>
     )
   }
   if (isError) {
     return (
-      <p className="text-center text-md mt-4 text-blue-700">
+        <p className="text-center text-md mt-4 text-blue-700">
         Error al cargar los Aeropuertos
-      </p>
+        </p>
     )
   }
-
-  return (
+  
+  return (    
     <div>
-      <Header />
-      <div className="max-w-4xl flex flex-col justify-items-center mx-auto p-5">
-        <h1 className="text-center text-2xl mb-4 font-semibold">Filtrar Por Aeropuerto</h1>
-        <p className="mb-4 font-semibold text-gray-500 text-sm">Seleccione una ciudad un Aeropuerto y haga click en Buscar</p>
-        <div className="flex flex-col md:flex-row gap-2 mb-4">
-          <div className='w-full md:w-xs'>
-            <label>Ciudad</label>
-            <select id="ciudades" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
-              value={selectedCity} onChange={(e) => handleCityChange(e)}>
-              <option key='' value=''>Seleccione Ciudad</option>
-              {cities.map((city, i) => (
-                <option key={i} value={city}>{city}</option>
-              ))}
-            </select>
-          </div>
-          <div className='w-full'>
-            <label>Aeropuerto</label>
-            <select id="aeropuertos" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
-              value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)}
-            >
-              <option key='' value=''>Seleccione Aeropuerto</option>
-              {content.map((item, i: number) => (
+     <Header />
+    <div className="flex flex-col justify-items-center mx-auto p-5">      
+    <h1 className="text-center text-2xl mb-4 font-semibold">Filtrar Por Aeropuerto</h1>
+      <p className="mb-4 font-semibold text-gray-500 text-sm">Seleccione una ciudad un Aeropuerto y haga click en Buscar</p>     
+      <div className="flex flex-col md:flex-row gap-2 mb-4">
+        <div className='w-full md:w-xs'>
+          <label>Ciudad</label>
+          <select id="ciudades" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
+          value={selectedCity} onChange={(e) => handleCityChange(e)}>          
+          {cities.map((city,i) => (
+              <option key={i} value={city}>{city}</option>
+            ))}
+          </select>
+        </div>
+        <div className='w-full'>
+          <label>Aeropuerto</label>
+          <select id="aeropuertos" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
+            value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)}         
+          >
+            <option key='' value=''>Seleccione Aeropuerto</option>
+            {content.map((item, i: number) => (              
                 (item.ciudad.nombre == selectedCity) &&
                 <option key={i} value={i} data-latitude={item.latitud} data-longitude={item.longitud}>
                   {item.nombre}
                 </option>
-              ))}
-            </select>
-          </div>
-          <div className='w-full md:w-xs'>
-            <label>Radio</label>
-            <select id="radio" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
-              value={selectedRadius} onChange={(e) => setSelectedRadius(parseInt(e.target.value))}
-            >
-              {radius.map((item, i: number) => (
-                <option key={i} value={item}>{item} Km.</option>
-              ))}
-            </select>
-          </div>
-          <div className='flex items-end'>
-            <Button variant="default" className='w-full'
-              onClick={handleClick}
-            >Buscar</Button>
-          </div>
+              ))}            
+          </select>
         </div>
-        <p className="mb-4 font-semibold">Resultados</p>
-        <CarsByLocation
-          latitude={selectedLatitude}
-          longitude={selectedLongitude}
-          radius={selectedRadius}>
-        </CarsByLocation>
+        <div className='w-full md:w-xs'>          
+          <label>Radio</label>
+          <select id="radio" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
+          value={selectedRadius} onChange={(e) => setSelectedRadius(parseInt(e.target.value))}
+          >            
+            {radius.map((item, i: number) => (  
+              <option key={i} value={item}>{item} Km.</option>
+            ))}            
+          </select>
+        </div>
+        <div className='flex items-end'>
+          <Button variant="default" className='w-full'
+            onClick={handleClick}
+          >Buscar</Button>
+        </div>
       </div>
+      <p className="mb-4 font-semibold">Resultados</p>
+      <CarsByLocation 
+      latitude={selectedLatitude} 
+      longitude={selectedLongitude} 
+      radius={selectedRadius} />      
+    </div>        
     </div>
   );
 }
