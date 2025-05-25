@@ -1,8 +1,8 @@
 export interface LicenseData {
-  number: string;
-  issueDate: string;
-  expiryDate: string;
-  category: string;
+  numeroLicencia: string;
+  fechaEmision: string;
+  fechaVencimiento: string;
+  categoria: string;
 }
 
 export interface LicensePhotos {

@@ -16,15 +16,16 @@ import LicenseDataStep from "./license-data-step";
 import LicensePhotosStep from "./license-photos-step";
 import SuccessDialog from "./success-dialog";
 import axios from "axios";
+import { API_URL } from "@/utils/bakend";
 
 export default function DriverApplicationForm() {
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [licenseData, setLicenseData] = useState<LicenseData>({
-    number: "",
-    issueDate: "",
-    expiryDate: "",
-    category: "",
+    numeroLicencia: "",
+    fechaEmision: "",
+    fechaVencimiento: "",
+    categoria: "",
   });
   const [licensePhotos, setLicensePhotos] = useState<LicensePhotos>({
     front: null,
@@ -42,10 +43,10 @@ export default function DriverApplicationForm() {
 
   const isStep1Valid = () => {
     return (
-      licenseData.number &&
-      licenseData.issueDate &&
-      licenseData.expiryDate &&
-      licenseData.category
+      licenseData.numeroLicencia &&
+      licenseData.fechaEmision &&
+      licenseData.fechaVencimiento &&
+      licenseData.categoria
     );
   };
 
@@ -57,12 +58,13 @@ export default function DriverApplicationForm() {
     setLoading(true);
     const authToken = localStorage.getItem("auth_token");
     const formdata = new FormData();
+    console.log(licenseData);
     formdata.append("license", JSON.stringify(licenseData));
     formdata.append("front", licensePhotos.front as File);
     formdata.append("back", licensePhotos.back as File);
-    console.log(formdata)
+    console.log(formdata);
     try {
-      await axios.post("/api/license", formdata, {
+      await axios.post(`${API_URL}/api/request`, formdata, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${authToken}`,
@@ -138,7 +140,10 @@ export default function DriverApplicationForm() {
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 ) : (
-                  <Button onClick={handleSubmit} disabled={!isStep2Valid() || loading}>
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={!isStep2Valid() || loading}
+                  >
                     Enviar Solicitud
                     <Check className="h-4 w-4 ml-2" />
                   </Button>
