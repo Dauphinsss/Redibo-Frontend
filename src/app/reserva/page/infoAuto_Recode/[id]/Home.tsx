@@ -78,7 +78,7 @@ export default function Home({ id }: HomeProps) {
   return (
     <>
       <Header />
-      <main className="w-full flex flex-col items-center px-4 sm:px-6 lg:px-8">
+      <main className="w-full flex flex-col items-center px-4 sm:px-6 lg:px-8 pt-15">
         <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8 py-6">
           <div className="flex-1">
             <Autoimag imagenes={auto.imagenes} nombre={auto.modelo} />
