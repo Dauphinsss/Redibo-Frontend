@@ -4,7 +4,6 @@ import { memo } from 'react';
 interface BotonVolverProps {
   to: string;
 }
-
 function BotonVolver({ to }: BotonVolverProps) {
   return (
     <Link
