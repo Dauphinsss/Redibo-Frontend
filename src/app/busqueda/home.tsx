@@ -1,12 +1,13 @@
 'use client';
 
 import { useMemo, useState } from "react";
-import { Map } from "lucide-react";
+import { Map, SlidersHorizontal } from "lucide-react";
 import { useAutos } from '@/app/busqueda/hooks/useAutos_hook_Recode';
 import SearchBar from '@/app/busqueda/components/seccionOrdenarMasResultados/RecodeSearchBar';
 import HeaderBusquedaRecode from '@/app/busqueda/components/seccionOrdenarMasResultados/HeaderBusquedaRecode';
 import ResultadosAutos from '@/app/busqueda/components/seccionOrdenarMasResultados/ResultadosAutos_Recode';
 import Header from '@/components/ui/Header';
+import SidebarFiltros from '@/app/busqueda/components/filtros/SidebarFiltros';
 import dynamic from "next/dynamic";
 
 import DateRangeFilter from "@/app/busqueda/components/filtrofechas_7-bits/DateRangeFilter"
@@ -17,6 +18,14 @@ import Link from "next/link";
 export default function Home() {
   const [radio, setradio] = useState(1)
   const [punto, setpunto] = useState({ lon: 0, alt: 0 })
+  
+  // Estados para sidebar (agregados del primer código)
+  const [mostrarSidebar, setMostrarSidebar] = useState(false);
+  const [filtrosCombustible, setFiltrosCombustible] = useState([]);
+  const [filtrosCaracteristicas, setFiltrosCaracteristicas] = useState({});
+  const [filtrosTransmision, setFiltrosTransmision] = useState([]);
+  const [filtrosCaracteristicasAdicionales, setFiltrosCaracteristicasAdicionales] = useState([]);
+  
   const {
     autos,
     autosFiltrados,
@@ -53,6 +62,25 @@ export default function Home() {
 
   return (
     <div className="relative">
+      {/* Sidebar de filtros (agregado del primer código) */}
+      <SidebarFiltros
+        mostrar={mostrarSidebar}
+        onCerrar={() => setMostrarSidebar(false)}
+        setFiltrosCombustible={setFiltrosCombustible}
+        setFiltrosCaracteristicas={setFiltrosCaracteristicas}
+        setFiltrosTransmision={setFiltrosTransmision}
+        filtrosTransmison={filtrosTransmision}
+        setFiltrosCaracteristicasAdicionales={setFiltrosCaracteristicasAdicionales}
+        filtrosCaracteristicasAdicionales={filtrosCaracteristicasAdicionales}
+      />
+
+      {/* Botón abrir sidebar (agregado del primer código) */}
+      <button
+        onClick={() => setMostrarSidebar(true)}
+        className="fixed top-[100px] left-4 z-[60] bg-black text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition"
+      >      
+        <SlidersHorizontal size={24} />          
+      </button>
 
       <div className="sticky top-0 z-50 bg-white shadow overflow-visible">
         <div className="border-b">
@@ -147,7 +175,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
 
       <MapViwMobile>
         <ViewMap
