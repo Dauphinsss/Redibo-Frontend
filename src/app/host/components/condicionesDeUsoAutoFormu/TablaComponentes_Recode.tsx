@@ -153,7 +153,7 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
         await postCondicionesUso_Recode(payload);
         setModalSuccess(true);
         setTimeout(() => {
-          router.push("/listadoPrueba");
+          router.push("/host/pages");
         }, 3000);
       } catch (error) {
         console.error("Error al guardar condiciones:", error);
