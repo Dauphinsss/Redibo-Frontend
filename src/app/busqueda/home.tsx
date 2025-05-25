@@ -69,24 +69,25 @@ export default function Home() {
         setFiltrosCombustible={setFiltrosCombustible}
         setFiltrosCaracteristicas={setFiltrosCaracteristicas}
         setFiltrosTransmision={setFiltrosTransmision}
-        filtrosTransmison={filtrosTransmision}
+        filtrosTransmision={filtrosTransmision}
         setFiltrosCaracteristicasAdicionales={setFiltrosCaracteristicasAdicionales}
         filtrosCaracteristicasAdicionales={filtrosCaracteristicasAdicionales}
       />
-
-      {/* Botón abrir sidebar (agregado del primer código) */}
-      <button
-        onClick={() => setMostrarSidebar(true)}
-        className="fixed top-[100px] left-4 z-[60] bg-black text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition"
-      >      
-        <SlidersHorizontal size={24} />          
-      </button>
 
       <div className="sticky top-0 z-50 bg-white shadow overflow-visible">
         <div className="border-b">
           <Header />
         </div>
-        <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center">
+        <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center items-center gap-4">
+          {/* Botón de filtros alineado en el header */}
+          <button
+            onClick={() => setMostrarSidebar(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-white text-black border border-gray-300 rounded-md font-semibold hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-300 transition"
+          >      
+            <SlidersHorizontal size={20} />
+            Filtros          
+          </button>
+          
           <div className="w-full max-w-2xl">
             <SearchBar
               placeholder="Buscar por modelo, marca"
@@ -129,6 +130,7 @@ export default function Home() {
               >
                 Filtrar por Aeropuerto
               </Link>
+
               <button
                 onClick={toggleGPSFilter}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium shadow-md border ${gpsFilterActive ? 'bg-black text-white' : 'bg-white text-black border-black'} transition-colors duration-300`}

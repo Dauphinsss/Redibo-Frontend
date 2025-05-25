@@ -115,165 +115,172 @@ export default function SidebarFiltros({
   };
 
   return (
-    <div
-      ref={sidebarRef}
-      className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 transition-transform duration-300 transform ${
-        mostrar ? 'translate-x-0' : '-translate-x-full'
-      }`}
-    >
-      {/* Encabezado */}
-      <div className="flex justify-between items-center px-4 py-3 border-b">
-        <h2 className="font-semibold text-lg">Filtros</h2>
-        <button
-          onClick={() => {
-            setFiltrosCombustible([]);
-            setFiltrosCombustibleLocal([]);
-            setFiltrosTransmision([]);
-            setFiltrosCaracteristicas({});
-            setCaracteristicasLocal({});
-            setFiltrosCaracteristicasAdicionales([]);
-            setErrores({ combustible: "" });
-          }}
-          className="text-sm bg-black text-white px-3 py-1 rounded hover:bg-gray-700 transition"
-        >
-          Resetear filtros
-        </button>
-        <button onClick={onCerrar} className="text-xl font-bold hover:text-gray-600">
-          &times;
-        </button>
-      </div>
+    <>
+      {/* Sidebar */}
+      <div
+        ref={sidebarRef}
+        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-lg z-[60] transition-transform duration-300 transform ${
+          mostrar ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {/* Encabezado */}
+        <div className="flex justify-between items-center px-4 py-4 border-b bg-white">
+          <h2 className="font-semibold text-lg">Filtros</h2>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                setFiltrosCombustible([]);
+                setFiltrosCombustibleLocal([]);
+                setFiltrosTransmision([]);
+                setFiltrosCaracteristicas({});
+                setCaracteristicasLocal({});
+                setFiltrosCaracteristicasAdicionales([]);
+                setErrores({ combustible: "" });
+              }}
+              className="text-sm bg-black text-white px-3 py-1 rounded hover:bg-gray-700 transition"
+            >
+              Resetear
+            </button>
+            <button onClick={onCerrar} className="text-xl font-bold hover:text-gray-600 w-8 h-8 flex items-center justify-center">
+              &times;
+            </button>
+          </div>
+        </div>
 
-      {/* Contenido scrollable con altura limitada */}
-      <div className="space-y-4 p-4 overflow-y-auto max-h-[calc(100vh-60px)]">
-        {/* Combustible */}
-        <div className="border rounded shadow-sm">
-          <button
-            onClick={() => toggle('tipoCombustible')}
-            className="w-full text-left px-4 py-2 bg-black text-white font-semibold hover:bg-gray-700"
-          >
-            Tipo combustible
-          </button>
-          {abierto.tipoCombustible && (
-            <div className="p-4 space-y-2">
-              {['Gasolina', 'GNV', 'Eléctrico', 'Diesel'].map((tipo) => (
-                <label key={tipo} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox"
-                    checked={filtrosCombustibleLocal.includes(tipo.toLowerCase())}
-                    onChange={(e) => handleCheckboxChange(tipo, e.target.checked)}
-                  />
-                  {tipo}
-                </label>
-              ))}
-              {errores.combustible && (
-                <p className="text-red-500 text-sm mt-2">{errores.combustible}</p>
+        {/* Contenido scrollable */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="space-y-4 p-4">
+            {/* Combustible */}
+            <div className="border rounded shadow-sm">
+              <button
+                onClick={() => toggle('tipoCombustible')}
+                className="w-full text-left px-4 py-3 bg-black text-white font-semibold hover:bg-gray-700 transition-colors"
+              >
+                Tipo combustible
+              </button>
+              {abierto.tipoCombustible && (
+                <div className="p-4 space-y-3">
+                  {['Gasolina', 'GNV', 'Eléctrico', 'Diesel'].map((tipo) => (
+                    <label key={tipo} className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="form-checkbox h-4 w-4 text-blue-600"
+                        checked={filtrosCombustibleLocal.includes(tipo.toLowerCase())}
+                        onChange={(e) => handleCheckboxChange(tipo, e.target.checked)}
+                      />
+                      <span className="text-sm">{tipo}</span>
+                    </label>
+                  ))}
+                  {errores.combustible && (
+                    <p className="text-red-500 text-sm mt-2">{errores.combustible}</p>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
 
-        {/* Características del coche */}
-        <div className="border rounded shadow-sm">
-          <button
-            onClick={() => toggle('caracteristicasCoche')}
-            className="w-full text-left px-4 py-2 bg-black text-white font-semibold hover:bg-gray-700"
-          >
-            Características del coche
-          </button>
-          {abierto.caracteristicasCoche && (
-            <div className="p-4 space-y-4">
-              <div>
-                <p className="font-semibold">Número de asientos</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {[2, 4, 5, 7].map((n) => (
-                    <label key={n} className="flex items-center gap-2">
+            {/* Características del coche */}
+            <div className="border rounded shadow-sm">
+              <button
+                onClick={() => toggle('caracteristicasCoche')}
+                className="w-full text-left px-4 py-3 bg-black text-white font-semibold hover:bg-gray-700 transition-colors"
+              >
+                Características del coche
+              </button>
+              {abierto.caracteristicasCoche && (
+                <div className="p-4 space-y-4">
+                  <div>
+                    <p className="font-semibold mb-2">Número de asientos</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[2, 4, 5, 7].map((n) => (
+                        <label key={n} className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="form-checkbox h-4 w-4 text-blue-600"
+                            checked={caracteristicasLocal.asientos === n}
+                            onChange={(e) => handleCaracteristicasChange('asientos', n, e.target.checked)}
+                          />
+                          <span className="text-sm">{n}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="font-semibold mb-2">Número de puertas</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[2, 3, 4, 5].map((n) => (
+                        <label key={n} className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="form-checkbox h-4 w-4 text-blue-600"
+                            checked={caracteristicasLocal.puertas === n}
+                            onChange={(e) => handleCaracteristicasChange('puertas', n, e.target.checked)}
+                          />
+                          <span className="text-sm">{n}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Transmisión */}
+            <div className="border rounded shadow-sm">
+              <button
+                onClick={() => toggle('transmision')}
+                className="w-full text-left px-4 py-3 bg-black text-white font-semibold hover:bg-gray-700 transition-colors"
+              >
+                Transmisión
+              </button>
+              {abierto.transmision && (
+                <div className="p-4 space-y-3">
+                  {['Manual', 'Automática'].map((tipo) => (
+                    <label key={tipo} className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
-                        className="form-checkbox"
-                        checked={caracteristicasLocal.asientos === n}
-                        onChange={(e) => handleCaracteristicasChange('asientos', n, e.target.checked)}
+                        className="form-checkbox h-4 w-4 text-blue-600"
+                        checked={filtrosTransmision.includes(tipo.toLowerCase())}
+                        onChange={() => handleTransmisionChange(tipo)}
                       />
-                      {n}
+                      <span className="text-sm">{tipo}</span>
                     </label>
                   ))}
                 </div>
-              </div>
+              )}
+            </div>
 
-              <div>
-                <p className="font-semibold">Número de puertas</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {[2, 3, 4, 5].map((n) => (
-                    <label key={n} className="flex items-center gap-2">
+            {/* Características adicionales */}
+            <div className="border rounded shadow-sm">
+              <button
+                onClick={() => toggle('caracteristicasAdicionales')}
+                className="w-full text-left px-4 py-3 bg-black text-white font-semibold hover:bg-gray-700 transition-colors"
+              >
+                Características adicionales
+              </button>
+              {abierto.caracteristicasAdicionales && (
+                <div className="p-4 space-y-3 max-h-64 overflow-y-auto">
+                  {[
+                    "Aire acondicionado", "Bluetooth", "GPS", "Portabicicletas", "Soporte para esquís",
+                    "Pantalla táctil", "Sillas para bebé", "Cámara de reversa", "Asientos de cuero",
+                    "Sistema antirrobo", "Toldo o rack de techo", "Vidrios polarizados", "Sistema de sonido"
+                  ].map((carac) => (
+                    <label key={carac} className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
-                        className="form-checkbox"
-                        checked={caracteristicasLocal.puertas === n}
-                        onChange={(e) => handleCaracteristicasChange('puertas', n, e.target.checked)}
+                        className="form-checkbox h-4 w-4 text-blue-600"
+                        checked={filtrosCaracteristicasAdicionales.includes(carac.toLowerCase())}
+                        onChange={(e) => handleCaracteristicasAdicionalesChange(carac, e.target.checked)}
                       />
-                      {n}
+                      <span className="text-sm">{carac}</span>
                     </label>
                   ))}
                 </div>
-              </div>
+              )}
             </div>
-          )}
-        </div>
-
-        {/* Transmisión */}
-        <div className="border rounded shadow-sm">
-          <button
-            onClick={() => toggle('transmision')}
-            className="w-full text-left px-4 py-2 bg-black text-white font-semibold hover:bg-gray-700"
-          >
-            Transmisión
-          </button>
-          {abierto.transmision && (
-            <div className="p-4 space-y-2">
-              {['Manual', 'Automática'].map((tipo) => (
-                <label key={tipo} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox"
-                    checked={filtrosTransmision.includes(tipo.toLowerCase())}
-                    onChange={() => handleTransmisionChange(tipo)}
-                  />
-                  {tipo}
-                </label>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Características adicionales */}
-        <div className="border rounded shadow-sm">
-          <button
-            onClick={() => toggle('caracteristicasAdicionales')}
-            className="w-full text-left px-4 py-2 bg-black text-white font-semibold hover:bg-gray-700"
-          >
-            Características adicionales
-          </button>
-          {abierto.caracteristicasAdicionales && (
-            <div className="p-4 space-y-2 max-h-48 overflow-y-auto">
-              {[
-                "Aire acondicionado", "Bluetooth", "GPS", "Portabicicletas", "Soporte para esquís",
-                "Pantalla táctil", "Sillas para bebé", "Cámara de reversa", "Asientos de cuero",
-                "Sistema antirrobo", "Toldo o rack de techo", "Vidrios polarizados", "Sistema de sonido"
-              ].map((carac) => (
-                <label key={carac} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox"
-                    checked={filtrosCaracteristicasAdicionales.includes(carac.toLowerCase())}
-                    onChange={(e) => handleCaracteristicasAdicionalesChange(carac, e.target.checked)}
-                  />
-                  {carac}
-                </label>
-              ))}
-            </div>
-          )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
