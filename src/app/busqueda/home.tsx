@@ -21,10 +21,7 @@ export default function Home() {
   
   // Estados para sidebar (agregados del primer código)
   const [mostrarSidebar, setMostrarSidebar] = useState(false);
-  const [filtrosCombustible, setFiltrosCombustible] = useState([]);
-  const [filtrosCaracteristicas, setFiltrosCaracteristicas] = useState({});
-  const [filtrosTransmision, setFiltrosTransmision] = useState([]);
-  const [filtrosCaracteristicasAdicionales, setFiltrosCaracteristicasAdicionales] = useState([]);
+
   
   const {
     autos,
@@ -38,6 +35,14 @@ export default function Home() {
     cargando,
     filtrarAutos,
     obtenerSugerencia,
+    filtrosCombustible,
+    setFiltrosCombustible,
+    filtrosCaracteristicas,
+    setFiltrosCaracteristicas,
+    filtrosTransmision, 
+    setFiltrosTransmision,
+    setFiltrosCaracteristicasAdicionales,
+    filtrosCaracteristicasAdicionales,
   } = useAutos(8, radio, punto);
 
   const [busqueda, setBusqueda] = useState("");

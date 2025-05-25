@@ -31,11 +31,7 @@ export interface RawAuto_Interface_Recode {
         data: string;
         id_carro: number;
     }[];
-    caracteristicasAdicionalesCarro: {
-        caracteristicas_adicionales?: {
-            nombre: string;
-        };
-    }[];
+    caracteristicasAdicionales: string[];
     Reserva: {
         fecha_inicio: string;
         fecha_fin: string;

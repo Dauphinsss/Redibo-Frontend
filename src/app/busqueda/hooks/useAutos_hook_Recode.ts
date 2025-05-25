@@ -15,6 +15,11 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
   const [fechaFiltroInicio, setFechaFiltroInicio] = useState("");
   const [fechaFiltroFin, setFechaFiltroFin] = useState("");
   const [filtroCiudad, setFiltroCiudad] = useState<string>(''); //editado Sprinteros
+  const [filtrosCombustible, setFiltrosCombustible] = useState<string[]>([]);
+  const [filtrosCaracteristicas, setFiltrosCaracteristicas] = useState<{ asientos?: number; puertas?: number }>({});
+  const [filtrosTransmision, setFiltrosTransmision] = useState<string[]>([]);
+  const [filtrosCaracteristicasAdicionales, setFiltrosCaracteristicasAdicionales] = useState<string[]>([]);
+
   const fetchAutos = async () => {
     try {
       setCargando(true);
@@ -44,84 +49,127 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
   const filtrarYOrdenarAutos = useCallback(() => {
     let resultado = [...autos];
 
+    // Filtro por texto de búsqueda (marca o modelo)
     if (textoBusqueda.trim()) {
-      const query = normalizarTexto(textoBusqueda.trim());
-      resultado = resultado.filter(auto => {
-        const autoTexto = `${auto.marca} ${auto.modelo}`;
-        const textoNormalizado = normalizarTexto(autoTexto).replace(/[^\p{L}\p{N}\s.\-\/]/gu, "").replace(/\s+/g, " ").trim();
-        const palabrasBusqueda = query.split(" ");
-        return palabrasBusqueda.every(palabra => textoNormalizado.includes(palabra));
-        /*return palabrasBusqueda.every(palabra =>
-          textoNormalizado.split(" ").some(palabraTexto =>
-              palabraTexto.startsWith(palabra)
-          )
-      );*/
-      });
-      resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
+        const query = normalizarTexto(textoBusqueda.trim());
+        resultado = resultado.filter(auto => {
+            const autoTexto = `${auto.marca} ${auto.modelo}`;
+            const textoNormalizado = normalizarTexto(autoTexto)
+                .replace(/[^\p{L}\p{N}\s.\-\/]/gu, "")
+                .replace(/\s+/g, " ")
+                .trim();
+            const palabrasBusqueda = query.split(" ");
+            return palabrasBusqueda.every(palabra => textoNormalizado.includes(palabra));
+        });
     }
 
-    resultado = resultado.filter(auto => {
-
-      if (!auto.reservas || auto.reservas.length === 0) return true;
-
-      const filtroInicio = fechaFiltroInicio ? new Date(fechaFiltroInicio) : null;
-      const filtroFin = fechaFiltroFin ? new Date(fechaFiltroFin) : null;
-
-      return !auto.reservas.some(reserva => {
-        if (!['pendiente', 'confirmado'].includes(reserva.estado)) return false;
-
-        const inicioReserva = new Date(reserva.fecha_inicio);
-        const finReserva = new Date(reserva.fecha_fin);
-
-        if (filtroInicio && !filtroFin) {
-          return finReserva >= filtroInicio;
+   // Filtro por tipo de combustible
+        if (filtrosCombustible.length > 0) {
+            console.log("Aplicando filtro de combustible:", filtrosCombustible);
+            resultado = resultado.filter(auto => {
+                console.log("Combustibles del auto:", auto.combustibles);
+                return auto.combustibles.some(combustible =>
+                    filtrosCombustible.includes(combustible)
+                );
+            });
         }
 
-        if (!filtroInicio && filtroFin) {
-          return inicioReserva <= filtroFin;
+        // Filtro por características del coche (asientos y puertas)
+        if (filtrosCaracteristicas.asientos) {
+            console.log("Aplicando filtro de asientos:", filtrosCaracteristicas.asientos);
+            resultado = resultado.filter(auto => auto.asientos === filtrosCaracteristicas.asientos);
+        }
+        if (filtrosCaracteristicas.puertas) {
+            console.log("Aplicando filtro de puertas:", filtrosCaracteristicas.puertas);
+            resultado = resultado.filter(auto => auto.puertas === filtrosCaracteristicas.puertas);
         }
 
-        if (filtroInicio && filtroFin) {
-          return (
-            inicioReserva <= filtroFin &&
-            finReserva >= filtroInicio
-          );
+        // Filtro por transmisión
+        if (filtrosTransmision.length > 0) {
+            console.log("Aplicando filtro de transmisión:", filtrosTransmision);
+            resultado = resultado.filter(auto => {
+            console.log("Transmisión del auto:", auto.transmision);
+            return filtrosTransmision.some(transmision =>
+             auto.transmision.toLowerCase().includes(transmision.toLowerCase())
+            );
+           });
         }
-        return false;
-      });
-    });
 
+        // Normalizar las características adicionales antes de la comparación
+        if (filtrosCaracteristicasAdicionales.length > 0) {
+             //console.log("Aplicando filtro de características adicionales:", filtrosCaracteristicasAdicionales);
+             resultado = resultado.filter(auto => {
+             //console.log("Revisando auto:", auto.idAuto || auto, "Características:", auto.caracteristicasAdicionales);
+             return filtrosCaracteristicasAdicionales.every(caracteristica =>
+             (auto.caracteristicasAdicionales || []).some(c => normalizarTexto(c).includes(normalizarTexto(caracteristica)))
+           );
+        });
+        }
 
-    //editado Sprinteros
+    // Filtro por ciudad
     if (filtroCiudad && filtroCiudad.trim()) {
-        console.log("Aplicando filtro de ciudad:", filtroCiudad);
         resultado = resultado.filter(auto =>
             normalizarTexto(auto.ciudad).includes(normalizarTexto(filtroCiudad))
         );
-        }
-
-
-    if (punto.alt !== 0 && punto.lon !== 0) {
-      resultado = autosCercanosOrdenados(resultado, punto, radio * 1000)
     }
 
+    // Filtro por disponibilidad (reservas)
+    resultado = resultado.filter(auto => {
+        if (!auto.reservas || auto.reservas.length === 0) return true;
+
+        const filtroInicio = fechaFiltroInicio ? new Date(fechaFiltroInicio) : null;
+        const filtroFin = fechaFiltroFin ? new Date(fechaFiltroFin) : null;
+
+        return !auto.reservas.some(reserva => {
+            if (!['pendiente', 'confirmado'].includes(reserva.estado)) return false;
+
+            const inicioReserva = new Date(reserva.fecha_inicio);
+            const finReserva = new Date(reserva.fecha_fin);
+
+            if (filtroInicio && !filtroFin) {
+                return finReserva >= filtroInicio;
+            }
+
+            if (!filtroInicio && filtroFin) {
+                return inicioReserva <= filtroFin;
+            }
+
+            if (filtroInicio && filtroFin) {
+                return (
+                    inicioReserva <= filtroFin &&
+                    finReserva >= filtroInicio
+                );
+            }
+
+            return false;
+        });
+    });
+
+    // Filtro por ubicación geográfica (radio)
+    if (punto.alt !== 0 && punto.lon !== 0) {
+        resultado = autosCercanosOrdenados(resultado, punto, radio * 1000);
+    }
+
+    // Ordenar resultados
     switch (ordenSeleccionado) {
-      case 'Modelo Ascendente':
-        resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
-        break;
-      case 'Modelo Descendente':
-        resultado.sort((a, b) => b.modelo.localeCompare(a.modelo));
-        break;
-      case 'Precio bajo a alto':
-        resultado.sort((a, b) => a.precioPorDia - b.precioPorDia);
-        break;
-      case 'Precio alto a bajo':
-        resultado.sort((a, b) => b.precioPorDia - a.precioPorDia);
-        break;
+        case 'Modelo Ascendente':
+            resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
+            break;
+        case 'Modelo Descendente':
+            resultado.sort((a, b) => b.modelo.localeCompare(a.modelo));
+            break;
+        case 'Precio bajo a alto':
+            resultado.sort((a, b) => a.precioPorDia - b.precioPorDia);
+            break;
+        case 'Precio alto a bajo':
+            resultado.sort((a, b) => b.precioPorDia - a.precioPorDia);
+            break;
     }
 
     setAutosFiltrados(resultado);
-  }, [autos, textoBusqueda, ordenSeleccionado, fechaFiltroInicio, fechaFiltroFin, punto, radio]);
+}, [autos,textoBusqueda,filtrosCombustible,filtrosCaracteristicas,filtrosTransmision,filtrosCaracteristicasAdicionales,
+  filtroCiudad,fechaFiltroInicio,fechaFiltroFin,punto,radio,ordenSeleccionado]);
+
 
   useEffect(() => {
     filtrarYOrdenarAutos();
@@ -211,6 +259,14 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     },
     obtenerSugerencia,
     filtroCiudad,
-    setFiltroCiudad
+    setFiltroCiudad,
+    filtrosCombustible,
+    setFiltrosCombustible,
+    filtrosCaracteristicas,
+    setFiltrosCaracteristicas,
+    filtrosTransmision,
+    setFiltrosTransmision,
+    filtrosCaracteristicasAdicionales,
+    setFiltrosCaracteristicasAdicionales,
   };
 }
