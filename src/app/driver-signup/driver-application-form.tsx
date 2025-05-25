@@ -1,58 +1,89 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, ArrowRight, Check } from "lucide-react"
-import { LicenseData, LicensePhotos } from "./types"
-import ProgressIndicator from "./progress-indicator"
-import LicenseDataStep from "./license-data-step"
-import LicensePhotosStep from "./license-photos-step"
-import SuccessDialog from "./success-dialog"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { LicenseData, LicensePhotos } from "./types";
+import ProgressIndicator from "./progress-indicator";
+import LicenseDataStep from "./license-data-step";
+import LicensePhotosStep from "./license-photos-step";
+import SuccessDialog from "./success-dialog";
+import axios from "axios";
 
 export default function DriverApplicationForm() {
-  const [currentStep, setCurrentStep] = useState(1)
+  const [loading, setLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
   const [licenseData, setLicenseData] = useState<LicenseData>({
     number: "",
     issueDate: "",
     expiryDate: "",
     category: "",
-  })
+  });
   const [licensePhotos, setLicensePhotos] = useState<LicensePhotos>({
     front: null,
     back: null,
-  })
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  });
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleLicenseDataChange = (field: keyof LicenseData, value: string) => {
-    setLicenseData((prev) => ({ ...prev, [field]: value }))
-  }
+    setLicenseData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handlePhotoChange = (type: "front" | "back", file: File | null) => {
-    setLicensePhotos((prev) => ({ ...prev, [type]: file }))
-  }
+    setLicensePhotos((prev) => ({ ...prev, [type]: file }));
+  };
 
   const isStep1Valid = () => {
-    return licenseData.number && licenseData.issueDate && licenseData.expiryDate && licenseData.category
-  }
+    return (
+      licenseData.number &&
+      licenseData.issueDate &&
+      licenseData.expiryDate &&
+      licenseData.category
+    );
+  };
 
   const isStep2Valid = () => {
-    return licensePhotos.front && licensePhotos.back
-  }
+    return licensePhotos.front && licensePhotos.back;
+  };
 
-  const handleSubmit = () => {
-    console.log("Datos de licencia:", licenseData)
-    console.log("Fotos de licencia:", licensePhotos)
-    setIsSubmitted(true)
-  }
+  const handleSubmit = async () => {
+    setLoading(true);
+    const authToken = localStorage.getItem("auth_token");
+    const formdata = new FormData();
+    formdata.append("license", JSON.stringify(licenseData));
+    formdata.append("front", licensePhotos.front as File);
+    formdata.append("back", licensePhotos.back as File);
+    console.log(formdata)
+    try {
+      await axios.post("/api/license", formdata, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Error al enviar datos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-background p-4">
       <div className="container mx-auto max-w-2xl pt-8">
         <div className="mb-8">
-
           <div className="space-y-4">
-            <h1 className="text-3xl font-bold text-foreground">Solicitud para Conductor</h1>
+            <h1 className="text-3xl font-bold text-foreground">
+              Solicitud para Conductor
+            </h1>
             <ProgressIndicator currentStep={currentStep} />
           </div>
         </div>
@@ -60,7 +91,9 @@ export default function DriverApplicationForm() {
         <Card>
           <CardHeader>
             <CardTitle>
-              {currentStep === 1 ? "Paso 1: Información de la Licencia" : "Paso 2: Fotos de la Licencia"}
+              {currentStep === 1
+                ? "Paso 1: Información de la Licencia"
+                : "Paso 2: Fotos de la Licencia"}
             </CardTitle>
             <CardDescription>
               {currentStep === 1
@@ -70,13 +103,26 @@ export default function DriverApplicationForm() {
           </CardHeader>
 
           <CardContent className="space-y-6">
-            {currentStep === 1 && <LicenseDataStep licenseData={licenseData} onDataChange={handleLicenseDataChange} />}
+            {currentStep === 1 && (
+              <LicenseDataStep
+                licenseData={licenseData}
+                onDataChange={handleLicenseDataChange}
+              />
+            )}
 
-            {currentStep === 2 && <LicensePhotosStep licensePhotos={licensePhotos} onPhotoChange={handlePhotoChange} />}
+            {currentStep === 2 && (
+              <LicensePhotosStep
+                licensePhotos={licensePhotos}
+                onPhotoChange={handlePhotoChange}
+              />
+            )}
 
             <div className="flex justify-between pt-4">
               {currentStep > 1 && (
-                <Button variant="outline" onClick={() => setCurrentStep(currentStep - 1)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep(currentStep - 1)}
+                >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Anterior
                 </Button>
@@ -84,12 +130,15 @@ export default function DriverApplicationForm() {
 
               <div className="ml-auto">
                 {currentStep < 2 ? (
-                  <Button onClick={() => setCurrentStep(currentStep + 1)} disabled={!isStep1Valid()}>
+                  <Button
+                    onClick={() => setCurrentStep(currentStep + 1)}
+                    disabled={!isStep1Valid()}
+                  >
                     Siguiente
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 ) : (
-                  <Button onClick={handleSubmit} disabled={!isStep2Valid()}>
+                  <Button onClick={handleSubmit} disabled={!isStep2Valid() || loading}>
                     Enviar Solicitud
                     <Check className="h-4 w-4 ml-2" />
                   </Button>
@@ -102,5 +151,5 @@ export default function DriverApplicationForm() {
 
       <SuccessDialog isOpen={isSubmitted} />
     </div>
-  )
+  );
 }

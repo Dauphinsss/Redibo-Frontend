@@ -28,7 +28,7 @@ export default function SuccessDialog({ isOpen }: SuccessDialogProps) {
             Tu solicitud para convertirte en conductor ha sido enviada correctamente.
           </DialogDescription>
           <div className="text-sm text-muted-foreground mt-2">
-            Revisaremos tu información y te contactaremos en las próximas 24-48 horas.
+            Revisaremos tu información, esto puede tardar entre 24-48 horas. Puedes ver el estado de tu solicitud en la sección de Conductor de tu perfil.
           </div>
         </DialogHeader>
         <div className="flex justify-center pt-4">

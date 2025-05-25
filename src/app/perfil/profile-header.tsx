@@ -64,6 +64,7 @@ export function ProfileHeader() {
         },
       });
 
+      
       console.log("Roles del usuario:", response.data.roles);
       setUserData(response.data);
     } catch (error) {
