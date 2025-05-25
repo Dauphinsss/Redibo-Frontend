@@ -1,6 +1,6 @@
-import { apiFormularioCondicionesUsoAuto } from "@/api/apis_Recode";
+import { apiCarById, apiFormularioCondicionesUsoAuto } from "@/api/apis_Recode";
 import { CondicionesUsoPayload_Recode } from "@/app/host/interface/CondicionesUsoFormu_interface_Recode";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 
 export const postCondicionesUso_Recode = async (payload: CondicionesUsoPayload_Recode): Promise<void> => {
     try {
@@ -16,5 +16,21 @@ export const postCondicionesUso_Recode = async (payload: CondicionesUsoPayload_R
         console.error("Data:", axiosError.response?.data);
 
         throw new Error("No se pudo enviar las condiciones de uso. Intenta de nuevo más tarde.");
+    }
+};
+
+export const getCarById = async (id: string) => {
+    try {
+        const response = await apiCarById.get(`/detailCar/${id}`);
+        return await response.data;
+    } catch (error: unknown) {
+        // Si el error es 404 (auto no existe), devolvemos null
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+            console.warn(`Auto con ID ${id} no encontrado.`);
+            return null;
+        }
+        // Si es otro tipo de error, lo lanzamos para que lo maneje error.tsx
+        console.error(`Error inesperado al obtener el auto con ID ${id}:`, error);
+        throw error;
     }
 };
