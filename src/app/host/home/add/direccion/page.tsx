@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { useFormContext } from "../context/FormContext";
+import { useFormContext } from "../context/form";
 import { Button } from "@/components/ui/button";
 import CampoPais from "../../../components/Direccion/CampoPais";
 import CampoDepartamento from "../../../components/Direccion/CampoDepartamento";
@@ -14,7 +14,7 @@ import CampoNumCasa from "../../../components/Direccion/CampoNumCasa";
 import BotonesFormulario from "../../../components/Direccion/BotonesFormulario";
 
 // Definimos la constante API_URL aquí
-const API_BASE_URL = "https://redibo-backend-sprinteros1.onrender.com/api";
+const API_BASE_URL = "https://redibo-backends2.onrender.com/api/v1";
 
 export default function AddDireccion() {
   const router = useRouter();

@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useFormContext } from "../context/FormContext";
+import { useFormContext } from "../context/form";
 
 import CampoImagen from "../../../components/inputimagen/CampoImagen";
 import CampoMantenimientos from "../../../components/inputimagen/CampoMantenimientos";

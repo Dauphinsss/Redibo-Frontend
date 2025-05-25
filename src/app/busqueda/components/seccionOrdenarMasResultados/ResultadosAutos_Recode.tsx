@@ -24,7 +24,7 @@ export default function ResultadosAutos({
     if (autosActuales.length === 0) {
         return (
         <p className="text-center text-gray-500">
-            No se encontraron autos con los filtros aplicados.
+            No se encontraron resultados.
         </p>
         );
     }

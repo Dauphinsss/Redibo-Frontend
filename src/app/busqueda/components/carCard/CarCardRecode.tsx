@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useState } from "react";
+import { memo } from "react";
 import { AutoCard_Interfaces_Recode as Auto } from "@/app/busqueda/interface/AutoCard_Interface_Recode";
 import CarCardImage from "./CarCardImgRecode";
 import CarCardHeader from "./CarCardHeaderRecode";
@@ -32,7 +32,7 @@ function RecodeCarCard(props: Auto) {
     imagenURL,
   } = props;
 
-  const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(combustibles[0]);
+  //const [combustibleSeleccionado, setCombustibleSeleccionado] = useState(combustibles[0]);
   const { promedioCalificacion } = useCalificaciones(idAuto);
   const setSelectedPoint = useMapStore((state) => state.setSelectedPoint);
   return (
@@ -54,8 +54,6 @@ function RecodeCarCard(props: Auto) {
             transmision={transmision}
             combustibles={combustibles}
             estado={estadoAlquiler}
-            combustibleSeleccionado={combustibleSeleccionado}
-            onCombustibleChange={setCombustibleSeleccionado}
           />
           <CarCardHost nombreHost={nombreHost} calificacion={parseFloat(promedioCalificacion)} />
           <CarCardUbicacion ciudad={ciudad} calle={calle} />

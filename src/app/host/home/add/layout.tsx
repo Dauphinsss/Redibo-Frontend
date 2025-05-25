@@ -1,8 +1,8 @@
 // app/host/home/add/layout.tsx
 "use client";
 
-import { FormProvider } from "./context/FormContext";
-
+import { FormProvider } from "./context/form";
+import { SegurosProvider } from "./context/seguros";
 export default function AddLayout({
   children,
 }: {
@@ -10,9 +10,11 @@ export default function AddLayout({
 }) {
   return (
     <FormProvider>
-      <div className="bg-gray-100 min-h-screen">
-        {children}
-      </div>
+      <SegurosProvider>
+        <div className="bg-gray-100 min-h-screen">
+          {children}
+        </div>
+      </SegurosProvider>
     </FormProvider>
   );
 }

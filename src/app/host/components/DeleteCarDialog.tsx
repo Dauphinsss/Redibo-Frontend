@@ -31,13 +31,16 @@ export function DeleteCarDialog({ car, onDelete, trigger }: DeleteCarDialogProps
             ¿Confirmar eliminación?
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Eliminarás el {car.brand} {car.model} ({car.year})
+            Eliminarás el {car.brand} {car.model} ({car.year}). Esta acción no se puede deshacer.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={onDelete}>
-            Confirmar
+          <AlertDialogAction 
+            onClick={onDelete}
+            className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+          >
+            Eliminar
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
