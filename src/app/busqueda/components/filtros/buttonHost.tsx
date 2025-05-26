@@ -22,10 +22,10 @@ interface ButtonHostProps {
   className?: string;
 }
 
-export function ButtonHost({ 
-  onFilterChange, 
-  disabled = false, 
-  className = "" 
+export function ButtonHost({
+  onFilterChange,
+  disabled = false,
+  className = ""
 }: ButtonHostProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -87,8 +87,8 @@ export function ButtonHost({
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           disabled={disabled}
           className={`w-full justify-between ${className}`}
         >
@@ -100,8 +100,8 @@ export function ButtonHost({
           </div>
           <div className="flex items-center space-x-1">
             {selectedHost && (
-              <Badge 
-                variant="secondary" 
+              <Badge
+                variant="secondary"
                 className="mr-2 px-1 py-0 text-xs"
                 onClick={clearSelection}
               >
@@ -112,7 +112,7 @@ export function ButtonHost({
           </div>
         </Button>
       </PopoverTrigger>
-      
+
       <PopoverContent className="w-80 p-0" align="start">
         <div className="p-3 border-b">
           <div className="relative">
@@ -156,7 +156,7 @@ export function ButtonHost({
           ) : searchTerm.length > 0 ? (
             <div className="p-4 text-center">
               <p className="text-sm text-muted-foreground">
-                No se encontraron hosts con "{searchTerm}"
+                No se encontraron hosts con &quot;{searchTerm}&quot;
               </p>
             </div>
           ) : (

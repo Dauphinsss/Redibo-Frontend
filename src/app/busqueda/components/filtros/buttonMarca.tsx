@@ -23,10 +23,10 @@ interface ButtonMarcaProps {
   className?: string;
 }
 
-export function ButtonMarca({ 
-  onFilterChange, 
-  disabled = false, 
-  className = "" 
+export function ButtonMarca({
+  onFilterChange,
+  disabled = false,
+  className = ""
 }: ButtonMarcaProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -92,8 +92,8 @@ export function ButtonMarca({
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           disabled={disabled}
           className={`w-full justify-between ${className}`}
         >
@@ -105,8 +105,8 @@ export function ButtonMarca({
           </div>
           <div className="flex items-center space-x-1">
             {selectedMarca && (
-              <Badge 
-                variant="secondary" 
+              <Badge
+                variant="secondary"
                 className="mr-2 px-1 py-0 text-xs"
                 onClick={clearSelection}
               >
@@ -117,7 +117,7 @@ export function ButtonMarca({
           </div>
         </Button>
       </PopoverTrigger>
-      
+
       <PopoverContent className="w-80 p-0" align="start">
         <div className="p-3 border-b">
           <div className="relative">
@@ -161,7 +161,7 @@ export function ButtonMarca({
           ) : searchTerm.length > 0 ? (
             <div className="p-4 text-center">
               <p className="text-sm text-muted-foreground">
-                No se encontraron marcas con "{searchTerm}"
+                No se encontraron marcas con &quot;{searchTerm}&quot;
               </p>
             </div>
           ) : (
