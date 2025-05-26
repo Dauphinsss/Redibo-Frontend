@@ -27,14 +27,16 @@ import {
   HelpCircle,
   Shield,
   Wallet,
+  CarIcon,
 } from "lucide-react";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import DriverRequests from "./driver-requested";
 
-type SectionType = "orders" | "insurances" | "balance";
+type SectionType = "orders" | "insurances" | "balance" | "solicitudes";
 
 export default function AdminPage() {
   const [activeSection, setActiveSection] = useState<SectionType>("orders");
@@ -49,12 +51,10 @@ export default function AdminPage() {
         const res = await axios.get(`${API_URL}/api/perfil`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        
+
         const userRoles = res.data.roles || [];
-        
-        // Verificar si el usuario es admin
+
         if (!userRoles.includes("ADMIN")) {
-          // Redirigir si no es admin
           window.location.href = "/";
           return;
         }
@@ -77,6 +77,8 @@ export default function AdminPage() {
         return <InsurancesManagement />;
       case "balance":
         return <BalanceManagement />;
+      case "solicitudes":
+        return <DriverRequests />;
       default:
         return <OrdersManagement />;
     }
@@ -86,6 +88,7 @@ export default function AdminPage() {
     orders: "Órdenes de Pago",
     insurances: "Seguros de Auto",
     balance: "Saldo",
+    solicitudes: "Solicitudes para Conductor",
   };
 
   const menuItems = [
@@ -106,6 +109,12 @@ export default function AdminPage() {
       title: "Saldo",
       icon: Wallet,
       alwaysShow: true,
+    },
+    {
+      id: "solicitudes",
+      title: "Solicitudes Conductor",
+      icon: CarIcon,
+      alwaysShow: roles.includes("ADMIN"),
     },
   ];
 
