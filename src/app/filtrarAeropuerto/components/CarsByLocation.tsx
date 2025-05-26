@@ -18,8 +18,9 @@ const CarsByLocation: React.FC<ComponentProps>  = ({ latitude, longitude, radius
             loading: () => <p>El mapa se esta cargando</p>,
             ssr: false
         }
-    ), [])
-  const { data: content = []} = useCars();
+    ), [])  
+  
+  const { data: content = [], isLoading, isError } = useCars();
   function calcularDistancia(latAeropuerto: number, lonAeropuerto: number, latAuto: number, lonAuto: number) {
     const a = { lat: latAeropuerto, lng: lonAeropuerto }
     const b = { lat: latAuto, lon: lonAuto }
@@ -35,41 +36,58 @@ const CarsByLocation: React.FC<ComponentProps>  = ({ latitude, longitude, radius
     }
   })
 
-  return (<div className="flex flex-col-reverse gap-3 md:flex-row">
+  if (isLoading) {
+    return (
+    <p className="text-center text-md mt-4 font-semibold text-muted-foreground">
+    Cargando Autos...
+    </p>
+    )
+  }
+  if (isError) {
+    return (
+        <p className="text-center text-md mt-4 text-blue-700">
+        Error al cargar los Autos
+        </p>
+    )
+  }
+
+  return (<div className="flex flex-col-reverse gap-4 md:flex-row">
   <div className="w-full">
+    {(filteredCars.length == 0)?<p>No hay vehiculos Cercanos</p>:
+    <p>Se encontraron {filteredCars.length} vehiculos</p>}
   <ul className="divide-y divide-gray-300">
     {filteredCars.map((item, i:number) => {
       const distance =  calcularDistancia(latitude, longitude, item.latitud, item.longitud);            
       return(
       <li key={i} className="pb-3 sm:pb-4">
         <div className="flex flex-col md:flex-row items-center gap-2">
-            <img className="w-42 rounded-sm mt-2" src={(item.imagenes)?(item.imagenes):
+            <img className="w-full md:max-w-42 rounded-sm mt-2" src={(item.imagenes)?(item.imagenes):
               'https://placehold.co/600x400?text=Sin+Imagen'
             } 
             alt="imagen auto" />         
-         <div className="w-full">
+         <div className="w-full flex flex-col gap-1">
             <p className="text-md font-semibold text-gray-900">
               {item.marca} {item.modelo}
             </p>
-            <p className="text-sm text-gray-700">
+            <p className="inline-flex flex-wrap text-sm text-gray-700">
             Distancia: 
-            <span className="bg-gray-100 text-gray-800 text-sm font-semibold me-2 px-2 py-0.5 rounded-sm">
+            <span className="bg-gray-200 text-gray-800 font-semibold me-2 px-2 py-0.5 rounded-sm">
               {distance} Km
             </span> 
             </p>
-            <p className="inline-flex text-sm text-gray-800 flex-wrap">
-              <IoPeople className="mt-1" />{item.asientos} asientos
-              <GiCarDoor className="mt-1 ml-2" />{item.puertas} puertas 
-              <TbManualGearboxFilled className="mt-1 ml-2" /> {item.transmision} 
-            </p>
+            <div className="flex gap-1 text-sm text-gray-800 flex-wrap">
+              <p className="inline-flex"><IoPeople className="mt-1" />{item.asientos} asientos</p>
+              <p className="inline-flex"><GiCarDoor className="mt-1" />{item.puertas} puertas </p>
+              <p className="inline-flex"><TbManualGearboxFilled className="mt-1" /> {item.transmision} </p>
+            </div>
             <p className="text-sm text-gray-600">
               Año: {item.anio}  
             </p>
          </div>
-         <div className="inline-flex flex-col w-full items-end text-sm font-semibold text-gray-900">
+         <div className="flex flex-col w-full items-end text-sm font-semibold text-gray-900">
           <p>BOB. {item.precio_por_dia}</p>          
           <Link href={"infoAuto_Recode/" + item.id} target="blank" 
-          className="text-gray-900 text-xs font-semibold bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 rounded-sm px-2.5 py-2 ms-2 mt-2">
+          className="text-gray-900 text-xs font-semibold bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 rounded-sm px-2.5 py-2 mt-2">
           Ver Oferta</Link>
          </div>         
       </div>        
@@ -78,8 +96,8 @@ const CarsByLocation: React.FC<ComponentProps>  = ({ latitude, longitude, radius
     )}    
   </ul>   
   </div>
-  {(filteredCars.length == 0 ) ? <p>No hay vehiculos cercanos</p>:
-  <div className="w-full">
+  {(filteredCars.length > 0 ) &&
+  <div className="w-full md:w-4xl md:sticky md:top-0 md:self-start">
   <MapComponent latitude={latitude} longitude={longitude} radius={radius} cars={filteredCars}/>
   </div>
   }

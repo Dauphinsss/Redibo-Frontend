@@ -2,7 +2,6 @@
 import React, { ChangeEvent } from 'react';
 import { useState } from 'react';
 import { useAirports } from '@/app/filtrarAeropuerto/hooks/useAirports'
-import { Button } from "@/components/ui/button"
 import CarsByLocation from '@/app/filtrarAeropuerto/components/CarsByLocation';
 import Header from "@/components/ui/Header";
 
@@ -34,16 +33,20 @@ export default function Page() {
     setSelectedLongitude(0);
   }  
 
-  const handleClick = () => { 
-    if(selectedValue != ''){      
-      const index = parseInt(selectedValue);
+  const handleAirportChange = (e: ChangeEvent<HTMLSelectElement>) => {    
+    setSelectedValue(e.target.value)
+    if(e.target.value != ''){
+      const index = parseInt(e.target.value);
       const latitude = content[index].latitud    
       setSelectedLatitude(latitude);
       const longitude = content[index].longitud
       setSelectedLongitude(longitude);        
-    }
-  }
-
+    }else{
+      setSelectedLatitude(0);
+      setSelectedLongitude(0);
+    }    
+  }  
+  
   if (isLoading) {
     return (
     <p className="text-center text-md mt-4 font-semibold text-muted-foreground">
@@ -62,10 +65,10 @@ export default function Page() {
   return (    
     <div>
      <Header />
-    <div className="flex flex-col justify-items-center mx-auto p-5">      
-    <h1 className="text-center text-2xl mb-4 font-semibold">Filtrar Por Aeropuerto</h1>
-      <p className="mb-4 font-semibold text-gray-500 text-sm">Seleccione una ciudad un Aeropuerto y haga click en Buscar</p>     
-      <div className="flex flex-col md:flex-row gap-2 mb-4">
+    <div className="flex flex-col justify-items-center mx-auto pt-4 px-6">      
+    <h1 className="text-center text-xl mb-4 font-semibold">Filtrar Por Aeropuerto</h1>
+      <p className="mb-4 font-semibold text-gray-500 text-sm">Seleccione una ciudad un Aeropuerto y un Radio de busqueda</p>     
+      <div className="flex flex-col md:flex-row gap-3 mb-4">
         <div className='w-full md:w-xs'>
           <label>Ciudad</label>
           <select id="ciudades" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
@@ -78,7 +81,7 @@ export default function Page() {
         <div className='w-full'>
           <label>Aeropuerto</label>
           <select id="aeropuertos" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
-            value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)}         
+            value={selectedValue} onChange={(e) => handleAirportChange(e)}         
           >
             <option key='' value=''>Seleccione Aeropuerto</option>
             {content.map((item, i: number) => (              
@@ -98,14 +101,8 @@ export default function Page() {
               <option key={i} value={item}>{item} Km.</option>
             ))}            
           </select>
-        </div>
-        <div className='flex items-end'>
-          <Button variant="default" className='w-full'
-            onClick={handleClick}
-          >Buscar</Button>
-        </div>
-      </div>
-      <p className="mb-4 font-semibold">Resultados</p>
+        </div>        
+      </div>      
       <CarsByLocation 
       latitude={selectedLatitude} 
       longitude={selectedLongitude} 

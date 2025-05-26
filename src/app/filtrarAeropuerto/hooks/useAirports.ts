@@ -4,11 +4,11 @@ import { Aeropuerto } from "@/app/home/types/apitypes";
 
 export function useAirports() {
   return useQuery<Aeropuerto[]>({
-    queryKey: ['all-airports'],
+    queryKey: [''],
     queryFn: async () => {
       const response = await axiosInstance.get('/api/airports/');
       return response.data;
     },
-    staleTime: 7000,
+    staleTime: Infinity,
   })
 }

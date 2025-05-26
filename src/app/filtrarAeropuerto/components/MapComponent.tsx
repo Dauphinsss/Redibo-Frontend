@@ -41,7 +41,7 @@
               <span className='font-semibold text-xs'>{item.marca} {item.modelo}</span>
               <img src={(item.imagenes)? item.imagenes:'https://placehold.co/600x400?text=Sin+Imagen'} width={300} />
               <Link href={"infoAuto_Recode/" + item.id} target="blank" 
-              className="block text-gray-900 text-xs text-center font-semibold bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 rounded-sm px-2.5 py-2 ms-2 mt-2">
+              className="block w-full text-xs text-center font-semibold bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 rounded-sm px-2.5 py-2 mt-2">
               Ver Oferta</Link>
             </Popup>
           </Marker>)

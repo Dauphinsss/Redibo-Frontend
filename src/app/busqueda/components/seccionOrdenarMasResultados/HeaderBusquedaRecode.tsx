@@ -21,7 +21,7 @@ export default function HeaderBusquedaRecode({
     setAutosFiltrados,
     }: Props) {
     return (
-        <div className="w-full px-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-x-6 gap-y-2 flex-wrap mb-6">
+        <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-x-6 gap-y-2 flex-wrap mb-6">
             <p className="text-gray-600 text-sm sm:text-base">
                 Mostrando <span className="font-semibold">{autosMostrados.length}</span> de{' '}
                 <span className="font-semibold">{autosFiltrados.length}</span> resultados
