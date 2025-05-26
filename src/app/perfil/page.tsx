@@ -17,7 +17,6 @@ import {
 import { ProfileHeader } from "./profile-header";
 import { PersonalInfo } from "./personal-info";
 import { PaymentInfo } from "./payment-info";
-import { DriverInfo } from "./driver-info";
 import { RatingsInfo } from "./ratings-info";
 import { VehiclesInfo } from "./vehicles-info";
 import { ReservationsList } from "./orders-info"; // Importamos el nuevo componente
@@ -34,7 +33,6 @@ import {
   BadgeDollarSign,
   CarFront, // Importamos icono para órdenes de pago
 } from "lucide-react";
-import { SteeringWheel } from "./steering-wheel-icon";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -45,7 +43,6 @@ import { BecomeDriver } from "./become-driver";
 type SectionType =
   | "personal"
   | "payments"
-  | "driver"
   | "becomeDriver"
   | "ratings"
   | "vehicles"
@@ -121,8 +118,6 @@ export default function ProfilePage() {
         return <PersonalInfo />;
       case "payments":
         return <PaymentInfo />;
-      case "driver":
-        return <DriverInfo />;
       case "becomeDriver":
         return <BecomeDriver />;
       case "ratings":
@@ -158,13 +153,6 @@ export default function ProfilePage() {
       title: "Mi Billetera",
       icon: BadgeDollarSign,
       alwaysShow: true,
-    },
-    {
-      id: "driver",
-      title: "Conductor",
-      icon: SteeringWheel,
-      alwaysShow: false,
-      requiresRole: "DRIVER",
     },
     {
       id: "becomeDriver",

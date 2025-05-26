@@ -70,6 +70,7 @@ export default function DriverApplicationForm() {
           Authorization: `Bearer ${authToken}`,
         },
       });
+      localStorage.setItem("estadoConductor", "PENDING");
       setIsSubmitted(true);
     } catch (error) {
       console.error("Error al enviar datos:", error);

@@ -19,10 +19,12 @@ export default function Home() {
     return conductor === "NO_REQUESTED";
   };
   const [conductor, setConductor] = useState("NO_REQUESTED");
+  const [token, setToken] = useState<string | null>(null);
   const getInfo = async () => {
     try {
       const authToken = localStorage.getItem("auth_token");
       if (!authToken) return;
+      setToken(authToken);
       const response = await axios.get<Info>(`${API_URL}/api/info`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -59,7 +61,7 @@ export default function Home() {
           <Carrucel />
         </div>
 
-        {request() && <Driver />}
+        {request() && token && <Driver />}
       </main>
       <Footer />
     </div>

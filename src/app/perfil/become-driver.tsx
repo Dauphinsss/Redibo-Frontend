@@ -1,58 +1,62 @@
 import { useEffect, useState } from "react";
-import { SteeringWheel } from "./steering-wheel-icon";
 import Pendiente from "./driver/pendiente";
+import axios from "axios";
+import { API_URL } from "@/utils/bakend";
+import { Licencia, LicenciaConducir } from "./driver/licencia";
+import { SolicitarLicencia } from "./driver/soliciar-licencis";
 
 export function BecomeDriver() {
-  const [conductor, setConductor] = useState(false);
-
-  const esCondutctor = () => {
-    const roles = localStorage.getItem("roles");
-    if (roles) setConductor(roles.includes("DRIVER"));
+  const [licencia, setLicencia] = useState<Licencia | null>(null);
+  const [estado, setEstado] = useState("NO_REQUESTED");
+  const [loading, setLoading] = useState(true);
+  const getData = async () => {
+    const authToken = localStorage.getItem("auth_token");
+    if (authToken) {
+      try {
+        if (localStorage.getItem("estadoConductor") === "APPROVED") {
+          const res = await axios.get<Licencia>(`${API_URL}/api/licencia`, {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          });
+          if (res.status === 200) {
+            setLicencia(res.data);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching driver license:", error);
+        setLicencia(null);
+      }
+    }
+    setLoading(false);
   };
 
-  const [pendiente, setPendiente] = useState(false);
-
-  const esPendiente = () => {
-    const state = localStorage.getItem("estadoConductor");
-    if (state === 'PENDING') setPendiente(true);
-  };
   useEffect(() => {
-    esCondutctor();
-    esPendiente();
+    const state = localStorage.getItem("estadoConductor");
+    if (state) {
+      setEstado(state);
+    }
+    getData();
   }, []);
 
   return (
     <>
-      {conductor && (
-        <div className="flex justify-center mt-8">
-          <div className="w-full max-w-md">
-            <div className="border-2 border-gray-800 rounded-xl p-6 flex items-center justify-center">
-              <div className="w-full max-w-sm">
-                <div className="border-2 border-gray-800 rounded-lg p-6 flex flex-col md:flex-row items-center gap-6">
-                  <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
-                    <SteeringWheel className="w-16 h-16 text-gray-600" />
-                  </div>
-
-                  <div className="flex-1">
-                    <div className="space-y-2">
-                      <div className="h-2 w-24 bg-gray-800 rounded"></div>
-                      <div className="h-2 w-32 bg-gray-800 rounded"></div>
-                      <div className="h-2 w-28 bg-gray-800 rounded"></div>
-                      <div className="h-2 w-20 bg-gray-800 rounded"></div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 text-center">
-                  <p className="text-gray-500">Licencia de conducir</p>
-                  <p className="text-gray-500">Válida hasta: 2026</p>
-                </div>
-              </div>
-            </div>
-          </div>
+      {loading && (
+        <div className="flex flex-col justify-center items-center text-gray-500">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 m-4 "></div>
+          Cargando...
         </div>
       )}
-      {pendiente && <Pendiente />}
+      {estado === "NO_REQUESTED" && <SolicitarLicencia />}
+      {licencia && (
+        <div className="w-full flex flex-col items-center mx-auto mt-8 space-y-6">
+          <p className="text-gray-500 text-center">
+            ¡Felicidades! Usted ha sido verficado como Conductor.
+          </p>
+          <LicenciaConducir data={licencia} />
+        </div>
+      )}
+      {estado === "PENDING" && <Pendiente />}
     </>
   );
 }
