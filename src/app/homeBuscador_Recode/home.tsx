@@ -14,6 +14,8 @@ import { ButtonCalif } from '@/components/filtros/buttonCalif';
 import { ButtonViajes } from '@/components/filtros/buttonViajes';
 import { SlidersHorizontal } from 'lucide-react';// Icono de filtro
 import { ButtonLimpiar } from '@/components/filtros/buttonLimpiar';
+import FiltroBusquedaTexto from '@/app/busquedaFiltrada/filtroBusquedaTexto';
+
 
 export default function Home() {
   const {
@@ -92,6 +94,11 @@ export default function Home() {
               obtenerSugerencia={obtenerSugerencia}
             />
           </section>
+
+          <section className="mb-8 flex flex-col items-center text-center">
+            <FiltroBusquedaTexto />
+          </section>
+
 
           {/* Contenido principal */}
           <div className="flex flex-col lg:flex-row gap-8">
