@@ -46,53 +46,60 @@ const DateRangeFilter: React.FC<Props> = ({
     }, [mostrarFiltro]);
 
     return (
-        <div className="relative" ref={filtroRef}>
+        <div className="flex items-center gap-2" ref={filtroRef}>
             <button
                 onClick={() => setMostrarFiltro(!mostrarFiltro)}
-                className="bg-white text-black font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100"
+                className={`h-10 px-4 py-2 rounded-md border border-input bg-background text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 whitespace-nowrap ${
+                    mostrarFiltro 
+                        ? 'bg-secondary hover:bg-secondary/80 ring-2 ring-black' 
+                        : ''
+                }`}
+                disabled={estaVacio}
             >
                 Filtrar por Fechas
+                <span className="ml-2">{mostrarFiltro ? '↑' : '↓'}</span>
             </button>
 
             {mostrarFiltro && (
-                <div className="absolute mt-2 p-4 border rounded shadow bg-white z-10">
-                    <h2 className="text-sm font-semibold mb-2">Disponibilidad del Vehículo:</h2>
-                    <div className="flex flex-col md:flex-row gap-2">
-                        {/* Fecha Inicio */}
-                        <div className="flex flex-col">
-                            <label className="text-xs font-bold">Fecha Inicio</label>
-                            <input
-                                type="date"
-                                min={todayLocal}
-                                value={fechaInicio}
-                                onChange={(e) => {
-                                    const nuevaFechaInicio = e.target.value;
-                                    setFechaInicio(nuevaFechaInicio);
+                <div className="flex items-center gap-3 p-4 border border-border rounded-md bg-card text-card-foreground shadow-sm animate-in slide-in-from-left-2 duration-200">
+                    <div className="text-sm font-medium text-foreground whitespace-nowrap">
+                        Disponibilidad del Vehículo:
+                    </div>
+                    
+                    {/* Fecha Inicio */}
+                    <div className="flex flex-col gap-2">
+                        <label className="text-xs font-medium text-muted-foreground">Fecha Inicio</label>
+                        <input
+                            type="date"
+                            min={todayLocal}
+                            value={fechaInicio}
+                            onChange={(e) => {
+                                const nuevaFechaInicio = e.target.value;
+                                setFechaInicio(nuevaFechaInicio);
 
-                                    if (fechaFin && new Date(nuevaFechaInicio) > new Date(fechaFin)) {
-                                        setFechaFin("");
-                                    }
-                                }}
-                                className="border px-2 py-1 rounded w-[140px] text-sm"
-                                title={estaVacio ? "Primero ingrese un término de búsqueda" : ""}
-                            />
-                        </div>
-
-                        {/* Fecha Fin */}
-                        <div className="flex flex-col">
-                            <label className="text-xs font-bold">Fecha Fin</label>
-                            <input
-                                type="date"
-                                min={fechaInicio || todayLocal}
-                                value={fechaFin}
-                                onChange={(e) => setFechaFin(e.target.value)}
-                                className="border px-2 py-1 rounded w-[140px] text-sm"
-                                title={estaVacio ? "Primero ingrese un término de búsqueda" : ""}
-                            />
-                        </div>
+                                if (fechaFin && new Date(nuevaFechaInicio) > new Date(fechaFin)) {
+                                    setFechaFin("");
+                                }
+                            }}
+                            className="flex h-9 w-[140px] rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                            title={estaVacio ? "Primero ingrese un término de búsqueda" : ""}
+                        />
                     </div>
 
-                    <div className="mt-3 text-xs text-center text-gray-600 bg-gray-100 rounded p-2">
+                    {/* Fecha Fin */}
+                    <div className="flex flex-col gap-2">
+                        <label className="text-xs font-medium text-muted-foreground">Fecha Fin</label>
+                        <input
+                            type="date"
+                            min={fechaInicio || todayLocal}
+                            value={fechaFin}
+                            onChange={(e) => setFechaFin(e.target.value)}
+                            className="flex h-9 w-[140px] rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                            title={estaVacio ? "Primero ingrese un término de búsqueda" : ""}
+                        />
+                    </div>
+
+                    <div className="text-xs text-muted-foreground bg-muted rounded px-2 py-1 whitespace-nowrap">
                         Mostrando {autosActuales.length} de {autosTotales.length} resultados
                     </div>
                 </div>
