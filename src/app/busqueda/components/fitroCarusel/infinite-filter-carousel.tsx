@@ -185,7 +185,7 @@ export function InfiniteFilterCarousel({
         className="w-full"
         opts={{
           align: 'start',
-          loop: true,
+          loop: false,
           dragFree: true,
           containScroll: 'trimSnaps' // Mejora el comportamiento del scroll
         }}
