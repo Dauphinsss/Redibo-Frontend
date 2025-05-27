@@ -43,6 +43,10 @@ export default function Home() {
     cargando,
     filtrarAutos,
     obtenerSugerencia,
+    cargandoFiltros,
+    aplicarFiltroPrecio,
+    aplicarFiltroViajes,
+    aplicarFiltroCalificacion
   } = useAutos(8, radio, punto);
 
   const [busqueda, setBusqueda] = useState("");
