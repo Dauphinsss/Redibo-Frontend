@@ -6,6 +6,8 @@ import SearchBar from '@/app/busqueda/components/seccionOrdenarMasResultados/Rec
 import HeaderBusquedaRecode from '@/app/busqueda/components/seccionOrdenarMasResultados/HeaderBusquedaRecode';
 import ResultadosAutos from '@/app/busqueda/components/seccionOrdenarMasResultados/ResultadosAutos_Recode';
 import Header from '@/components/ui/Header';
+import SidebarFiltros from '@/app/busqueda/components/filtros/SidebarFiltros';
+import { SlidersHorizontal } from 'lucide-react';
 import dynamic from "next/dynamic";
 import MapViwMobile from "@/app/busqueda/components/map/MapViewMobile";
 import { InfiniteFilterCarousel } from "@/app/busqueda/components/fitroCarusel/infinite-filter-carousel";
@@ -16,6 +18,9 @@ export default function Home() {
   const router = useRouter();
   const [radio, setRadio] = useState(1);
   const [punto, setPunto] = useState({ lon: 0, alt: 0 });
+
+  const [mostrarSidebar, setMostrarSidebar] = useState(false);
+
   const {
     autos,
     autosFiltrados,
@@ -31,7 +36,15 @@ export default function Home() {
     cargandoFiltros,
     aplicarFiltroPrecio,
     aplicarFiltroViajes,
-    aplicarFiltroCalificacion
+    aplicarFiltroCalificacion,
+    filtrosCombustible,
+    setFiltrosCombustible,
+    filtrosCaracteristicas,
+    setFiltrosCaracteristicas,
+    filtrosTransmision, 
+    setFiltrosTransmision,
+    setFiltrosCaracteristicasAdicionales,
+    filtrosCaracteristicasAdicionales,
   } = useAutos(8, radio, punto);
 
   const [busqueda, setBusqueda] = useState("");
@@ -71,12 +84,31 @@ export default function Home() {
 
   return (
     <div className="relative">
-      {/* Header fijo */}
+      {/* Sidebar de filtros (agregado del primer código) */}
+      <SidebarFiltros
+        mostrar={mostrarSidebar}
+        onCerrar={() => setMostrarSidebar(false)}
+        setFiltrosCombustible={setFiltrosCombustible}
+        setFiltrosCaracteristicas={setFiltrosCaracteristicas}
+        setFiltrosTransmision={setFiltrosTransmision}
+        filtrosTransmision={filtrosTransmision}
+        setFiltrosCaracteristicasAdicionales={setFiltrosCaracteristicasAdicionales}
+        filtrosCaracteristicasAdicionales={filtrosCaracteristicasAdicionales}
+      />
+
       <div className="sticky top-0 z-50 bg-white shadow overflow-visible">
         <div className="border-b">
           <Header />
         </div>
-        <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center">
+        <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center items-center gap-4">
+          {/* Botón de filtros alineado en el header */}
+          <button
+            onClick={() => setMostrarSidebar(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-white text-black border border-gray-300 rounded-md font-semibold hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-300 transition"
+          >      
+            <SlidersHorizontal size={20} />
+            Filtros          
+          </button>
           <div className="w-full max-w-2xl">
             <SearchBar
               placeholder="Buscar por modelo, marca"

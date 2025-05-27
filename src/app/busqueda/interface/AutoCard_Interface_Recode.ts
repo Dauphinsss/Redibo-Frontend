@@ -23,4 +23,5 @@ export interface AutoCard_Interfaces_Recode {
         fecha_fin: string;
         estado: string;
     }[];
+    caracteristicasAdicionales: string[];
 }

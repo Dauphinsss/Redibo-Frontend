@@ -16,6 +16,11 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
   const [fechaFiltroInicio, setFechaFiltroInicio] = useState("");
   const [fechaFiltroFin, setFechaFiltroFin] = useState("");
   const [filtroCiudad, setFiltroCiudad] = useState<string>(''); //editado Sprinteros
+  const [filtrosCombustible, setFiltrosCombustible] = useState<string[]>([]);
+  const [filtrosCaracteristicas, setFiltrosCaracteristicas] = useState<{ asientos?: number; puertas?: number }>({});
+  const [filtrosTransmision, setFiltrosTransmision] = useState<string[]>([]);
+  const [filtrosCaracteristicasAdicionales, setFiltrosCaracteristicasAdicionales] = useState<string[]>([]);
+
   
   const [filtroPrecio, setFiltroPrecio] = useState<{min: number, max: number} | null>(null);
   const [filtroViajes, setFiltroViajes] = useState<number | null>(null);
@@ -102,6 +107,49 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     });
 
 
+    // Filtro por tipo de combustible
+        if (filtrosCombustible.length > 0) {
+            console.log("Aplicando filtro de combustible:", filtrosCombustible);
+            resultado = resultado.filter(auto => {
+                console.log("Combustibles del auto:", auto.combustibles);
+                return auto.combustibles.some(combustible =>
+                    filtrosCombustible.includes(combustible)
+                );
+            });
+        }
+    
+    // Filtro por características del coche (asientos y puertas)
+        if (filtrosCaracteristicas.asientos) {
+            console.log("Aplicando filtro de asientos:", filtrosCaracteristicas.asientos);
+            resultado = resultado.filter(auto => auto.asientos === filtrosCaracteristicas.asientos);
+        }
+        if (filtrosCaracteristicas.puertas) {
+            console.log("Aplicando filtro de puertas:", filtrosCaracteristicas.puertas);
+            resultado = resultado.filter(auto => auto.puertas === filtrosCaracteristicas.puertas);
+        }
+    
+     // Filtro por transmisión
+        if (filtrosTransmision.length > 0) {
+            console.log("Aplicando filtro de transmisión:", filtrosTransmision);
+            resultado = resultado.filter(auto => {
+            console.log("Transmisión del auto:", auto.transmision);
+            return filtrosTransmision.some(transmision =>
+             auto.transmision.toLowerCase().includes(transmision.toLowerCase())
+            );
+           });
+        }
+    
+    // Filtro por características adicionales 
+        if (filtrosCaracteristicasAdicionales.length > 0) {
+             //console.log("Aplicando filtro de características adicionales:", filtrosCaracteristicasAdicionales);
+             resultado = resultado.filter(auto => {
+             //console.log("Revisando auto:", auto.idAuto || auto, "Características:", auto.caracteristicasAdicionales);
+             return filtrosCaracteristicasAdicionales.every(caracteristica =>
+             (auto.caracteristicasAdicionales || []).some(c => normalizarTexto(c).includes(normalizarTexto(caracteristica)))
+           );
+        });
+        }
+
     //editado Sprinteros
     if (filtroCiudad && filtroCiudad.trim()) {
         console.log("Aplicando filtro de ciudad:", filtroCiudad);
@@ -131,7 +179,8 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     }
 
     setAutosFiltrados(resultado);
-  }, [autos, textoBusqueda, ordenSeleccionado, fechaFiltroInicio, fechaFiltroFin, punto, radio]);
+  }, [autos,textoBusqueda,filtrosCombustible,filtrosCaracteristicas,filtrosTransmision,filtrosCaracteristicasAdicionales,
+  filtroCiudad,fechaFiltroInicio,fechaFiltroFin,punto,radio,ordenSeleccionado]);
 
   useEffect(() => {
     filtrarYOrdenarAutos();
@@ -334,6 +383,14 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     aplicarFiltroCalificacion,
     filtroPrecio,
     filtroViajes,
-    filtroCalificacion
+    filtroCalificacion,
+    filtrosCombustible,
+    setFiltrosCombustible,
+    filtrosCaracteristicas,
+    setFiltrosCaracteristicas,
+    filtrosTransmision,
+    setFiltrosTransmision,
+    filtrosCaracteristicasAdicionales,
+    setFiltrosCaracteristicasAdicionales,
   };
 }
