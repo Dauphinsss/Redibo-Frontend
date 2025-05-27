@@ -28,23 +28,6 @@ const DateRangeFilter: React.FC<Props> = ({
         .toISOString().split("T")[0];
     const filtroRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (filtroRef.current && !filtroRef.current.contains(event.target as Node)) {
-                setMostrarFiltro(false);
-            }
-        };
-
-        if (mostrarFiltro) {
-            document.addEventListener("mousedown", handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        }
-
-    }, [mostrarFiltro]);
-
     return (
         <div className="flex items-center gap-2" ref={filtroRef}>
             <button
@@ -54,7 +37,7 @@ const DateRangeFilter: React.FC<Props> = ({
                         ? 'bg-secondary hover:bg-secondary/80 ring-2 ring-black' 
                         : ''
                 }`}
-                disabled={estaVacio}
+                //disabled={estaVacio}
             >
                 Filtrar por Fechas
                 <span className="ml-2">{mostrarFiltro ? '↑' : '↓'}</span>

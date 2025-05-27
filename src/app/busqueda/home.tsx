@@ -11,21 +11,6 @@ import MapViwMobile from "@/app/busqueda/components/map/MapViewMobile";
 import { InfiniteFilterCarousel } from "@/app/busqueda/components/fitroCarusel/infinite-filter-carousel";
 import { useRouter } from 'next/navigation';
 
-// Interfaces para los filtros
-interface Host {
-  id: number;
-  name: string;
-  trips: number;
-  rating?: number;
-}
-
-interface Marca {
-  id: number;
-  name: string;
-  models: number;
-  count: number;
-  logo?: string;
-}
 
 export default function Home() {
   const router = useRouter();
@@ -103,7 +88,7 @@ export default function Home() {
             />
           </div>
         </div>
-        
+
         {/* Carrusel de filtros */}
         <div className="px-4 sm:px-6 lg:px-8 py-3 border-t bg-gray-50">
           <InfiniteFilterCarousel
@@ -122,8 +107,8 @@ export default function Home() {
             onPrecioFilter={handlePrecioFilter}
             onCalifFilter={handleCalifFilter}
             onViajesFilter={handleViajesFilter}
-            onHostFilter={() => {}}
-            onMarcaFilter={() => {}}
+            onHostFilter={() => { }}
+            onMarcaFilter={() => { }}
             autoScrollDelay={4000}
           />
         </div>

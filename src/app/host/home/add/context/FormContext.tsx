@@ -18,6 +18,8 @@ interface DireccionData {
   calle: string;
   zona: string;
   num_casa: string;
+  latitud: number | null;
+  longitud: number | null;
 }
 
 interface DatosPrincipalesData {
@@ -73,7 +75,7 @@ interface FormContextType {
 const FormContext = createContext<FormContextType | undefined>(undefined);
 
 const initialFormData: FormData = {
-  direccion: { id_provincia: null, ciudadId: null, calle: "", zona: "", num_casa: "" },
+  direccion: { id_provincia: null, ciudadId: null, calle: "", zona: "", num_casa: "", latitud: null, longitud: null },
   datosPrincipales: { vim: "", año: 0, marca: "", modelo: "", placa: "" },
   caracteristicas: { combustibleIds: [], asientos: 0, puertas: 0, transmicion: "Automatica", soat: false},
   caracteristicasAdicionales: { extraIds: [] },

@@ -15,6 +15,8 @@ import { ButtonCalif } from "../filtros/buttonCalif"
 import { ButtonViajes } from "../filtros/buttonViajes"
 import { ButtonHost } from "../filtros/buttonHost"
 import { ButtonMarca } from "../filtros/buttonMarca"
+import { AutoCard_Interfaces_Recode as Auto } from '@/app/busqueda/interface/AutoCard_Interface_Recode';
+
 
 // Interfaces para los nuevos filtros
 interface Host {
@@ -39,8 +41,8 @@ interface InfiniteFilterCarouselProps {
   fechaFin: string
   setFechaInicio: (fecha: string) => void
   setFechaFin: (fecha: string) => void
-  autosActuales: any[]
-  autosTotales: any[]
+  autosActuales: Auto[]
+  autosTotales: Auto[]
   onAirportFilter: () => void
   gpsActive: boolean
   onGpsToggle: () => void
@@ -96,7 +98,6 @@ export function InfiniteFilterCarousel({
   )
 
   // Estado para controlar si algún filtro está expandido
-  const [expandedFilter, setExpandedFilter] = React.useState<string | null>(null);
 
   // Array de configuración para los filtros
   const filterItems = [
@@ -122,18 +123,18 @@ export function InfiniteFilterCarousel({
     {
       id: 'host',
       component: (
-        <ButtonHost 
-          onFilterChange={onHostFilter} 
-          disabled={disabledHost} 
+        <ButtonHost
+          onFilterChange={onHostFilter}
+          disabled={disabledHost}
         />
       ),
     },
     {
       id: 'marca',
       component: (
-        <ButtonMarca 
-          onFilterChange={onMarcaFilter} 
-          disabled={disabledMarca} 
+        <ButtonMarca
+          onFilterChange={onMarcaFilter}
+          disabled={disabledMarca}
         />
       ),
     },
@@ -182,9 +183,9 @@ export function InfiniteFilterCarousel({
       <Carousel
         plugins={[autoplayPlugin.current]}
         className="w-full"
-        opts={{ 
-          align: 'start', 
-          loop: true, 
+        opts={{
+          align: 'start',
+          loop: false,
           dragFree: true,
           containScroll: 'trimSnaps' // Mejora el comportamiento del scroll
         }}
@@ -194,11 +195,10 @@ export function InfiniteFilterCarousel({
         <CarouselContent className="-ml-2 md:-ml-4 overflow-visible">
           {filterItems.map((filter) =>
             !filter.hidden ? (
-              <CarouselItem 
-                key={filter.id} 
-                className={`pl-2 md:pl-4 ${
-                  filter.expandable ? 'basis-auto min-w-fit' : 'basis-auto'
-                }`}
+              <CarouselItem
+                key={filter.id}
+                className={`pl-2 md:pl-4 ${filter.expandable ? 'basis-auto min-w-fit' : 'basis-auto'
+                  }`}
               >
                 <div className={`p-1 ${filter.expandable ? 'min-w-fit' : ''}`}>
                   {filter.component}
@@ -208,8 +208,8 @@ export function InfiniteFilterCarousel({
           )}
         </CarouselContent>
 
-        <CarouselPrevious className="hidden md:flex absolute -left-12" />
-        <CarouselNext className="hidden md:flex absolute -right-12" />
+        <CarouselPrevious className="hidden md:flex absolute -left-7" />
+        <CarouselNext className="hidden md:flex absolute -right-6" />
       </Carousel>
     </div>
   )
