@@ -53,7 +53,8 @@ export default function DescriHost({
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <FaCar className="text-gray-500" />
-                <span>{host.autos.length} autos</span>
+                //aniadi cosas aaaah
+                <span>{host.autos.length} {host.autos.length === 1 ? "auto" : "autos"}</span>
               </div>
             </div>
           </div>

@@ -18,6 +18,8 @@ export function useAutos(cantidadPorLote = 8) {
         setCargando(true);
         const rawData: RawAuto[] = await getAllCars();
         const transformed = rawData.map(transformAuto);
+        //aqui aniadi aaaah
+        transformed.sort((a, b) => a.modelo.localeCompare(b.modelo));
         setAutos(transformed);
         setAutosFiltrados(transformed);
         } catch (error) {
