@@ -225,9 +225,9 @@ export default function Home() {
             <p>Ubicación: {data.location}</p>
             <p>País: Bolivia</p>
             <p>Ciudad: {nombreCiudad}</p>
-            <p>Desde: {format(data.startDate, "PPP", { locale: es })}</p>
+            <p>Desde: {format(data.startDate, "dd/MM/yy")}</p>
             {data.endDate && (
-              <p>Hasta: {format(data.endDate, "PPP", { locale: es })}</p>
+              <p>Hasta: {format(data.endDate, "dd/MM/yy")}</p>
             )}
             {!data.endDate && (
               <p>Hasta: No especificada</p>
@@ -286,7 +286,7 @@ export default function Home() {
                 name="ciudadId"
                 render={({ field }) => (
                   <FormItem className="flex flex-col h-24">
-                    <FormLabel>* Donde te encuentras:</FormLabel>
+                    <FormLabel>* Dónde te encuentras:</FormLabel>
                     <div className="flex gap-2 items-center">
                       <Select
                         value={field.value}
@@ -322,44 +322,80 @@ export default function Home() {
               <FormField
                 control={form.control}
                 name="startDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col h-24">
-                    <FormLabel>* Fecha de inicio:</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP", { locale: es })
-                            ) : (
-                              <span>Selecciona una fecha</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
-                          locale={es}
-                          fromDate={new Date()}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <div className="h-5">
-                      <FormMessage />
-                    </div>
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  const [isStartDateOpen, setIsStartDateOpen] = useState(false);
+                  const [tempStartDate, setTempStartDate] = useState<Date | undefined>(field.value);
+
+                  const handleStartDateCancel = () => {
+                    setTempStartDate(field.value);
+                    setIsStartDateOpen(false);
+                  };
+
+                  const handleStartDateOk = () => {
+                    field.onChange(tempStartDate);
+                    setIsStartDateOpen(false);
+                  };
+
+                  return (
+                    <FormItem className="flex flex-col h-24">
+                      <FormLabel>* Fecha de inicio:</FormLabel>
+                      <Popover open={isStartDateOpen} onOpenChange={setIsStartDateOpen}>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                              onClick={() => {
+                                setTempStartDate(field.value);
+                                setIsStartDateOpen(true);
+                              }}
+                            >
+                              {field.value ? (
+                                format(field.value, "dd/MM/yy")
+                              ) : (
+                                <span>Selecciona una fecha</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <div>
+                            <Calendar
+                              mode="single"
+                              selected={tempStartDate}
+                              onSelect={setTempStartDate}
+                              initialFocus
+                              locale={es}
+                              fromDate={new Date()}
+                            />
+                            <div className="flex justify-end gap-2 p-3 border-t">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleStartDateCancel}
+                              >
+                                Cancelar
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={handleStartDateOk}
+                              >
+                                Ok
+                              </Button>
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                      <div className="h-5">
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  );
+                }}
               />
 
               {/* Campo de fecha de fin con botón de búsqueda y altura fija */}
@@ -367,63 +403,101 @@ export default function Home() {
                 <FormField
                   control={form.control}
                   name="endDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col w-full">
-                      <FormLabel>Fecha de fin:</FormLabel>
-                      <div className="flex gap-2 items-center">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "pl-3 text-left font-normal h-10 flex-1",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                                disabled={!form.watch("startDate")}
-                              >
-                                {field.value ? (
-                                  format(field.value, "PPP", { locale: es })
-                                ) : (
-                                  <span>Selecciona una fecha</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              initialFocus
-                              locale={es}
-                              fromDate={form.watch("startDate") || new Date()}
-                              toDate={form.watch("startDate") ? addDays(form.watch("startDate"), 90) : undefined}
-                              disabled={(date) =>
-                                !form.watch("startDate") ||
-                                isBefore(date, form.watch("startDate")) ||
-                                (form.watch("startDate") && isBefore(addDays(form.watch("startDate"), 90), date))
-                              }
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        
-                        {/* Botón de búsqueda redondo, alineado con el botón de fecha fin */}
-                        <Button
-                          type="submit"
-                          className="h-10 w-10 p-0 rounded-full flex-shrink-0"
-                          variant="default"
-                          disabled={buscando}
-                        >
-                          <Search className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <div className="h-5">
-                        <FormMessage />
-                      </div>
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const [isEndDateOpen, setIsEndDateOpen] = useState(false);
+                    const [tempEndDate, setTempEndDate] = useState<Date | undefined>(field.value);
+
+                    const handleEndDateCancel = () => {
+                      setTempEndDate(field.value);
+                      setIsEndDateOpen(false);
+                    };
+
+                    const handleEndDateOk = () => {
+                      field.onChange(tempEndDate);
+                      setIsEndDateOpen(false);
+                    };
+
+                    return (
+                      <FormItem className="flex flex-col w-full">
+                        <FormLabel>Fecha de fin:</FormLabel>
+                        <div className="flex gap-2 items-center">
+                          <Popover open={isEndDateOpen} onOpenChange={setIsEndDateOpen}>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "pl-3 text-left font-normal h-10 flex-1",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                  disabled={!form.watch("startDate")}
+                                  onClick={() => {
+                                    if (form.watch("startDate")) {
+                                      setTempEndDate(field.value);
+                                      setIsEndDateOpen(true);
+                                    }
+                                  }}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "dd/MM/yy")
+                                  ) : (
+                                    <span>Selecciona una fecha</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <div>
+                                <Calendar
+                                  mode="single"
+                                  selected={tempEndDate}
+                                  onSelect={setTempEndDate}
+                                  initialFocus
+                                  locale={es}
+                                  fromDate={form.watch("startDate") || new Date()}
+                                  toDate={form.watch("startDate") ? addDays(form.watch("startDate"), 90) : undefined}
+                                  disabled={(date) =>
+                                    !form.watch("startDate") ||
+                                    isBefore(date, form.watch("startDate")) ||
+                                    (form.watch("startDate") && isBefore(addDays(form.watch("startDate"), 90), date))
+                                  }
+                                />
+                                <div className="flex justify-end gap-2 p-3 border-t">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleEndDateCancel}
+                                  >
+                                    Cancelar
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={handleEndDateOk}
+                                  >
+                                    Ok
+                                  </Button>
+                                </div>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                          
+                          {/* Botón de búsqueda redondo, alineado con el botón de fecha fin */}
+                          <Button
+                            type="submit"
+                            className="h-10 w-10 p-0 rounded-full flex-shrink-0"
+                            variant="default"
+                            disabled={buscando}
+                          >
+                            <Search className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="h-5">
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
             </div>
