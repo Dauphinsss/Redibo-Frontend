@@ -52,7 +52,7 @@ export const createSubmitAction = (
     setSubmitError(null);
 
     const {
-      direccion: { id_provincia, calle, zona, num_casa },
+      direccion: { id_provincia, calle, zona, num_casa, latitud, longitud },
       datosPrincipales: { vim, año, marca, modelo, placa },
       caracteristicas: { combustibleIds, asientos, puertas, transmicion, soat },
       caracteristicasAdicionales: { extraIds },
@@ -64,6 +64,8 @@ export const createSubmitAction = (
       calle: calle || "",
       zona: zona || "",
       num_casa: num_casa ?? "",
+      latitud: Number(latitud), // Aseguramos que latitud sea un número
+      longitud: Number(longitud), // Aseguramos que longitud sea un número
       vim: vim || "",
       año: Number(año),
       marca: marca || "",
