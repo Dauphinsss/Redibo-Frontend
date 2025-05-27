@@ -44,7 +44,7 @@ export default function Home() {
         <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center">
           <div className="w-full max-w-2xl">
             <SearchBar
-              placeholder="Buscar por modelo, marca"
+              placeholder="Buscar por modelo, marca, host"
               onFiltrar={filtrarAutos}
               obtenerSugerencia={obtenerSugerencia}
             />
