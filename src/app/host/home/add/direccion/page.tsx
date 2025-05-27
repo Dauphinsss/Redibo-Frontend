@@ -42,7 +42,7 @@ export default function AddDireccion() {
   const [provinciaError, setProvinciaError] = useState("");
   const [calleError, setCalleError] = useState("");
   const [numCasaError, setNumCasaError] = useState("");
-  const [mapaError, setMapaError] = useState("");
+  const [/*mapaError*/, setMapaError] = useState("");
 
   const [isFormValid, setIsFormValid] = useState(false);
 

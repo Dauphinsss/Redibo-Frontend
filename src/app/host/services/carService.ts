@@ -185,8 +185,8 @@ export interface CreateFullCarPayload {
   calle: string;
   zona: string;
   num_casa: string | null;
-  latitud: number;
-  longitud: number;
+  latitud?: number;
+  longitud?: number;
   vim: string;  // Mantenemos vim para compatibilidad con API
   año: number;
   marca: string;
