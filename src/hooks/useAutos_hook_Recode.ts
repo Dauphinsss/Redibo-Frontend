@@ -3,10 +3,12 @@ import { AutoCard_Interfaces_Recode as Auto } from '@/interface/AutoCard_Interfa
 import { RawAuto_Interface_Recode as RawAuto } from '@/interface/RawAuto_Interface_Recode';
 import { getAllCars } from '@/service/services_Recode';
 import { transformAuto } from '@/utils/transformAuto_Recode';
+import * as filtrosAPI from '@/service/filtrosService_Recode';
 
 export function useAutos(cantidadPorLote = 8) {
     const [autos, setAutos] = useState<Auto[]>([]);
     const [autosFiltrados, setAutosFiltrados] = useState<Auto[]>([]);
+    const [autosBase, setAutosBase] = useState<Auto[]>([]);
     const [autosVisibles, setAutosVisibles] = useState(cantidadPorLote);
     const [cargando, setCargando] = useState(true);
     const [ordenSeleccionado, setOrdenSeleccionado] = useState('Recomendación');
@@ -16,6 +18,13 @@ export function useAutos(cantidadPorLote = 8) {
     const [filtrosTransmision, setFiltrosTransmision] = useState<string[]>([]);
     const [filtrosCaracteristicasAdicionales, setFiltrosCaracteristicasAdicionales] = useState<string[]>([]);
     const [filtroCiudad, setFiltroCiudad] = useState<string>('');
+    
+    // Nuevos estados para los filtros
+    const [filtroPrecio, setFiltroPrecio] = useState<{min: number, max: number} | null>(null);
+    const [filtroViajes, setFiltroViajes] = useState<number | null>(null);
+    const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
+    const [cargandoFiltros, setCargandoFiltros] = useState(false);
+    const [autosAntesFiltroViajes, setAutosAntesFiltroViajes] = useState<Auto[]>([]);
 
     const fetchAutos = async () => {
         try {
@@ -24,6 +33,7 @@ export function useAutos(cantidadPorLote = 8) {
             const transformed = rawData.map(transformAuto);
             setAutos(transformed);
             setAutosFiltrados(transformed);
+            setAutosBase(transformed);
         } catch (error) {
             console.error('Error al cargar los autos:', error);
             alert('No se pudo cargar los autos. Intenta de nuevo más tarde.');
@@ -187,6 +197,113 @@ export function useAutos(cantidadPorLote = 8) {
         return busqueda + diferencia;
     };
 
+    // Nuevos handlers para los filtros
+    const aplicarFiltroPrecio = useCallback(async (min: number, max: number) => {
+        try {
+            setCargandoFiltros(true);
+            console.log('Aplicando filtro de precio:', { min, max });
+            console.log('Autos antes del filtro:', autosFiltrados.length);
+            
+            const ids = autosFiltrados.map(a => parseInt(a.idAuto, 10));
+            const datos = await filtrosAPI.filtrarPorPrecio({ 
+                minPrecio: min, 
+                maxPrecio: max, 
+                idsCarros: ids 
+            });
+            
+            const idsFiltrados = datos.map((d: { id: number }) => d.id);
+            const nuevosFiltrados = autosFiltrados.filter(a => 
+                idsFiltrados.includes(parseInt(a.idAuto, 10))
+            );
+            
+            console.log('Autos después del filtro:', nuevosFiltrados.length);
+            setAutosFiltrados(nuevosFiltrados);
+            setFiltroPrecio({ min, max });
+        } catch (error) {
+            console.error('Error al aplicar filtro de precio:', error);
+        } finally {
+            setCargandoFiltros(false);
+        }
+    }, [autosFiltrados]);
+
+    const limpiarFiltros = useCallback(() => {
+        setAutosFiltrados(autosBase);
+        setFiltroPrecio(null);
+        setFiltroViajes(null);
+        setFiltroCalificacion(null);
+        setFiltrosCombustible([]);
+        setFiltrosCaracteristicas({});
+        setFiltrosTransmision([]);
+        setFiltrosCaracteristicasAdicionales([]);
+        setFiltroCiudad('');
+        setTextoBusqueda('');
+        setOrdenSeleccionado('Recomendación');
+    }, [autosBase]);
+
+    const aplicarFiltroViajes = useCallback(async (minViajes: number) => {
+        try {
+            setCargandoFiltros(true);
+            console.log('Aplicando filtro de viajes:', { minViajes });
+            console.log('Autos antes del filtro:', autosFiltrados.length);
+            
+            if (!filtroViajes) {
+                setAutosAntesFiltroViajes(autosFiltrados);
+            }
+
+            if (minViajes === 0) {
+                setAutosFiltrados(autosAntesFiltroViajes);
+                setFiltroViajes(null);
+                return;
+            }
+            
+            const ids = autosFiltrados.map(a => parseInt(a.idAuto, 10));
+            const datos = await filtrosAPI.filtrarPorViajes({ 
+                minViajes, 
+                idsCarros: ids 
+            });
+            
+            const idsFiltrados = datos.map((d: { id: number }) => d.id);
+            const nuevosFiltrados = autosFiltrados.filter(a => 
+                idsFiltrados.includes(parseInt(a.idAuto, 10))
+            );
+            
+            console.log('Autos después del filtro:', nuevosFiltrados.length);
+            setAutosFiltrados(nuevosFiltrados);
+            setFiltroViajes(minViajes);
+        } catch (error) {
+            console.error('Error al aplicar filtro de viajes:', error);
+        } finally {
+            setCargandoFiltros(false);
+        }
+    }, [autosFiltrados, filtroViajes, autosAntesFiltroViajes]);
+
+    const aplicarFiltroCalificacion = useCallback(async (minCalificacion: number) => {
+        try {
+            setCargandoFiltros(true);
+            console.log('Aplicando filtro de calificación:', { minCalificacion });
+            console.log('Autos antes del filtro:', autosFiltrados.length);
+            
+            const ids = autosFiltrados.map(a => parseInt(a.idAuto, 10));
+            const datos = await filtrosAPI.filtrarPorCalificacion({ 
+                minCalificacion, 
+                idsCarros: ids 
+            });
+            
+            const idsFiltrados = datos.map((d: { id: number }) => d.id);
+            const nuevosFiltrados = autosFiltrados.filter(a => 
+                idsFiltrados.includes(parseInt(a.idAuto, 10))
+            );
+            
+            console.log('Autos después del filtro:', nuevosFiltrados.length);
+            setAutosFiltrados(nuevosFiltrados);
+            setFiltroCalificacion(minCalificacion);
+        } catch (error) {
+            console.error('Error al aplicar filtro de calificación:', error);
+        } finally {
+            setCargandoFiltros(false);
+        }
+    }, [autosFiltrados]);
+
     return {
         autos,
         autosFiltrados,
@@ -204,9 +321,18 @@ export function useAutos(cantidadPorLote = 8) {
         setFiltrosCaracteristicas,
         filtrosTransmision,
         setFiltrosTransmision,
+        setFiltrosCaracteristicasAdicionales,
         filtrosCaracteristicasAdicionales,
         obtenerSugerencia,
         filtroCiudad,
-        setFiltroCiudad
+        setFiltroCiudad,
+        limpiarFiltros,
+        cargandoFiltros,
+        aplicarFiltroPrecio,
+        aplicarFiltroViajes,
+        aplicarFiltroCalificacion,
+        filtroPrecio,
+        filtroViajes,
+        filtroCalificacion
     };
 }

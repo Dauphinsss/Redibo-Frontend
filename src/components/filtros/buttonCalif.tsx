@@ -12,9 +12,10 @@ import { useState } from "react";
 
 interface ButtonCalifProps {
   onFilterChange: (calificacion: number) => void;
+  disabled?: boolean;
 }
 
-export function ButtonCalif({ onFilterChange }: ButtonCalifProps) {
+export function ButtonCalif({ onFilterChange, disabled }: ButtonCalifProps) {
   const [calificacion, setCalificacion] = useState<string>("");
 
   const handleApply = () => {
@@ -24,7 +25,7 @@ export function ButtonCalif({ onFilterChange }: ButtonCalifProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="w-[200px] justify-between">
+        <Button variant="outline" className="w-[200px] justify-between" disabled={disabled}>
           Filtro por Calificación
           <span className="ml-2">↓</span>
         </Button>
@@ -42,6 +43,7 @@ export function ButtonCalif({ onFilterChange }: ButtonCalifProps) {
               value={calificacion}
               onValueChange={setCalificacion}
               className="grid grid-cols-2 gap-4"
+              disabled={disabled}
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="4.5" id="r4.5" />
@@ -60,7 +62,7 @@ export function ButtonCalif({ onFilterChange }: ButtonCalifProps) {
                 <Label htmlFor="r3">3.0+ ⭐</Label>
               </div>
             </RadioGroup>
-            <Button onClick={handleApply} className="mt-2">
+            <Button onClick={handleApply} className="mt-2" disabled={disabled}>
               Aplicar Filtro
             </Button>
           </div>

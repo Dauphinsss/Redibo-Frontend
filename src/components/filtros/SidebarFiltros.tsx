@@ -46,13 +46,32 @@ export default function SidebarFiltros({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        actualizarEstadoMenus();
         onCerrar();
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [onCerrar]);
+  }, [onCerrar, filtrosCombustibleLocal, caracteristicasLocal, filtrosTransmision, filtrosCaracteristicasAdicionales]);
+
+  const actualizarEstadoMenus = () => {
+    setAbierto({
+      tipoCombustible: filtrosCombustibleLocal.length > 0,
+      caracteristicasCoche: caracteristicasLocal.asientos !== undefined || caracteristicasLocal.puertas !== undefined,
+      transmision: filtrosTransmision.length > 0,
+      caracteristicasAdicionales: filtrosCaracteristicasAdicionales.length > 0,
+    });
+  };
+
+  const cerrarTodosLosMenus = () => {
+    setAbierto({
+      tipoCombustible: false,
+      caracteristicasCoche: false,
+      transmision: false,
+      caracteristicasAdicionales: false,
+    });
+  };
 
   const toggle = (key: keyof typeof abierto) => {
     setAbierto((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -114,6 +133,21 @@ export default function SidebarFiltros({
     });
   };
 
+  const resetearFiltros = () => {
+    setFiltrosCombustible([]);
+    setFiltrosCombustibleLocal([]);
+    setFiltrosTransmision([]);
+    setFiltrosCaracteristicas({});
+    setCaracteristicasLocal({});
+    setFiltrosCaracteristicasAdicionales([]);
+    setErrores({ combustible: "" });
+    cerrarTodosLosMenus();
+  };
+
+  const handleCerrar = () => {
+    onCerrar();
+  };
+
   return (
     <div
       ref={sidebarRef}
@@ -125,20 +159,12 @@ export default function SidebarFiltros({
       <div className="flex justify-between items-center px-4 py-3 border-b">
         <h2 className="font-semibold text-lg">Filtros</h2>
         <button
-          onClick={() => {
-            setFiltrosCombustible([]);
-            setFiltrosCombustibleLocal([]);
-            setFiltrosTransmision([]);
-            setFiltrosCaracteristicas({});
-            setCaracteristicasLocal({});
-            setFiltrosCaracteristicasAdicionales([]);
-            setErrores({ combustible: "" });
-          }}
+          onClick={resetearFiltros}
           className="text-sm bg-black text-white px-3 py-1 rounded hover:bg-gray-700 transition"
         >
           Resetear filtros
         </button>
-        <button onClick={onCerrar} className="text-xl font-bold hover:text-gray-600">
+        <button onClick={handleCerrar} className="text-xl font-bold hover:text-gray-600">
           &times;
         </button>
       </div>
