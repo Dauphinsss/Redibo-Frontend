@@ -33,13 +33,13 @@ export default function Home() {
     cargando,
     filtrarAutos,
     obtenerSugerencia,
-    //cargandoFiltros,
-    //aplicarFiltroPrecio,
-    //aplicarFiltroViajes,
-    //aplicarFiltroCalificacion,
-    //filtrosCombustible,
+    cargandoFiltros,
+    aplicarFiltroPrecio,
+    aplicarFiltroViajes,
+    aplicarFiltroCalificacion,
+    filtrosCombustible,
     setFiltrosCombustible,
-    //filtrosCaracteristicas,
+    filtrosCaracteristicas,
     setFiltrosCaracteristicas,
     filtrosTransmision, 
     setFiltrosTransmision,
@@ -142,6 +142,9 @@ export default function Home() {
             onHostFilter={() => { }}
             onMarcaFilter={() => { }}
             autoScrollDelay={4000}
+            onMostrarTodos={() => {
+              console.log("Mostrar todos los resultados");
+            }}
           />
         </div>
       </div>

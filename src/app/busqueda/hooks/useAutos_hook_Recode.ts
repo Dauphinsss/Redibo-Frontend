@@ -9,6 +9,7 @@ import * as filtrosAPI from '@/app/busqueda/service/filtrosService_Recode';
 export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: number, alt: number }) {
   const [autos, setAutos] = useState<Auto[]>([]);
   const [autosFiltrados, setAutosFiltrados] = useState<Auto[]>([]);
+  const [autosBase, setAutosBase] = useState<Auto[]>([]); // Para mantener el estado original de los autos
   const [autosVisibles, setAutosVisibles] = useState(cantidadPorLote);
   const [cargando, setCargando] = useState(true);
   const [ordenSeleccionado, setOrdenSeleccionado] = useState('Recomendación');
@@ -37,6 +38,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
       const transformed = rawData.map(transformAuto);
       setAutos(transformed);
       setAutosFiltrados(transformed);
+      setAutosBase(transformed); // Guardamos el estado original de los autos
     } catch (error) {
       console.error('Error al cargar los autos:', error);
       alert('No se pudo cargar los autos. Intenta de nuevo más tarde.');
@@ -294,6 +296,20 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
         }
     }, [autosFiltrados, filtroPrecio, autosAntesFiltroPrecio]);
 
+    const listaCompleta = useCallback(() => {
+        setAutosFiltrados(autosBase);
+        setFiltroPrecio(null);
+        setFiltroViajes(null);
+        setFiltroCalificacion(null);
+        setFiltrosCombustible([]);
+        setFiltrosCaracteristicas({});
+        setFiltrosTransmision([]);
+        setFiltrosCaracteristicasAdicionales([]);
+        setFiltroCiudad('');
+        setTextoBusqueda('');
+        setOrdenSeleccionado('Recomendación');
+    }, [autosBase]  );
+
     const aplicarFiltroViajes = useCallback(async (minViajes: number) => {
         try {
             setCargandoFiltros(true);
@@ -375,6 +391,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
       
     },
     obtenerSugerencia,
+    listaCompleta,
     filtroCiudad,
     setFiltroCiudad,
     cargandoFiltros,

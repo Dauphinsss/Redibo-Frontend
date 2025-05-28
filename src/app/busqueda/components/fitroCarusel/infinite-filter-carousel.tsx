@@ -5,18 +5,17 @@ import * as React from "react"
 import Autoplay from "embla-carousel-autoplay"
 import { Map } from "lucide-react"
 
-
 import { Button } from "@/components/ui/button"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import DateRangeFilter from "@/app/busqueda/components/filtrofechas_7-bits/DateRangeFilter"
 import Radio from "@/app/busqueda/components/map/Radio"
-import { ButtonPrecio } from "../filtros/buttonPrecio"
-import { ButtonCalif } from "../filtros/buttonCalif"
-import { ButtonViajes } from "../filtros/buttonViajes"
-import { ButtonHost } from "../filtros/buttonHost"
-import { ButtonMarca } from "../filtros/buttonMarca"
+import { ButtonPrecio } from "../filtros/buttonPrecio";
+import { ButtonCalif } from "../filtros/buttonCalif";
+import { ButtonViajes } from "../filtros/buttonViajes";
+import { ButtonHost } from "../filtros/buttonHost";
+import { ButtonMarca } from "../filtros/buttonMarca";
+import { ButtonTodos } from "../filtros/buttonTodos";
 import { AutoCard_Interfaces_Recode as Auto } from '@/app/busqueda/interface/AutoCard_Interface_Recode';
-
 
 // Interfaces para los nuevos filtros
 interface Host {
@@ -51,20 +50,23 @@ interface InfiniteFilterCarouselProps {
   onPrecioFilter: (min: number, max: number) => void
   onCalifFilter: (calificacion: number) => void
   onViajesFilter: (minViajes: number) => void
-  onHostFilter: (host: Host | null) => void // Nuevo
-  onMarcaFilter: (marca: Marca | null) => void // Nuevo
+  onHostFilter: (host: Host | null) => void
+  onMarcaFilter: (marca: Marca | null) => void
+  onMostrarTodos: () => void // Nuevo: función para mostrar todos los resultados
+  isAllActive?: boolean // Nuevo: indica si el filtro "Todos" está activo
   disabledPrecio?: boolean
   disabledCalif?: boolean
   disabledViajes?: boolean
-  disabledHost?: boolean // Nuevo
-  disabledMarca?: boolean // Nuevo
+  disabledHost?: boolean
+  disabledMarca?: boolean
+  disabledTodos?: boolean // Nuevo
   autoScrollDelay?: number
   className?: string
 }
 
 /**
  * @description Un carrusel de filtros infinito y personalizable con autoplay.
- * Ahora incluye filtros por Host y Marca con búsqueda dinámica.
+ * Ahora incluye filtros por Host, Marca y botón "Todos" para limpiar filtros.
  */
 export function InfiniteFilterCarousel({
   searchTerm,
@@ -84,11 +86,14 @@ export function InfiniteFilterCarousel({
   onViajesFilter,
   onHostFilter,
   onMarcaFilter,
+  onMostrarTodos,
+  isAllActive = false,
   disabledPrecio,
   disabledCalif,
   disabledViajes,
   disabledHost,
   disabledMarca,
+  disabledTodos = false,
   autoScrollDelay = 3000,
   className = "",
 }: InfiniteFilterCarouselProps) {
@@ -97,10 +102,18 @@ export function InfiniteFilterCarousel({
     Autoplay({ delay: autoScrollDelay, stopOnInteraction: true })
   )
 
-  // Estado para controlar si algún filtro está expandido
-
   // Array de configuración para los filtros
   const filterItems = [
+    {
+      id: 'todos',
+      component: (
+        <ButtonTodos
+          onMostrarTodos={onMostrarTodos}
+          disabled={disabledTodos}
+          isActive={isAllActive}
+        />
+      ),
+    },
     {
       id: 'dateRange',
       component: (
@@ -187,7 +200,7 @@ export function InfiniteFilterCarousel({
           align: 'start',
           loop: false,
           dragFree: true,
-          containScroll: 'trimSnaps' // Mejora el comportamiento del scroll
+          containScroll: 'trimSnaps'
         }}
         onMouseEnter={autoplayPlugin.current.stop}
         onMouseLeave={() => autoplayPlugin.current.play()}
