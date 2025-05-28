@@ -187,6 +187,11 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     setAutosVisibles(cantidadPorLote);
 
   }, [filtrarYOrdenarAutos, cantidadPorLote]);
+  
+  //filtro desde el frontend
+  const aplicarFiltrosExternos = (callback: (autos: Auto[]) => Auto[]) => {
+    setAutosFiltrados((prev) => callback(prev));
+  };
 
   const autosActuales = useMemo(() => {
     return autosFiltrados.slice(0, autosVisibles);
@@ -392,5 +397,6 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     setFiltrosTransmision,
     filtrosCaracteristicasAdicionales,
     setFiltrosCaracteristicasAdicionales,
+    aplicarFiltrosExternos
   };
 }
