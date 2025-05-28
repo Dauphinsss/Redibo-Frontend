@@ -7,7 +7,7 @@ import Header from '@/components/ui/Header';
 
 export default function Home() {
   const router = useRouter(); // Agregar esta línea
-  
+
   const [filters, setFilters] = useState<{
     ciudad?: string;
     startDate?: Date;
@@ -32,7 +32,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1 container mx-auto py-8 px-4 md:px-8">
         {/* Sección de Título */}
         <section className="text-center mb-12">
@@ -43,7 +43,7 @@ export default function Home() {
         {/* Sección de Filtros */}
         <section className="mb-16">
           <h2 className="text-2xl font-semibold mb-6 text-gray-800">Encuentra tu vehículo ideal</h2>
-          <FiltrosIni 
+          <FiltrosIni
             router={router} // Pasar el router como prop
             onFilterSubmit={handleFilterSubmit}
             onResetFilters={handleResetFilters}
@@ -53,7 +53,7 @@ export default function Home() {
         {/* Sección de Carrusel */}
         <section className="mb-16">
           <h2 className="text-2xl font-semibold mb-6 text-gray-800">Vehículos más rentados</h2>
-          <div className="px-4">
+          <div className="flex justify-center px-4">
             <Carrucel />
           </div>
         </section>
