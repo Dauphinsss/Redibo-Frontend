@@ -2,16 +2,22 @@
 
 import { useState, useEffect, useRef } from "react";
 import { MagnifyingGlassIcon,XMarkIcon } from "@heroicons/react/24/solid";
+//Importacion para el basurerito
+import { TrashIcon } from "@heroicons/react/24/solid";
 
 interface SearchBarProps {
   placeholder: string;
   onFiltrar: (query: string) => void;
   obtenerSugerencia: (query: string) => string;
+  //NUEVO: Boton de limpiar busqueda
+  onClearBusqueda?: () => void;
 }
-
-const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSugerencia}) => {
+// Añadi onClearBusqueda como propiedad opcional
+const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSugerencia, onClearBusqueda}) => {
   const [busqueda, setBusqueda] = useState("");
   const [mostrarBoton, setMostrarBoton] = useState(true);
+  //NUEVO: estado para mostrar el error
+  const [error, setError] = useState(""); // ✅ para mensajes de error
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [sugerencia, setSugerencia] = useState("");
@@ -127,15 +133,37 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
   };
 
   return (
-    <div className="relative w-full max-w-md">
+
+    //Añadir flex items-center para modificar el contenedor
+    //<div className="relative w-full max-w-md">
+    <div className="relative w-full max-w-md max-w-md z-10">
       <input
         type="text"
         placeholder={placeholder}
         aria-label="Campo de búsqueda de autos por modelo, marca"
         value={busqueda}
-        maxLength={50}
+        //Tamañp máximo de caracteres
+        maxLength={100}
         onChange={(e) => { 
+
+          const valor = e.target.value;
+          // NUEVO: Detectar si contiene una URL común
+          const contieneURL = /https?:\/\/|www\./i.test(valor);
+          if (contieneURL) {
+            setError("No se permiten enlaces o direcciones web.");
+            return;
+          }
+          //NUEVO: Validar longitud
+          if (valor.length >= 100) {
+            setError("Has alcanzado el límite máximo de 100 caracteres.");
+            return;
+          }
+          if (error && valor.length <= 100) {
+            setError(""); // Limpia error cuando vuelve a ser válido
+          }  
+
           setBusqueda(e.target.value);
+          
           if (e.target.value.trim() === "") {
             sessionStorage.removeItem("ultimaBusqueda");
           }
@@ -178,15 +206,45 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         }}
         className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[11px] md:text-base lg:text-lg"
       />
-      {mostrarBoton && (
+      
+      {/* Mostrar error si hay */}  
+      {error && (
+        <p className="text-red-500 text-sm mt-1">{error}</p>
+      )}
+
+      {/* Botón de búsqueda manual */}
         <button
           type="button"
           aria-label="Buscar autos"
           className="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black text-white rounded-md flex items-center justify-center"
+          onClick={() => {
+            // Ejecutar búsqueda manual si se desea
+            if (busqueda.trim() !== "") {
+              agregarAHistorial(busqueda);
+              inputRef.current?.blur();
+            }
+          }}
         >
           <MagnifyingGlassIcon className="h-5 w-5" />
         </button>
+
+      {!mostrarBoton && (
+        <button
+          type="button"
+          aria-label="Limpiar búsqueda"
+          title="Limpiar búsqueda" // ✅ tooltip nativa
+          onClick={() => {
+            setBusqueda("");
+            setSugerencia("");
+            sessionStorage.removeItem("ultimaBusqueda");
+            if (onClearBusqueda) onClearBusqueda(); // <-- NUEVO
+          }}
+          className="absolute right-12 top-1/2 transform -translate-y-1/2 w-10 h-10 text-gray-500 hover:text-black"
+        >
+          <TrashIcon className="w-5 h-5" />
+        </button>
       )}
+
 
       { sugerencia && (
         <div
@@ -232,7 +290,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
       )}
       </ul>
     )}
-    </div>
+  </div>
   );
 };
 export default SearchBar;
