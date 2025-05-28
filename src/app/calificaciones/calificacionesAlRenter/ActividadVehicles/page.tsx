@@ -23,7 +23,7 @@ interface Carro {
   id: number
   marca: string
   modelo: string
-  imagenes: {
+  Imagen: {
     data: string
   }[]
 }
@@ -33,11 +33,11 @@ interface Reserva {
   fecha_inicio: Date
   fecha_fin: Date
   estado: "PENDIENTE" | "CONFIRMADA" | "EN_CURSO" | "COMPLETADA" | "CANCELADA"
-  usuario: Usuario
-  carro: Carro
+  Usuario: Usuario
+  Carro: Carro
 }
 
-export default function VehiclesRentadosPage() {
+export default function ActividadVehiclesPage() {
   const [reservaciones, setReservaciones] = useState<Reserva[]>([])
   const [registrosPorPagina, setRegistrosPorPagina] = useState("5")
   const [paginaActual, setPaginaActual] = useState(1)
@@ -88,7 +88,7 @@ export default function VehiclesRentadosPage() {
       }
 
       const response = await fetch(
-        `${API_URL}/api/reservas/completadas?hostId=${userId}&page=${paginaActual}&limit=${registrosPorPagina}`,
+        `${API_URL}/api/reservas/completadas?hostId=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -103,15 +103,8 @@ export default function VehiclesRentadosPage() {
 
       const data = await response.json()
 
-      // Asumiendo que la API devuelve { reservas: [], total: number }
-      if (data.reservas) {
-        setReservaciones(data.reservas)
-        setTotalReservaciones(data.total)
-      } else {
-        // Si la API devuelve directamente el array
-        setReservaciones(data)
-        setTotalReservaciones(data.length)
-      }
+      setReservaciones(data)
+      setTotalReservaciones(data.length)
     } catch (error: unknown) {
       console.error("Error:", error)
       const errorMessage = error instanceof Error ? error.message : "Error desconocido"
@@ -120,13 +113,13 @@ export default function VehiclesRentadosPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [userId, paginaActual, registrosPorPagina])
+  }, [userId])
 
   useEffect(() => {
     if (userId) {
       cargarReservaciones()
     }
-  }, [userId, paginaActual, registrosPorPagina, cargarReservaciones])
+  }, [userId, cargarReservaciones])
 
   const getVarianteBadge = (estado: string) => {
     switch (estado) {
@@ -210,12 +203,12 @@ export default function VehiclesRentadosPage() {
                   {reservaciones.map((reserva) => (
                     <TableRow key={reserva.id}>
                       <TableCell>
-                        {reserva.carro.marca} {reserva.carro.modelo}
+                        {reserva.Carro.marca} {reserva.Carro.modelo}
                       </TableCell>
                       <TableCell>
-                        {reserva.usuario ? (
-                          <Link href={`/usuario/${reserva.usuario.id}`} className="hover:underline cursor-pointer">
-                            {reserva.usuario.nombre}
+                        {reserva.Usuario ? (
+                          <Link href={`/usuario/${reserva.Usuario.id}`} className="hover:underline cursor-pointer">
+                            {reserva.Usuario.nombre}
                           </Link>
                         ) : (
                           <span className="text-muted-foreground">Sin datos</span>
@@ -223,8 +216,8 @@ export default function VehiclesRentadosPage() {
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          <div>{reserva.usuario?.correo}</div>
-                          <div className="text-muted-foreground">{reserva.usuario?.telefono}</div>
+                          <div>{reserva.Usuario?.correo}</div>
+                          <div className="text-muted-foreground">{reserva.Usuario?.telefono}</div>
                         </div>
                       </TableCell>
                       <TableCell>
