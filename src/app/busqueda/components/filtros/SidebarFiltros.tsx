@@ -136,6 +136,12 @@ export default function SidebarFiltros({
                 setCaracteristicasLocal({});
                 setFiltrosCaracteristicasAdicionales([]);
                 setErrores({ combustible: "" });
+                setAbierto({
+                  tipoCombustible: false,
+                  caracteristicasCoche: false,
+                  transmision: false,
+                  caracteristicasAdicionales: false,
+                });
               }}
               className="text-sm bg-black text-white px-3 py-1 rounded hover:bg-gray-700 transition"
             >
