@@ -119,9 +119,9 @@ export default function SidebarFiltros({
       {/* Sidebar */}
       <div
         ref={sidebarRef}
-        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-lg z-[60] transition-transform duration-300 transform ${
-          mostrar ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed top-0 left-0 h-screen w-80 bg-white shadow-lg z-[60] transition-transform duration-300 transform ${
+        mostrar ? 'translate-x-0' : '-translate-x-full'
+      } flex flex-col`}
       >
         {/* Encabezado */}
         <div className="flex justify-between items-center px-4 py-4 border-b bg-white">
