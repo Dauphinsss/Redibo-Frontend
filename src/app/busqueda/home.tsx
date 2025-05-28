@@ -12,7 +12,7 @@ import dynamic from "next/dynamic";
 import MapViwMobile from "@/app/busqueda/components/map/MapViewMobile";
 import { InfiniteFilterCarousel } from "@/app/busqueda/components/fitroCarusel/infinite-filter-carousel";
 import { useRouter } from 'next/navigation';
-
+import CustomSearchWrapper from "@/app/busqueda/hooks/customSearchHU/CustomSearchWrapper";
 
 export default function Home() {
   const router = useRouter();
@@ -160,18 +160,26 @@ export default function Home() {
               <HeaderBusquedaRecode
                 autosTotales={autos}
                 autosFiltrados={autosFiltrados}
-                autosMostrados={autosActuales}
+                //autosMostrados={autosActuales}
+                autosMostrados={autosFiltrados}
                 ordenSeleccionado={ordenSeleccionado}
                 setOrdenSeleccionado={setOrdenSeleccionado}
                 setAutosFiltrados={setAutosFiltrados}
               />
 
-              <ResultadosAutos
+              {/* <ResultadosAutos
                 cargando={cargando}
                 autosActuales={autosActuales}
                 autosFiltrados={autosFiltrados}
                 autosVisibles={autosVisibles}
                 mostrarMasAutos={mostrarMasAutos}
+              /> */}
+              <CustomSearchWrapper
+                autosFiltrados={autosFiltrados.slice(0,4)}
+                autosVisibles={autosVisibles}
+                mostrarMasAutos={mostrarMasAutos}
+                busqueda={busqueda}
+                cargando={cargando}
               />
             </div>
           </div>
