@@ -114,8 +114,14 @@ export default function Home() {
               placeholder="Buscar por modelo, marca"
               onFiltrar={(query) => {
                 setBusqueda(query);
-                filtrarAutos(query, fechaInicio, fechaFin);
+                //Se borro para que no se vuelva a buscar en todos los carros
+                //filtrarAutos(query, fechaInicio, fechaFin);
               }}
+              //NUEVO
+              onClearBusqueda={() => {
+                setBusqueda(""); // 🔁 borra el texto y reactiva el autosFiltrados base
+              }}
+
               obtenerSugerencia={obtenerSugerencia}
             />
           </div>
