@@ -119,7 +119,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
         resultado.sort((a, b) => b.precioPorDia - a.precioPorDia);
         break;
     }
-
+    //Actualiza la lista final de autos despues de aplicar filtros
     setAutosFiltrados(resultado);
   }, [autos, textoBusqueda, ordenSeleccionado, fechaFiltroInicio, fechaFiltroFin, punto, radio]);
 
@@ -129,6 +129,11 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
 
   }, [filtrarYOrdenarAutos, cantidadPorLote]);
 
+  //filtro desde el frontend
+  const aplicarFiltrosExternos = (callback: (autos: Auto[]) => Auto[]) => {
+    setAutosFiltrados((prev) => callback(prev));
+  };
+  
   const autosActuales = useMemo(() => {
     return autosFiltrados.slice(0, autosVisibles);
   }, [autosFiltrados, autosVisibles]);
@@ -211,6 +216,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     },
     obtenerSugerencia,
     filtroCiudad,
-    setFiltroCiudad
+    setFiltroCiudad,
+    aplicarFiltrosExternos
   };
 }
