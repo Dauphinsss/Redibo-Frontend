@@ -26,7 +26,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-const API_URL = "http://localhost:4000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ||"http://localhost:4000";
 
 interface CarFormData {
   brand: string;
@@ -69,7 +69,7 @@ export default function DatosPrincipales() {
       }
 
       try {
-        const response = await axios.get(`${API_URL}/vehiculo/${carId}`);
+        const response = await axios.get(`${API_URL}/api/v1/vehiculo/${carId}`);
         let vehiculoData = response.data;
 
         if (response.data.data) vehiculoData = response.data.data;
@@ -98,11 +98,11 @@ export default function DatosPrincipales() {
       } catch {
         try {
           const [marcaResp, modeloResp, anioResp, vimResp, placaResp] = await Promise.all([
-            axios.get(`${API_URL}/vehiculo/${carId}/marca`).catch(() => ({ data: "" })),
-            axios.get(`${API_URL}/vehiculo/${carId}/modelo`).catch(() => ({ data: "" })),
-            axios.get(`${API_URL}/vehiculo/${carId}/anio`).catch(() => ({ data: "" })),
-            axios.get(`${API_URL}/vehiculo/${carId}/vim`).catch(() => ({ data: "" })),
-            axios.get(`${API_URL}/vehiculo/${carId}/placa`).catch(() => ({ data: "" })),
+            axios.get(`${API_URL}/api/v1/vehiculo/${carId}/marca`).catch(() => ({ data: "" })),
+            axios.get(`${API_URL}/api/v1/vehiculo/${carId}/modelo`).catch(() => ({ data: "" })),
+            axios.get(`${API_URL}/api/v1/vehiculo/${carId}/anio`).catch(() => ({ data: "" })),
+            axios.get(`${API_URL}/api/v1/vehiculo/${carId}/vim`).catch(() => ({ data: "" })),
+            axios.get(`${API_URL}/api/v1/vehiculo/${carId}/placa`).catch(() => ({ data: "" })),
             
           ]);
 
@@ -253,7 +253,7 @@ export default function DatosPrincipales() {
         placa: formData.plate,
       };
 
-      const response = await axios.put(`${API_URL}/vehiculo/${carId}`, backendData);
+      const response = await axios.put(`${API_URL}/api/v1/vehiculo/${carId}`, backendData);
 
       if (response.status === 200 || response.data?.mensaje) {
         toast.success(response.data.mensaje || "¡Datos guardados correctamente!");

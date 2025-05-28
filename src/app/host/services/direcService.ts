@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Define la URL base para las peticiones
-const API_URL = "http://localhost:4000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ||"http://localhost:4000";
 
 interface BackendCountry {
   id: number;
@@ -15,7 +15,7 @@ export interface Country {
 
 export async function getCountries(): Promise<Country[]> {
   try {
-    const response = await axios.get<BackendCountry[]>(`${API_URL}/paises`);
+    const response = await axios.get<BackendCountry[]>(`${API_URL}/api/v1/paises`);
 
     // Verificar si la respuesta es un array válido y no está vacía
     if (!Array.isArray(response.data) || response.data.length === 0) {
@@ -58,7 +58,7 @@ export interface City {
 
 export async function getCities(): Promise<City[]> {
   try {
-    const response = await axios.get<BackendCity[]>(`${API_URL}/cities`);
+    const response = await axios.get<BackendCity[]>(`${API_URL}/api/v1/cities`);
 
     // Verificar si la respuesta es un array válido y no está vacía
     if (!Array.isArray(response.data) || response.data.length === 0) {

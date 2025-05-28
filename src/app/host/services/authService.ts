@@ -2,8 +2,8 @@
 import axios from "axios";
 
 const TOKEN_KEY = "token";
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v2";
-const DEV_TOKEN_ENDPOINT = `${API_BASE}/cars/dev-token`;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const DEV_TOKEN_ENDPOINT = `${API_BASE}/api/v2/cars/dev-token`;
 
 /**
  * Verifica si el código se está ejecutando en el navegador
