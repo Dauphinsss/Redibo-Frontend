@@ -11,7 +11,7 @@ export const transformAuto = (item: RawAuto): AutoCard => ({
     anio: item.a_o,
     combustibles: Array.isArray(item.CombustibleCarro)
         ? item.CombustibleCarro
-            .map((c) => c?.TipoCombustible?.tipoDeCombustible)
+            .map((c) => c?.TipoCombustible?.tipoDeCombustible?.toLowerCase())
             .filter((c): c is string => typeof c === "string")
         : [],
     estadoAlquiler: item.estado,
