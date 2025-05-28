@@ -127,9 +127,9 @@ class SegurosService {
     }
   }
 
-  async deleteSeguroCarro(id: number): Promise<void> {
+  async deleteSeguroCarro(id_carro: number): Promise<void> {
     try {
-      await API.delete(`/carros/seguros/${id}`);
+      await API.delete(`/api/carros/${id_carro}/seguros`);
     } catch (error) {
       this.handleError(error);
       throw error;
