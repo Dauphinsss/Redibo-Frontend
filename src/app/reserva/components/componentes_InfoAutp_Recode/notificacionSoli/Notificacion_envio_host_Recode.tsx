@@ -150,7 +150,7 @@ export default function FormularioSolicitud({
       };
 
       const response = await fetch(
-        "https://search-car-backend.vercel.app/correoHost",
+        "https://search-car-backend.vercel.app/correo/enviarGuardar",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
