@@ -41,7 +41,7 @@ export default function Home() {
     setFiltrosCombustible,
     filtrosCaracteristicas,
     setFiltrosCaracteristicas,
-    filtrosTransmision, 
+    filtrosTransmision,
     setFiltrosTransmision,
     setFiltrosCaracteristicasAdicionales,
     filtrosCaracteristicasAdicionales,
@@ -105,9 +105,9 @@ export default function Home() {
           <button
             onClick={() => setMostrarSidebar(true)}
             className="flex items-center gap-2 px-4 py-2 bg-white text-black border border-gray-300 rounded-md font-semibold hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-300 transition"
-          >      
+          >
             <SlidersHorizontal size={20} />
-            Filtros          
+            Filtros
           </button>
           <div className="w-full max-w-2xl">
             <SearchBar
@@ -175,7 +175,7 @@ export default function Home() {
         </main>
         {/* Mapa en desktop */}
         <div className="hidden lg:block w-[40%]">
-          <div className="sticky top-[200px] h-[calc(100vh-200px)] bg-gray-100 rounded shadow-inner">
+          <div className="sticky top-[210px] h-[calc(100vh-210px)] bg-gray-100 rounded shadow-inner">
             <ViewMap
               posix={[-17.39438, -66.16018]}
               autos={autosFiltrados}
