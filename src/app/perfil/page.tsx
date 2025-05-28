@@ -39,6 +39,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type SectionType =
   | "personal"
@@ -49,6 +50,7 @@ type SectionType =
   | "orders";
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [activeSection, setActiveSection] = useState<SectionType>("personal");
   const [roles, setRoles] = useState<string[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -179,6 +181,13 @@ export default function ProfilePage() {
       alwaysShow: false,
       requiresRole: "RENTER",
     },
+    {
+      id: "actividad-automovil",
+      title: "Actividad de Automóvil",
+      icon: Car,
+      alwaysShow: true,
+      onClick: () => router.push("/calificaciones/calificacionesAlRenter/ActividadVehicles")
+    },
   ];
 
   const handleLogout = () => {
@@ -216,7 +225,11 @@ export default function ProfilePage() {
                         <SidebarMenuItem key={item.id}>
                           <SidebarMenuButton
                             onClick={() => {
-                              setActiveSection(item.id as SectionType);
+                              if (item.onClick) {
+                                item.onClick();
+                              } else {
+                                setActiveSection(item.id as SectionType);
+                              }
                               setIsSidebarOpen(false);
                             }}
                             isActive={activeSection === item.id}
