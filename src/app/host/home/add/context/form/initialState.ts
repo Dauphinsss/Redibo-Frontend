@@ -7,7 +7,9 @@ export const initialFormData: FormData = {
     ciudadId: null, 
     calle: "", 
     zona: "", 
-    num_casa: "" 
+    num_casa: "", 
+    latitud: 0,
+    longitud: 0
   },
   datosPrincipales: { 
     vim: "", 

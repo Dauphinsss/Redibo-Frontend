@@ -6,6 +6,8 @@ export interface DireccionData {
   calle: string;
   zona: string;
   num_casa: string;
+  latitud: number | null;
+  longitud: number | null;
 }
 
 export interface DatosPrincipalesData {

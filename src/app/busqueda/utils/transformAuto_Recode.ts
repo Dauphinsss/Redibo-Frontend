@@ -26,4 +26,7 @@ export const transformAuto = (item: RawAuto): AutoCard => ({
     latitud: item.Direccion.latitud || -17.37398,
     longitud: item.Direccion.longitud || -66.25434,
     reservas: item.Reserva,
+    caracteristicasAdicionales: Array.isArray(item.caracteristicasAdicionales) 
+        ? item.caracteristicasAdicionales 
+        : [],
 });

@@ -1,22 +1,26 @@
 'use client';
 
 import { useMemo, useState } from "react";
-import { Map } from "lucide-react";
 import { useAutos } from '@/app/busqueda/hooks/useAutos_hook_Recode';
 import SearchBar from '@/app/busqueda/components/seccionOrdenarMasResultados/RecodeSearchBar';
 import HeaderBusquedaRecode from '@/app/busqueda/components/seccionOrdenarMasResultados/HeaderBusquedaRecode';
 import ResultadosAutos from '@/app/busqueda/components/seccionOrdenarMasResultados/ResultadosAutos_Recode';
 import Header from '@/components/ui/Header';
+import SidebarFiltros from '@/app/busqueda/components/filtros/SidebarFiltros';
+import { SlidersHorizontal } from 'lucide-react';
 import dynamic from "next/dynamic";
-
-import DateRangeFilter from "@/app/busqueda/components/filtrofechas_7-bits/DateRangeFilter"
-import Radio from "@/app/busqueda/components/map/Radio"
 import MapViwMobile from "@/app/busqueda/components/map/MapViewMobile";
-import Link from "next/link";
+import { InfiniteFilterCarousel } from "@/app/busqueda/components/fitroCarusel/infinite-filter-carousel";
+import { useRouter } from 'next/navigation';
+
 
 export default function Home() {
-  const [radio, setradio] = useState(1)
-  const [punto, setpunto] = useState({ lon: 0, alt: 0 })
+  const router = useRouter();
+  const [radio, setRadio] = useState(1);
+  const [punto, setPunto] = useState({ lon: 0, alt: 0 });
+
+  const [mostrarSidebar, setMostrarSidebar] = useState(false);
+
   const {
     autos,
     autosFiltrados,
@@ -29,18 +33,45 @@ export default function Home() {
     cargando,
     filtrarAutos,
     obtenerSugerencia,
+    cargandoFiltros,
+    aplicarFiltroPrecio,
+    aplicarFiltroViajes,
+    aplicarFiltroCalificacion,
+    filtrosCombustible,
+    setFiltrosCombustible,
+    filtrosCaracteristicas,
+    setFiltrosCaracteristicas,
+    filtrosTransmision, 
+    setFiltrosTransmision,
+    setFiltrosCaracteristicasAdicionales,
+    filtrosCaracteristicasAdicionales,
   } = useAutos(8, radio, punto);
 
   const [busqueda, setBusqueda] = useState("");
-
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
-  const [gpsFilterActive, setGpsFilterActive] = useState(false);
+  const [gpsActive, setGpsActive] = useState(false);
+
+  // Handlers para los filtros
+  const handlePrecioFilter = (min: number, max: number) => {
+    // Aquí deberías filtrar los autos por precio
+    // filtrarAutos(busqueda, fechaInicio, fechaFin, ...otrosFiltros, min, max)
+    console.log('Filtro por precio:', { min, max });
+  };
+  const handleCalifFilter = (calificacion: number) => {
+    // Aquí deberías filtrar los autos por calificación
+    console.log('Filtro por calificación:', calificacion);
+  };
+  const handleViajesFilter = (minViajes: number) => {
+    // Aquí deberías filtrar los autos por viajes
+    console.log('Filtro por viajes:', minViajes);
+  };
+  const handleAirportFilter = () => {
+    router.push('/filtrarAeropuerto');
+  };
   const toggleGPSFilter = () => {
-    if (gpsFilterActive) {
-      setpunto({ lon: 0, alt: 0 })
-    }
-    setGpsFilterActive(!gpsFilterActive);
+    if (gpsActive) setPunto({ lon: 0, alt: 0 });
+    setGpsActive((prev) => !prev);
   };
 
   const ViewMap = useMemo(() => dynamic(
@@ -53,12 +84,31 @@ export default function Home() {
 
   return (
     <div className="relative">
+      {/* Sidebar de filtros (agregado del primer código) */}
+      <SidebarFiltros
+        mostrar={mostrarSidebar}
+        onCerrar={() => setMostrarSidebar(false)}
+        setFiltrosCombustible={setFiltrosCombustible}
+        setFiltrosCaracteristicas={setFiltrosCaracteristicas}
+        setFiltrosTransmision={setFiltrosTransmision}
+        filtrosTransmision={filtrosTransmision}
+        setFiltrosCaracteristicasAdicionales={setFiltrosCaracteristicasAdicionales}
+        filtrosCaracteristicasAdicionales={filtrosCaracteristicasAdicionales}
+      />
 
       <div className="sticky top-0 z-50 bg-white shadow overflow-visible">
         <div className="border-b">
           <Header />
         </div>
-        <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center">
+        <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center items-center gap-4">
+          {/* Botón de filtros alineado en el header */}
+          <button
+            onClick={() => setMostrarSidebar(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-white text-black border border-gray-300 rounded-md font-semibold hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-300 transition"
+          >      
+            <SlidersHorizontal size={20} />
+            Filtros          
+          </button>
           <div className="w-full max-w-2xl">
             <SearchBar
               placeholder="Buscar por modelo, marca"
@@ -70,50 +120,39 @@ export default function Home() {
             />
           </div>
         </div>
+
+        {/* Carrusel de filtros */}
+        <div className="px-4 sm:px-6 lg:px-8 py-3 border-t bg-gray-50">
+          <InfiniteFilterCarousel
+            searchTerm={busqueda}
+            fechaInicio={fechaInicio}
+            fechaFin={fechaFin}
+            setFechaInicio={setFechaInicio}
+            setFechaFin={setFechaFin}
+            autosActuales={autosActuales}
+            autosTotales={autosFiltrados}
+            onAirportFilter={handleAirportFilter}
+            gpsActive={gpsActive}
+            onGpsToggle={toggleGPSFilter}
+            radio={radio}
+            setRadio={setRadio}
+            onPrecioFilter={handlePrecioFilter}
+            onCalifFilter={handleCalifFilter}
+            onViajesFilter={handleViajesFilter}
+            onHostFilter={() => { }}
+            onMarcaFilter={() => { }}
+            autoScrollDelay={4000}
+            onMostrarTodos={() => {
+              console.log("Mostrar todos los resultados");
+            }}
+          />
+        </div>
       </div>
 
       {/* Contenido principal */}
       <div className="flex flex-col lg:flex-row">
         <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Columna izquierda: lista */}
           <div className="max-w-full pt-6 gap-8">
-
-            <div className="grid grid-cols-1 justify-items-center md:items-start md:grid-cols-[1fr_1fr_1fr] gap-2 mb-4 w-full">
-              <DateRangeFilter
-                searchTerm={busqueda}
-                fechaInicio={fechaInicio}
-                fechaFin={fechaFin}
-                setFechaInicio={(fecha) => {
-                  setFechaInicio(fecha);
-                  filtrarAutos(busqueda, fecha, fechaFin);
-                }}
-                setFechaFin={(fecha) => {
-                  setFechaFin(fecha);
-                  filtrarAutos(busqueda, fechaInicio, fecha)
-                }}
-                onAplicarFiltro={(inicio, fin) => filtrarAutos(busqueda, inicio, fin)}
-                autosActuales={autosActuales}
-                autosTotales={autosFiltrados}
-              />
-
-              <Link href="/filtrarAeropuerto"
-                className="text-black text-center font-semibold bg-white hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-300 rounded-md text-md px-4 py-2 me-2 mb-2 border border-gray-300"
-              >
-                Filtrar por Aeropuerto
-              </Link>
-              <button
-                onClick={toggleGPSFilter}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium shadow-md border ${gpsFilterActive ? 'bg-black text-white' : 'bg-white text-black border-black'} transition-colors duration-300`}
-              >
-                <Map size={20} />
-                <span className="font-bold">GPS: {gpsFilterActive ? 'ON' : 'OFF'}</span>
-              </button>
-              <Radio
-                radio={radio}
-                setRadio={setradio}
-                punto={punto}
-              />
-            </div>
             <div className="w-full max-w-4xl mx-auto">
               <HeaderBusquedaRecode
                 autosTotales={autos}
@@ -134,32 +173,31 @@ export default function Home() {
             </div>
           </div>
         </main>
+        {/* Mapa en desktop */}
         <div className="hidden lg:block w-[40%]">
-          <div className="sticky top-[140px] h-[calc(100vh-140px)] bg-gray-100 rounded shadow-inner">
+          <div className="sticky top-[200px] h-[calc(100vh-200px)] bg-gray-100 rounded shadow-inner">
             <ViewMap
               posix={[-17.39438, -66.16018]}
               autos={autosFiltrados}
               radio={radio}
               punto={punto}
-              setpunto={setpunto}
-              estaActivoGPS={gpsFilterActive}
+              setpunto={setPunto}
+              estaActivoGPS={gpsActive}
             />
           </div>
         </div>
       </div>
-
-
+      {/* Mapa en mobile */}
       <MapViwMobile>
         <ViewMap
           posix={[-17.39438, -66.16018]}
           autos={autosFiltrados}
           radio={radio}
           punto={punto}
-          setpunto={setpunto}
-          estaActivoGPS={gpsFilterActive}
+          setpunto={setPunto}
+          estaActivoGPS={gpsActive}
         />
       </MapViwMobile>
-
     </div>
   );
 }
