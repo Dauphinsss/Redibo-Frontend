@@ -175,7 +175,7 @@ export default function Home() {
                 mostrarMasAutos={mostrarMasAutos}
               /> */}
               <CustomSearchWrapper
-                autosFiltrados={autosFiltrados.slice(0,4)}
+                autosFiltrados={autosFiltrados}
                 autosVisibles={autosVisibles}
                 mostrarMasAutos={mostrarMasAutos}
                 busqueda={busqueda}
