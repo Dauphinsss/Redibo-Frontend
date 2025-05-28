@@ -5,6 +5,11 @@ export function useCustomSearch(autosFiltrados: Auto[], busqueda: string) {
   const [autosBuscados, setAutosBuscados] = useState<Auto[]>(autosFiltrados);
 
   useEffect(() => {
+    if (!busqueda.trim()) {
+      setAutosBuscados(autosFiltrados);
+      return;
+    }
+
     const filtrados = autosFiltrados.filter(auto => {
       const textoAuto = `${auto.marca} ${auto.modelo}`;
       return textoAuto.includes(busqueda);
