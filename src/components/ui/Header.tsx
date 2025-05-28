@@ -102,6 +102,11 @@ export default function Header() {
                 <Link href="/contacto" className="text-sm font-medium">
                   Contacto
                 </Link>
+                {user && (
+                  <Link href="/socios" className="text-sm font-medium">
+                    Socios
+                  </Link>
+                )}
                 <div className="mt-4 border-t pt-4">
                   {user ? (
                     <>
@@ -176,6 +181,11 @@ export default function Header() {
           <Link href="/contacto" className="text-sm font-medium">
             Contacto
           </Link>
+          {user && (
+            <Link href="/socios" className="text-sm font-medium">
+              Socios
+            </Link>
+          )}
         </nav>
 
         {/* Auth section - desktop */}
