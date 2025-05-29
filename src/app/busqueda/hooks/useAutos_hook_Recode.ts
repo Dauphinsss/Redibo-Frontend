@@ -427,11 +427,8 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     filtrosTransmision,
     setFiltrosTransmision,
     filtrosCaracteristicasAdicionales,
-    setFiltrosCaracteristicasAdicionales,
-<<<<<<< HEAD
+    setFiltrosCaracteristicasAdicionales,   
     mostrarTodos,
-=======
     aplicarFiltrosExternos
->>>>>>> mainSprinteros
   };
 }
