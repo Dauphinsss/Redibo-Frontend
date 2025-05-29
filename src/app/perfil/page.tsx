@@ -185,7 +185,8 @@ export default function ProfilePage() {
       id: "actividad-automovil",
       title: "Actividad de Automóvil",
       icon: Car,
-      alwaysShow: true,
+      alwaysShow: false,
+      requiresRole: "HOST",
       onClick: () => router.push("/calificaciones/calificacionesAlRenter/ActividadVehicles")
     },
   ];
