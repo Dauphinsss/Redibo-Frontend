@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:4000/api/filterU5';
-
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const API_URL = `${API_BASE}api/filterU5`;
 export interface FiltroInicial {
     id: number;
     precio_por_dia: number;

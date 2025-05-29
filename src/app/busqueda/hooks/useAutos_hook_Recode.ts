@@ -374,6 +374,12 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
         }
     }, [autosFiltrados]);
 
+  // Agregar lógica para manejar el evento `onMostrarTodos`
+  const mostrarTodos = () => {
+    setAutosFiltrados(autosBase); // Restablecer la lista de autos filtrados a la lista original
+  };
+
+  // Exportar la función `mostrarTodos` para que pueda ser utilizada externamente
   return {
     autos,
     autosFiltrados,
@@ -409,5 +415,6 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     setFiltrosTransmision,
     filtrosCaracteristicasAdicionales,
     setFiltrosCaracteristicasAdicionales,
+    mostrarTodos,
   };
 }
