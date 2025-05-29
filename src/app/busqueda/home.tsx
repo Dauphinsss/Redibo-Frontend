@@ -12,7 +12,7 @@ import dynamic from "next/dynamic";
 import MapViwMobile from "@/app/busqueda/components/map/MapViewMobile";
 import { InfiniteFilterCarousel } from "@/app/busqueda/components/fitroCarusel/infinite-filter-carousel";
 import { CIUDADES_BOLIVIA } from "./constants";
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import CustomSearchWrapper from "@/app/busqueda/hooks/customSearchHU/CustomSearchWrapper";
 
 type Props = {
@@ -194,7 +194,7 @@ export default function Home({ ciudad }: Props) {
         </main>
         {/* Mapa en desktop */}
         <div className="hidden lg:block w-[40%]">
-          <div className="sticky top-[210px] h-[calc(100vh-210px)] bg-gray-100 rounded shadow-inner">
+          <div className="sticky top-[204px] h-[calc(100vh-204px)] bg-gray-100 rounded shadow-inner">
             <ViewMap
               posix={CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA]}
               autos={autosFiltrados}

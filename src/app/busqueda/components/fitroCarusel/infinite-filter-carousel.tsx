@@ -1,14 +1,13 @@
 // infinite-filter-carousel.tsx
 "use client"
 
-import * as React from "react"
-import Autoplay from "embla-carousel-autoplay"
-import { Map } from "lucide-react"
+import * as React from "react";
+import Autoplay from "embla-carousel-autoplay";
+import { Map } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import DateRangeFilter from "@/app/busqueda/components/filtrofechas_7-bits/DateRangeFilter"
-import Radio from "@/app/busqueda/components/map/Radio"
+import { Button } from "@/components/ui/button";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import DateRangeFilter from "@/app/busqueda/components/filtrofechas_7-bits/DateRangeFilter";
 import { ButtonPrecio } from "../filtros/buttonPrecio";
 import { ButtonCalif } from "../filtros/buttonCalif";
 import { ButtonViajes } from "../filtros/buttonViajes";
@@ -16,6 +15,7 @@ import { ButtonHost } from "../filtros/buttonHost";
 import { ButtonMarca } from "../filtros/buttonMarca";
 import { ButtonTodos } from "../filtros/buttonTodos";
 import { AutoCard_Interfaces_Recode as Auto } from '@/app/busqueda/interface/AutoCard_Interface_Recode';
+import { ButtonGPS } from "../map/ButtonGPS";
 
 // Interfaces para los nuevos filtros
 interface Host {
@@ -130,8 +130,7 @@ export function InfiniteFilterCarousel({
             setFechaFin(fin);
           }}
         />
-      ),
-      expandable: true,
+      )
     },
     {
       id: 'host',
@@ -174,20 +173,13 @@ export function InfiniteFilterCarousel({
     {
       id: 'gps',
       component: (
-        <Button variant={gpsActive ? "default" : "outline"} onClick={onGpsToggle} className="flex items-center gap-2">
-          <Map size={18} />
-          GPS: {gpsActive ? 'Activado' : 'Desactivado'}
-        </Button>
+        <ButtonGPS
+          gpsActive={gpsActive}
+          onGpsToggle={onGpsToggle}
+          radio={radio}
+          setRadio={setRadio}
+        />
       ),
-    },
-    {
-      id: 'radio',
-      component: (
-        <div className="p-1 bg-white rounded-md border">
-          <Radio radio={radio} setRadio={setRadio} punto={{ lon: 1, alt: 1 }} />
-        </div>
-      ),
-      hidden: !gpsActive,
     },
   ]
 
@@ -206,21 +198,17 @@ export function InfiniteFilterCarousel({
         onMouseLeave={() => autoplayPlugin.current.play()}
       >
         <CarouselContent className="-ml-2 md:-ml-4 overflow-visible">
-          {filterItems.map((filter) =>
-            !filter.hidden ? (
-              <CarouselItem
-                key={filter.id}
-                className={`pl-2 md:pl-4 ${filter.expandable ? 'basis-auto min-w-fit' : 'basis-auto'
-                  }`}
-              >
-                <div className={`p-1 ${filter.expandable ? 'min-w-fit' : ''}`}>
-                  {filter.component}
-                </div>
-              </CarouselItem>
-            ) : null
-          )}
+          {filterItems.map((filter) => (
+            <CarouselItem
+              key={filter.id}
+              className="pl-2 md:pl-4 basis-auto"
+            >
+              <div>
+                {filter.component}
+              </div>
+            </CarouselItem>
+          ))}
         </CarouselContent>
-
         <CarouselPrevious className="hidden md:flex absolute -left-7" />
         <CarouselNext className="hidden md:flex absolute -right-6" />
       </Carousel>
