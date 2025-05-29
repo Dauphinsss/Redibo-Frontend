@@ -2,7 +2,7 @@ import React from "react";
 import { NotificacionHost } from "./notificacionSolicitud";
 import { NotificacionRenter } from "./notificacionRenter";
 import { Notificacion } from "@/app/reserva/interface/NotificacionSolicitud_Recode";
-import Notificacion_Recode from "@/app/host/components/notificacion/Notificacion";
+//import {Notificacion_Recode} from "@/app/host/components/notificacion/Notificacion";
 
 interface NotificacionesCampanaProps {
   notificaciones: Notificacion[];
@@ -18,23 +18,27 @@ export const NotificacionesCampana: React.FC<NotificacionesCampanaProps> = ({
   return (
     <div className="w-[400px] h-[500px] bg-white border rounded shadow-lg overflow-y-auto p-4">
       <h2 className="text-lg font-semibold mb-4">Notificaciones</h2>
-      <Notificacion_Recode
-        nombreUsr={"Carlos Gomez"}
-        fotoPerfil={""}
-        mensaje={"Por motivo de viaje"}
-        fechaIni={"99/99/99"}
-        fechaFin={"99/99/99"}
-        fotoCar={""}
-        marcaCar={"Ford"}
-        modeloCar={"Mustang"}
-      />
+      
       {notificaciones.length === 0 ? (
         <p className="text-gray-500 text-center py-4">No hay notificaciones</p>
       ) : (
         <>
           <div className="mb-4">
             <h3 className="text-sm font-bold mb-2">Solicitudes al Host</h3>
-            {notificaciones
+            {/*{notificaciones
+              .filter(n => n.tipo === 'host')
+              .map(notif => (
+                <Notificacion_Recode
+                  key={notif.id}
+                  notificacion={notif}
+                  fotoPerfil={""}
+                  mensaje={"Por motivo de viaje"}
+                  fotoCar={""}
+                  onAceptar={() => onAceptar?.(notif.id)}
+                  onRechazar={() => onRechazar?.(notif.id)}
+                />
+              ))}*/}
+               {notificaciones
               .filter(n => n.tipo === 'host')
               .map(notif => (
                 <NotificacionHost

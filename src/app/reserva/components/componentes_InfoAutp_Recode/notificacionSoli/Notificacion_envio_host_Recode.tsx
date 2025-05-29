@@ -149,6 +149,8 @@ export default function FormularioSolicitud({
         id_host: datosAuto.host.id,
       };
 
+      const idHost= datosAuto.host.id;
+
       const response = await fetch(
         "https://search-car-backend.vercel.app/correo/enviarGuardar",
         {
