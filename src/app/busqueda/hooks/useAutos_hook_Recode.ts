@@ -131,16 +131,24 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
         }
     
      // Filtro por transmisión
-        if (filtrosTransmision.length > 0) {
-            console.log("Aplicando filtro de transmisión:", filtrosTransmision);
+       if (filtrosTransmision.length > 0) {
+            //console.log("Aplicando filtro de transmisión:", filtrosTransmision);
             resultado = resultado.filter(auto => {
-            console.log("Transmisión del auto:", auto.transmision);
+            const transmisionAuto = normalizarTexto(auto.transmision);
+            //console.log("Transmisión del auto:", transmisionAuto);
             return filtrosTransmision.some(transmision =>
-             auto.transmision.toLowerCase().includes(transmision.toLowerCase())
+            transmisionAuto.includes(normalizarTexto(transmision))
             );
-           });
+          });
+      }
+
+        function normalizarTexto(texto: string): string {
+         return texto
+         .toLowerCase() 
+         .normalize("NFD") 
+         .replace(/[\u0300-\u036f]/g, "");
         }
-    
+
     // Filtro por características adicionales 
         if (filtrosCaracteristicasAdicionales.length > 0) {
              //console.log("Aplicando filtro de características adicionales:", filtrosCaracteristicasAdicionales);
@@ -189,6 +197,11 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     setAutosVisibles(cantidadPorLote);
 
   }, [filtrarYOrdenarAutos, cantidadPorLote]);
+  
+  //filtro desde el frontend
+  const aplicarFiltrosExternos = (callback: (autos: Auto[]) => Auto[]) => {
+    setAutosFiltrados((prev) => callback(prev));
+  };
 
   const autosActuales = useMemo(() => {
     return autosFiltrados.slice(0, autosVisibles);
@@ -415,6 +428,10 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     setFiltrosTransmision,
     filtrosCaracteristicasAdicionales,
     setFiltrosCaracteristicasAdicionales,
+<<<<<<< HEAD
     mostrarTodos,
+=======
+    aplicarFiltrosExternos
+>>>>>>> mainSprinteros
   };
 }
