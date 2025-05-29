@@ -11,10 +11,15 @@ import { SlidersHorizontal } from 'lucide-react';
 import dynamic from "next/dynamic";
 import MapViwMobile from "@/app/busqueda/components/map/MapViewMobile";
 import { InfiniteFilterCarousel } from "@/app/busqueda/components/fitroCarusel/infinite-filter-carousel";
-import { useRouter } from 'next/navigation';
+import { CIUDADES_BOLIVIA } from "./constants";
+import { useRouter, useSearchParams } from 'next/navigation';
 import CustomSearchWrapper from "@/app/busqueda/hooks/customSearchHU/CustomSearchWrapper";
 
-export default function Home() {
+type Props = {
+  ciudad?: string;
+};
+
+export default function Home({ ciudad }: Props) {
   const router = useRouter();
   const [radio, setRadio] = useState(1);
   const [punto, setPunto] = useState({ lon: 0, alt: 0 });
@@ -191,7 +196,7 @@ export default function Home() {
         <div className="hidden lg:block w-[40%]">
           <div className="sticky top-[210px] h-[calc(100vh-210px)] bg-gray-100 rounded shadow-inner">
             <ViewMap
-              posix={[-17.39438, -66.16018]}
+              posix={CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA]}
               autos={autosFiltrados}
               radio={radio}
               punto={punto}
@@ -204,7 +209,7 @@ export default function Home() {
       {/* Mapa en mobile */}
       <MapViwMobile>
         <ViewMap
-          posix={[-17.39438, -66.16018]}
+          posix={CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA]}
           autos={autosFiltrados}
           radio={radio}
           punto={punto}

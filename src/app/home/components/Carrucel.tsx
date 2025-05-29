@@ -30,7 +30,7 @@ function Carrucel() {
   if (content.length === 0) {
     return (
       <p className="text-center text-xl font-semibold text-muted-foreground">
-        No hay autos disponibles por el momento
+        No hay autos reservados en este momento
       </p>
     )
   }
