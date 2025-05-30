@@ -83,24 +83,17 @@ export default function CalificacionesAlRenterPage() {
 
       // Agregar palabras adicionales al diccionario
       leoProfanity.add([
-        "puta",
-        "mierda",
-        "cabrón",
-        "joder",
-        "coño",
-        "gilipollas",
-        "capullo",
-        "idiota",
-        "imbécil",
-        "pendejo",
-        "marica",
-        "maricón",
-        "cojones",
-        "hostia",
-        "hijo de puta",
-        "hijoputa",
-        "malparido",
-        "cabron",
+        "puta","mierda",        "cabrón","joder",        "coño",
+        "gilipollas",        "capullo",        "idiota",        "imbécil",
+        "pendejo",        "marica",        "maricón",        "cojones",
+        "hostia",        "hijo de puta",        "hijoputa",        "malparido",
+        "cabron",         "pendeja",        "pendejas",	"pendejos",        "pendejadas",
+        "Huevón", "boludo","pelotudo","Empobrecedo","Zorra","pelagato","Analfabeto",
+        "ignorante","palurdo","berzotas","gaznápiro",
+        "papanatas","papanatas","papanatas","papanatas",
+        "Idiota","imbécil","lerdo","mameluco","mentecato",
+        " estupido","atontao","orate","loco","subnormal","deficiente","majadero","zoquete",
+        "Puto","puta","perra","cabron","HDP","pt","puto","puta",
       ])
     } catch (error) {
       console.error("Error al cargar el diccionario:", error)
@@ -569,7 +562,7 @@ export default function CalificacionesAlRenterPage() {
                           const calificacion = calificaciones.find((c) => c.reservaId === renter.idReserva)
                          
                           return (
-                            <div key={renter.id} className="rental-item flex flex-col md:flex-row justify-between gap-4 p-4 bg-gray-100 rounded-xl shadow-sm">
+                            <div key={renter.idReserva} className="rental-item flex flex-col md:flex-row justify-between gap-4 p-4 bg-gray-100 rounded-xl shadow-sm">
                               <div className="rental-item-left flex gap-3">
                                 <div className="rental-image-placeholder bg-gray-200 w-12 h-12 rounded-full">
                                   <img
@@ -873,10 +866,10 @@ export default function CalificacionesAlRenterPage() {
                         </div>
 
                         {/* Añadir después de la última categoría (puntualidad) y antes de los botones de acción */}
-                        <div className="rating-category">
-                          <h4 className="mb-2 font-medium text-gray-700">Comentario general</h4>
+                        <div className="rating-category flex flex-col sm:flex-row sm:items-start sm:gap-4">
+                          <h4 className="mb-2 sm:mb-0 font-medium text-gray-700 sm:w-1/4">Comentario general</h4>
                           <textarea
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-400"
+                            className="w-full sm:w-3/4 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-400"
                             placeholder="Añade un comentario general sobre tu experiencia con este arrendatario..."
                             value={rating.comentario}
                             onChange={(e) => {
