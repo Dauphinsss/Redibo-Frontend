@@ -19,7 +19,8 @@ import { PersonalInfo } from "./personal-info";
 import { PaymentInfo } from "./payment-info";
 import { RatingsInfo } from "./ratings-info";
 import { VehiclesInfo } from "./vehicles-info";
-import { ReservationsList } from "./orders-info"; // Importamos el nuevo componente
+import { ReservationsList } from "./orders-info";
+import { SecurityInfo } from "./security-info";
 import {
   User,
   Star,
@@ -31,8 +32,9 @@ import {
   HelpCircle,
   Receipt,
   BadgeDollarSign,
-  CarFront, // Importamos icono para órdenes de pago
+  CarFront,
   Users,
+  Shield,
 } from "lucide-react";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
@@ -48,7 +50,8 @@ type SectionType =
   | "ratings"
   | "vehicles"
   | "orders"
-  | "socios";
+  | "socios"
+  | "security";
 
 export default function ProfilePage() {
   const [activeSection, setActiveSection] = useState<SectionType>("personal");
@@ -128,6 +131,8 @@ export default function ProfilePage() {
         return <VehiclesInfo />;
       case "orders":
         return <ReservationsList />;
+      case "security":
+        return <SecurityInfo />;
       case "socios":
         return (
           <div className="space-y-6">
@@ -168,7 +173,8 @@ export default function ProfilePage() {
     ratings: "Calificaciones",
     vehicles: "Vehículos",
     orders: "Órdenes de Pago",
-    socios: "Mis Socios"
+    socios: "Mis Socios",
+    security: "Seguridad"
   };
 
   const menuItems = [
@@ -176,6 +182,12 @@ export default function ProfilePage() {
       id: "personal",
       title: "Información Personal",
       icon: User,
+      alwaysShow: true,
+    },
+    {
+      id: "security",
+      title: "Seguridad",
+      icon: Shield,
       alwaysShow: true,
     },
     {
