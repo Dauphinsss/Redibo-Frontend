@@ -21,6 +21,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
+// ⬇️ Importa la campana
+import { NotificacionesCampana } from "@/components/ui/CampanaNotificaciones";
+
 export default function Header() {
   const [user, setUser] = useState<{ nombre: string; foto: string } | null>(
     null
@@ -35,8 +38,7 @@ export default function Header() {
 
     if (nombre && foto) {
       setUser({ nombre, foto });
-
-      // Verificar si el usuario es administrador
+  // Verificar si el usuario es administrador
       if (rolesStr) {
         try {
           // Intentar parsear como JSON si es un array
@@ -63,8 +65,7 @@ export default function Header() {
     setIsAdmin(false);
     router.push("/");
   };
-
-  // Función para determinar la ruta del perfil
+// Función para determinar la ruta del perfil
   const getProfileRoute = () => {
     return isAdmin ? "/admin" : "/perfil";
   };
@@ -181,38 +182,45 @@ export default function Header() {
         {/* Auth section - desktop */}
         <div className="hidden md:flex items-center gap-4">
           {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2">
-                  <Avatar className="h-8 w-8">
-                    {user.foto && user.foto !== "default.jpg" ? (
-                      <img
-                        src={user.foto}
-                        alt={user.nombre}
-                        className="h-8 w-8 rounded-full"
-                      />
-                    ) : (
-                      <AvatarFallback>{user.nombre.charAt(0)}</AvatarFallback>
-                    )}
-                  </Avatar>
-                  <span className="text-sm font-medium">{user.nombre}</span>
-                  <ChevronDown className="h-4 w-4 opacity-50" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <Link href={getProfileRoute()}>
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Mi {isAdmin ? "Panel de Admin" : "Perfil"}</span>
+            <>
+              {/* 🔔 Campana al lado del avatar */}
+              <NotificacionesCampana />
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8">
+                      {user.foto && user.foto !== "default.jpg" ? (
+                        <img
+                          src={user.foto}
+                          alt={user.nombre}
+                          className="h-8 w-8 rounded-full"
+                        />
+                      ) : (
+                        <AvatarFallback>
+                          {user.nombre.charAt(0)}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <span className="text-sm font-medium">{user.nombre}</span>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <Link href={getProfileRoute()}>
+                    <DropdownMenuItem>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Mi {isAdmin ? "Panel de Admin" : "Perfil"}</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Cerrar sesión</span>
                   </DropdownMenuItem>
-                </Link>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Cerrar sesión</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
           ) : (
             <>
               <Link href="/login" className="text-sm font-medium">
