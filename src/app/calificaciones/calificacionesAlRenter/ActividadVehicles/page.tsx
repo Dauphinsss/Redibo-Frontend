@@ -163,7 +163,18 @@ export default function ActividadVehiclesPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <div className="container mx-auto py-8 px-4 flex-1">
-        <h1 className="text-2xl font-bold mb-6">Actividad de mis vehículos</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Actividad de mis vehículos</h1>
+          <Link href="/perfil">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 px-3 sm:h-10 sm:px-4"
+            >
+              Atrás
+            </Button>
+          </Link>
+        </div>
 
         {isLoading ? (
           <div className="flex justify-center items-center min-h-[400px]">
