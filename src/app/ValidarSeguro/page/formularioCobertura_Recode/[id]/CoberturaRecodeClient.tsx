@@ -3,11 +3,11 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/ui/Header";
-import FormularioCobertura from "@/components/recodeComponentes/cobertura/FormularioRecode";
-import TablaRecode from "@/components/recodeComponentes/cobertura/TablaRecode";
-import PopUpCobertura from "@/components/recodeComponentes/cobertura/PopUpCobertura";
-import BotonValidacion from "@/components/recodeComponentes/cobertura/BotonValidacion";
-import { useSeguroCoberturas } from "@/hooks/useSeguroCoberturas";
+import FormularioCobertura from "@/app/ValidarSeguro/components/cobertura/FormularioRecode";
+import TablaRecode from "@/app/ValidarSeguro/components/cobertura/TablaRecode";
+import PopUpCobertura from "@/app/ValidarSeguro/components/cobertura/PopUpCobertura";
+import BotonValidacion from "@/app/ValidarSeguro/components/cobertura/BotonValidacion";
+import { useSeguroCoberturas } from "@/app/ValidarSeguro/hooks/useSeguroCoberturas";
 
 interface Props {
   id_carro: string;

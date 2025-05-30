@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { SeguroConCoberturas_Interface_Recode } from "@/interface/SeguroConCoberturas_Interface_Recode";
+import { SeguroConCoberturas_Interface_Recode } from "@/app/ValidarSeguro/interface/SeguroConCoberturas_Interface_Recode";
 
 interface Props {
   initialDataFor: SeguroConCoberturas_Interface_Recode;

@@ -1,15 +1,15 @@
 import {apiCarById, apiCobertura} from "@/api/apis_Recode";
 import { CondicionesUsoResponse } from "@/app/reserva/interface/CondicionesUsoVisual_interface_Recode";
-import {EnlaceInterface } from "@/interface/CoberturaForm_Interface_Recode";
+import {EnlaceInterface } from "@/app/ValidarSeguro/interface/CoberturaForm_Interface_Recode";
 
 import { RawCondicionesUsoResponse } from "@/app/reserva/interface/RawCondicionesUsoVisuali_Interface_Recode";
 import { transformCondiciones_Recode } from "@/app/reserva/utils/transformCondicionesVisuali_Recode";
 import axios, { AxiosError } from "axios";
 import { RawHostDetails_Recode } from "@/app/reserva/interface/RawHostDetails_Recode";
 import { transformDetailsHost_Recode } from "@/app/reserva/utils/transformDetailsHost_Recode";
-import { transformSeguroTodo_Recode } from "@/utils/transforSeguro_Recode";
-import { PostCoberturaPayload, PutCoberturaPayload, SeguroConCoberturas_Interface_Recode } from "@/interface/SeguroConCoberturas_Interface_Recode";
-import { SeguroRaw_Recode } from "@/interface/SeguroRaw_Recode";
+import { transformSeguroTodo_Recode } from "@/app/ValidarSeguro/utils/transforSeguro_Recode";
+import { PostCoberturaPayload, PutCoberturaPayload, SeguroConCoberturas_Interface_Recode } from "@/app/ValidarSeguro/interface/SeguroConCoberturas_Interface_Recode";
+import { SeguroRaw_Recode } from "@/app/ValidarSeguro/interface/SeguroRaw_Recode";
 
 
 
