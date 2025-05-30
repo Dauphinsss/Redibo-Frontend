@@ -32,6 +32,7 @@ import {
   Receipt,
   BadgeDollarSign,
   CarFront, // Importamos icono para órdenes de pago
+  Users,
 } from "lucide-react";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
@@ -46,7 +47,8 @@ type SectionType =
   | "becomeDriver"
   | "ratings"
   | "vehicles"
-  | "orders";
+  | "orders"
+  | "socios";
 
 export default function ProfilePage() {
   const [activeSection, setActiveSection] = useState<SectionType>("personal");
@@ -126,6 +128,33 @@ export default function ProfilePage() {
         return <VehiclesInfo />;
       case "orders":
         return <ReservationsList />;
+      case "socios":
+        return (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4">
+              {roles.includes('RENTER') && (
+                <Link href="/perfil/socios/conductores">
+                  <div
+                    className="w-full sm:w-64 h-40 bg-black text-white hover:bg-gray-900 rounded-xl p-6 flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
+                  >
+                    <Users className="h-10 w-10 mb-3" />
+                    <p className="text-lg font-semibold">Ver mis conductores</p>
+                  </div>
+                </Link>
+              )}
+              {roles.includes('DRIVER') && (
+                <Link href="/perfil/socios/arrendatarios">
+                   <div
+                    className="w-full sm:w-64 h-40 bg-black text-white hover:bg-gray-900 rounded-xl p-6 flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
+                  >
+                    <Users className="h-10 w-10 mb-3" />
+                    <p className="text-lg font-semibold">Ver mis arrendatarios</p>
+                  </div>
+                </Link>
+              )}
+            </div>
+          </div>
+        );
       default:
         return <PersonalInfo />;
     }
@@ -139,6 +168,7 @@ export default function ProfilePage() {
     ratings: "Calificaciones",
     vehicles: "Vehículos",
     orders: "Órdenes de Pago",
+    socios: "Mis Socios"
   };
 
   const menuItems = [
@@ -179,6 +209,13 @@ export default function ProfilePage() {
       alwaysShow: false,
       requiresRole: "RENTER",
     },
+    {
+      id: "socios",
+      title: "Socios",
+      icon: Users,
+      alwaysShow: false,
+      requiresRole: ["RENTER", "DRIVER"],
+    },
   ];
 
   const handleLogout = () => {
@@ -210,7 +247,10 @@ export default function ProfilePage() {
                   {menuItems.map((item) => {
                     if (
                       item.alwaysShow ||
-                      (item.requiresRole && roles.includes(item.requiresRole))
+                      (item.requiresRole && 
+                        (Array.isArray(item.requiresRole) 
+                          ? item.requiresRole.some(role => roles.includes(role))
+                          : roles.includes(item.requiresRole)))
                     ) {
                       return (
                         <SidebarMenuItem key={item.id}>
