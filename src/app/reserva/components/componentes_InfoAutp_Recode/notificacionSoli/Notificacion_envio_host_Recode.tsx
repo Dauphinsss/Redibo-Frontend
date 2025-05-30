@@ -144,7 +144,7 @@ export default function FormularioSolicitud({
         onNuevaNotificacion({
           id: nuevasNotif[0].id,
           tipo: "host",
-          mensaje: nuevasNotif[0].mensaje,
+          mensaje: "Nueva solicitud de alquiler",
           fecha: nuevasNotif[0].fecha,
           datos: {
             nombreUsuario: renterNombre,
