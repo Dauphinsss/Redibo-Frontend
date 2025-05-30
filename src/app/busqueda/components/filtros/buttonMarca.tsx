@@ -111,6 +111,7 @@ export function ButtonMarca({
       }
     }
   };
+  
 
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
@@ -148,7 +149,9 @@ export function ButtonMarca({
             <Input
               ref={inputRef}
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              //onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value.trimStart())}// ingnora espacios
+        
               placeholder="Buscar marca de vehículo..."
               className="pl-10"
             />
