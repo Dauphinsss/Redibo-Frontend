@@ -199,7 +199,7 @@ export default function Home({ ciudad }: Props) {
         <div className="hidden lg:block w-[40%]">
           <div className="sticky top-[204px] h-[calc(100vh-204px)] bg-gray-100 rounded shadow-inner">
             <ViewMap
-              posix={CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA]}
+              posix={(ciudad)? CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA] : CIUDADES_BOLIVIA['Cochabamba']}
               autos={autosFiltrados}
               radio={radio}
               punto={punto}
@@ -212,7 +212,7 @@ export default function Home({ ciudad }: Props) {
       {/* Mapa en mobile */}
       <MapViwMobile>
         <ViewMap
-          posix={CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA]}
+          posix={(ciudad)? CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA] : CIUDADES_BOLIVIA['Cochabamba']}
           autos={autosFiltrados}
           radio={radio}
           punto={punto}
