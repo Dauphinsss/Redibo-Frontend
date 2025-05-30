@@ -196,7 +196,7 @@ export default function Home({ ciudad }: Props) {
           </div>
         </main>
         {/* Mapa en desktop */}
-        <div className="hidden lg:block w-[40%]">
+        <div className="w-0 h-0 lg:block lg:w-[40%] lg:h-auto">
           <div className="sticky top-[204px] h-[calc(100vh-204px)] bg-gray-100 rounded shadow-inner">
             <ViewMap
               posix={(ciudad)? CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA] : CIUDADES_BOLIVIA['Cochabamba']}
