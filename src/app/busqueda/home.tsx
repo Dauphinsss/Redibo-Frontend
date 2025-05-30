@@ -14,6 +14,22 @@ import { InfiniteFilterCarousel } from "@/app/busqueda/components/fitroCarusel/i
 import { useRouter } from 'next/navigation';
 import CustomSearchWrapper from "@/app/busqueda/hooks/customSearchHU/CustomSearchWrapper";
 
+// Interfaces para el filtro de marca
+interface Marca {
+  id: number;
+  name: string;
+  models: number;
+  count: number;
+  logo?: string;
+}
+
+interface Host {
+  id: number;
+  name: string;
+  trips: number;
+  rating?: number;
+}
+
 export default function Home() {
   const router = useRouter();
   const [radio, setRadio] = useState(1);
@@ -51,27 +67,64 @@ export default function Home() {
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
   const [gpsActive, setGpsActive] = useState(false);
+  
+  // Estados para los nuevos filtros
+  const [marcaSeleccionada, setMarcaSeleccionada] = useState<Marca | null>(null);
+  const [mostrarTodos, setMostrarTodos] = useState(true);
 
   // Handlers para los filtros
   const handlePrecioFilter = (min: number, max: number) => {
-    // Aquí deberías filtrar los autos por precio
-    // filtrarAutos(busqueda, fechaInicio, fechaFin, ...otrosFiltros, min, max)
+    aplicarFiltroPrecio(min, max);
     console.log('Filtro por precio:', { min, max });
   };
+  
   const handleCalifFilter = (calificacion: number) => {
-    // Aquí deberías filtrar los autos por calificación
+    aplicarFiltroCalificacion(calificacion);
     console.log('Filtro por calificación:', calificacion);
   };
+  
   const handleViajesFilter = (minViajes: number) => {
-    // Aquí deberías filtrar los autos por viajes
+    aplicarFiltroViajes(minViajes);
     console.log('Filtro por viajes:', minViajes);
   };
+  
   const handleAirportFilter = () => {
     router.push('/filtrarAeropuerto');
   };
+  
   const toggleGPSFilter = () => {
     if (gpsActive) setPunto({ lon: 0, alt: 0 });
     setGpsActive((prev) => !prev);
+  };
+
+  // Handler para el filtro de marca - conecta con la lógica existente
+  const handleMarcaFilter = (marca: Marca | null) => {
+    setMarcaSeleccionada(marca);
+    setMostrarTodos(false);
+    
+    if (marca) {
+      // Usar la función filtrarAutos existente con el nombre de la marca
+      setBusqueda(marca.name);
+      filtrarAutos(marca.name, fechaInicio, fechaFin);
+    } else {
+      // Limpiar filtro de marca
+      setBusqueda("");
+      filtrarAutos("", fechaInicio, fechaFin);
+    }
+  };
+
+  // Handler para mostrar todos los resultados
+  const handleMostrarTodos = () => {
+    setMostrarTodos(true);
+    setMarcaSeleccionada(null);
+    setBusqueda("");
+    filtrarAutos("", fechaInicio, fechaFin);
+  };
+
+  // Handler para el filtro de host (placeholder)
+  const handleHostFilter = (host: Host | null) => {
+    console.log('Filtro por host:', host);
+    // Aquí puedes implementar la lógica de filtrado por host
   };
 
   const ViewMap = useMemo(() => dynamic(
@@ -84,7 +137,7 @@ export default function Home() {
 
   return (
     <div className="relative">
-      {/* Sidebar de filtros (agregado del primer código) */}
+      {/* Sidebar de filtros */}
       <SidebarFiltros
         mostrar={mostrarSidebar}
         onCerrar={() => setMostrarSidebar(false)}
@@ -114,14 +167,15 @@ export default function Home() {
               placeholder="Buscar por modelo, marca"
               onFiltrar={(query) => {
                 setBusqueda(query);
-                //Se borro para que no se vuelva a buscar en todos los carros
-                //filtrarAutos(query, fechaInicio, fechaFin);
+                setMarcaSeleccionada(null); // Limpiar marca seleccionada si se busca manualmente
+                setMostrarTodos(false);
+                // Se borró la llamada automática para que no se vuelva a buscar en todos los carros
               }}
-              //NUEVO
               onClearBusqueda={() => {
-                setBusqueda(""); // 🔁 borra el texto y reactiva el autosFiltrados base
+                setBusqueda("");
+                setMarcaSeleccionada(null);
+                setMostrarTodos(true);
               }}
-
               obtenerSugerencia={obtenerSugerencia}
             />
           </div>
@@ -145,12 +199,11 @@ export default function Home() {
             onPrecioFilter={handlePrecioFilter}
             onCalifFilter={handleCalifFilter}
             onViajesFilter={handleViajesFilter}
-            onHostFilter={() => { }}
-            onMarcaFilter={() => { }}
+            onHostFilter={handleHostFilter}
+            onMarcaFilter={handleMarcaFilter}
+            onMostrarTodos={handleMostrarTodos}
+            isAllActive={mostrarTodos}
             autoScrollDelay={4000}
-            onMostrarTodos={() => {
-              console.log("Mostrar todos los resultados");
-            }}
           />
         </div>
       </div>
@@ -163,20 +216,12 @@ export default function Home() {
               <HeaderBusquedaRecode
                 autosTotales={autos}
                 autosFiltrados={autosFiltrados}
-                //autosMostrados={autosActuales}
                 autosMostrados={autosFiltrados}
                 ordenSeleccionado={ordenSeleccionado}
                 setOrdenSeleccionado={setOrdenSeleccionado}
                 setAutosFiltrados={setAutosFiltrados}
               />
 
-              {/* <ResultadosAutos
-                cargando={cargando}
-                autosActuales={autosActuales}
-                autosFiltrados={autosFiltrados}
-                autosVisibles={autosVisibles}
-                mostrarMasAutos={mostrarMasAutos}
-              /> */}
               <CustomSearchWrapper
                 autosFiltrados={autosFiltrados}
                 autosVisibles={autosVisibles}
