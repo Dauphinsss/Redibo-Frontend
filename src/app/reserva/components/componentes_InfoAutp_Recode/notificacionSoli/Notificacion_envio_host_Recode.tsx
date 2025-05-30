@@ -13,6 +13,7 @@ import NotificacionEnvioExitoso from "./Notificacion_envio_exitoso_Recode";
 
 import { AutoDetails_interface_Recode } from "@/app/reserva/interface/AutoDetails_interface_Recode";
 import { SolicitudRecodePost } from "@/app/reserva/interface/EnviarGuardarNotif_Recode";
+import { transformAutoDetails_Recode } from "@/app/reserva/utils/transformAutoDetails_Recode";
 
 interface Props {
   id_carro: number;
@@ -47,6 +48,8 @@ export default function FormularioSolicitud({
           setAuto(carData);
           setHostNombre(carData.nombreHost || "");
         }
+        const autoTransformado = transformAutoDetails_Recode(carData);
+        setAuto(autoTransformado);
       } catch {
         setFormError("Error al cargar información del vehículo");
       }
@@ -102,7 +105,7 @@ export default function FormularioSolicitud({
       renterEmail,
       hostEmail,
       id_renter: 4,
-      id_host: auto.Usuario.id, 
+      id_host: auto.idHost, 
     };
 
     console.log(auto);
