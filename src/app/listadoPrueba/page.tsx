@@ -1,6 +1,6 @@
 "use client";
 
-import ResultadoAutos from "@/app/ValidarSeguro/components/cobertura/ResultadoAutos";
+import ResultadoAutos from "@/app/validarSeguro/components/cobertura/ResultadoAutos";
 import Header from "@/components/ui/Header";
 import { useAutosSimplificado } from "@/hooks/useAutosSimplificado";
 
