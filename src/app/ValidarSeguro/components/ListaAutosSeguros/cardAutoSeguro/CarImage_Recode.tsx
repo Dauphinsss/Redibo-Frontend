@@ -1,15 +1,11 @@
 import React from "react";
 import Image from "next/image";
+import { CarImageProps } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 
-interface CarImageProps {
-  src?: string;
-  alt?: string;
-}
-
-const CarImage_Recode: React.FC<CarImageProps> = ({
-  src = "/images/Auto_default.png",
-  alt = "Auto"
-}) => {
+function CarImage_Recode({
+  src,
+  alt,
+}: CarImageProps) {
   return (
     <div className="w-40 h-32 rounded-xl overflow-hidden shadow-md bg-gray-100 flex items-center justify-center">
       {src ? (

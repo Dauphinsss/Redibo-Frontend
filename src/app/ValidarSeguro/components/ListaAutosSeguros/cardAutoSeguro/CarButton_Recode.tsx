@@ -1,6 +1,6 @@
-import React from "react";
+import React, { memo } from "react";
 
-const CarButton_Recode: React.FC = () => {
+function CarButton_Recode(){
   return (
     <button className="mt-4 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition">
       Ver aseguradoras
@@ -8,4 +8,4 @@ const CarButton_Recode: React.FC = () => {
   );
 };
 
-export default CarButton_Recode;
+export default memo(CarButton_Recode);
