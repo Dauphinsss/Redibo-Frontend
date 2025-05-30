@@ -8,6 +8,7 @@ import { Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import DateRangeFilter from "@/app/busqueda/components/filtrofechas_7-bits/DateRangeFilter";
+import AirportsFilter from "../filtroAeropuertos_7-bits/AirportsFilter"
 import { ButtonPrecio } from "../filtros/buttonPrecio";
 import { ButtonCalif } from "../filtros/buttonCalif";
 import { ButtonViajes } from "../filtros/buttonViajes";
@@ -42,7 +43,10 @@ interface InfiniteFilterCarouselProps {
   setFechaFin: (fecha: string) => void
   autosActuales: Auto[]
   autosTotales: Auto[]
-  onAirportFilter: () => void
+  //onAirportFilter: () => void
+  autos: Auto[]
+  setAutosFiltrados: (autos: Auto[]) => void
+
   gpsActive: boolean
   onGpsToggle: () => void
   radio: number
@@ -76,7 +80,9 @@ export function InfiniteFilterCarousel({
   setFechaFin,
   autosActuales,
   autosTotales,
-  onAirportFilter,
+  //onAirportFilter,
+  autos,
+  setAutosFiltrados,  
   gpsActive,
   onGpsToggle,
   radio,
@@ -165,10 +171,12 @@ export function InfiniteFilterCarousel({
     {
       id: 'aeropuerto',
       component: (
-        <Button variant="outline" onClick={onAirportFilter}>
-          Filtrar por Aeropuerto
-        </Button>
+        <AirportsFilter                    
+          autos={autos}
+          setAutosFiltrados={setAutosFiltrados}          
+        />
       ),
+      expandable: true,
     },
     {
       id: 'gps',

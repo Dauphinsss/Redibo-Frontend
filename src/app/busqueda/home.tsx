@@ -142,7 +142,10 @@ export default function Home({ ciudad }: Props) {
             setFechaFin={setFechaFin}
             autosActuales={autosActuales}
             autosTotales={autosFiltrados}
-            onAirportFilter={handleAirportFilter}
+            //onAirportFilter={handleAirportFilter}
+            setAutosFiltrados={setAutosFiltrados}
+            autos={autos}
+
             gpsActive={gpsActive}
             onGpsToggle={toggleGPSFilter}
             radio={radio}
