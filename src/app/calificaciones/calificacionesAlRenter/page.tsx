@@ -75,10 +75,10 @@ export default function CalificacionesAlRenterPage() {
   const [usuariosBloqueados, setUsuariosBloqueados] = useState<{[key: string]: boolean}>({})
   const [showToast, setShowToast] = useState(false)
   const [showToastEliminacion,setShowToastEliminacion]=useState(false)
-  // Cargar el diccionario de palabras ofensivas
+  
   useEffect(() => {
     try {
-      // Cargar el diccionario en español
+      
       leoProfanity.add(leoProfanity.getDictionary("es"))
 
       // Agregar palabras adicionales al diccionario
@@ -164,7 +164,7 @@ export default function CalificacionesAlRenterPage() {
     setUsuariosBloqueados(bloqueados)
   }
 
-  // Cargar datos cuando se obtiene el hostId
+  
   useEffect(() => {
     if (!hostId) return
 
@@ -179,7 +179,7 @@ export default function CalificacionesAlRenterPage() {
 
         console.log("Fetching data for hostId:", hostId)
 
-        // Fetch rentals from API - Modificado para coincidir con el modelo Reserva
+        
         const rentalsResponse = await fetch(`${API_URL}/api/reservas/completadas?hostId=${hostId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -190,7 +190,7 @@ export default function CalificacionesAlRenterPage() {
         }
         const rentalsData = await rentalsResponse.json()
 
-        // Fetch ratings from API - Modificado para coincidir con el modelo CalificacionReserva
+        
         const ratingsResponse = await fetch(`${API_URL}/api/calificaciones-reserva?hostId=${hostId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -306,7 +306,7 @@ export default function CalificacionesAlRenterPage() {
 
       if (!selected) return
 
-      // Validar que todas las calificaciones estén completas
+      
       if (
         rating.comportamiento === 0 ||
         rating.cuidado_vehiculo === 0 ||
@@ -316,7 +316,7 @@ export default function CalificacionesAlRenterPage() {
         return
       }
 
-      // Validar comentario ofensivo
+      
       if (leoProfanity.check(rating.comentario)) {
         setComentarioOfensivo(true)
         setError("El comentario contiene lenguaje inapropiado")
@@ -389,7 +389,7 @@ export default function CalificacionesAlRenterPage() {
         setCalificaciones([...calificaciones, newCalificacion])
       }
 
-      // Actualizar el estado de rated en el renter seleccionado
+      
       setRenters(
         renters.map((r) =>
           r.id === selected.id && r.idReserva === selected.idReserva
@@ -414,73 +414,58 @@ export default function CalificacionesAlRenterPage() {
     }
   }
 
-  async function handleBorrar(renter: Renter) {
-    console.log("Comparando:", {
-      buscarRenterId: String(renter.id),
-      buscarReservaId: String(renter.idReserva),
-      calificaciones: calificaciones.map(c => ({
-        id: c.id,
-        renterId: String(c.renterId),
-        reservaId: String(c.reservaId)
-      }))
-    });
-    const calificacion = calificaciones.find(
-      (c) =>
-        String(c.renterId || "") === String(renter.id || "") &&
-        String(c.reservaId || "") === String(renter.idReserva || "")
-    )
-    if (!calificacion) {
-      alert("No se encontró la calificación para este arrendatario/reserva.");
-      return;
+  async function handleBorrar(calificacionId: string) {
+    console.log("Frontend - ID de calificación a eliminar:", calificacionId);
+    const confirmed = window.confirm("¿Estás seguro de que quieres eliminar esta calificación?");
+    if (!confirmed) {
+        return; 
     }
+
     try {
-      const token = localStorage.getItem("auth_token")
+      const token = localStorage.getItem("auth_token");
       if (!token) {
-        throw new Error("No se encontró el token de autenticación")
+        throw new Error("No se encontró el token de autenticación");
       }
 
-      const response = await fetch(
-        `${API_URL}/api/calificaciones-reserva/${calificacion.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      
+      const response = await fetch(`${API_URL}/api/calificaciones-reserva/${calificacionId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
-        throw new Error("Error al borrar la calificación")
+        
+         const errorBody = response.status !== 204 ? await response.json() : null;
+         const errorMessage = errorBody?.error || `Error al eliminar calificación: ${response.status} ${response.statusText}`; 
+         throw new Error(errorMessage);
       }
-      
-      // Actualizar la lista de calificaciones
-      setCalificaciones(
-        calificaciones.filter((c) => c.id !== calificacion.id)
-      )
 
-      // Actualizar el estado de rated en el renter
-      setRenters(
-        renters.map((r) =>
-          r.id === renter.id && r.idReserva === renter.idReserva
-            ? { ...r, rated: false }
-            : r
-        )
-      )
-      if (selected?.id === renter.id) {
-       
-        setShowToastEliminacion(true)
-        setShowRatingPanel(false)
-        setSelected(null)
-        setRating({
-          comportamiento: 0,
-          cuidado_vehiculo: 0,
-          puntualidad: 0,
-          comentario: "",
-        })
+      
+      setCalificaciones(calificaciones.filter(calif => calif.id !== calificacionId));
+
+      
+      const deletedCalificacion = calificaciones.find(calif => calif.id === calificacionId);
+
+      
+      if (deletedCalificacion && deletedCalificacion.reservaId) {
+        setRenters(prevRenters =>
+          prevRenters.map(renter =>
+            renter.idReserva === deletedCalificacion.reservaId
+              ? { ...renter, rated: false }
+              : renter
+          )
+        );
       }
-    } catch (error) {
-      console.error("Error al borrar la calificación:", error)
-      setError("Error al borrar la calificación")
+
+      setShowToastEliminacion(true); // Mostrar toast de éxito
+      setTimeout(() => setShowToastEliminacion(false), 3000);
+
+    } catch (error: any) {
+      console.error("Error al eliminar calificación:", error);
+      
+      toast.error(error.message || "Error al eliminar calificación.");
     }
   }
 
@@ -686,10 +671,7 @@ export default function CalificacionesAlRenterPage() {
                                       </button>
                                       {estaDentroDePeriodoCalificacion(renter.fechaFin?.toString() || "") && (
                                         <button
-                                          onClick={() => {
-                                            alert("Intentando borrar");
-                                            handleBorrar(renter);
-                                          }}
+                                          onClick={() => { if (calificacion) handleBorrar(calificacion.id) }}
                                           className="delete-button"
                                           aria-label="Eliminar calificación"
                                         >
@@ -960,7 +942,7 @@ export default function CalificacionesAlRenterPage() {
                           )}
 
                           {selected.rated && estaDentroDePeriodoCalificacion(selected.fechaFin?.toString() || "") && (
-                          <button onClick={() => handleBorrar(selected)} className="delete-rating-button">
+                          <button onClick={() => handleBorrar(selected.id)} className="delete-rating-button">
                           <Trash2 size={16} />
                           Borrar calificación
                           </button>

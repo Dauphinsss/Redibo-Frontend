@@ -45,9 +45,10 @@ export default function ActividadVehiclesPage() {
   const [error, setError] = useState<string | null>(null)
   const [totalReservaciones, setTotalReservaciones] = useState(0)
   const [userId, setUserId] = useState<string | null>(null)
+  const [filtroEstado, setFiltroEstado] = useState<string>("")
 
   useEffect(() => {
-    // Obtener el ID del usuario autenticado del localStorage
+   
     const token = localStorage.getItem("auth_token")
     if (token) {
       const fetchUserId = async () => {
@@ -87,8 +88,16 @@ export default function ActividadVehiclesPage() {
         throw new Error("No se encontró el token de autenticación")
       }
 
+      
+      let apiUrl = `${API_URL}/api/reservas?hostId=${userId}&page=${paginaActual}&limit=${registrosPorPagina}`;
+
+
+      if (filtroEstado) {
+           apiUrl = `${apiUrl}&estado=${filtroEstado}`;
+      }
+
       const response = await fetch(
-        `${API_URL}/api/reservas/completadas?hostId=${userId}`,
+        apiUrl,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -102,9 +111,19 @@ export default function ActividadVehiclesPage() {
       }
 
       const data = await response.json()
+      console.log("Datos de reserva recibidos del backend:", data); 
 
-      setReservaciones(data)
-      setTotalReservaciones(data.length)
+      
+      if (data && Array.isArray(data.reservas)) {
+        setReservaciones(data.reservas)
+        setTotalReservaciones(data.total)
+      } else {
+         console.error("Formato de respuesta inesperado del backend para /api/reservas:", data);
+         setReservaciones([]);
+         setTotalReservaciones(0);
+         
+      }
+
     } catch (error: unknown) {
       console.error("Error:", error)
       const errorMessage = error instanceof Error ? error.message : "Error desconocido"
@@ -113,7 +132,7 @@ export default function ActividadVehiclesPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [userId])
+  }, [userId, registrosPorPagina, paginaActual, filtroEstado])
 
   useEffect(() => {
     if (userId) {

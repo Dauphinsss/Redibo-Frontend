@@ -3,7 +3,6 @@
 import { useState, useEffect, MouseEvent } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import {
@@ -149,15 +148,15 @@ export default function ComentariosPage() {
     fetchRoles();
   }, []);
 
-  // Scroll al inicio cuando cambia la página
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  // Apply filters whenever filter criteria change
+  
   useEffect(() => {
     applyFilters();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [searchTerm, dateRange, sortBy, sortOrder]);
 
   const applyFilters = () => {
@@ -176,15 +175,15 @@ export default function ComentariosPage() {
       filtered = filtered.filter((comment) => {
         const commentDate = new Date(comment.fecha_creacion);
 
-        // Establecer todas las horas, minutos y segundos a 0 para comparar solo las fechas
+        
         const fromDate = new Date(dateRange.from as Date);
         fromDate.setHours(0, 0, 0, 0);
 
         const toDate = new Date(dateRange.to as Date);
-        toDate.setHours(23, 59, 59, 999); // Fin del día para incluir todo el día final
+        toDate.setHours(23, 59, 59, 999); 
 
         const normalizedCommentDate = new Date(commentDate);
-        normalizedCommentDate.setHours(12, 0, 0, 0); // Mediodía para evitar problemas de zona horaria
+        normalizedCommentDate.setHours(12, 0, 0, 0); 
 
         return (
           normalizedCommentDate >= fromDate && normalizedCommentDate <= toDate
@@ -389,49 +388,43 @@ export default function ComentariosPage() {
               currentComments.map((comment) => (
                 <div
                   key={comment.id}
-                  className="border rounded-lg p-4 flex gap-4"
+                  className="bg-white p-6 rounded-lg shadow-sm border border-gray-100"
                 >
-                  <div className="flex-shrink-0">
-                    <img
-                      src={
-                        comment.carro?.Imagen?.[0]?.data
-                          ? `data:image/jpeg;base64,${comment.carro.Imagen[0].data}`
-                          : "/placeholder.svg?height=80&width=120"
-                      }
-                      alt={`${comment.carro?.marca || ""} ${
-                        comment.carro?.modelo || ""
-                      }`}
-                      width={120}
-                      height={80}
-                      className="rounded-md object-cover"
-                    />
-                  </div>
-                  <div className="flex-grow">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-medium text-lg">
-                        {comment.carro?.marca || "Vehículo"}{" "}
-                        {comment.carro?.modelo || ""}{" "}
-                        {comment.carro?.año || ""}
-                      </h3>
-                      <span className="text-sm text-gray-500">
-                        {format(
-                          new Date(comment.fecha_creacion),
-                          "d MMMM yyyy",
-                          {
-                            locale: es,
-                          }
-                        )}
-                      </span>
+                  <div className="flex gap-4">
+                    <div className="w-24 h-24 flex-shrink-0">
+                      <img
+                        src={comment.carro?.Imagen?.[0]?.data || "/placeholder_car.svg"}
+                        alt={`${comment.carro?.marca} ${comment.carro?.modelo}`}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
                     </div>
-                    <div className="mt-1">
-                      {renderStars(comment.calificacion)}
+                    <div className="flex-grow">
+                      <div className="flex justify-between items-start">
+                        <h3 className="font-medium text-lg">
+                          {comment.carro?.marca || "Vehículo"}{" "}
+                          {comment.carro?.modelo || ""}{" "}
+                          {comment.carro?.año || ""}
+                        </h3>
+                        <span className="text-sm text-gray-500">
+                          {format(
+                            new Date(comment.fecha_creacion),
+                            "d MMMM yyyy",
+                            {
+                              locale: es,
+                            }
+                          )}
+                        </span>
+                      </div>
+                      <div className="mt-1">
+                        {renderStars(comment.calificacion)}
+                      </div>
+                      <p className="mt-2 text-gray-700 break-words whitespace-pre-line">
+                        {comment.comentario || "Sin comentarios"}
+                      </p>
+                      <p className="mt-1 text-sm text-gray-500">
+                        Por: {comment.usuario.nombre}
+                      </p>
                     </div>
-                    <p className="mt-2 text-gray-700 break-words whitespace-pre-line">
-                      {comment.comentario || "Sin comentarios"}
-                    </p>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Por: {comment.usuario.nombre}
-                    </p>
                   </div>
                 </div>
               ))
