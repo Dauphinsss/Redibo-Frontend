@@ -1,5 +1,5 @@
-import { SeguroRaw_Recode } from "@/interface/SeguroRaw_Recode";
-import { SeguroConCoberturas_Interface_Recode } from "@/interface/SeguroConCoberturas_Interface_Recode";
+import { SeguroRaw_Recode } from "@/app/ValidarSeguro/interface/SeguroRaw_Recode";
+import { SeguroConCoberturas_Interface_Recode } from "@/app/ValidarSeguro/interface/SeguroConCoberturas_Interface_Recode";
 
 export function transformSeguroTodo_Recode(
     datos?: SeguroRaw_Recode[] | null

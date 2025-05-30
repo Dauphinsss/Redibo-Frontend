@@ -2,9 +2,9 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import SubirImagenCloudinary from '@/components/recodeComponentes/cobertura/ImagenUpload';
+import SubirImagenCloudinary from '@/app/ValidarSeguro/components/cobertura/ImagenUpload';
 import { postCoberturaEnlace } from '@/service/services_Recode';
-import { EnlaceInterface } from '@/interface/CoberturaForm_Interface_Recode';
+import { EnlaceInterface } from '@/app/ValidarSeguro/interface/CoberturaForm_Interface_Recode';
 
 export default function ImagenUploadClient() {
   const searchParams = useSearchParams();

@@ -2,7 +2,7 @@
 
 import { memo, useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { useCoberturasStore } from "@/hooks/useCoberturasStore";
+import { useCoberturasStore } from "@/app/ValidarSeguro/hooks/useCoberturasStore";
 
 function PopUpCobertura() {
   const {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useCoberturasStore } from "@/hooks/useCoberturasStore";
+import { useCoberturasStore } from "@/app/ValidarSeguro/hooks/useCoberturasStore";
 import { postCobertura, putCobertura } from "@/service/services_Recode";
 
 interface Props {
