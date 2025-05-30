@@ -43,7 +43,7 @@ export default function CondicionVisualPage() {
         </div>
         
         <div className="lg:w-96">
-          <NotificacionesCampana 
+          <NotificacionesCampana
             notificaciones={notificaciones}
             onAceptar={(id) => console.log('Aceptar:', id)}
             onRechazar={(id) => console.log('Rechazar:', id)}

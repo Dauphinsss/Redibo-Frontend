@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ObtenerNotif_Recode } from "@/app/reserva/interface/obtenerNotif_Recode";
+import { ObtenerNotif_Recode } from "@/app/reserva/interface/ObtenerNotif_Recode";
 
 export function useObtenerNotif(idHost: number) {
   const [notificaciones, setNotificaciones] = useState<ObtenerNotif_Recode[]>([]);
