@@ -315,7 +315,7 @@ export default function ProfilePage() {
                         cuenta
                       </p>
                     </div>
-                    <div className="p-4 md:p-6">{renderContent()}</div>
+                    <div>{renderContent()}</div>
                   </div>
                 </div>
               </main>
