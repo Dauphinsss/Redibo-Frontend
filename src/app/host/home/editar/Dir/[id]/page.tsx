@@ -25,7 +25,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-const API_URL = "http://localhost:4000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ||"http://localhost:4000";
 
 interface Option {
   id: number;
@@ -84,7 +84,7 @@ const EditarDireccionPage: React.FC = () => {
       try {
         // 1. Cargar todos los países disponibles primero
         try {
-          const paisesResponse = await axios.get(`${API_URL}/paises`);
+          const paisesResponse = await axios.get(`${API_URL}/api/v1/paises`);
           console.log("Países cargados:", paisesResponse.data);
           if (paisesResponse.data && Array.isArray(paisesResponse.data)) {
             setPaises(paisesResponse.data);
@@ -95,8 +95,8 @@ const EditarDireccionPage: React.FC = () => {
         }
 
         // 2. Obtener datos del carro con dirección
-        console.log(`Obteniendo datos de: ${API_URL}/carro/direccion/${carId}`);
-        const carroResponse = await axios.get(`${API_URL}/carro/direccion/${carId}`);
+        console.log(`Obteniendo datos de: ${API_URL}/api/v1/carro/direccion/${carId}`);
+        const carroResponse = await axios.get(`${API_URL}/api/v1/carro/direccion/${carId}`);
         const datosCarro = carroResponse.data;
         
         console.log("Datos recibidos del carro:", datosCarro);
@@ -128,7 +128,7 @@ const EditarDireccionPage: React.FC = () => {
         // 3. Cargar todas las ciudades del país seleccionado
         if (datosCarro.paisId) {
           try {
-            const ciudadesResponse = await axios.get(`${API_URL}/ciudades/${datosCarro.paisId}`);
+            const ciudadesResponse = await axios.get(`${API_URL}/api/v1/ciudades/${datosCarro.paisId}`);
             console.log("Ciudades cargadas:", ciudadesResponse.data);
             if (ciudadesResponse.data && Array.isArray(ciudadesResponse.data)) {
               setCiudades(ciudadesResponse.data);
@@ -142,7 +142,7 @@ const EditarDireccionPage: React.FC = () => {
         // 4. Cargar todas las provincias de la ciudad seleccionada
         if (datosCarro.ciudadId) {
           try {
-            const provinciasResponse = await axios.get(`${API_URL}/provincias/${datosCarro.ciudadId}`);
+            const provinciasResponse = await axios.get(`${API_URL}/api/v1/provincias/${datosCarro.ciudadId}`);
             console.log("Provincias cargadas:", provinciasResponse.data);
             if (provinciasResponse.data && Array.isArray(provinciasResponse.data)) {
               setProvincias(provinciasResponse.data);
@@ -259,7 +259,7 @@ const EditarDireccionPage: React.FC = () => {
     
     // Cargar todas las ciudades del país seleccionado
     try {
-      const response = await axios.get(`${API_URL}/ciudades/${paisId}`);
+      const response = await axios.get(`${API_URL}/api/v1/ciudades/${paisId}`);
       console.log(`Ciudades del país ${paisId}:`, response.data);
       if (response.data && Array.isArray(response.data)) {
         setCiudades(response.data);
@@ -294,7 +294,7 @@ const EditarDireccionPage: React.FC = () => {
     
     // Cargar todas las provincias de la ciudad seleccionada
     try {
-      const response = await axios.get(`${API_URL}/provincias/${ciudadId}`);
+      const response = await axios.get(`${API_URL}/api/v1/provincias/${ciudadId}`);
       console.log(`Provincias de la ciudad ${ciudadId}:`, response.data);
       if (response.data && Array.isArray(response.data)) {
         setProvincias(response.data);
@@ -444,11 +444,11 @@ const EditarDireccionPage: React.FC = () => {
     };
     
     console.log("Datos a enviar:", datosParaEnviar);
-    console.log(`Enviando a: ${API_URL}/carro/direccion/${carId}`);
+    console.log(`Enviando a: ${API_URL}/api/v1/carro/direccion/${carId}`);
     
     try {
       await axios.put(
-        `${API_URL}/carro/direccion/${carId}`, 
+        `${API_URL}/api/v1/carro/direccion/${carId}`, 
         datosParaEnviar,
         {
           headers: {

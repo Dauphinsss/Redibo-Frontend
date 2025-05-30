@@ -13,7 +13,7 @@ export default function Radio({ radio, setRadio, punto }: RadioControlProps) {
 
   return (
     <div
-      className={`border-gray-300 p-4 rounded-md border-2 w-56 mx-auto transition-opacity duration-300 text-center bg-white hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-300 ${isDisabled ? "opacity-30" : "opacity-100"
+      className={`p-4 bg-white transition-opacity duration-300 ${isDisabled ? "opacity-40 pointer-events-none" : "opacity-100"
         }`}
     >
       <div className="mb-3">
@@ -21,16 +21,21 @@ export default function Radio({ radio, setRadio, punto }: RadioControlProps) {
           Radio: {radio} kilometro
         </span>
       </div>
-      <input
-        type="range"
-        min={1}
-        max={20}
-        value={radio}
-        onChange={handleChange}
-        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-        aria-label="Ajustar radio"
-        disabled={isDisabled}
-      />
+      <div className="relative px-2">
+        <input
+          type="range"
+          min={1}
+          max={20}
+          value={radio}
+          onChange={handleChange}
+          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 focus:outline-none"
+          aria-label="Ajustar radio"
+        />
+        <div className="flex justify-between text-xs text-gray-500 mt-1 px-1">
+          <span>1 km</span>
+          <span>20 km</span>
+        </div>
+      </div>
     </div>
   );
 }

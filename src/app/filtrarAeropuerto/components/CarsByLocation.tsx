@@ -31,13 +31,14 @@ const CarsByLocation = ({ latitude, longitude, radius }: Props) => {
       <ul className="max-w-4xl divide-y divide-gray-200 dark:divide-gray-700">
         {content.map((item, i: number) => {
           const distance = haversineDistance(latitude, longitude, item.latitud, item.longitud);
-          if (distance < radius) {
+          if (distance !=0 && distance < radius) {
             count++;
             return (
               <li key={i} className="pb-3 sm:pb-4">
                 <div className="flex items-center space-x-2 rtl:space-x-reverse">
                   <div className="shrink-0">
-                    <img className="w-20 rounded-sm mt-2" src={item.imagenes} alt="imagen auto" />
+                    <img className="w-20 rounded-sm mt-2" src={(item.imagenes)?(item.imagenes):
+                      'https://placehold.co/600x400?text=Sin+Imagen'} alt="imagen auto" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-900">

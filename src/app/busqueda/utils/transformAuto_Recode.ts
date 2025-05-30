@@ -11,7 +11,7 @@ export const transformAuto = (item: RawAuto): AutoCard => ({
     anio: item.a_o,
     combustibles: Array.isArray(item.CombustibleCarro)
         ? item.CombustibleCarro
-            .map((c) => c?.TipoCombustible?.tipoDeCombustible)
+            .map((c) => c?.TipoCombustible?.tipoDeCombustible?.toLowerCase())
             .filter((c): c is string => typeof c === "string")
         : [],
     estadoAlquiler: item.estado,
@@ -26,4 +26,7 @@ export const transformAuto = (item: RawAuto): AutoCard => ({
     latitud: item.Direccion.latitud || -17.37398,
     longitud: item.Direccion.longitud || -66.25434,
     reservas: item.Reserva,
+    caracteristicasAdicionales: Array.isArray(item.caracteristicasAdicionales) 
+        ? item.caracteristicasAdicionales 
+        : [],
 });

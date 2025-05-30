@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 
 // Configuración base
 const API: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v2/seguros",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
   timeout: 10000,
 });
 
@@ -35,7 +35,7 @@ class SegurosService {
   // Métodos para tipos de seguro (CRUD)
   async getSeguros(): Promise<Seguro[]> {
     try {
-      const response = await API.get(`/seguros`);
+      const response = await API.get(`/api/v2/seguros/seguros`);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -45,7 +45,7 @@ class SegurosService {
 
   async getSeguroById(id: number): Promise<Seguro> {
     try {
-      const response = await API.get(`/seguros/${id}`);
+      const response = await API.get(`/api/v2/seguros/seguros/${id}`);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -55,7 +55,7 @@ class SegurosService {
 
   async createSeguro(seguro: Omit<Seguro, 'id'>): Promise<Seguro> {
     try {
-      const response = await API.post(`/seguros`, seguro);
+      const response = await API.post(`/api/v2/seguros/seguros`, seguro);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -65,7 +65,7 @@ class SegurosService {
 
   async updateSeguro(id: number, seguro: Partial<Omit<Seguro, 'id'>>): Promise<Seguro> {
     try {
-      const response = await API.put(`/seguros/${id}`, seguro);
+      const response = await API.put(`/api/v2/seguros/seguros/${id}`, seguro);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -75,7 +75,7 @@ class SegurosService {
 
   async deleteSeguro(id: number): Promise<void> {
     try {
-      await API.delete(`/seguros/${id}`);
+      await API.delete(`/api/v2/seguros/seguros/${id}`);
     } catch (error) {
       this.handleError(error);
       throw error;
@@ -85,7 +85,7 @@ class SegurosService {
   // Métodos para pólizas de seguro de coche
   async createSeguroCarro(idCarro: number, seguro: SeguroAdicionalPayload): Promise<SeguroCarro> {
     try {
-      const response = await API.post(`/carros/${idCarro}/seguros`, seguro);
+      const response = await API.post(`/api/v2/seguros/carros/${idCarro}/seguros`, seguro);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -99,7 +99,7 @@ class SegurosService {
         throw new Error('El array de seguros no puede estar vacío');
       }
 
-      const response = await API.post(`/carros/${idCarro}/seguros/batch`, seguros);
+      const response = await API.post(`/api/v2/seguros/carros/${idCarro}/seguros/batch`, seguros);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -109,7 +109,7 @@ class SegurosService {
 
   async getSeguroCarroById(id: number): Promise<SeguroCarro> {
     try {
-      const response = await API.get(`/carros/seguros/${id}`);
+      const response = await API.get(`/api/v2/seguros/carros/seguros/${id}`);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -119,7 +119,7 @@ class SegurosService {
 
   async updateSeguroCarro(id: number, seguro: Partial<Omit<SeguroCarro, 'id' | 'id_carro'>>): Promise<SeguroCarro> {
     try {
-      const response = await API.put(`/carros/seguros/${id}`, seguro);
+      const response = await API.put(`/api/v2/seguros/carros/seguros/${id}`, seguro);
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -127,9 +127,9 @@ class SegurosService {
     }
   }
 
-  async deleteSeguroCarro(id: number): Promise<void> {
+  async deleteSeguroCarro(id_carro: number): Promise<void> {
     try {
-      await API.delete(`/carros/seguros/${id}`);
+      await API.delete(`/api/v2/seguros/carros/${id_carro}/seguros`);
     } catch (error) {
       this.handleError(error);
       throw error;

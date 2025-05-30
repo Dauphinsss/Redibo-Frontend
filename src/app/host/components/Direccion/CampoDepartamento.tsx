@@ -11,12 +11,13 @@ import axios from "axios";
 
 interface CampoDepartamentoProps {
   departamento: string;
-  onDepartamentoChange: (value: string) => void;
+  onDepartamentoChange: (value: string, name?: string) => void;
   departamentoError: string;
   setDepartamentoError: (value: string) => void;
   pais: string;
   setProvincia: (value: string) => void;
   apiUrl: string;
+  setSelectedDepartmentName: (name: string) => void;
 }
 
 interface Department {
@@ -31,7 +32,8 @@ export default function CampoDepartamento({
   setDepartamentoError,
   pais,
   setProvincia,
-  apiUrl
+  apiUrl,
+  setSelectedDepartmentName
 }: CampoDepartamentoProps) {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(false);
@@ -84,7 +86,13 @@ export default function CampoDepartamento({
   }, [pais, apiUrl, setDepartamentoError]);
 
   const handleValueChange = (value: string) => {
-    onDepartamentoChange(value);
+    const selectedDept = departments.find(dept => dept.id.toString() === value);
+    if (selectedDept) {
+      setSelectedDepartmentName(selectedDept.nombre);
+      onDepartamentoChange(value, selectedDept.nombre);
+    } else {
+      onDepartamentoChange(value);
+    }
     setProvincia("");
   };
 

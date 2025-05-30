@@ -19,7 +19,7 @@ const logger = {
 
 // Crear instancia de Axios con configuración base
 const API: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v2",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
   timeout: 10000,
 });
 
@@ -144,7 +144,7 @@ export async function getCars({
     hostId = 1 
   } = {}): Promise<{ data: Car[]; total: number }> {
     try {
-      const response = await API.get<GetCarsResponse>("/cars", {
+      const response = await API.get<GetCarsResponse>("/api/v2/cars", {
         params: { hostId, start: skip, limit: take },
       });
   
@@ -185,6 +185,8 @@ export interface CreateFullCarPayload {
   calle: string;
   zona: string;
   num_casa: string | null;
+  latitud?: number;
+  longitud?: number;
   vim: string;  // Mantenemos vim para compatibilidad con API
   año: number;
   marca: string;
@@ -213,7 +215,7 @@ export async function createFullCar(
   images: File[] = []
 ): Promise<CreateFullCarResponse> {
   try {
-    const resp = await API.post<CreateFullCarResponse>('/cars/full', payload);
+    const resp = await API.post<CreateFullCarResponse>('/api/v2/cars/full', payload);
     const result = resp.data;
     
     // Si la creación fue exitosa y hay imágenes, subirlas
@@ -242,7 +244,7 @@ export async function createFullCar(
 
 export async function getCarById(carId: number): Promise<Car | null> {
   try {
-    const resp = await API.get<{ success: boolean; data: BackendCar }>(`/cars/${carId}`);
+    const resp = await API.get<{ success: boolean; data: BackendCar }>(`/api/v2/cars/${carId}`);
     
     if (resp.data.success && resp.data.data) {
       return transformBackendCar(resp.data.data);
@@ -260,7 +262,7 @@ export async function updateCar(
   data: { num_mantenimientos: number; precio_por_dia: number; descripcion?: string }
 ): Promise<boolean> {
   try {
-    await API.put(`/cars/${carId}`, data);
+    await API.put(`/api/v2/cars/${carId}`, data);
     return true;
   } catch (error) {
     console.error(`Error al actualizar el carro ID ${carId}:`, error);

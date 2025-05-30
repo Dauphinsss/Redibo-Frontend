@@ -170,7 +170,7 @@ function CaracteristicasCocheInner() {
         />
         
         <CampoSeguroMultiple
-          apiUrl="https://redibo-backends2.onrender.com"
+          apiUrl="http://localhost:4000"
           error={segurosAdicionalesError}
           setError={setSegurosAdicionalesError}
           onChange={handleSegurosAdicionalesChange}
