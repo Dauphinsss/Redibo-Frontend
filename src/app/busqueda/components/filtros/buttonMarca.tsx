@@ -152,13 +152,19 @@ export function ButtonMarca({
               //onChange={(e) => setSearchTerm(e.target.value)}
               //onChange={(e) => setSearchTerm(e.target.value.trimStart())}// ingnora espacios
               onChange={(e) => {
-                const value = e.target.value;
+                setSearchTerm(e.target.value.trimStart())
+                //const value = e.target.value;
+                const value = e.target.value.slice(0, 50);
                 const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]/g, '');
                 setSearchTerm(onlyValid.trimStart());
               }}
               placeholder="Buscar marca de vehículo..."
               className="pl-10"
             />
+            <div className="text-xs text-right text-muted-foreground mt-1">
+              {searchTerm.length}/50 caracteres
+            </div>
+
           </div>
         </div>
 
