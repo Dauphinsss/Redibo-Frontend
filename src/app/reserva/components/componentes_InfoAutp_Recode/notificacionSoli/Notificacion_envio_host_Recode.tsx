@@ -15,6 +15,9 @@ import { AutoDetails_interface_Recode } from "@/app/reserva/interface/AutoDetail
 import { SolicitudRecodePost } from "@/app/reserva/interface/EnviarGuardarNotif_Recode";
 import { transformAutoDetails_Recode } from "@/app/reserva/utils/transformAutoDetails_Recode";
 
+import { useObtenerNotif } from "@/app/reserva/hooks/useObtenerNotif_Recode";
+
+
 interface Props {
   id_carro: number;
   onSolicitudExitosa: () => void;
@@ -38,6 +41,7 @@ export default function FormularioSolicitud({
   const [hostEmail, setHostEmail] = useState("");
 
   const { enviarSolicitud, cargando, error } = useEnviarSolicitudRecode();
+  const { notificaciones, fetchNotif } = useObtenerNotif();
 
   // Carga los datos del auto
   useEffect(() => {
@@ -111,6 +115,8 @@ export default function FormularioSolicitud({
     console.log(auto);
     await enviarSolicitud(solicitud);
     console.log("Solicitud enviada:", solicitud);
+    const nuevasNotif = await fetchNotif(auto.idHost);
+    console.log("Notificaciones reales del host:", nuevasNotif);
 
     if (onNuevaNotificacion) {
       const now = new Date().toLocaleString();
@@ -134,22 +140,24 @@ export default function FormularioSolicitud({
         estado: "enviado",
       });
 
-      onNuevaNotificacion({
-        id: `notif-${Date.now() + 1}`,
-        tipo: "host",
-        mensaje: "Nueva solicitud de alquiler",
-        fecha: now,
-        datos: {
-          nombreUsuario: renterNombre,
-          marcaVehiculo: auto.marca,
-          modeloVehiculo: auto.modelo,
-          fechaInicio,
-          fechaFin,
-          lugarRecogida: "Cochabamba",
-          lugarDevolucion: "Cochabamba",
-        },
-        estado: "pendiente",
-      });
+      if (onNuevaNotificacion && nuevasNotif.length > 0) {
+        onNuevaNotificacion({
+          id: nuevasNotif[0].id,
+          tipo: "host",
+          mensaje: nuevasNotif[0].mensaje,
+          fecha: nuevasNotif[0].fecha,
+          datos: {
+            nombreUsuario: renterNombre,
+            marcaVehiculo: auto.marca,
+            modeloVehiculo: auto.modelo,
+            fechaInicio,
+            fechaFin,
+            lugarRecogida: "Cochabamba",
+            lugarDevolucion: "Cochabamba",
+          },
+          estado: nuevasNotif[0].estado ? "enviado" : "pendiente",
+        });
+      }
     }
 
     if (!error) {
