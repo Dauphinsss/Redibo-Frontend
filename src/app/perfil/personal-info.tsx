@@ -75,7 +75,7 @@ export function PersonalInfo() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-6">
       <div>
         <div className="grid grid-cols-2 gap-x-8 gap-y-6">
           <div className="grid col-span-2 md:col-span-1 gap-2">

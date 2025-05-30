@@ -24,6 +24,7 @@ interface UserProfile {
     id: number;
     nombre: string;
   };
+  estadoConductor: string;
   roles: string[];
 }
 
@@ -65,7 +66,8 @@ export function ProfileHeader() {
       });
 
       
-      console.log("Roles del usuario:", response.data.roles);
+      console.log("usuario:", response.data);
+      localStorage.setItem("estadoConductor", response.data.estadoConductor);
       setUserData(response.data);
     } catch (error) {
       console.error("Error al obtener el perfil:", error);
