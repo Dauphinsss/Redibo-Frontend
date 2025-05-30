@@ -1,6 +1,6 @@
 "use client";
 
-import { useCoberturasStore } from "@/app/ValidarSeguro/hooks/useCoberturasStore";
+import { useCoberturasStore } from "@/app/validarSeguro/hooks/useCoberturasStore";
 import { Pencil, Trash2 } from "lucide-react";
 import { deleteCobertura } from "@/service/services_Recode";
 
