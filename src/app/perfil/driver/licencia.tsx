@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, User, CreditCard, Clock } from "lucide-react";
-import Image from "next/image";
 
 export interface Licencia {
   numeroLicencia: string;
@@ -65,7 +64,7 @@ export function LicenciaConducir({ data }: LicenciaConducirProps) {
             <div className="md:col-span-1">
               <div className="text-center">
                 <div className="w-36 h-36 mx-auto border-2 border-gray-400 rounded overflow-hidden bg-gray-100 mb-3">
-                  <Image
+                  <img
                     src={data.foto || "/placeholder.svg"}
                     alt={`Foto de ${data.nombre}`}
                     width={144}

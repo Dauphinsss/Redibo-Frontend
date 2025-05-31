@@ -144,7 +144,7 @@ export default function ProfilePage() {
         return <SecurityInfo />;
       case "socios":
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 p-4">
             <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4">
               {roles.includes("RENTER") && (
                 <Link href="/perfil/socios/conductores">
