@@ -40,6 +40,17 @@ type SectionType = "orders" | "insurances" | "balance" | "solicitudes";
 
 export default function AdminPage() {
   const [activeSection, setActiveSection] = useState<SectionType>("orders");
+
+  useEffect(() => {
+    const storedSection = sessionStorage.getItem("admin_section") as SectionType;
+    if (storedSection) {
+      setActiveSection(storedSection);
+    }
+  }, []);
+
+  useEffect(() => {
+    sessionStorage.setItem("admin_section", activeSection);
+  }, [activeSection]);
   const [roles, setRoles] = useState<string[]>([]);
 
   useEffect(() => {
@@ -58,9 +69,9 @@ export default function AdminPage() {
           window.location.href = "/";
           return;
         }
-        
+
         await setRoles(["ADMIN"]); // Solo mostramos rol de ADMIN aunque tenga otros
-        console.log(roles)
+        console.log(roles);
       } catch (err) {
         console.error("Error al obtener datos del usuario", err);
       }
@@ -87,7 +98,7 @@ export default function AdminPage() {
   const sectionTitles = {
     orders: "Órdenes de Pago",
     insurances: "Seguros de Auto",
-    balance: "Saldo",
+    balance: "Solicitudes de Transacciones",
     solicitudes: "Solicitudes para Conductor",
   };
 
@@ -106,7 +117,7 @@ export default function AdminPage() {
     },
     {
       id: "balance",
-      title: "Saldo",
+      title: "Saldo y Transacciones",
       icon: Wallet,
       alwaysShow: true,
     },
@@ -119,10 +130,10 @@ export default function AdminPage() {
   ];
 
   const handleLogout = () => {
-    localStorage.clear();       // Limpia toda la sesión
+    localStorage.clear(); // Limpia toda la sesión
     window.location.href = "/"; // Redirige a la página de inicio
   };
-  
+
   return (
     <div className="flex flex-col w-full max-w-full overflow-hidden bg-gray-50">
       <div className="flex-1">
@@ -147,9 +158,9 @@ export default function AdminPage() {
                   {menuItems.map((item) => (
                     <SidebarMenuItem key={item.id}>
                       <SidebarMenuButton
-                        onClick={() =>
-                          setActiveSection(item.id as SectionType)
-                        }
+                        onClick={() => {
+                          setActiveSection(item.id as SectionType);
+                        }}
                         isActive={activeSection === item.id}
                         className={cn(
                           "justify-start rounded-lg transition-all duration-200 px-3 py-2 text-sm my-1",
@@ -236,7 +247,7 @@ export default function AdminPage() {
                         Panel de administración para gestión del sistema
                       </p>
                     </div>
-                    <div className="p-4 md:p-6">{renderContent()}</div>
+                    <div className="pt-4">{renderContent()}</div>
                   </div>
                 </div>
               </main>

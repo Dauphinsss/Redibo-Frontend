@@ -1,30 +1,58 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import axios from "axios";
+import AdminTransactions, { Transaccion } from "./admin-transactions";
+import { API_URL } from "@/utils/bakend";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export function BalanceManagement() {
+  const [transactions, setTransactions] = useState<Transaccion[]>([]);
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await axios.get<Transaccion[]>(
+        `${API_URL}/api/get-transacciones`
+      );
+      setTransactions(response.data);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+      toast.error("Error al obtener las transacciones");
+      setTransactions([]);
+    }
+  };
+
+  const aprobar = async (id: string) => {
+    try {
+      const response = await axios.put(`${API_URL}/api/aceptar-transaccion/${id}`);
+      console.log("Transaction approved:", response.data);
+      toast.success("Transacción aprobada correctamente");
+      fetchTransactions(); // Refresh the list after approval
+    } catch (error) {
+      console.error("Error approving transaction:", error);
+      toast.error("Error al aprobar la transacción");
+    }
+  };
+
+  const rechazar = async (id: string) => {
+    try {
+      const response = await axios.put(`${API_URL}/api/rechazar-transaccion/${id}`);
+      console.log("Transaction rejected:", response.data);
+      toast.success("Transacción rechazada correctamente");
+      fetchTransactions(); // Refresh the list after rejection
+    } catch (error) {
+      console.error("Error rejecting transaction:", error);
+      toast.error("Error al rechazar la transacción");
+    }
+  }
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Gestión de Saldo</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center p-6 text-center">
-            <div className="mb-4 text-gray-400">
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                <line x1="12" y1="12" x2="12" y2="12"></line>
-                <path d="M2 10h20"></path>
-              </svg>
-            </div>
-            <h3 className="mb-2 text-xl font-semibold">Contenido Vacío</h3>
-            <p className="text-gray-500">
-              La funcionalidad de gestión de saldo estará disponible pronto.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <AdminTransactions transactions={transactions} onApprove={aprobar} onReject={rechazar}/>
     </div>
   );
 }

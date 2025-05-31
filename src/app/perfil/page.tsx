@@ -77,8 +77,11 @@ export default function ProfilePage() {
         console.error("Error al obtener datos del usuario", err);
       }
     };
-
     fetchUserData();
+    const section = sessionStorage.getItem("section");
+    if (section && (section as SectionType)) {
+      setActiveSection(section as SectionType);
+    }
   }, []);
 
   const handleTouchStart = (e: TouchEvent): void => {
@@ -94,7 +97,9 @@ export default function ProfilePage() {
       const deltaX = touchEndX - touchStartX;
       if (deltaX > touchThreshold) {
         // Emular un clic
-        const sidebarTrigger = document.querySelector('[data-sidebar-trigger="true"]') as HTMLElement;
+        const sidebarTrigger = document.querySelector(
+          '[data-sidebar-trigger="true"]'
+        ) as HTMLElement;
         if (sidebarTrigger) {
           sidebarTrigger.click();
         }
@@ -107,13 +112,17 @@ export default function ProfilePage() {
   useEffect(() => {
     const handleTouchStartEvent = (e: TouchEvent): void => handleTouchStart(e);
     const handleTouchEndEvent = (e: TouchEvent): void => handleTouchEnd(e);
-    
-    document.addEventListener('touchstart', handleTouchStartEvent, { passive: true });
-    document.addEventListener('touchend', handleTouchEndEvent, { passive: true });
-    
+
+    document.addEventListener("touchstart", handleTouchStartEvent, {
+      passive: true,
+    });
+    document.addEventListener("touchend", handleTouchEndEvent, {
+      passive: true,
+    });
+
     return () => {
-      document.removeEventListener('touchstart', handleTouchStartEvent);
-      document.removeEventListener('touchend', handleTouchEndEvent);
+      document.removeEventListener("touchstart", handleTouchStartEvent);
+      document.removeEventListener("touchend", handleTouchEndEvent);
     };
   }, [touchStartX]);
 
@@ -137,23 +146,21 @@ export default function ProfilePage() {
         return (
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4">
-              {roles.includes('RENTER') && (
+              {roles.includes("RENTER") && (
                 <Link href="/perfil/socios/conductores">
-                  <div
-                    className="w-full sm:w-64 h-40 bg-black text-white hover:bg-gray-900 rounded-xl p-6 flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
-                  >
+                  <div className="w-full sm:w-64 h-40 bg-black text-white hover:bg-gray-900 rounded-xl p-6 flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out">
                     <Users className="h-10 w-10 mb-3" />
                     <p className="text-lg font-semibold">Ver mis conductores</p>
                   </div>
                 </Link>
               )}
-              {roles.includes('DRIVER') && (
+              {roles.includes("DRIVER") && (
                 <Link href="/perfil/socios/arrendatarios">
-                   <div
-                    className="w-full sm:w-64 h-40 bg-black text-white hover:bg-gray-900 rounded-xl p-6 flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out"
-                  >
+                  <div className="w-full sm:w-64 h-40 bg-black text-white hover:bg-gray-900 rounded-xl p-6 flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 ease-in-out">
                     <Users className="h-10 w-10 mb-3" />
-                    <p className="text-lg font-semibold">Ver mis arrendatarios</p>
+                    <p className="text-lg font-semibold">
+                      Ver mis arrendatarios
+                    </p>
                   </div>
                 </Link>
               )}
@@ -174,7 +181,7 @@ export default function ProfilePage() {
     vehicles: "Vehículos",
     orders: "Órdenes de Pago",
     socios: "Mis Socios",
-    security: "Seguridad"
+    security: "Seguridad",
   };
 
   const menuItems = [
@@ -259,9 +266,11 @@ export default function ProfilePage() {
                   {menuItems.map((item) => {
                     if (
                       item.alwaysShow ||
-                      (item.requiresRole && 
-                        (Array.isArray(item.requiresRole) 
-                          ? item.requiresRole.some(role => roles.includes(role))
+                      (item.requiresRole &&
+                        (Array.isArray(item.requiresRole)
+                          ? item.requiresRole.some((role) =>
+                              roles.includes(role)
+                            )
                           : roles.includes(item.requiresRole)))
                     ) {
                       return (
@@ -269,6 +278,7 @@ export default function ProfilePage() {
                           <SidebarMenuButton
                             onClick={() => {
                               setActiveSection(item.id as SectionType);
+                              sessionStorage.setItem("section", item.id);
                               setIsSidebarOpen(false);
                             }}
                             isActive={activeSection === item.id}
@@ -338,12 +348,12 @@ export default function ProfilePage() {
 
             {/* Contenido principal con botón de menú para móvil */}
             <SidebarInset>
-              <div 
-                className="fixed left-0 top-0 bottom-0 w-8 z-40 md:hidden" 
-                style={{ backgroundColor: 'transparent' }}
+              <div
+                className="fixed left-0 top-0 bottom-0 w-8 z-40 md:hidden"
+                style={{ backgroundColor: "transparent" }}
                 aria-hidden="true"
               />
-              
+
               <div className="flex items-center p-2 bg-white md:hidden border rounded-lg m-4 z-50 fixed ">
                 <SidebarTrigger
                   onClick={() => setIsSidebarOpen(!isSidebarOpen)}
