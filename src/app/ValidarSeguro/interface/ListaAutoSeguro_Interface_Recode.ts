@@ -1,4 +1,5 @@
 export interface CarCardProps {
+    idAuto: string;
     modelo: string;
     marca: string;
     asientos: number;
