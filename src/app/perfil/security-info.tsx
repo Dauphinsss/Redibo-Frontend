@@ -275,13 +275,13 @@ export const SecurityInfo = () => {
             </p>
             <div className="space-y-2">
               <Label htmlFor="current-password" className="text-sm font-medium">
-                Contraseña
+                Contraseña *
               </Label>
               <div className="relative">
                 <Input
                   id="current-password"
                   type={showCurrentPassword ? "text" : "password"}
-                  placeholder="Escribe tu contraseña"
+                  placeholder="Contraseña"
                   value={currentPassword}
                   maxLength={20}
                   onChange={(e) => {
@@ -344,7 +344,7 @@ export const SecurityInfo = () => {
               <div className="relative">
                 <Input
                   type={showNewPassword ? "text" : "password"}
-                  placeholder="Escribe tu contraseña"
+                  placeholder="Contraseña"
                   value={newPassword}
                   maxLength={20}
                   onChange={(e) => {

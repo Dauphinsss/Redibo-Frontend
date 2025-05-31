@@ -101,7 +101,7 @@ export function ProfileHeader() {
         toast.error(response.data.error);
         return;
       }
-      //console.log("Rol agregado:", response.data.roles)
+
       toast.success("Rol agregado exitosamente.");
       window.location.reload();
     } catch (error: unknown) {
@@ -159,7 +159,7 @@ export function ProfileHeader() {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  {["HOST", "RENTER", "DRIVER"]
+                  {["HOST", "RENTER"]
                     .filter((rol) => !userData.roles.includes(rol))
                     .map((rol) => (
                       <DropdownMenuItem
@@ -179,7 +179,7 @@ export function ProfileHeader() {
         )}
       </div>
 
-      {/* 🔽 MODAL DE CONFIRMACIÓN 🔽 */}
+      {/* MODAL DE CONFIRMACIÓN */}
       {modalOpen && rolSeleccionado && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md pointer-events-auto">
@@ -214,7 +214,6 @@ export function ProfileHeader() {
           </div>
         </div>
       )}
-      {/* 🔼 FIN MODAL 🔼 */}
     </div>
   );
 }

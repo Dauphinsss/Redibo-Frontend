@@ -58,7 +58,7 @@ export default function ProfilePage() {
   const [roles, setRoles] = useState<string[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [touchStartX, setTouchStartX] = useState(0);
-  const touchThreshold = 70; // deslizamiento válido
+  const touchThreshold = 100; // deslizamiento válido
 
   useEffect(() => {
     const fetchUserData = async () => {

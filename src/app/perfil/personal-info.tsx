@@ -112,28 +112,6 @@ export function PersonalInfo() {
             <a className="text-base">{userData?.ciudad.nombre}</a>
           </div>
         </div>
-
-        <div className="mt-6 flex justify-end">
-          <Button
-            variant="outline"
-            onClick={() => setIsEditing(!isEditing)}
-            className="w-full md:w-auto bg-gray-200 text-gray-500 cursor-not-allowed"
-            disabled={true}
-          >
-            {isEditing ? "Cancelar" : "Editar Información"}
-          </Button>
-          {isEditing && (
-            <Button
-              className="ml-4 w-full md:w-auto"
-              onClick={() => {
-                // Aquí iría la lógica para guardar los cambios
-                setIsEditing(false);
-              }}
-            >
-              Guardar Cambios
-            </Button>
-          )}
-        </div>
       </div>
     </div>
   );
