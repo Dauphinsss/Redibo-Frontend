@@ -264,6 +264,7 @@ export default function SaldoImproved() {
                             <Button>Agregar fondos</Button>
                           </DialogTrigger>
                           <AddFundsModal 
+                            refresh={fetchTransactions}
                             onSuccess={handleAddFundsSuccess}
                             onClose={() => setIsAddFundsModalOpen(false)}
                           />

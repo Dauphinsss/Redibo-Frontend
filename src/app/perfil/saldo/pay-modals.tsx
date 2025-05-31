@@ -41,9 +41,10 @@ type AddFundsStep = "amount-input" | "bank-selection" | "qr-display" | "transact
 interface AddFundsModalProps {
   onSuccess: () => void;
   onClose: () => void;
+  refresh: () => void
 }
 
-export default function AddFundsModal({ onSuccess, onClose }: AddFundsModalProps) {
+export default function AddFundsModal({ onSuccess, onClose, refresh }: AddFundsModalProps) {
   const [currentStep, setCurrentStep] = useState<AddFundsStep>("amount-input");
   const [amount, setAmount] = useState("");
   const [amountError, setAmountError] = useState("");
@@ -163,6 +164,7 @@ export default function AddFundsModal({ onSuccess, onClose }: AddFundsModalProps
         toast.success("Solicitud de recarga enviada exitosamente. Espera la aprobación del administrador.");
         onSuccess();
         onClose();
+        refresh(); // Refresh the balance or transaction list
         resetModal();
       }
     } catch (error) {
