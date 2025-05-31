@@ -84,6 +84,7 @@ export default function AdminTransactions({
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isPaymentConfirmDialogOpen, setIsPaymentConfirmDialogOpen] =
     useState(false);
+  const [sending, setSending] = useState(false);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -143,9 +144,11 @@ export default function AdminTransactions({
     setIsDetailModalOpen(true);
   };
 
-  const handleApprove = () => {
+  const handleApprove = async () => {
     if (selectedTransaction && onApprove) {
-      onApprove(selectedTransaction.id);
+      setSending(true);
+      await onApprove(selectedTransaction.id);
+      setSending(false);
       setIsDetailModalOpen(false);
       setIsApproveDialogOpen(false);
       setSelectedTransaction(null);
@@ -490,7 +493,7 @@ export default function AdminTransactions({
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleApprove}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-gray-950 hover:bg-gray-900"
             >
               Aprobar Transacción
             </AlertDialogAction>
@@ -567,16 +570,21 @@ export default function AdminTransactions({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>No, aún no he pagado</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
+            <AlertDialogCancel disabled={sending}>No, aún no he pagado</AlertDialogCancel>
+            <Button
+              disabled={sending}
+              onClick={async () => {
+                setSending(true);
+                await onApprove?.(selectedTransaction?.id || "");
                 setIsPaymentConfirmDialogOpen(false);
-                setIsApproveDialogOpen(true);
+                setSending(false);
+                setSelectedTransaction(null);
+                setIsDetailModalOpen(false);
               }}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-gray-900 hover:bg-gray-700"
             >
               Sí, ya pagué al usuario
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

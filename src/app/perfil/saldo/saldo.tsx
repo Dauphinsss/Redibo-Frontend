@@ -211,6 +211,7 @@ export default function SaldoImproved() {
       setQrPreview(null);
       setAmountError("");
       fetchTransactions(); 
+      fetchBalance();
     } catch (error) {
       toast.error("Error al enviar la solicitud de retiro");
       console.error("Error al enviar la solicitud de retiro:", error);
