@@ -204,7 +204,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
             inputRef.current?.blur();
           }
         }}
-        className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[11px] md:text-base lg:text-lg"
+        className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[14px] md:text-base"
       />
       
       {/* Mostrar error si hay */}  

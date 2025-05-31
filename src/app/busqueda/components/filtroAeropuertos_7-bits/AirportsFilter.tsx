@@ -10,6 +10,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Airports } from "../../constants";
 
 interface Props {            
     autos: Auto[];    
@@ -34,7 +35,8 @@ const AirportsFilter: React.FC<Props> = ({
   ]
 
   const radius = [5, 10, 15, 20]
-  const { data: content = [], isLoading, isError } = useAirports();
+  //const { data: content = [] } = useAirports();
+  const content = Airports;
   const [selectedAirport, setSelectedAirport] = useState('');
   const [selectedCity, setSelectedCity] = useState(cities[0]);
   const [selectedLatitude, setSelectedLatitude] = useState(0);
@@ -94,17 +96,7 @@ const AirportsFilter: React.FC<Props> = ({
           <span className="ml-2">↓</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-100">
-        {(isLoading) &&   
-          <p className="text-center text-md mt-4 font-semibold text-muted-foreground">
-            Cargando Aeropuertos...
-          </p>   
-        }   
-        {(isError) &&        
-          <p className="text-center text-md mt-4 text-blue-700">
-            Error al cargar los Aeropuertos
-          </p> 
-        }  
+      <PopoverContent className="w-90">        
         <div className="flex flex-col items-center gap-2">
           <div className='w-full'>
             <label>Ciudad</label>
