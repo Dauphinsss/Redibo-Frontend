@@ -282,7 +282,9 @@ export function PersonalInfo() {
             </>
           ) : (
             <>
-              <a className="text-base">{userData.nombre}</a>
+              <div className="mt-1 border rounded bg-gray-50 px-3 py-2">
+                <a className="text-base text-gray-800">{userData.nombre}</a>
+              </div>
               <button
                 className="absolute top-0 right-0 text-gray-500 hover:text-gray-800"
                 onClick={() => setEditandoNombre(true)}
@@ -298,7 +300,9 @@ export function PersonalInfo() {
           <Label htmlFor="correo" className="text-base">
             Correo Electrónico
           </Label>
-          <a className="text-base">{userData.correo}</a>
+          <div className="mt-1 border rounded bg-gray-50 px-3 py-2">
+            <a className="text-base text-gray-800">{userData.correo}</a>
+          </div>
         </div>
 
         <div className="grid col-span-2 md:col-span-1 gap-2 relative">
@@ -330,7 +334,9 @@ export function PersonalInfo() {
             </>
           ) : (
             <>
-              <a className="text-base">{userData.telefono || "—"}</a>
+                <div className="mt-1 border rounded bg-gray-50 px-3 py-2">
+                  <a className="text-base text-gray-800">{userData.telefono || "—"}</a>
+                </div>
               <button
                 className="absolute top-0 right-0 text-gray-500 hover:text-gray-800"
                 onClick={() => setEditandoTelefono(true)}
@@ -371,9 +377,11 @@ export function PersonalInfo() {
             </>
           ) : (
             <>
-              <a className="text-base">
-                {formatToDDMMYYYY(userData.fecha_nacimiento) || "—"}
-              </a>
+              <div className="mt-1 border rounded bg-gray-50 px-3 py-2">
+                <a className="text-base text-gray-800">
+                  {formatToDDMMYYYY(userData.fecha_nacimiento) || "—"}
+                </a>
+              </div>
               <button
                 className="absolute top-0 right-0 text-gray-500 hover:text-gray-800"
                 onClick={() => setEditandoNacimiento(true)}
@@ -418,7 +426,9 @@ export function PersonalInfo() {
             </>
           ) : (
             <>
-              <a className="text-base">{userData.genero || "—"}</a>
+              <div className="mt-1 border rounded bg-gray-50 px-3 py-2">
+                <a className="text-base text-gray-800">{userData.genero || "—"}</a>
+              </div>
               <button
                 className="absolute top-0 right-0 text-gray-500 hover:text-gray-800"
                 onClick={() => setEditandoGenero(true)}
@@ -467,7 +477,11 @@ export function PersonalInfo() {
             </>
           ) : (
             <>
-              <a className="text-base">{userData.ciudad.nombre || "—"}</a>
+              <div className="mt-1 border rounded bg-gray-50 px-3 py-2">
+                <a className="text-base text-gray-800">
+                  {userData.ciudad.nombre || "—"}
+                </a>
+              </div>
               <button
                 className="absolute top-0 right-0 text-gray-500 hover:text-gray-800"
                 onClick={() => setEditandoCiudad(true)}
