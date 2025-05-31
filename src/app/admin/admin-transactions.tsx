@@ -146,7 +146,8 @@ export default function AdminTransactions({
 
   const handleApprove = async () => {
     if (selectedTransaction && onApprove) {
-      setSending(true);
+      console.log(selectedTransaction)
+        setSending(true);
       await onApprove(selectedTransaction.id);
       setSending(false);
       setIsDetailModalOpen(false);
@@ -570,7 +571,9 @@ export default function AdminTransactions({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={sending}>No, aún no he pagado</AlertDialogCancel>
+            <AlertDialogCancel disabled={sending}>
+              No, aún no he pagado
+            </AlertDialogCancel>
             <Button
               disabled={sending}
               onClick={async () => {
