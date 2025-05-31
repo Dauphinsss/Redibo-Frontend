@@ -15,7 +15,7 @@ export const NotificacionesCampana: React.FC<NotificacionesCampanaProps> = ({
   onAceptar,
   onRechazar
 }) => {
-
+  
   return (
     <div className="w-[400px] h-[500px] bg-white border rounded shadow-lg overflow-y-auto p-4">
       <h2 className="text-lg font-semibold mb-4">Notificaciones</h2>
