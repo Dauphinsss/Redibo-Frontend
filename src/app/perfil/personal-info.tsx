@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import axios from "axios";
+import axios, { AxiosError }from "axios";
+
 import { API_URL } from "@/utils/bakend";
 interface City {
   id: number;
@@ -39,8 +40,6 @@ export function PersonalInfo() {
   const [valorGenero, setValorGenero] = useState("");
   const [editandoCiudad, setEditandoCiudad] = useState(false);
   const [valorCiudad, setValorCiudad] = useState("");
-  const [editandoFoto, setEditandoFoto] = useState(false);
-  const [valorFoto, setValorFoto] = useState("");
   const [listaCiudades, setListaCiudades] = useState<City[]>([]);
   const token =
     typeof window !== "undefined" ? localStorage.getItem("auth_token") : "";
@@ -51,10 +50,10 @@ export function PersonalInfo() {
       return fechaBruta.split("T")[0];
     }
     if (fechaBruta.includes("/")) {
-      let [d, m, y] = fechaBruta.split("/");
-      d = d.padStart(2, "0");
-      m = m.padStart(2, "0");
-      return `${y}-${m}-${d}`;
+    const [d, m, y] = fechaBruta.split("/");
+     const dia = d.padStart(2, "0");
+     const mes = m.padStart(2, "0");
+     return `${y}-${mes}-${dia}`;
     }
     return "";
   }
@@ -95,7 +94,6 @@ export function PersonalInfo() {
         setValorNacimiento(isoNacimiento);
         setValorGenero(data.genero || "");
         setValorCiudad(data.ciudad?.nombre || "");
-        setValorFoto(data.foto || "");
       } catch (error) {
         console.error("Error al obtener el perfil:", error);
       } finally {
@@ -129,11 +127,11 @@ export function PersonalInfo() {
   const actualizarCampo = async (
     campo: string,
     valor: string,
-    onSuccess: (nuevoValor: any) => void,
+    onSuccess: (nuevoValor: unknown) => void,
     onError?: (msg: string) => void
   ) => {
     try {
-      const payload: Record<string, any> = {};
+      const payload: Record<string, string> = {};
       payload[campo] = valor;
 
       const response = await axios.post(
@@ -151,14 +149,15 @@ export function PersonalInfo() {
         onSuccess(data.user[campo as keyof typeof data.user]);
       } else {
         const msg: string =
-          (data as any).message || "Error al actualizar " + campo;
+          (data as { message?: string }).message || "Error al actualizar " + campo;
         if (onError) onError(msg);
         else alert(msg);
       }
-    } catch (err: any) {
+    } catch (err) {
+      const errorAxios = err as AxiosError<{ message?: string }>;
       const msg =
-        err.response?.data?.message ||
-        "Ocurrió un error al actualizar " + campo.replace("_", " ");
+      errorAxios.response?.data?.message ||
+      "Ocurrió un error al actualizar " + campo.replace("_", " ");
       if (onError) onError(msg);
       else alert(msg);
       console.error(err);
@@ -174,7 +173,7 @@ export function PersonalInfo() {
       valorNombre.trim(),
       (nuevoValor) => {
         setUserData((prev) =>
-          prev ? { ...prev, nombre: nuevoValor } : prev
+          prev ? { ...prev, nombre: nuevoValor as string } : prev
         );
         setEditandoNombre(false);
       }
@@ -187,7 +186,7 @@ export function PersonalInfo() {
     }
     actualizarCampo("telefono", valorTelefono.trim(), (nuevoValor) => {
       setUserData((prev) =>
-        prev ? { ...prev, telefono: nuevoValor } : prev
+        prev ? { ...prev, telefono: nuevoValor as string } : prev
       );
       setEditandoTelefono(false);
     });
@@ -200,7 +199,7 @@ export function PersonalInfo() {
     const [y, m, d] = valorNacimiento.split("-");
     const ddmmyyyy = `${d.padStart(2, "0")}/${m.padStart(2, "0")}/${y}`;
     actualizarCampo("fecha_nacimiento", ddmmyyyy, (nuevoValor) => {
-      const iso = parseBackendDate(nuevoValor);
+      const iso = parseBackendDate(nuevoValor as string);
       setUserData((prev) =>
         prev ? { ...prev, fecha_nacimiento: iso } : prev
       );
@@ -214,7 +213,7 @@ export function PersonalInfo() {
     }
     actualizarCampo("genero", valorGenero, (nuevoValor) => {
       setUserData((prev) =>
-        prev ? { ...prev, genero: nuevoValor } : prev
+        prev ? { ...prev, genero: nuevoValor as string} : prev
       );
       setEditandoGenero(false);
     });
@@ -227,14 +226,16 @@ export function PersonalInfo() {
   actualizarCampo(
     "ciudad",
     valorCiudad.trim(),
-    (nuevaCiudadObj) => {
+    (nuevoValor) => {
+      // Forzamos que `nuevoValor` es objeto {id, nombre}
+      const obj = nuevoValor as { id: number; nombre: string };
       setUserData((prev) =>
         prev
           ? {
               ...prev,
               ciudad: {
-                id: prev.ciudad.id,
-                nombre: nuevaCiudadObj.nombre,
+                id: obj.id,
+                nombre: obj.nombre,
               },
             }
           : prev
@@ -246,16 +247,6 @@ export function PersonalInfo() {
     }
   );
 };
-  const guardarFoto = () => {
-    if (!valorFoto.trim()) {
-      alert("La URL de la foto no puede quedar vacía");
-      return;
-    }
-    actualizarCampo("foto", valorFoto.trim(), (nuevoValor) => {
-      setUserData((prev) => (prev ? { ...prev, foto: nuevoValor } : prev));
-      setEditandoFoto(false);
-    });
-  };
 
   return (
     <div className="space-y-6 mt-6">
