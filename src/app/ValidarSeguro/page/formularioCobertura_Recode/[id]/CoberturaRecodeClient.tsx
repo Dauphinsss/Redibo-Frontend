@@ -3,11 +3,11 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/ui/Header";
-import FormularioCobertura from "@/app/validarSeguro/components/cobertura/FormularioRecode";
-import TablaRecode from "@/app/validarSeguro/components/cobertura/TablaRecode";
-import PopUpCobertura from "@/app/validarSeguro/components/cobertura/PopUpCobertura";
-import BotonValidacion from "@/app/validarSeguro/components/cobertura/BotonValidacion";
-import { useSeguroCoberturas } from "@/app/validarSeguro/hooks/useSeguroCoberturas";
+import BotonValidacion from "@/app/ValidarSeguro/components/cobertura/BotonValidacion";
+import PopUpCobertura from "@/app/ValidarSeguro/components/cobertura/PopUpCobertura";
+import TablaRecode from "@/app/ValidarSeguro/components/cobertura/TablaRecode";
+import { useSeguroCoberturas } from "@/app/ValidarSeguro/hooks/useSeguroCoberturas";
+import FormularioRecode from "@/app/ValidarSeguro/components/cobertura/FormularioRecode";
 
 interface Props {
   id_carro: string;
@@ -44,7 +44,7 @@ export default function CoberturaRecodeClient({ id_carro }: Props) {
           <div className="p-4 space-y-4">
             {seguro && (
               <>
-                <FormularioCobertura initialDataFor={seguro} />
+                <FormularioRecode initialDataFor={seguro} />
                 <TablaRecode />
                 <div className="mt-6 flex justify-center">
                   <BotonValidacion idSeguro={seguro.id_seguro} />
