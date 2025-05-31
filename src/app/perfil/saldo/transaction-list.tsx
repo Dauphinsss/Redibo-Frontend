@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -198,15 +192,19 @@ export default function TransactionList({
                   </div>
 
                   {/* Botón para ver QR */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => openImageModal(transaction.qrUrl)}
-                    className="flex items-center gap-1"
-                  >
-                    <Eye className="w-3 h-3" />
-                    QR
-                  </Button>
+                  {transaction.tipo === "RETIRO" ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openImageModal(transaction.qrUrl)}
+                      className="flex items-center gap-1"
+                    >
+                      <Eye className="w-3 h-3" />
+                      QR
+                    </Button>
+                  ) : (
+                    <div className="w-[61px] h-8"></div>
+                  )}
                 </div>
               </div>
             ))}

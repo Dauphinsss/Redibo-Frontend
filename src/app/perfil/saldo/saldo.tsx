@@ -27,12 +27,14 @@ import axios from "axios";
 import { API_URL } from "@/utils/bakend";
 import { toast } from "sonner";
 import TransactionList, { Transaccion } from "./transaction-list";
+import AddFundsModal from "./pay-modals";
 
 export default function SaldoImproved() {
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [qrFile, setQrFile] = useState<File | null>(null);
   const [qrPreview, setQrPreview] = useState<string | null>(null);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+  const [isAddFundsModalOpen, setIsAddFundsModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [balance, setBalance] = useState<number>(2547.85);
@@ -181,6 +183,7 @@ export default function SaldoImproved() {
   const handleWithdrawSubmit = async () => {
     setSending(true);
     if (!validateAmount(withdrawAmount)) {
+      setSending(false);
       return;
     }
     toast.info("Enviando solicitud de retiro");
@@ -195,6 +198,7 @@ export default function SaldoImproved() {
       const token = localStorage.getItem("auth_token");
       if (!token) {
         console.error("No se encontró el token de autenticación");
+        setSending(false);
         return;
       }
 
@@ -217,6 +221,10 @@ export default function SaldoImproved() {
       console.error("Error al enviar la solicitud de retiro:", error);
     }
     setSending(false);
+  };
+
+  const handleAddFundsSuccess = () => {
+    fetchBalance();
   };
 
   return (
@@ -246,6 +254,20 @@ export default function SaldoImproved() {
                       })}{" "}
                       BOB
                     </div>
+
+                    <div className="flex gap-3">
+                      <Dialog
+                          open={isAddFundsModalOpen}
+                          onOpenChange={setIsAddFundsModalOpen}
+                        >
+                          <DialogTrigger asChild>
+                            <Button>Agregar fondos</Button>
+                          </DialogTrigger>
+                          <AddFundsModal 
+                            onSuccess={handleAddFundsSuccess}
+                            onClose={() => setIsAddFundsModalOpen(false)}
+                          />
+                        </Dialog>
 
                     <Dialog
                       open={isWithdrawModalOpen}
@@ -513,6 +535,7 @@ export default function SaldoImproved() {
                         </div>
                       </DialogContent>
                     </Dialog>
+                  </div>
                   </CardContent>
                 </Card>
 
