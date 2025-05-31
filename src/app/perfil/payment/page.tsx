@@ -5,9 +5,10 @@ import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { API_URL } from "@/utils/bakend";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, CreditCard, QrCode, Wallet } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 const BANK_DETAILS = [
   {
@@ -27,7 +28,8 @@ const BANK_DETAILS = [
   },
 ];
 
-type PaymentStep = "bank-selection" | "qr-generation" | "transaction-registration";
+type PaymentStep = "payment-method" | "bank-selection" | "qr-generation" | "transaction-registration";
+
 export default function PaymentPageWrapper() {
   return (
     <Suspense fallback={<div>Cargando datos de pago...</div>}>
@@ -35,44 +37,118 @@ export default function PaymentPageWrapper() {
     </Suspense>
   );
 }
+
 function PaymentPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
-  const [currentStep, setCurrentStep] = useState<PaymentStep>("bank-selection");
+  const [currentStep, setCurrentStep] = useState<PaymentStep>("payment-method");
   const [selectedBank, setSelectedBank] = useState<string | null>(null);
   const [transactionId, setTransactionId] = useState("");
   const [transactionIdError, setTransactionIdError] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [balance, setBalance] = useState<number>(0);
+  const [balanceError, setBalanceError] = useState("");
   const [orderDetails, setOrderDetails] = useState<{
     monto_a_pagar: number;
     estado: string;
   } | null>(null);
 
   useEffect(() => {
-    const fetchOrderDetails = async () => {
+    const fetchData = async () => {
       if (!code) {
         console.log("No se encontró el código en la URL");
         router.replace("/perfil");
         return;
       }
+
       try {
-        const response = await axios.post(
+        // Obtener detalles de la orden
+        const orderResponse = await axios.post(
           `${API_URL}/api/paymentOrderbyCode`,
           { codigo: code },
         );
-        setOrderDetails(response.data);
+        setOrderDetails(orderResponse.data);
+
+        // Obtener saldo del usuario
+        const token = localStorage.getItem("auth_token");
+        if (!token) {
+          console.error("No se encontró el token de autenticación");
+          return;
+        }
+
+        const balanceResponse = await axios.get(`${API_URL}/api/get-saldo`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setBalance(balanceResponse.data.saldo);
       } catch (error) {
-        console.error("Error fetching order details:", error);
+        console.error("Error fetching data:", error);
         router.replace("/perfil");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchOrderDetails();
+    fetchData();
   }, [code, router]);
+
+  const handlePaymentMethodSelect = (method: "balance" | "qr") => {
+    if (method === "qr") {
+      setCurrentStep("bank-selection");
+    } else {
+      handleBalancePayment();
+    }
+  };
+
+  const handleBalancePayment = async () => {
+    if (!orderDetails) return;
+
+    if (balance < orderDetails.monto_a_pagar) {
+      setBalanceError(`Saldo insuficiente. Necesitas ${orderDetails.monto_a_pagar} BOB pero solo tienes ${balance} BOB.`);
+      return;
+    }
+
+    setSubmitting(true);
+    setBalanceError("");
+
+    try {
+      const token = localStorage.getItem("auth_token");
+      if (!token) {
+        console.error("No se encontró el token de autenticación");
+        return;
+      }
+
+      const response = await axios.post(
+        `${API_URL}/api/paymentOrder/PayWithBalance`,
+        {
+          codigo_orden_pago: code,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data.error) {
+        toast.error("Error en el pago:", response.data.error);
+        setBalanceError("Error al procesar el pago. Inténtalo de nuevo.");
+      } else {
+        toast.success("Pago realizado con éxito");
+        console.log("Pago realizado con éxito:", response.data);
+        setBalance(response.data.nuevo_saldo);
+        router.replace("/perfil");
+      }
+    } catch (error) {
+      console.error("Error processing balance payment:", error);
+      setBalanceError("Error al procesar el pago. Inténtalo de nuevo.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const handleBankSelect = (bank: string) => {
     setSelectedBank(bank);
@@ -102,6 +178,21 @@ function PaymentPage() {
     }
   };
 
+  const getProgressWidth = () => {
+    switch (currentStep) {
+      case "payment-method":
+        return "w-1/4";
+      case "bank-selection":
+        return "w-2/4";
+      case "qr-generation":
+        return "w-3/4";
+      case "transaction-registration":
+        return "w-full";
+      default:
+        return "w-1/4";
+    }
+  };
+
   if (loading) {
     return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
   }
@@ -110,17 +201,80 @@ function PaymentPage() {
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-50">
       <div className="relative h-2 bg-gray-200 rounded-full w-full max-w-lg mb-8">
         <div
-          className={`absolute top-0 left-0 h-full bg-primary transition-all duration-300 ${
-            currentStep === "bank-selection"
-              ? "w-1/3"
-              : currentStep === "qr-generation"
-                ? "w-2/3"
-                : "w-full"
-          }`}
+          className={`absolute top-0 left-0 h-full bg-primary transition-all duration-300 ${getProgressWidth()}`}
         />
       </div>
 
-      {/* Paso 1: Selección de banco */}
+      {/* Paso 1: Selección de método de pago */}
+      {currentStep === "payment-method" && (
+        <div className="transition-opacity duration-300 opacity-100 w-full max-w-3xl">
+          <h2 className="text-3xl font-bold mb-6 text-center">Selecciona tu método de pago</h2>
+          {orderDetails && (
+            <div className="mb-6 text-center">
+              <p className="text-xl font-semibold text-gray-800">Monto a pagar: {orderDetails.monto_a_pagar} BOB</p>
+              <p className="text-sm text-gray-500">Código de orden: {code}</p>
+            </div>
+          )}
+          
+          <div className="flex flex-col items-center w-full space-y-4">
+            {/* Opción de pago con saldo */}
+            <Button
+              variant="outline"
+              className="w-full max-w-md h-20 flex items-center justify-between gap-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 bg-gray-800 border-gray-700 hover:bg-gray-700 text-white"
+              onClick={() => handlePaymentMethodSelect("balance")}
+              disabled={submitting}
+            >
+              <div className="flex items-center gap-3">
+                <Wallet className="h-8 w-8 text-gray-300" />
+                <div className="text-left">
+                  <span className="text-lg font-medium text-white">Pagar con tu saldo</span>
+                  <p className="text-sm text-gray-300">Saldo disponible: {balance} BOB</p>
+                </div>
+              </div>
+              {submitting ? (
+                <Loader2 className="animate-spin h-5 w-5 text-gray-100" />
+              ) : (
+                <CreditCard className="h-5 w-5 text-gray-400" />
+              )}
+            </Button>
+
+            {balanceError && (
+              <div className="w-full max-w-md p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-600 text-sm text-center">{balanceError}</p>
+              </div>
+            )}
+
+            {/* Opción de pago con QR */}
+            <Button
+              variant="outline"
+              className="w-full max-w-md h-20 flex items-center justify-between gap-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 bg-gray-800 border-gray-700 hover:bg-gray-700 text-white"
+              onClick={() => handlePaymentMethodSelect("qr")}
+              disabled={submitting}
+            >
+              <div className="flex items-center gap-3">
+                <QrCode className="h-8 w-8 text-gray-300" />
+                <div className="text-left">
+                  <span className="text-lg font-medium text-white">Pagar con QR</span>
+                  <p className="text-sm text-gray-300">Transferencia bancaria</p>
+                </div>
+              </div>
+              <CreditCard className="h-5 w-5 text-gray-400" />
+            </Button>
+          </div>
+
+          <div className="mt-6 flex justify-center">
+            <Button
+              variant="outline"
+              className="px-6 py-2 rounded-lg hover:bg-gray-200"
+              onClick={() => router.replace("/perfil")}
+            >
+              Volver
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Paso 2: Selección de banco */}
       {currentStep === "bank-selection" && (
         <div className="transition-opacity duration-300 opacity-100 w-full max-w-3xl">
           <h2 className="text-3xl font-bold mb-6 text-center">Selecciona tu banco</h2>
@@ -148,7 +302,7 @@ function PaymentPage() {
             <Button
               variant="outline"
               className="px-6 py-2 rounded-lg hover:bg-gray-200"
-              onClick={() => router.replace("/perfil")}
+              onClick={() => setCurrentStep("payment-method")}
             >
               Volver
             </Button>
@@ -156,7 +310,7 @@ function PaymentPage() {
         </div>
       )}
 
-      {/* Paso 2: Generación de QR */}
+      {/* Paso 3: Generación de QR */}
       {currentStep === "qr-generation" && (
         <div className="transition-opacity duration-300 opacity-100 w-full max-w-3xl">
           <h2 className="text-3xl font-bold mb-6 text-center">Pago con {selectedBank}</h2>
@@ -181,12 +335,7 @@ function PaymentPage() {
                 Volver
               </Button>
               <Button
-                className="px-6 py-2 text-white rounded-lg hover:opacity-90 flex items-center justify-center"
-                style={{
-                  backgroundColor: selectedBank
-                    ? BANK_DETAILS.find((bank) => bank.name === selectedBank)?.backgroundColor
-                    : "#007bff",
-                }}
+                className="px-6 py-2 text-white rounded-lg hover:opacity-90 flex items-center justify-center bg-gray-800 hover:bg-gray-700"
                 onClick={() => setCurrentStep("transaction-registration")}
               >
                 {submitting ? <Loader2 className="animate-spin" /> : "Ya realicé el pago"}
@@ -196,7 +345,7 @@ function PaymentPage() {
         </div>
       )}
 
-      {/* Paso 3: Registro de transacción */}
+      {/* Paso 4: Registro de transacción */}
       {currentStep === "transaction-registration" && (
         <div className="transition-opacity duration-300 opacity-100 w-full max-w-3xl">
           <h2 className="text-3xl font-bold mb-6 text-center">Registrar transacción</h2>
@@ -238,12 +387,7 @@ function PaymentPage() {
                 Volver
               </Button>
               <Button
-                className="px-6 py-2 text-white rounded-lg hover:opacity-90 flex items-center justify-center"
-                style={{
-                  backgroundColor: selectedBank
-                    ? BANK_DETAILS.find((bank) => bank.name === selectedBank)?.backgroundColor
-                    : "#28a745",
-                }}
+                className="px-6 py-2 text-white rounded-lg hover:opacity-90 flex items-center justify-center bg-gray-800 hover:bg-gray-700"
                 onClick={() => {
                   if (!transactionId.trim()) {
                     setTransactionIdError("ID de transacción obligatorio");
