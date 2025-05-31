@@ -28,12 +28,12 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "images.pexels.com",
+        hostname: "www.topgear.com",
       },
       {
         protocol: "https",
         hostname: "media.istockphoto.com",
-      }
+      },
     ],
   },
 };

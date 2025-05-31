@@ -16,7 +16,6 @@ const todasLasCaracteristicas = [
   "Sistema de sonido",
 ];
 
-// Función para normalizar textos
 const normalizeText = (text: string) =>
   text
     .trim()

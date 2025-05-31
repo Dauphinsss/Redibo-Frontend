@@ -51,14 +51,11 @@ function RecodeCarCard(props: Auto) {
         isExpanded ? "expanded" : ""
       }`}
     >
-      {/* Contenedor de columnas principales */}
       <div className="flex flex-wrap md:flex-nowrap gap-4">
-        {/* Imagen del auto */}
         <div className="w-full md:w-[230px] flex flex-col items-center justify-center">
           <CarCardImage imagenUrl={imagenURL} />
         </div>
 
-        {/* Info del auto */}
         <div className="flex-1 min-w-0 flex flex-col justify-between">
           <div>
             <CarCardHeader nombre={modelo} marca={marca} />
@@ -79,7 +76,6 @@ function RecodeCarCard(props: Auto) {
           </div>
         </div>
 
-        {/* Precio */}
         <CarCardPrice
           id={idAuto}
           precioOficial={precioOficial}
@@ -88,7 +84,6 @@ function RecodeCarCard(props: Auto) {
         />
       </div>
 
-      {/* Características adicionales como una fila completa debajo */}
       <div className="w-full mt-6">
         <CarCardCaractAdicionales presentes={presentes} faltantes={faltantes} />
       </div>
