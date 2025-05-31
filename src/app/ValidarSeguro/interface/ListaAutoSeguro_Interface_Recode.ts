@@ -1,5 +1,5 @@
 export interface CarCardProps {
-    idAuto: string;
+    idAuto: number;
     modelo: string;
     marca: string;
     asientos: number;
@@ -8,7 +8,7 @@ export interface CarCardProps {
     combustibles: string[];
     host: string;
     ubicacion: string;
-    src: string;
+    src?: string | null;
     alt: string;
     onVerAseguradoras?: (idAuto: number) => void;
 }
@@ -25,6 +25,6 @@ export interface CarDetailsProps {
 }
 
 export interface CarImageProps {
-    src: string;
+    src?: string | null;
     alt: string;
 }

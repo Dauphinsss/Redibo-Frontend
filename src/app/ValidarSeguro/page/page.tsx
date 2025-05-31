@@ -3,7 +3,7 @@ import CarList_Recode from "../components/ListaAutosSeguros/CarList_Recode";
 
 export default function Page() {
     const carCards: CarCardProps[] = Array.from({ length: 8 }, (_, i) => ({
-            idAuto: ""+i + 1,
+            idAuto: i + 1,
             modelo: `Modelo ${i + 1}`,
             marca: `Marca del auto ${i + 1}`,
             asientos: 5 + (i % 3),
@@ -12,7 +12,7 @@ export default function Page() {
             combustibles: ["Gasolina", "Gas", "Diesel", "Eléctrico"],
             host: `Host ${i + 1}`,
             ubicacion: `Ciudad ${i + 1}, Calle ${i + 1}`,
-            src: `/public/images/Auto_default.png`,
+            src: null,
             alt: `Imagen del auto ${i + 1}`
         }));
     return (

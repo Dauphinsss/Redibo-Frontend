@@ -1,7 +1,17 @@
 "use client";
+
 import { memo, useState } from "react";
 import { CarCardProps } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 import CarCard_Recode from "./cardAutoSeguro/CarCard_Recode";
+import Modal_Recode from "@/app/validarSeguro/components/Seguros/Modal_Recode";
+import ListaAseguradoras_Recode from "@/app/validarSeguro/components/Seguros/ListaAseguradoras_Recode";
+
+// Simulamos aseguradoras por auto
+const todasAseguradoras = [
+  { id: 1, idAuto: 1, empresa: "Seguros A", fechaInicio: "01/01/2023", fechaFin: "01/01/2024" },
+  { id: 2, idAuto: 2, empresa: "Seguros B", fechaInicio: "02/02/2023", fechaFin: "02/02/2024" },
+  { id: 3, idAuto: 1, empresa: "Seguros C", fechaInicio: "03/03/2023", fechaFin: "03/03/2024" },
+];
 
 interface Props {
   carCards: CarCardProps[];
@@ -9,6 +19,9 @@ interface Props {
 
 function CarList_Recode({ carCards }: Props) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [idSeleccionado, setIdSeleccionado] = useState<number | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+
   const ITEMS_PER_PAGE = 3;
   const totalPages = Math.ceil(carCards.length / ITEMS_PER_PAGE);
 
@@ -17,12 +30,25 @@ function CarList_Recode({ carCards }: Props) {
     currentPage * ITEMS_PER_PAGE
   );
 
+  const handleVerAseguradoras = (idAuto: number) => {
+    setIdSeleccionado(idAuto);
+    setIsOpen(true);
+  };
+
+  const aseguradorasFiltradas = todasAseguradoras.filter(
+    (a) => a.idAuto === idSeleccionado
+  );
+
   return (
     <div className="flex flex-col items-center gap-6">
       {/* Cards */}
       <div className="flex flex-col gap-6 w-full">
         {currentItems.map((car) => (
-          <CarCard_Recode key={car.idAuto} {...car} />
+          <CarCard_Recode
+            key={car.idAuto}
+            {...car}
+            onVerAseguradoras={handleVerAseguradoras}
+          />
         ))}
       </div>
 
@@ -56,6 +82,18 @@ function CarList_Recode({ carCards }: Props) {
           &raquo;
         </button>
       </div>
+
+      {/* Modal aseguradoras */}
+      <Modal_Recode
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+          setIdSeleccionado(null);
+        }}
+        title="Aseguradoras"
+      >
+        <ListaAseguradoras_Recode aseguradoras={aseguradorasFiltradas} />
+      </Modal_Recode>
     </div>
   );
 }

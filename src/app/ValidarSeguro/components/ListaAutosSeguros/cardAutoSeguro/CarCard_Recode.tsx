@@ -34,7 +34,7 @@ function CarCard_Recode({
                     host={host}
                     ubicacion={ubicacion}
                 />
-                <CarButton_Recode onClick={() => onVerAseguradoras?.(Number(idAuto))} />
+                <CarButton_Recode onClick={() => onVerAseguradoras?.(idAuto)} />
             </div>
         </div>
     );
