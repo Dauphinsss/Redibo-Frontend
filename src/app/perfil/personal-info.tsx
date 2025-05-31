@@ -282,16 +282,20 @@ export function PersonalInfo() {
             </>
           ) : (
             <>
-              <div className="mt-1 border rounded bg-gray-50 px-3 py-2">
-                <a className="text-base text-gray-800">{userData.nombre}</a>
-              </div>
+              <div className="mt-1 flex items-center justify-between border rounded bg-gray-50 px-3 py-2">
+              <span className="text-base text-gray-800">{userData.nombre}</span>
               <button
-                className="absolute top-0 right-0 text-gray-500 hover:text-gray-800"
+                className="text-gray-500 hover:text-gray-800"
                 onClick={() => setEditandoNombre(true)}
                 title="Editar nombre"
+                aria-label="Editar nombre"
               >
-                Editar
+                <svg
+                  xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round"
+                    strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"/>
+                </svg>
               </button>
+            </div>
             </>
           )}
         </div>
@@ -334,16 +338,19 @@ export function PersonalInfo() {
             </>
           ) : (
             <>
-                <div className="mt-1 border rounded bg-gray-50 px-3 py-2">
-                  <a className="text-base text-gray-800">{userData.telefono || "—"}</a>
-                </div>
-              <button
-                className="absolute top-0 right-0 text-gray-500 hover:text-gray-800"
+                <div className="mt-1 flex items-center justify-between border rounded bg-gray-50 px-3 py-2">
+                <span className="text-base text-gray-800">{userData.telefono || "—"}</span>
+                <button
+                  className="text-gray-500 hover:text-gray-800"
                 onClick={() => setEditandoTelefono(true)}
                 title="Editar teléfono"
-              >
-                Editar
+                aria-label="Editar teléfono"
+              ><svg
+                  xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round"
+                    strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"/>
+                </svg>
               </button>
+              </div>
             </>
           )}
         </div>
@@ -377,18 +384,22 @@ export function PersonalInfo() {
             </>
           ) : (
             <>
-              <div className="mt-1 border rounded bg-gray-50 px-3 py-2">
-                <a className="text-base text-gray-800">
+              <div className="mt-1 flex items-center justify-between border rounded bg-gray-50 px-3 py-2">
+                <span className="text-base text-gray-800">
                   {formatToDDMMYYYY(userData.fecha_nacimiento) || "—"}
-                </a>
+                </span>
+                <button
+                  className="text-gray-500 hover:text-gray-800"
+                  onClick={() => setEditandoNacimiento(true)}
+                  title="Editar fecha de nacimiento"
+                  aria-label="Editar fecha de nacimiento"
+                >
+                  <svg
+                  xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round"
+                    strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"/>
+                </svg>
+                </button>
               </div>
-              <button
-                className="absolute top-0 right-0 text-gray-500 hover:text-gray-800"
-                onClick={() => setEditandoNacimiento(true)}
-                title="Editar fecha de nacimiento"
-              >
-                Editar
-              </button>
             </>
           )}
         </div>
@@ -426,16 +437,20 @@ export function PersonalInfo() {
             </>
           ) : (
             <>
-              <div className="mt-1 border rounded bg-gray-50 px-3 py-2">
-                <a className="text-base text-gray-800">{userData.genero || "—"}</a>
+              <div className="mt-1 flex items-center justify-between border rounded bg-gray-50 px-3 py-2">
+                <span className="text-base text-gray-800">{userData.genero || "—"}</span>
+                <button
+                  className="text-gray-500 hover:text-gray-800"
+                  onClick={() => setEditandoGenero(true)}
+                  title="Editar género"
+                  aria-label="Editar género"
+                >
+                  <svg
+                  xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round"
+                    strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"/>
+                </svg>
+                </button>
               </div>
-              <button
-                className="absolute top-0 right-0 text-gray-500 hover:text-gray-800"
-                onClick={() => setEditandoGenero(true)}
-                title="Editar género"
-              >
-                Editar
-              </button>
             </>
           )}
         </div>
@@ -477,18 +492,20 @@ export function PersonalInfo() {
             </>
           ) : (
             <>
-              <div className="mt-1 border rounded bg-gray-50 px-3 py-2">
-                <a className="text-base text-gray-800">
-                  {userData.ciudad.nombre || "—"}
-                </a>
+              <div className="mt-1 flex items-center justify-between border rounded bg-gray-50 px-3 py-2">
+                <span className="text-base text-gray-800">{userData.ciudad.nombre || "—"}</span>
+                <button
+                  className="text-gray-500 hover:text-gray-800"
+                  onClick={() => setEditandoCiudad(true)}
+                  title="Editar ciudad"
+                  aria-label="Editar ciudad"
+                >
+                  <svg
+                  xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round"
+                    strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"/>
+                </svg>
+                </button>
               </div>
-              <button
-                className="absolute top-0 right-0 text-gray-500 hover:text-gray-800"
-                onClick={() => setEditandoCiudad(true)}
-                title="Editar ciudad"
-              >
-                Editar
-              </button>
             </>
           )}
         </div>
