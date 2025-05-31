@@ -42,6 +42,7 @@ const AirportsFilter: React.FC<Props> = ({
   const [selectedLatitude, setSelectedLatitude] = useState(0);
   const [selectedLongitude, setSelectedLongitude] = useState(0);
   const [selectedRadius, setSelectedRadius] = useState(5);
+  const [showMessage, setShowMessage] = useState(false);
 
   const [open, setOpen] = useState(false);
 
@@ -56,6 +57,7 @@ const AirportsFilter: React.FC<Props> = ({
 
   const handleClick = () => {      
     if (selectedAirport != '') {
+      setShowMessage(false);
       const index = parseInt(selectedAirport);
       const latitude = content[index].latitud      
       setSelectedLatitude(latitude)
@@ -72,10 +74,16 @@ const AirportsFilter: React.FC<Props> = ({
       setAutosFiltrados(filteredCars);      
       console.log(filteredCars);
     }
-    else{      
-      setAutosFiltrados(cars);
+    else{
+      setShowMessage(true);
     }
   }
+
+  const handleRemove = () => {
+    setSelectedAirport('');
+    setShowMessage(false);
+    setAutosFiltrados(cars);
+  }  
 
   function calcularDistancia(latAeropuerto: number, lonAeropuerto: number, latAuto: number, lonAuto: number) {
     const a = { lat: latAeropuerto, lng: lonAeropuerto }
@@ -118,8 +126,9 @@ const AirportsFilter: React.FC<Props> = ({
                 <option key={i} value={i} data-latitude={item.latitud} data-longitude={item.longitud}>
                   {item.nombre}
                 </option>
-              ))}
+              ))}              
             </select>
+            {(showMessage) && <p className='text-red-500 text-xs'>Debe seleccionar un Aeropuerto</p>}
           </div>
           <div className='w-full'>
             <label>Radio</label>
@@ -131,10 +140,13 @@ const AirportsFilter: React.FC<Props> = ({
               ))}
             </select>
           </div>          
-          <div className='w-full'>
-            <Button variant="default" className='w-full'
+          <div className='flex gap-2 w-full'>
+            <Button variant="default" className='flex-grow-1' 
               onClick={handleClick}
             >Aplicar Filtro</Button>
+            <Button variant="secondary" 
+              onClick={handleRemove}
+            >Remover Filtro</Button>
           </div>
         </div> 
       </PopoverContent>
