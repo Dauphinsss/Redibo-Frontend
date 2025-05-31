@@ -26,7 +26,7 @@ import {
 import axios from "axios";
 import { API_URL } from "@/utils/bakend";
 import { toast } from "sonner";
-import TransactionList from "./transaction-list";
+import TransactionList, { Transaccion } from "./transaction-list";
 
 export default function SaldoImproved() {
   const [withdrawAmount, setWithdrawAmount] = useState("");
@@ -39,6 +39,7 @@ export default function SaldoImproved() {
   const [loading, setLoading] = useState(true);
   const [amountError, setAmountError] = useState("");
   const [sending, setSending] = useState(false);
+  const [transactions, setTransactions] = useState<Transaccion[]>([]);
 
   // Calcular saldo restante
   const remainingBalance = useMemo(() => {
@@ -68,8 +69,38 @@ export default function SaldoImproved() {
     }
   };
 
+  const fetchTransactions = async () => {
+    const authToken = localStorage.getItem("auth_token");
+    if (!authToken) {
+      console.error("No se encontró el token de autenticación");
+      return;
+    }
+    try {
+      const response = await axios.get<Transaccion[]>(
+        `${API_URL}/api/transacciones`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setTransactions(response.data);
+      } else {
+        console.error(
+          "Error al obtener las transacciones:",
+          response.statusText
+        );
+      }
+    } catch (error) {
+      console.error("Error al obtener las transacciones:", error);
+      setTransactions([]);
+    }
+  };
+
   useEffect(() => {
     fetchBalance();
+    fetchTransactions();
   }, []);
 
   // Drag and Drop handlers
@@ -179,6 +210,7 @@ export default function SaldoImproved() {
       setQrFile(null);
       setQrPreview(null);
       setAmountError("");
+      fetchTransactions(); 
     } catch (error) {
       toast.error("Error al enviar la solicitud de retiro");
       console.error("Error al enviar la solicitud de retiro:", error);
@@ -484,7 +516,7 @@ export default function SaldoImproved() {
                 </Card>
 
                 {/* Recent Transactions */}
-                <TransactionList />
+                <TransactionList transactions={transactions} />
               </div>
             </div>
           </div>
