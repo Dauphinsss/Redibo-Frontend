@@ -11,6 +11,12 @@ const todasAseguradoras = [
   { id: 1, idAuto: 1, empresa: "Seguros A", fechaInicio: "01/01/2023", fechaFin: "01/01/2024" },
   { id: 2, idAuto: 2, empresa: "Seguros B", fechaInicio: "02/02/2023", fechaFin: "02/02/2024" },
   { id: 3, idAuto: 1, empresa: "Seguros C", fechaInicio: "03/03/2023", fechaFin: "03/03/2024" },
+  { id: 4, idAuto: 3, empresa: "Seguros D", fechaInicio: "04/04/2023", fechaFin: "04/04/2024" },
+  { id: 5, idAuto: 2, empresa: "Seguros E", fechaInicio: "05/05/2023", fechaFin: "05/05/2024" },
+  { id: 6, idAuto: 1, empresa: "Seguros F", fechaInicio: "06/06/2023", fechaFin: "06/06/2024" },
+  { id: 7, idAuto: 1, empresa: "Seguros G", fechaInicio: "07/07/2023", fechaFin: "07/07/2024" },
+  { id: 8, idAuto: 1, empresa: "Seguros H", fechaInicio: "08/08/2023", fechaFin: "08/08/2024" },
+  { id: 9, idAuto: 1, empresa: "Seguros I", fechaInicio: "09/09/2023", fechaFin: "09/09/2024" },
 ];
 
 interface Props {

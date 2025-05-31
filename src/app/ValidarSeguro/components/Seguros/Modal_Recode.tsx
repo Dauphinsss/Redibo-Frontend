@@ -22,7 +22,7 @@ function Modal_Recode({ isOpen, onClose, title = "", children }: Props) {
         return () => document.removeEventListener("keydown", handleKeyDown);
     }, [onClose]);
 
-    // Cerrar al hacer clic fuera
+    // Cerrar al hacer clic fuera del modal
     const handleClickOutside = (e: React.MouseEvent<HTMLDivElement>) => {
         if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
         onClose();
@@ -31,8 +31,8 @@ function Modal_Recode({ isOpen, onClose, title = "", children }: Props) {
 
     return (
         <AnimatePresence>
-        {isOpen && (
-            <motion.div
+            {isOpen && (
+                <motion.div
                 onClick={handleClickOutside}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -45,19 +45,26 @@ function Modal_Recode({ isOpen, onClose, title = "", children }: Props) {
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.95, opacity: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="bg-white p-6 rounded-xl max-w-lg w-full shadow-xl relative"
+                    className="bg-white rounded-xl max-w-lg w-full shadow-xl relative flex flex-col max-h-[80vh]"
                 >
-                    <h2 className="text-2xl font-bold text-center mb-6">{title}</h2>
-                    <button
-                    onClick={onClose}
-                    className="absolute top-3 right-4 text-gray-400 hover:text-black text-lg font-bold"
-                    >
-                    ×
-                    </button>
-                    {children}
+                    {/* Encabezado fijo */}
+                    <div className="p-4 border-b sticky top-0 z-10 bg-white flex justify-between items-center rounded-t-xl">
+                        <h2 className="text-xl font-bold">{title}</h2>
+                        <button
+                            onClick={onClose}
+                            className="text-gray-400 hover:text-black text-lg font-bold"
+                        >
+                            ×
+                        </button>
+                    </div>
+
+                    {/* Contenido con scroll */}
+                    <div className="p-6 overflow-y-auto">
+                        {children}
+                    </div>
                 </motion.div>
-            </motion.div>
-        )}
+                </motion.div>
+            )}
         </AnimatePresence>
     );
 }
