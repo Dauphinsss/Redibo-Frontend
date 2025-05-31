@@ -41,10 +41,7 @@ function RecodeCarCard(props: Auto) {
   );
   const { promedioCalificacion } = useCalificaciones(idAuto);
   const { isExpanded, toggleExpand } = useExpandingCard();
-  const { presentes, faltantes } = useCaracAdicionales(
-    caracteristicasAdicionales
-  );
-
+  const { presentes } = useCaracAdicionales(caracteristicasAdicionales);
   return (
     <div
       className={`w-full max-w-[750px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col transition-all duration-300 ${
@@ -85,7 +82,7 @@ function RecodeCarCard(props: Auto) {
       </div>
 
       <div className="w-full mt-6">
-        <CarCardCaractAdicionales presentes={presentes} faltantes={faltantes} />
+        <CarCardCaractAdicionales presentes={presentes} />
       </div>
     </div>
   );

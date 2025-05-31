@@ -1,30 +1,56 @@
 import { memo } from "react";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { useExpandingCard } from "@/app/busqueda/hooks/useExpandingCard";
-import {
-  FaSnowflake,
-  FaMusic,
-  FaMapMarkedAlt,
-  FaLock,
-  FaCarSide,
-  FaMotorcycle,
-  FaSatelliteDish,
-  FaSolarPanel,
-} from "react-icons/fa";
+import { FaBluetooth, FaMobileScreenButton } from "react-icons/fa6";
+import { GiGps, GiCarSeat } from "react-icons/gi";
 import "./CaracAdicionales.css";
+import { TbAirConditioning, TbCarGarage } from "react-icons/tb";
+import { MdPedalBike, MdOutlineSecurity, MdWindow } from "react-icons/md";
+import { FaSkiingNordic } from "react-icons/fa";
+import { RiArmchairLine } from "react-icons/ri";
+import { TiCamera } from "react-icons/ti";
+import { BsFillSpeakerFill } from "react-icons/bs";
 
 interface Props {
   presentes: string[];
-  faltantes: string[];
 }
 
-// Solo mostramos el ícono de aire acondicionado
-const iconoAireAcondicionado = <FaSnowflake />;
+// Lista de todas las características posibles
+const todasLasCaracteristicas = [
+  "Aire acondicionado",
+  "Bluetooth",
+  "GPS",
+  "Portabicicletas",
+  "Soporte para esquís",
+  "Pantalla táctil",
+  "Sillas para bebé",
+  "Cámara de reversa",
+  "Asientos de cuero",
+  "Sistema antirrobo",
+  "Toldo o rack de techo",
+  "Vidrios polarizados",
+  "Sistema de sonido",
+];
 
-function CarCardFeatures({ presentes, faltantes }: Props) {
+// Mapeo de íconos para cada característica
+const iconosCaracteristicas: Record<string, JSX.Element> = {
+  "Aire acondicionado": <TbAirConditioning />,
+  Bluetooth: <FaBluetooth />,
+  GPS: <GiGps />,
+  Portabicicletas: <MdPedalBike />,
+  "Soporte para esquís": <FaSkiingNordic />,
+  "Pantalla táctil": <FaMobileScreenButton />,
+  "Sillas para bebé": <GiCarSeat />,
+  "Cámara de reversa": <TiCamera />,
+  "Asientos de cuero": <RiArmchairLine />,
+  "Sistema antirrobo": <MdOutlineSecurity />,
+  "Toldo o rack de techo": <TbCarGarage />,
+  "Vidrios polarizados": <MdWindow />,
+  "Sistema de sonido": <BsFillSpeakerFill />,
+};
+
+function CarCardCaractAdicionales({ presentes }: Props) {
   const { isExpanded, toggleExpand } = useExpandingCard();
-
-  console.log("Características presentes en verde:", presentes);
 
   return (
     <div className={`car-card-features ${isExpanded ? "expanded" : ""}`}>
@@ -36,21 +62,29 @@ function CarCardFeatures({ presentes, faltantes }: Props) {
         {isExpanded ? <MdExpandLess size={20} /> : <MdExpandMore size={20} />}
       </button>
 
-      {isExpanded && (presentes.length > 0 || faltantes.length > 0) && (
+      {isExpanded && (
         <ul className="features-list bg-white visible grid-container">
-          {presentes.map((feature, index) => (
+          {todasLasCaracteristicas.map((feature, index) => (
             <li key={index} className="flex items-center gap-2">
-              {/* Solo agregamos el icono si la característica es "Aire acondicionado" */}
-              {feature === "Aire acondicionado" && iconoAireAcondicionado}{" "}
-              <span style={{ color: "green", fontWeight: "bold" }}>
+              <span
+                style={{ color: presentes.includes(feature) ? "green" : "red" }}
+              >
+                {iconosCaracteristicas[feature] ? (
+                  <span
+                    style={{
+                      color: presentes.includes(feature) ? "green" : "red",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      marginRight: "5px",
+                    }}
+                  >
+                    {iconosCaracteristicas[feature]}
+                  </span>
+                ) : (
+                  "❓"
+                )}
                 {feature}
               </span>
-            </li>
-          ))}
-          {faltantes.map((feature, index) => (
-            <li key={index} className="flex items-center gap-2">
-              {feature === "Aire acondicionado" && iconoAireAcondicionado}{" "}
-              <span style={{ color: "red", opacity: "0.7" }}>{feature}</span>
             </li>
           ))}
         </ul>
@@ -59,4 +93,4 @@ function CarCardFeatures({ presentes, faltantes }: Props) {
   );
 }
 
-export default memo(CarCardFeatures);
+export default memo(CarCardCaractAdicionales);
