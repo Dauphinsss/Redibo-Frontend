@@ -3,12 +3,7 @@
 import type React from "react";
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -163,7 +158,7 @@ export default function SaldoImproved() {
       const formData = new FormData();
       const monto = Number.parseFloat(withdrawAmount);
 
-      formData.append("transaccion",JSON.stringify({ monto }));
+      formData.append("transaccion", JSON.stringify({ monto }));
       formData.append("qr", qrFile as File);
 
       const token = localStorage.getItem("auth_token");
@@ -203,13 +198,6 @@ export default function SaldoImproved() {
           <div className="flex-1 p-8">
             <div className="max-w-4xl mx-auto">
               <div>
-                <div className="mb-6">
-                  <h3 className="text-xl font-semibold mb-2">Saldo</h3>
-                  <p className="text-muted-foreground">
-                    Gestiona tu saldo disponible y realiza retiros
-                  </p>
-                </div>
-
                 <Card className="mb-6">
                   <CardHeader>
                     <CardTitle className="flex items-center">
@@ -480,7 +468,10 @@ export default function SaldoImproved() {
                               className="flex-1"
                               onClick={handleWithdrawSubmit}
                               disabled={
-                                !withdrawAmount || !qrFile || !!amountError || sending
+                                !withdrawAmount ||
+                                !qrFile ||
+                                !!amountError ||
+                                sending
                               }
                             >
                               Enviar Solicitud

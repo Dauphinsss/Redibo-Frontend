@@ -2,7 +2,7 @@ import { Clock, CheckCircle2, AlertCircle } from "lucide-react";
 
 export default function Pendiente() {
   return (
-    <div>
+    <div className="p-6">
       <h2 className="text-lg font-semibold mb-2">Tu solicitud para ser Conductor esta Pendiente</h2>
 
       <div className="border-l-4 border-gray-300 p-6 rounded-r-lg">
