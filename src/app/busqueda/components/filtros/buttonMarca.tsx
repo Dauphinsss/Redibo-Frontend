@@ -69,9 +69,11 @@ export function ButtonMarca({
       setAllMarcas(extractedMarcas);
     }
   }, [autos]);
+  
 
   // Filtrar marcas según el término de búsqueda
   useEffect(() => {
+
     if (searchTerm.length > 0) {
       setLoading(true);
       const timer = setTimeout(() => {
@@ -152,11 +154,12 @@ export function ButtonMarca({
               //onChange={(e) => setSearchTerm(e.target.value)}
               //onChange={(e) => setSearchTerm(e.target.value.trimStart())}// ingnora espacios
               onChange={(e) => {
-                setSearchTerm(e.target.value.trimStart())
+                //setSearchTerm(e.target.value.trimStart())
                 //const value = e.target.value;
                 const value = e.target.value.slice(0, 50);
                 const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]/g, '');
-                setSearchTerm(onlyValid.trimStart());
+                //const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ-]/g, ''); permite guiones "Mercedes-Benz"
+                setSearchTerm(onlyValid.trim());
               }}
               placeholder="Buscar marca de vehículo..."
               className="pl-10"
