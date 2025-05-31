@@ -4,6 +4,7 @@ import CarButton_Recode from "./CarButton_Recode";
 import CarDetails_Recode from "./CarDetails_Recode";
 import { CarCardProps } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 function CarCard_Recode({
+    idAuto,
     modelo, 
     marca, 
     asientos,
@@ -13,7 +14,8 @@ function CarCard_Recode({
     host, 
     ubicacion, 
     src, 
-    alt
+    alt,
+    onVerAseguradoras,
 }: CarCardProps) {
     return (
         <div className="border p-4 rounded-xl flex gap-6 max-w-4xl shadow-sm items-center">
@@ -32,7 +34,7 @@ function CarCard_Recode({
                     host={host}
                     ubicacion={ubicacion}
                 />
-                <CarButton_Recode />
+                <CarButton_Recode onClick={() => onVerAseguradoras?.(Number(idAuto))} />
             </div>
         </div>
     );

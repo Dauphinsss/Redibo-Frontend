@@ -10,6 +10,7 @@ export interface CarCardProps {
     ubicacion: string;
     src: string;
     alt: string;
+    onVerAseguradoras?: (idAuto: number) => void;
 }
 
 export interface CarDetailsProps {
