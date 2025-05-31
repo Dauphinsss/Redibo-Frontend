@@ -1,5 +1,5 @@
-import { CarCardProps } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 import CarList_Recode from "../components/ListaAutosSeguros/CarList_Recode";
+import { CarCardProps } from "../interface/ListaAutoSeguro_Interface_Recode";
 
 export default function Page() {
     const carCards: CarCardProps[] = Array.from({ length: 8 }, (_, i) => ({
