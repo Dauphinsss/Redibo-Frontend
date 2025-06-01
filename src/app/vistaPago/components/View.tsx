@@ -4,7 +4,6 @@ import { useCardByID, useCreatePaymentOrder, useHostById, useRenter } from '../h
 import Image from 'next/image'
 
 export default function View({ id }: { id: number }) {
-  console.log(localStorage.getItem("auth_token"))
   const { mutate, error, data } = useCreatePaymentOrder();
   const { data: car } = useCardByID(id)
   const { data: host } = useHostById(id)
@@ -32,7 +31,7 @@ export default function View({ id }: { id: number }) {
             {/* Imagen */}
             {car?.imagen && (
               <Image
-                src="https://res.cloudinary.com/di86sws6b/image/upload/v1748704657/car-images/1/ywxkgqywmh7knxfjq6wu.jpg"
+                src={car.imagen}
                 alt="vehiculo"
                 width={400}
                 height={300}
