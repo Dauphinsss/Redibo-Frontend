@@ -23,6 +23,7 @@ export default function CustomSearchWrapper({
 }: Props) {
   const autosBuscados = useCustomSearch(autosFiltrados, busqueda);
   const autosActuales = autosBuscados.slice(0, autosVisibles);
+  console.log("Autos Buscados", autosBuscados);
 
   return (
     <ResultadosAutos

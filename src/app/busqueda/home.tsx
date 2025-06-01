@@ -57,6 +57,10 @@ export default function Home({ ciudad }: Props) {
   const [fechaFin, setFechaFin] = useState("");
   const [gpsActive, setGpsActive] = useState(false);
 
+  console.log("Autos Filtrados", autosFiltrados)
+  console.log("Autos Actuales", autosActuales)
+  console.log("Autos visibles", autosVisibles)
+
   // Handlers para los filtros
   const handlePrecioFilter = (min: number, max: number) => {
     // Aquí deberías filtrar los autos por precio
@@ -199,12 +203,13 @@ export default function Home({ ciudad }: Props) {
         <div className="w-0 h-0 lg:block lg:w-[40%] lg:h-auto">
           <div className="sticky top-[204px] h-[calc(100vh-204px)] bg-gray-100 rounded shadow-inner">
             <ViewMap
-              posix={(ciudad)? CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA] : CIUDADES_BOLIVIA['Cochabamba']}
-              autos={autosFiltrados}
+              posix={(ciudad) ? CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA] : CIUDADES_BOLIVIA['Cochabamba']}
+              autosFiltrados={autosFiltrados}
               radio={radio}
               punto={punto}
               setpunto={setPunto}
               estaActivoGPS={gpsActive}
+              busqueda={busqueda}
             />
           </div>
         </div>
@@ -212,12 +217,13 @@ export default function Home({ ciudad }: Props) {
       {/* Mapa en mobile */}
       <MapViwMobile>
         <ViewMap
-          posix={(ciudad)? CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA] : CIUDADES_BOLIVIA['Cochabamba']}
-          autos={autosFiltrados}
+          posix={(ciudad) ? CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA] : CIUDADES_BOLIVIA['Cochabamba']}
+          autosFiltrados={autosFiltrados}
           radio={radio}
           punto={punto}
           setpunto={setPunto}
           estaActivoGPS={gpsActive}
+          busqueda={busqueda}
         />
       </MapViwMobile>
     </div>
