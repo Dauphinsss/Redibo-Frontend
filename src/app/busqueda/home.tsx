@@ -114,7 +114,6 @@ export default function Home({ ciudad }: Props) {
               Filtros
             </button>
 
-            {/* Este div fuerza al SearchBar a tomar su tamaño ideal sin expandirse innecesariamente */}
             <div className="w-full max-w-md">
               <SearchBar
                 placeholder="Buscar por modelo, marca"
@@ -125,9 +124,6 @@ export default function Home({ ciudad }: Props) {
             </div>
           </div>
         </div>
-
-
-
 
         {/* Carrusel de filtros */}
         <div className="px-4 sm:px-6 lg:px-8 py-3 border-t bg-gray-50">
@@ -184,7 +180,6 @@ export default function Home({ ciudad }: Props) {
             </div>
           </div>
         </main>
-        {/* Mapa en desktop */}
         <div className="w-0 h-0 lg:block lg:w-[40%] lg:h-auto">
           <div className="sticky top-[204px] h-[calc(100vh-204px)] bg-gray-100 rounded shadow-inner">
             <ViewMap
@@ -199,7 +194,6 @@ export default function Home({ ciudad }: Props) {
           </div>
         </div>
       </div>
-      {/* Mapa en mobile */}
       <MapViwMobile>
         <ViewMap
           posix={(ciudad) ? CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA] : CIUDADES_BOLIVIA['Cochabamba']}
