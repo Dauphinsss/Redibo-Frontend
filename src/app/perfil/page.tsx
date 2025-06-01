@@ -21,6 +21,7 @@ import { RatingsInfo } from "./ratings-info";
 import { VehiclesInfo } from "./vehicles-info";
 import { ReservationsList } from "./orders-info";
 import { SecurityInfo } from "./security-info";
+import { ComprobantesInfo } from "./payment-proofs";
 import {
   User,
   Star,
@@ -50,6 +51,7 @@ type SectionType =
   | "ratings"
   | "vehicles"
   | "orders"
+  | "comprobantes"
   | "socios"
   | "security";
 
@@ -140,6 +142,8 @@ export default function ProfilePage() {
         return <VehiclesInfo />;
       case "orders":
         return <ReservationsList />;
+      case "comprobantes":
+        return <ComprobantesInfo />;
       case "security":
         return <SecurityInfo />;
       case "socios":
@@ -180,6 +184,7 @@ export default function ProfilePage() {
     ratings: "Calificaciones",
     vehicles: "Vehículos",
     orders: "Órdenes de Pago",
+    comprobantes: "Comprobantes de Pago",
     socios: "Mis Socios",
     security: "Seguridad",
   };
@@ -227,6 +232,12 @@ export default function ProfilePage() {
       icon: Receipt,
       alwaysShow: false,
       requiresRole: "RENTER",
+    },
+    {
+      id: "comprobantes",
+      title: "Comprobantes de Pago",
+      icon: Receipt,
+      alwaysShow: true,
     },
     {
       id: "socios",

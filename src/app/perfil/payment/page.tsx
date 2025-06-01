@@ -163,6 +163,7 @@ function PaymentPage() {
         {
           codigo_orden_pago: code,
           numero_transaccion: transactionId,
+          monto_a_pagar: orderDetails?.monto_a_pagar,
         }
       );
 
