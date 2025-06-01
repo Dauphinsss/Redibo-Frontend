@@ -18,6 +18,7 @@ import CustomSearchWrapper from "@/app/busqueda/hooks/customSearchHU/CustomSearc
 type Props = {
   ciudad?: string;
 };
+
 // Interfaces para el filtro de marca
 interface Marca {
   id: number;
@@ -33,6 +34,7 @@ interface Host {
   trips: number;
   rating?: number;
 }
+
 export default function Home({ ciudad }: Props) {
   
   const router = useRouter();
@@ -65,6 +67,9 @@ export default function Home({ ciudad }: Props) {
     setFiltrosTransmision,
     setFiltrosCaracteristicasAdicionales,
     filtrosCaracteristicasAdicionales,
+    filtroHost,
+    setFiltroHost,
+    limpiarFiltros
   } = useAutos(8, radio, punto);
 
   const [busqueda, setBusqueda] = useState("");
@@ -75,13 +80,28 @@ export default function Home({ ciudad }: Props) {
   // Estados para los nuevos filtros
   const [marcaSeleccionada, setMarcaSeleccionada] = useState<Marca | null>(null);
   const [mostrarTodos, setMostrarTodos] = useState(true);
+  const [hostSeleccionado, setHostSeleccionado] = useState<Host | null>(null);
 
   // Handlers para los filtros
   const handlePrecioFilter = (min: number, max: number) => {
     aplicarFiltroPrecio(min, max);
     console.log('Filtro por precio:', { min, max });
   };
-  
+
+  const handleHostFilter = (host: Host | null) => {
+    console.log('Filtro por host:', host);
+    setHostSeleccionado(host);
+    setMostrarTodos(false);
+    
+    if (host) {
+        // Filtrar por el nombre del host
+        setFiltroHost(host.name);
+    } else {
+        // Limpiar filtro de host
+        setFiltroHost('');
+    }
+  };
+
   const handleCalifFilter = (calificacion: number) => {
     aplicarFiltroCalificacion(calificacion);
     console.log('Filtro por calificación:', calificacion);
@@ -121,14 +141,10 @@ export default function Home({ ciudad }: Props) {
   const handleMostrarTodos = () => {
     setMostrarTodos(true);
     setMarcaSeleccionada(null);
+    setHostSeleccionado(null);
     setBusqueda("");
+    limpiarFiltros();
     filtrarAutos("", fechaInicio, fechaFin);
-  };
-
-  // Handler para el filtro de host (placeholder)
-  const handleHostFilter = (host: Host | null) => {
-    console.log('Filtro por host:', host);
-    // Aquí puedes implementar la lógica de filtrado por host
   };
 
   const ViewMap = useMemo(() => dynamic(
@@ -211,6 +227,7 @@ export default function Home({ ciudad }: Props) {
             onMostrarTodos={handleMostrarTodos}
             isAllActive={mostrarTodos}
             autoScrollDelay={4000}
+            autosOriginales={autos}
           />
         </div>
       </div>
