@@ -147,6 +147,7 @@ export function InfiniteFilterCarousel({
         <ButtonHost
           onFilterChange={onHostFilter}
           disabled={disabledHost}
+          autos={autosOriginales.length > 0 ? autosOriginales : autosTotales}  //nuevo que añadi
         />
       ),
     },
