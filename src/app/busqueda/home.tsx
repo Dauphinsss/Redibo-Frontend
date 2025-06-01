@@ -53,13 +53,7 @@ export default function Home({ ciudad }: Props) {
   } = useAutos(8, radio, punto);
 
   const [busqueda, setBusqueda] = useState("");
-  const [fechaInicio, setFechaInicio] = useState("");
-  const [fechaFin, setFechaFin] = useState("");
   const [gpsActive, setGpsActive] = useState(false);
-
-  console.log("Autos Filtrados", autosFiltrados)
-  console.log("Autos Actuales", autosActuales)
-  console.log("Autos visibles", autosVisibles)
 
   // Handlers para los filtros
   const handlePrecioFilter = (min: number, max: number) => {
@@ -124,9 +118,7 @@ export default function Home({ ciudad }: Props) {
               onFiltrar={(query) => {
                 setBusqueda(query);
                 //Se borro para que no se vuelva a buscar en todos los carros
-                //filtrarAutos(query, fechaInicio, fechaFin);
               }}
-              //NUEVO
               onClearBusqueda={() => {
                 setBusqueda(""); // 🔁 borra el texto y reactiva el autosFiltrados base
               }}
@@ -139,14 +131,6 @@ export default function Home({ ciudad }: Props) {
         {/* Carrusel de filtros */}
         <div className="px-4 sm:px-6 lg:px-8 py-3 border-t bg-gray-50">
           <InfiniteFilterCarousel
-            searchTerm={busqueda}
-            fechaInicio={fechaInicio}
-            fechaFin={fechaFin}
-            setFechaInicio={setFechaInicio}
-            setFechaFin={setFechaFin}
-            autosActuales={autosActuales}
-            autosTotales={autosFiltrados}
-            //onAirportFilter={handleAirportFilter}
             setAutosFiltrados={setAutosFiltrados}
             autos={autos}
 

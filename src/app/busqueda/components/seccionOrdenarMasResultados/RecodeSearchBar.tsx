@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MagnifyingGlassIcon,XMarkIcon } from "@heroicons/react/24/solid";
+import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
 //Importacion para el basurerito
 import { TrashIcon } from "@heroicons/react/24/solid";
 
@@ -13,7 +13,7 @@ interface SearchBarProps {
   onClearBusqueda?: () => void;
 }
 // Añadi onClearBusqueda como propiedad opcional
-const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSugerencia, onClearBusqueda}) => {
+const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSugerencia, onClearBusqueda }) => {
   const [busqueda, setBusqueda] = useState("");
   const [mostrarBoton, setMostrarBoton] = useState(true);
   //NUEVO: estado para mostrar el error
@@ -35,12 +35,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
   useEffect(() => {
     const timer = setTimeout(() => {
       const valorNormalizado = busqueda
-      .trim()
-      .replace(/\s+/g, " ")
-      .replace(/[^\p{L}\p{N}\s.\-\/]/gu, "")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")   
-      .toLowerCase();
+        .trim()
+        .replace(/\s+/g, " ")
+        .replace(/[^\p{L}\p{N}\s.\-\/]/gu, "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
       onFiltrar(valorNormalizado);
     }, 300);
     return () => clearTimeout(timer);
@@ -64,27 +64,27 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
       } else {
         setSugerencia("");
       }
-    }, 150); 
-    return () => clearTimeout(timer); 
+    }, 150);
+    return () => clearTimeout(timer);
   }, [busqueda, obtenerSugerencia]);
 
-    // useEffect para guardar el historial en LocalStorage
-    useEffect(() => {
-      if (historial.length > 0) {
-        localStorage.setItem("historialBusqueda", JSON.stringify(historial));
-      }
-    }, [historial]);
-    
-    useEffect(() => {
-      const guardado = localStorage.getItem("historialBusqueda");
-      if (guardado) setHistorial(JSON.parse(guardado));
+  // useEffect para guardar el historial en LocalStorage
+  useEffect(() => {
+    if (historial.length > 0) {
+      localStorage.setItem("historialBusqueda", JSON.stringify(historial));
+    }
+  }, [historial]);
 
-      const guardada = sessionStorage.getItem("ultimaBusqueda");
-      if (guardada) {
+  useEffect(() => {
+    const guardado = localStorage.getItem("historialBusqueda");
+    if (guardado) setHistorial(JSON.parse(guardado));
+
+    const guardada = sessionStorage.getItem("ultimaBusqueda");
+    if (guardada) {
       setBusqueda(guardada);
       onFiltrar(guardada);
-      }
-    }, [onFiltrar]);
+    }
+  }, [onFiltrar]);
 
   //Agregado para el historial
   const handleFocus = () => {
@@ -109,7 +109,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
       return nuevoHistorial;
     });
   };
-  
+
   //Agregado para el historial
   const handleSelectHistorial = (item: string) => {
     setBusqueda(item);
@@ -136,7 +136,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
 
     //Añadir flex items-center para modificar el contenedor
     //<div className="relative w-full max-w-md">
-    <div className="relative w-full max-w-md max-w-md z-10">
+    <div className="relative w-full max-w-md z-10">
       <input
         type="text"
         placeholder={placeholder}
@@ -144,7 +144,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         value={busqueda}
         //Tamañp máximo de caracteres
         maxLength={100}
-        onChange={(e) => { 
+        onChange={(e) => {
 
           const valor = e.target.value;
           // NUEVO: Detectar si contiene una URL común
@@ -160,10 +160,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
           }
           if (error && valor.length <= 100) {
             setError(""); // Limpia error cuando vuelve a ser válido
-          }  
+          }
 
           setBusqueda(e.target.value);
-          
+
           if (e.target.value.trim() === "") {
             sessionStorage.removeItem("ultimaBusqueda");
           }
@@ -178,26 +178,26 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         onKeyDown={(e) => {
           if ((e.key === "ArrowRight" || e.key === "Tab") && sugerencia) {
             e.preventDefault();
-        
+
             const resto = sugerencia.slice(busqueda.length);
             const siguienteEspacio = resto.indexOf(" ");
-        
+
             let siguienteParte = "";
             if (siguienteEspacio !== -1) {
-              siguienteParte = resto.slice(0, siguienteEspacio + 1); 
+              siguienteParte = resto.slice(0, siguienteEspacio + 1);
             } else {
-              siguienteParte = resto; 
+              siguienteParte = resto;
             }
-        
+
             const nuevaBusqueda = busqueda + siguienteParte;
             setBusqueda(nuevaBusqueda);
             setTimeout(() => {
               inputRef.current?.setSelectionRange(nuevaBusqueda.length, nuevaBusqueda.length);
             }, 0);
-        
+
             if (nuevaBusqueda === sugerencia) {
               setSugerencia("");
-            } 
+            }
           } else if (e.key === "Enter") { //En este else se agrego para que se aniadan con un enter al historial
             agregarAHistorial(busqueda);
             setMostrarHistorial(false);
@@ -206,27 +206,27 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         }}
         className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[14px] md:text-base"
       />
-      
-      {/* Mostrar error si hay */}  
+
+      {/* Mostrar error si hay */}
       {error && (
         <p className="text-red-500 text-sm mt-1">{error}</p>
       )}
 
       {/* Botón de búsqueda manual */}
-        <button
-          type="button"
-          aria-label="Buscar autos"
-          className="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black text-white rounded-md flex items-center justify-center"
-          onClick={() => {
-            // Ejecutar búsqueda manual si se desea
-            if (busqueda.trim() !== "") {
-              agregarAHistorial(busqueda);
-              inputRef.current?.blur();
-            }
-          }}
-        >
-          <MagnifyingGlassIcon className="h-5 w-5" />
-        </button>
+      <button
+        type="button"
+        aria-label="Buscar autos"
+        className="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black text-white rounded-md flex items-center justify-center"
+        onClick={() => {
+          // Ejecutar búsqueda manual si se desea
+          if (busqueda.trim() !== "") {
+            agregarAHistorial(busqueda);
+            inputRef.current?.blur();
+          }
+        }}
+      >
+        <MagnifyingGlassIcon className="h-5 w-5" />
+      </button>
 
       {!mostrarBoton && (
         <button
@@ -246,7 +246,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
       )}
 
 
-      { sugerencia && (
+      {sugerencia && (
         <div
           className="absolute top-0 left-0 p-2 pr-12 w-full h-12 text-gray-400 pointer-events-none select-none 
           text-[11px] md:text-base lg:text-lg font-normal flex items-center"
@@ -264,33 +264,33 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         <ul className="absolute z-10 w-full bg-white border mt-1 rounded-md shadow-md max-h-60 overflow-y-auto">
           {historial.length > 0 ? (
             historial.map((item, index) => (
-            <li
+              <li
                 key={index}
                 className="px-4 py-2 flex justify-between items-center hover:bg-gray-100 text-sm text-gray-500"
               >
-              <span
-                className="cursor-pointer w-full text-left"
-                onClick={() => handleSelectHistorial(item)} 
-              >
-                {item}
-              </span>
-              <button
-                className="ml-2 text-gray-400 hover:text-black"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => handleDeleteHistorial(item)}
-              >
-                <XMarkIcon className="h-4 w-4" />
-              </button>
+                <span
+                  className="cursor-pointer w-full text-left"
+                  onClick={() => handleSelectHistorial(item)}
+                >
+                  {item}
+                </span>
+                <button
+                  className="ml-2 text-gray-400 hover:text-black"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleDeleteHistorial(item)}
+                >
+                  <XMarkIcon className="h-4 w-4" />
+                </button>
+              </li>
+            ))
+          ) : (
+            <li className="px-4 py-2 text-center text-sm text-gray-400">
+              No hay búsquedas guardadas.
             </li>
-          ))
-        ) : (
-        <li className="px-4 py-2 text-center text-sm text-gray-400">
-          No hay búsquedas guardadas.
-        </li>
+          )}
+        </ul>
       )}
-      </ul>
-    )}
-  </div>
+    </div>
   );
 };
 export default SearchBar;
