@@ -36,7 +36,7 @@ function RecodeCarCard(props: Auto) {
   const { promedioCalificacion } = useCalificaciones(idAuto);
   const setSelectedPoint = useMapStore((state) => state.setSelectedPoint);
   return (
-    <div className="w-full max-w-[750px] md:h-[320px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-4 cursor-pointer"
+    <div className="w-full max-w-[800px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-3 cursor-pointer"
       onClick={() => setSelectedPoint({ lat: props.latitud, lon: props.longitud })}
     >
       {/* Imagen del auto */}
