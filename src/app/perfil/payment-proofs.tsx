@@ -183,6 +183,66 @@ export function ComprobantesInfo() {
     }
   };
 
+  // Función para descargar PDF desde el backend
+  const downloadOrderPDF = async (orden: OrdenPago) => {
+    try {
+        setLoadingOrderDetails(true);
+        const token = localStorage.getItem("auth_token");
+        
+        const response = await axios.get(`${API_URL}/api/orden/${orden.id}/pdf`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        responseType: 'blob'
+        });
+        
+        // Crear y descargar el archivo
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `comprobante-orden-${orden.codigo}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+        
+    } catch (error) {
+        console.error('Error al descargar PDF:', error);
+        setError('Error al generar el PDF del comprobante');
+    } finally {
+        setLoadingOrderDetails(false);
+    }
+  };
+
+  const downloadTransactionPDF = async (transaction: Transaccion) => {
+    try {
+        setLoadingTransactionDetails(true);
+        const token = localStorage.getItem("auth_token");
+        
+        const response = await axios.get(`${API_URL}/api/transaccion/${transaction.id}/pdf`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        responseType: 'blob'
+        });
+        
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `comprobante-transaccion-${transaction.id.slice(-8)}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+        
+    } catch (error) {
+        console.error('Error al descargar PDF:', error);
+        setError('Error al generar el PDF del comprobante');
+    } finally {
+        setLoadingTransactionDetails(false);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === "ordenes") {
       fetchOrdenes();
@@ -660,9 +720,17 @@ export function ComprobantesInfo() {
                 <Button variant="outline" onClick={() => setIsOrderModalOpen(false)}>
                   Cerrar
                 </Button>
-                <Button className="flex items-center gap-2" disabled>
-                  <Download className="w-4 h-4" />
-                  Descargar PDF
+                <Button 
+                  className="flex items-center gap-2" 
+                  onClick={() => downloadOrderPDF(selectedOrder)}
+                  disabled={loadingOrderDetails}
+                  >
+                  {loadingOrderDetails ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4" />
+                  )}
+                    Descargar PDF
                 </Button>
               </div>
             </div>
@@ -761,8 +829,16 @@ export function ComprobantesInfo() {
                 <Button variant="outline" onClick={() => setIsTransactionModalOpen(false)}>
                   Cerrar
                 </Button>
-                <Button className="flex items-center gap-2" disabled>
-                  <Download className="w-4 h-4" />
+                <Button 
+                  className="flex items-center gap-2" 
+                  onClick={() => downloadTransactionPDF(selectedTransaction)}
+                  disabled={loadingTransactionDetails}
+                  >
+                  {loadingTransactionDetails ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4" />
+                  )}
                   Descargar PDF
                 </Button>
               </div>
