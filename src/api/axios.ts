@@ -8,4 +8,11 @@ const axiosInstance = axios.create({
   },
 });
 
-export default axiosInstance;
+const axiosInstance2 = axios.create({
+    baseURL: "http://localhost:4000/api/",
+    headers: {
+        "Content-Type": "application/json",
+    },
+});
+
+export { axiosInstance, axiosInstance2 };

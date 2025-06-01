@@ -4,7 +4,7 @@ import { ReservaProps } from '@/app/reserva/interface/autosInterface_Recode';
 import { useRouter } from 'next/navigation';
 
 export default function Reserva({ id, precio }: ReservaProps) {  
-
+  
   const router = useRouter();
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

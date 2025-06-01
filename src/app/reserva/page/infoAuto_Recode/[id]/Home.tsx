@@ -1,5 +1,5 @@
 'use client';
-
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
   getCarById,
@@ -26,6 +26,7 @@ interface HomeProps {
 }
 
 export default function Home({ id }: HomeProps) {
+  const router = useRouter();
   const [auto, setAuto] = useState<AutoDetails_interface_Recode | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [calificaciones, setCalificaciones] = useState<number[]>([]);
@@ -58,8 +59,11 @@ export default function Home({ id }: HomeProps) {
       setLoaded(true);
     })();
   }, [id]);
+   const handleSubmit = () => {
+    router.push(`/vistaPago/${id}`);
+  }
 
-  if (!loaded || !auto) return null;
+  if (!loaded || !auto) return null
 
   return (
     <>
@@ -138,6 +142,13 @@ export default function Home({ id }: HomeProps) {
                 anio={auto.anio}
                 soat={auto.soat}
               />
+              <button
+                onClick={handleSubmit }
+                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+              >
+                vista pago
+              </button>
+              <div>{id}</div>
               <Reserva id={id} precio={auto.precio} />
             </div>
           </div>

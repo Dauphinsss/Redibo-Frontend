@@ -57,16 +57,6 @@ export default async function Page({
                 modelo={auto.modelo}
                 precio={auto.precio}
               />
-              <Link
-                href={{
-                pathname: `/vistaPago/${id}`,
-                  query: {
-                    id
-                  },
-                }}
-              >
-                Vista de pago
-              </Link>
             </div>
           </div>
         </div>
