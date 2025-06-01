@@ -8,5 +8,5 @@ export const renterByIdEndpoint = {
     index: 'auth/profile'
 }
 export const ordenDePago = {
-    index: 'paymentOrder'
+    index: '/paymentOrder'
 }

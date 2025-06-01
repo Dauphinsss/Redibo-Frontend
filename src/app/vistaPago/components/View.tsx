@@ -4,6 +4,7 @@ import { useCardByID, useCreatePaymentOrder, useHostById, useRenter } from '../h
 import Image from 'next/image'
 
 export default function View({ id }: { id: number }) {
+  console.log(localStorage.getItem("auth_token"))
   const { mutate, error, data } = useCreatePaymentOrder();
   const { data: car } = useCardByID(id)
   const { data: host } = useHostById(id)
@@ -13,7 +14,7 @@ export default function View({ id }: { id: number }) {
     mutate({
       id_carro: id,
       id_usuario_host: Number(host?.id_host ?? 0),
-      id_usuario_renter: renter.id,
+      id_usuario_renter: Number(renter.id),
       monto_a_pagar: car?.precio_por_dia ?? 0,
     });
   };
@@ -29,7 +30,16 @@ export default function View({ id }: { id: number }) {
           {/* Panel izquierdo */}
           <section className="relative w-64 bg-gray-100 p-6">
             {/* Imagen */}
-            <Image className="w-full h-36 bg-gray-300 rounded mb-6" src={car?.imagen ?? ''} alt="vehiculo" />
+            {car?.imagen && (
+              <Image
+                src="https://res.cloudinary.com/di86sws6b/image/upload/v1748704657/car-images/1/ywxkgqywmh7knxfjq6wu.jpg"
+                alt="vehiculo"
+                width={400}
+                height={300}
+                className="rounded mb-6"
+              />
+
+            )}
 
             {/* Detalles */}
             <div className="space-y-2 text-sm">
