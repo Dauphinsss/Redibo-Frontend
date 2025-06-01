@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import axios, { AxiosError }from "axios";
-
+import axios, { AxiosError } from "axios";
+import { isUnderage } from "@/lib/utils"; 
 import { API_URL } from "@/utils/bakend";
 interface City {
   id: number;
@@ -29,7 +29,7 @@ interface UserProfile {
 
 export function PersonalInfo() {
   const [userData, setUserData] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);  
+  const [loading, setLoading] = useState(true);
   const [editandoNombre, setEditandoNombre] = useState(false);
   const [valorNombre, setValorNombre] = useState("");
   const [editandoTelefono, setEditandoTelefono] = useState(false);
@@ -41,6 +41,7 @@ export function PersonalInfo() {
   const [editandoCiudad, setEditandoCiudad] = useState(false);
   const [valorCiudad, setValorCiudad] = useState("");
   const [listaCiudades, setListaCiudades] = useState<City[]>([]);
+  const [errores, setErrores] = useState<{ [key: string]: string }>({});
   const token =
     typeof window !== "undefined" ? localStorage.getItem("auth_token") : "";
 
@@ -50,10 +51,10 @@ export function PersonalInfo() {
       return fechaBruta.split("T")[0];
     }
     if (fechaBruta.includes("/")) {
-    const [d, m, y] = fechaBruta.split("/");
-     const dia = d.padStart(2, "0");
-     const mes = m.padStart(2, "0");
-     return `${y}-${mes}-${dia}`;
+      const [d, m, y] = fechaBruta.split("/");
+      const dia = d.padStart(2, "0");
+      const mes = m.padStart(2, "0");
+      return `${y}-${mes}-${dia}`;
     }
     return "";
   }
@@ -89,7 +90,7 @@ export function PersonalInfo() {
         setUserData({
           ...data,fecha_nacimiento: isoNacimiento,
         });
-        setValorNombre(data.nombre);
+        setValorNombre(data.nombre || "");
         setValorTelefono(data.telefono || "");
         setValorNacimiento(isoNacimiento);
         setValorGenero(data.genero || "");
@@ -156,34 +157,109 @@ export function PersonalInfo() {
     } catch (err) {
       const errorAxios = err as AxiosError<{ message?: string }>;
       const msg =
-      errorAxios.response?.data?.message ||
-      "Ocurrió un error al actualizar " + campo.replace("_", " ");
+        errorAxios.response?.data?.message ||
+        "Ocurrió un error al actualizar " + campo.replace("_", " ");
       if (onError) onError(msg);
       else alert(msg);
       console.error(err);
     }
   };
-  const guardarNombre = () => {
-    if (!valorNombre.trim()) {
-      alert("El nombre no puede quedar vacío");
+  const handleNombreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nuevoValor = e.target.value;
+    const regexSoloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]*$/;
+    if (nuevoValor.length > 60) {
+      setErrores((prev) => ({
+        ...prev,
+        nombre: "El nombre no puede exceder los 60 caracteres.",
+      }));
       return;
     }
-    actualizarCampo(
-      "nombre",
-      valorNombre.trim(),
-      (nuevoValor) => {
-        setUserData((prev) =>
-          prev ? { ...prev, nombre: nuevoValor as string } : prev
-        );
-        setEditandoNombre(false);
-      }
-    );
+    if (nuevoValor === "" || regexSoloLetras.test(nuevoValor)) {
+      setValorNombre(nuevoValor);
+      setErrores((prev) => {
+        const copia = { ...prev };
+        delete copia.nombre;
+        return copia;
+      });
+    } else {
+      setErrores((prev) => ({
+        ...prev,
+        nombre: "Sólo se permiten letras y espacios.",
+      }));
+    }
+  };
+
+  const guardarNombre = () => {
+    if (!valorNombre.trim()) {
+      setErrores((prev) => ({ ...prev, nombre: "Este campo es obligatorio." }));
+      return;
+    }
+    if (valorNombre.trim().length < 3) {
+      setErrores((prev) => ({
+        ...prev,
+        nombre: "El nombre debe tener al menos 3 caracteres.",
+      }));
+      return;
+    }
+    if (valorNombre.trim().length > 60) {
+      setErrores((prev) => ({
+        ...prev,
+        nombre: "El nombre no puede exceder los 60 caracteres.",
+      }));
+      return;
+    }
+    const regexSoloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+    if (!regexSoloLetras.test(valorNombre.trim())) {
+      setErrores((prev) => ({
+        ...prev,
+        nombre: "Sólo se permiten letras y espacios.",
+      }));
+      return;
+    }
+    setErrores((prev) => {
+      const copia = { ...prev };
+      delete copia.nombre;
+      return copia;
+    });
+    actualizarCampo("nombre", valorNombre.trim(), (nuevoValor) => {
+      setUserData((prev) =>
+        prev ? { ...prev, nombre: nuevoValor as string } : prev
+      );
+      setEditandoNombre(false);
+    },
+    (mensajeError) => {
+      setErrores((prev) => ({ ...prev, nombre: mensajeError }));
+    });
   };
   const guardarTelefono = () => {
     if (!valorTelefono.trim()) {
-      alert("El teléfono no puede quedar vacío");
+      setErrores((prev) => ({
+        ...prev,
+        telefono: "El teléfono es obligatorio.",
+      }));
       return;
     }
+    if (valorTelefono.trim().length !== 8) {
+      setErrores((prev) => ({
+        ...prev,
+        telefono: "El teléfono debe tener exactamente 8 números.",
+      }));
+      return;
+    }
+    if (!/^[467]/.test(valorTelefono.trim())) {
+      setErrores((prev) => ({
+        ...prev,
+        telefono: "El teléfono debe comenzar con 4, 6 o 7.",
+      }));
+      return;
+    }
+
+    setErrores((prev) => {
+      const copia = { ...prev };
+      delete copia.telefono;
+      return copia;
+    });
+
     actualizarCampo("telefono", valorTelefono.trim(), (nuevoValor) => {
       setUserData((prev) =>
         prev ? { ...prev, telefono: nuevoValor as string } : prev
@@ -193,9 +269,34 @@ export function PersonalInfo() {
   };
   const guardarNacimiento = () => {
     if (!valorNacimiento) {
-      alert("Debes seleccionar una fecha");
+      setErrores((prev) => ({
+        ...prev,
+        fechaNacimiento: "La fecha de nacimiento es obligatoria.",
+      }));
       return;
     }
+    if (valorNacimiento < minDate) {
+        setErrores((prev) => ({
+          ...prev,
+          fechaNacimiento: `Por favor ingrese una fecha valida.`,
+        }));
+        return;
+      }
+
+    if (isUnderage(valorNacimiento)) {
+      setErrores((prev) => ({
+        ...prev,
+        fechaNacimiento: "Debes ser mayor de 18 años.",
+      }));
+      return;
+    }
+
+    setErrores((prev) => {
+      const copia = { ...prev };
+      delete copia.fechaNacimiento;
+      return copia;
+    });
+
     const [y, m, d] = valorNacimiento.split("-");
     const ddmmyyyy = `${d.padStart(2, "0")}/${m.padStart(2, "0")}/${y}`;
     actualizarCampo("fecha_nacimiento", ddmmyyyy, (nuevoValor) => {
@@ -208,63 +309,162 @@ export function PersonalInfo() {
   };
   const guardarGenero = () => {
     if (!valorGenero) {
-      alert("Debes seleccionar un género");
+      setErrores((prev) => ({
+        ...prev,
+        genero: "Por favor seleccione su genero.",
+      }));
       return;
     }
+    setErrores((prev) => {
+      const copia = { ...prev };
+      delete copia.genero;
+      return copia;
+    });
+
     actualizarCampo("genero", valorGenero, (nuevoValor) => {
       setUserData((prev) =>
-        prev ? { ...prev, genero: nuevoValor as string} : prev
+        prev ? { ...prev, genero: nuevoValor as string } : prev
       );
       setEditandoGenero(false);
     });
   };
   const guardarCiudad = () => {
-  if (!valorCiudad.trim()) {
-    alert("Debes seleccionar una ciudad");
-    return;
-  }
-  actualizarCampo(
-    "ciudad",
-    valorCiudad.trim(),
-    (nuevoValor) => {
-      // Forzamos que `nuevoValor` es objeto {id, nombre}
-      const obj = nuevoValor as { id: number; nombre: string };
-      setUserData((prev) =>
-        prev
-          ? {
-              ...prev,
-              ciudad: {
-                id: obj.id,
-                nombre: obj.nombre,
-              },
-            }
-          : prev
-      );
-      setEditandoCiudad(false);
-    },
-    (mensajeError) => {
-      alert(mensajeError);
+    if (!valorCiudad.trim()) {
+      setErrores((prev) => ({
+        ...prev,
+        ciudad: "Debes seleccionar una ciudad.",
+      }));
+      return;
     }
-  );
-};
+    setErrores((prev) => {
+      const copia = { ...prev };
+      delete copia.ciudad;
+      return copia;
+    });
+
+    actualizarCampo(
+      "ciudad",
+      valorCiudad.trim(),
+      (nuevoValor) => {
+        const obj = nuevoValor as { id: number; nombre: string };
+        setUserData((prev) =>
+          prev
+            ? {
+                ...prev,
+                ciudad: {
+                  id: obj.id,
+                  nombre: obj.nombre,
+                },
+              }
+            : prev
+        );
+        setEditandoCiudad(false);
+      },
+      (mensajeError) => {
+        setErrores((prev) => ({ ...prev, ciudad: mensajeError }));
+      }
+    );
+  };
+  const today = new Date().toISOString().split("T")[0];
+  const haceCienAnios = new Date();
+  haceCienAnios.setFullYear(haceCienAnios.getFullYear() - 100);
+  const minDate = haceCienAnios.toISOString().split("T")[0];
 
   return (
     <div className="space-y-6 mt-6">
-      <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-        <div className="grid col-span-2 md:col-span-1 gap-2 relative">
+      <div className="grid grid-cols-2 gap-x-8 gap-y-5">
+        <div className="grid col-span-2 md:col-span-1 gap-2">
           <Label htmlFor="nombre" className="text-base">
-            Nombre Completo
+            Nombre Completo 
           </Label>
-          {editandoNombre ? (
-            <>
-              <input
-                type="text"
-                id="nombre"
-                className="border rounded px-2 py-1"
-                value={valorNombre}
-                onChange={(e) => setValorNombre(e.target.value)}
-              />
-              <div className="mt-2 space-x-2">
+          <div className="relative min-h-[6.5rem]">
+            <div className={`border rounded bg-gray-50 px-3 py-2 h-[2.75rem] flex items-center ${
+                errores.nombre ? "border-red-500" : ""
+              }`}
+            >
+              {editandoNombre ? (
+                <input
+                  type="text"
+                  id="nombre"
+                  className="w-full bg-transparent outline-none text-gray-800"
+                  value={valorNombre}
+                  onChange={handleNombreChange}
+                  autoFocus
+                />
+              ) : (
+                <span className="block w-full text-gray-800">
+                  {userData.nombre || "—"}
+                </span>
+              )}
+
+              {editandoNombre ? (
+                <button
+                  className="text-gray-500 hover:text-gray-800 ml-2"
+                  onClick={() => {
+                    setEditandoNombre(false);
+                    setValorNombre(userData.nombre);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.nombre;
+                      return copia;
+                    });
+                  }}
+                  title="Cerrar edición"
+                  aria-label="Cerrar edición nombre"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              ) : (
+                <button
+                  className="text-gray-500 hover:text-gray-800 ml-2"
+                  onClick={() => {
+                    setEditandoNombre(true);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.nombre;
+                      return copia;
+                    });
+                  }}
+                  title="Editar nombre"
+                  aria-label="Editar nombre"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
+            {errores.nombre && (
+              <p className="text-red-500 text-sm mt-1 absolute bottom-9 left-3">
+                {errores.nombre}
+              </p>
+            )}
+            {editandoNombre && (
+              <div className="absolute bottom-0 left-0 flex space-x-2">
                 <Button size="sm" onClick={guardarNombre}>
                   Guardar
                 </Button>
@@ -274,53 +474,127 @@ export function PersonalInfo() {
                   onClick={() => {
                     setEditandoNombre(false);
                     setValorNombre(userData.nombre);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.nombre;
+                      return copia;
+                    });
                   }}
                 >
                   Cancelar
                 </Button>
               </div>
-            </>
-          ) : (
-            <>
-              <div className="mt-1 flex items-center justify-between border rounded bg-gray-50 px-3 py-2">
-              <span className="text-base text-gray-800">{userData.nombre}</span>
-              <button
-                className="text-gray-500 hover:text-gray-800"
-                onClick={() => setEditandoNombre(true)}
-                title="Editar nombre"
-                aria-label="Editar nombre"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round"
-                    strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"/>
-                </svg>
-              </button>
-            </div>
-            </>
-          )}
+            )}
+          </div>
         </div>
 
         <div className="grid col-span-2 md:col-span-1 gap-2">
           <Label htmlFor="correo" className="text-base">
             Correo Electrónico
           </Label>
-          <div className="mt-1 border rounded bg-gray-50 px-3 py-2">
-            <a className="text-base text-gray-800">{userData.correo}</a>
+          <div className="relative min-h-[6rem]">
+            <div className="border rounded bg-gray-50 px-3 py-2 h-[2.75rem] flex items-center">
+              <span className="block w-full text-gray-800">
+                {userData.correo}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="grid col-span-2 md:col-span-1 gap-2 relative">
-          <Label htmlFor="telefono" className="text-base">Número de Teléfono</Label>
-          {editandoTelefono ? (
-            <>
-              <input
-                type="text"
-                id="telefono"
-                className="border rounded px-2 py-1"
-                value={valorTelefono}
-                onChange={(e) => setValorTelefono(e.target.value)}
-              />
-              <div className="mt-2 space-x-2">
+        <div className="grid col-span-2 md:col-span-1 gap-2">
+          <Label htmlFor="telefono" className="text-base">
+            Número de Teléfono 
+          </Label>
+          <div className="relative min-h-[6.5rem]">
+            <div
+              className={`border rounded bg-gray-50 px-3 py-2 h-[2.75rem] flex items-center ${
+                errores.telefono ? "border-red-500" : ""
+              }`}
+            >
+              {editandoTelefono ? (
+                <input
+                  type="text"
+                  id="telefono"
+                  className="w-full bg-transparent outline-none text-gray-800"
+                  value={valorTelefono}
+                  onChange={(e) =>
+                    setValorTelefono(e.target.value.replace(/[^0-9]/g, ""))
+                  }
+                  autoFocus
+                />
+              ) : (
+                <span className="block w-full text-gray-800">
+                  {userData.telefono || "—"}
+                </span>
+              )}
+              {editandoTelefono ? (
+                <button
+                  className="text-gray-500 hover:text-gray-800 ml-2"
+                  onClick={() => {
+                    setEditandoTelefono(false);
+                    setValorTelefono(userData.telefono);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.telefono;
+                      return copia;
+                    });
+                  }}
+                  title="Cerrar edición"
+                  aria-label="Cerrar edición teléfono"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              ) : (
+                <button
+                  className="text-gray-500 hover:text-gray-800 ml-2"
+                  onClick={() => {
+                    setEditandoTelefono(true);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.telefono;
+                      return copia;
+                    });
+                  }}
+                  title="Editar teléfono"
+                  aria-label="Editar teléfono"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
+            {errores.telefono && (
+              <p className="text-red-500 text-sm mt-1 absolute bottom-9 left-3">
+                {errores.telefono}
+              </p>
+            )}
+            {editandoTelefono && (
+              <div className="absolute bottom-0 left-0 flex space-x-2">
                 <Button size="sm" onClick={guardarTelefono}>
                   Guardar
                 </Button>
@@ -330,43 +604,114 @@ export function PersonalInfo() {
                   onClick={() => {
                     setEditandoTelefono(false);
                     setValorTelefono(userData.telefono);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.telefono;
+                      return copia;
+                    });
                   }}
                 >
                   Cancelar
                 </Button>
               </div>
-            </>
-          ) : (
-            <>
-                <div className="mt-1 flex items-center justify-between border rounded bg-gray-50 px-3 py-2">
-                <span className="text-base text-gray-800">{userData.telefono || "—"}</span>
-                <button
-                  className="text-gray-500 hover:text-gray-800"
-                onClick={() => setEditandoTelefono(true)}
-                title="Editar teléfono"
-                aria-label="Editar teléfono"
-              ><svg
-                  xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round"
-                    strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"/>
-                </svg>
-              </button>
-              </div>
-            </>
-          )}
+            )}
+          </div>
         </div>
 
-        <div className="grid col-span-2 md:col-span-1 gap-2 relative">
-          <Label htmlFor="fecha_nacimiento" className="text-base">Fecha de Nacimiento</Label>
-          {editandoNacimiento ? (
-            <>
-              <input
-                type="date"
-                id="fecha_nacimiento"
-                className="border rounded px-2 py-1"
-                value={valorNacimiento}
-                onChange={(e) => setValorNacimiento(e.target.value)}
-              />
-              <div className="mt-2 space-x-2">
+        <div className="grid col-span-2 md:col-span-1 gap-2">
+          <Label htmlFor="fecha_nacimiento" className="text-base">
+            Fecha de Nacimiento 
+          </Label>
+          <div className="relative min-h-[6.5rem]">
+            <div
+              className={`border rounded bg-gray-50 px-3 py-2 h-[2.75rem] flex items-center ${
+                errores.fechaNacimiento ? "border-red-500" : ""
+              }`}
+            >
+              {editandoNacimiento ? (
+                <input
+                  type="date"
+                  id="fecha_nacimiento"
+                  className="w-full bg-transparent outline-none text-gray-800"
+                  value={valorNacimiento}
+                  onChange={(e) => setValorNacimiento(e.target.value)}
+                  min={minDate}
+                  max={today} 
+                  autoFocus
+                />
+              ) : (
+                <span className="block w-full text-gray-800">
+                  {formatToDDMMYYYY(userData.fecha_nacimiento) || "—"}
+                </span>
+              )}
+              {editandoNacimiento ? (
+                <button
+                  className="text-gray-500 hover:text-gray-800 ml-2"
+                  onClick={() => {
+                    setEditandoNacimiento(false);
+                    setValorNacimiento(userData.fecha_nacimiento);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.fechaNacimiento;
+                      return copia;
+                    });
+                  }}
+                  title="Cerrar edición"
+                  aria-label="Cerrar edición fecha"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              ) : (
+                <button
+                  className="text-gray-500 hover:text-gray-800 ml-2"
+                  onClick={() => {
+                    setEditandoNacimiento(true);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.fechaNacimiento;
+                      return copia;
+                    });
+                  }}
+                  title="Editar fecha de nacimiento"
+                  aria-label="Editar fecha de nacimiento"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
+            {errores.fechaNacimiento && (
+              <p className="text-red-500 text-sm mt-1 absolute bottom-9 left-3">
+                {errores.fechaNacimiento}
+              </p>
+            )}
+            {editandoNacimiento && (
+              <div className="absolute bottom-0 left-0 flex space-x-2">
                 <Button size="sm" onClick={guardarNacimiento}>
                   Guardar
                 </Button>
@@ -376,50 +721,118 @@ export function PersonalInfo() {
                   onClick={() => {
                     setEditandoNacimiento(false);
                     setValorNacimiento(userData.fecha_nacimiento);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.fechaNacimiento;
+                      return copia;
+                    });
                   }}
                 >
                   Cancelar
                 </Button>
               </div>
-            </>
-          ) : (
-            <>
-              <div className="mt-1 flex items-center justify-between border rounded bg-gray-50 px-3 py-2">
-                <span className="text-base text-gray-800">
-                  {formatToDDMMYYYY(userData.fecha_nacimiento) || "—"}
+            )}
+          </div>
+        </div>
+        
+        <div className="grid col-span-2 md:col-span-1 gap-2">
+          <Label htmlFor="genero" className="text-base">
+            Género 
+          </Label>
+          <div className="relative min-h-[6.5rem]">
+            <div
+              className={`border rounded bg-gray-50 px-3 py-2 h-[2.75rem] flex items-center ${
+                errores.genero ? "border-red-500" : ""
+              }`}
+            >
+              {editandoGenero ? (
+                <select
+                  id="genero"
+                  className="w-full bg-transparent outline-none text-gray-800"
+                  value={valorGenero}
+                  onChange={(e) => setValorGenero(e.target.value)}
+                  autoFocus
+                >
+                  <option value="">--Selecciona--</option>
+                  <option value="MASCULINO">Masculino</option>
+                  <option value="FEMENINO">Femenino</option>
+                  <option value="OTRO">Otro</option>
+                </select>
+              ) : (
+                <span className="block w-full text-gray-800">
+                  {userData.genero || "—"}
                 </span>
+              )}
+              {editandoGenero ? (
                 <button
-                  className="text-gray-500 hover:text-gray-800"
-                  onClick={() => setEditandoNacimiento(true)}
-                  title="Editar fecha de nacimiento"
-                  aria-label="Editar fecha de nacimiento"
+                  className="text-gray-500 hover:text-gray-800 ml-2"
+                  onClick={() => {
+                    setEditandoGenero(false);
+                    setValorGenero(userData.genero);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.genero;
+                      return copia;
+                    });
+                  }}
+                  title="Cerrar edición"
+                  aria-label="Cerrar edición género"
                 >
                   <svg
-                  xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round"
-                    strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"/>
-                </svg>
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
                 </button>
-              </div>
-            </>
-          )}
-        </div>
+              ) : (
+                <button
+                  className="text-gray-500 hover:text-gray-800 ml-2"
+                  onClick={() => {
+                    setEditandoGenero(true);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.genero;
+                      return copia;
+                    });
+                  }}
+                  title="Editar género"
+                  aria-label="Editar género"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
 
-        <div className="grid col-span-2 md:col-span-1 gap-2 relative">
-          <Label htmlFor="genero" className="text-base">Género</Label>
-          {editandoGenero ? (
-            <>
-              <select
-                id="genero"
-                className="border rounded px-2 py-1"
-                value={valorGenero}
-                onChange={(e) => setValorGenero(e.target.value)}
-              >
-                <option value="">--Selecciona--</option>
-                <option value="MASCULINO">Masculino</option>
-                <option value="FEMENINO">Femenino</option>
-                <option value="OTRO">Otro</option>
-              </select>
-              <div className="mt-2 space-x-2">
+            {errores.genero && (
+              <p className="text-red-500 text-sm mt-1 absolute bottom-9 left-3">
+                {errores.genero}
+              </p>
+            )}
+
+            {editandoGenero && (
+              <div className="absolute bottom-0 left-0 flex space-x-2">
                 <Button size="sm" onClick={guardarGenero}>
                   Guardar
                 </Button>
@@ -429,52 +842,119 @@ export function PersonalInfo() {
                   onClick={() => {
                     setEditandoGenero(false);
                     setValorGenero(userData.genero);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.genero;
+                      return copia;
+                    });
                   }}
                 >
                   Cancelar
                 </Button>
               </div>
-            </>
-          ) : (
-            <>
-              <div className="mt-1 flex items-center justify-between border rounded bg-gray-50 px-3 py-2">
-                <span className="text-base text-gray-800">{userData.genero || "—"}</span>
-                <button
-                  className="text-gray-500 hover:text-gray-800"
-                  onClick={() => setEditandoGenero(true)}
-                  title="Editar género"
-                  aria-label="Editar género"
-                >
-                  <svg
-                  xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round"
-                    strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"/>
-                </svg>
-                </button>
-              </div>
-            </>
-          )}
+            )}
+          </div>
         </div>
 
-        <div className="grid col-span-2 md:col-span-1 gap-2 relative">
+        <div className="grid col-span-2 md:col-span-1 gap-2">
           <Label htmlFor="ciudad" className="text-base">
-            Ciudad
+            Ciudad 
           </Label>
-          {editandoCiudad ? (
-            <>
-              <select
-                id="ciudad"
-                className="border rounded px-2 py-1"
-                value={valorCiudad}
-                onChange={(e) => setValorCiudad(e.target.value)}
-              >
-                <option value="">--Selecciona ciudad--</option>
-                {listaCiudades.map((ciud) => (
-                  <option key={ciud.id} value={ciud.nombre}>
-                    {ciud.nombre}
-                  </option>
-                ))}
-              </select>
-              <div className="mt-2 space-x-2">
+          <div className="relative min-h-[6.5rem]">
+            <div
+              className={`border rounded bg-gray-50 px-3 py-2 h-[2.75rem] flex items-center ${
+                errores.ciudad ? "border-red-500" : ""
+              }`}
+            >
+              {editandoCiudad ? (
+                <select
+                  id="ciudad"
+                  className="w-full bg-transparent outline-none text-gray-800"
+                  value={valorCiudad}
+                  onChange={(e) => setValorCiudad(e.target.value)}
+                  autoFocus
+                >
+                  <option value="">--Selecciona ciudad--</option>
+                  {listaCiudades.map((ciud) => (
+                    <option key={ciud.id} value={ciud.nombre}>
+                      {ciud.nombre}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span className="block w-full text-gray-800">
+                  {userData.ciudad.nombre || "—"}
+                </span>
+              )}
+              {editandoCiudad ? (
+                <button
+                  className="text-gray-500 hover:text-gray-800 ml-2"
+                  onClick={() => {
+                    setEditandoCiudad(false);
+                    setValorCiudad(userData.ciudad.nombre);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.ciudad;
+                      return copia;
+                    });
+                  }}
+                  title="Cerrar edición"
+                  aria-label="Cerrar edición ciudad"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              ) : (
+                <button
+                  className="text-gray-500 hover:text-gray-800 ml-2"
+                  onClick={() => {
+                    setEditandoCiudad(true);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.ciudad;
+                      return copia;
+                    });
+                  }}
+                  title="Editar ciudad"
+                  aria-label="Editar ciudad"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
+            {errores.ciudad && (
+              <p className="text-red-500 text-sm mt-1 absolute bottom-9 left-3">
+                {errores.ciudad}
+              </p>
+            )}
+
+            {editandoCiudad && (
+              <div className="absolute bottom-0 left-0 flex space-x-2">
                 <Button size="sm" onClick={guardarCiudad}>
                   Guardar
                 </Button>
@@ -484,30 +964,18 @@ export function PersonalInfo() {
                   onClick={() => {
                     setEditandoCiudad(false);
                     setValorCiudad(userData.ciudad.nombre);
+                    setErrores((prev) => {
+                      const copia = { ...prev };
+                      delete copia.ciudad;
+                      return copia;
+                    });
                   }}
                 >
                   Cancelar
                 </Button>
               </div>
-            </>
-          ) : (
-            <>
-              <div className="mt-1 flex items-center justify-between border rounded bg-gray-50 px-3 py-2">
-                <span className="text-base text-gray-800">{userData.ciudad.nombre || "—"}</span>
-                <button
-                  className="text-gray-500 hover:text-gray-800"
-                  onClick={() => setEditandoCiudad(true)}
-                  title="Editar ciudad"
-                  aria-label="Editar ciudad"
-                >
-                  <svg
-                  xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round"
-                    strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 13.414V17h3.586l9.364-9.364-3.586-3.586L4 13.414z"/>
-                </svg>
-                </button>
-              </div>
-            </>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>
