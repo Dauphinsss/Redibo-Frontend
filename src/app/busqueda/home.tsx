@@ -103,30 +103,31 @@ export default function Home({ ciudad }: Props) {
         <div className="border-b">
           <Header />
         </div>
-        <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center items-center gap-4">
-          {/* Botón de filtros alineado en el header */}
-          <button
-            onClick={() => setMostrarSidebar(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-white text-black border border-gray-300 rounded-md font-semibold hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-300 transition"
-          >
-            <SlidersHorizontal size={20} />
-            Filtros
-          </button>
-          <div className="w-full max-w-2xl">
-            <SearchBar
-              placeholder="Buscar por modelo, marca"
-              onFiltrar={(query) => {
-                setBusqueda(query);
-                //Se borro para que no se vuelva a buscar en todos los carros
-              }}
-              onClearBusqueda={() => {
-                setBusqueda(""); // 🔁 borra el texto y reactiva el autosFiltrados base
-              }}
+        <div className="border-t px-4 sm:px-6 lg:px-8 py-3 bg-white">
+          {/* Contenedor centrado */}
+          <div className="max-w-2xl w-full mx-auto flex justify-center items-center gap-4">
+            <button
+              onClick={() => setMostrarSidebar(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-white text-black border border-gray-300 rounded-md font-semibold hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-300 transition"
+            >
+              <SlidersHorizontal size={20} />
+              Filtros
+            </button>
 
-              obtenerSugerencia={obtenerSugerencia}
-            />
+            {/* Este div fuerza al SearchBar a tomar su tamaño ideal sin expandirse innecesariamente */}
+            <div className="w-full max-w-md">
+              <SearchBar
+                placeholder="Buscar por modelo, marca"
+                onFiltrar={(query) => setBusqueda(query)}
+                onClearBusqueda={() => setBusqueda("")}
+                obtenerSugerencia={obtenerSugerencia}
+              />
+            </div>
           </div>
         </div>
+
+
+
 
         {/* Carrusel de filtros */}
         <div className="px-4 sm:px-6 lg:px-8 py-3 border-t bg-gray-50">
