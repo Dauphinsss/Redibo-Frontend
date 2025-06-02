@@ -120,7 +120,7 @@ export function InfiniteFilterCarousel({
         <ButtonHost
           onFilterChange={onHostFilter}
           disabled={disabledHost}
-          autos={autosOriginales.length > 0 ? autosOriginales : autosTotales}  //nuevo que añadi
+          autos={autosOriginales.length > 0 ? autosOriginales : autos}  //nuevo que añadi
         />
       ),
     },
@@ -130,7 +130,7 @@ export function InfiniteFilterCarousel({
         <ButtonMarca
           onFilterChange={onMarcaFilter}
           disabled={disabledMarca}
-          autos={autosOriginales.length > 0 ? autosOriginales : autosTotales}
+          autos={autosOriginales.length > 0 ? autosOriginales : autos}
         />
       ),
     },
