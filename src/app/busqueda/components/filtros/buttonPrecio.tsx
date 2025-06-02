@@ -67,31 +67,27 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
   };
 
   const handleApply = () => {
-    // Validar que al menos hay un campo
-    if (!minPrecio && !maxPrecio) {
-      setError("Debes establecer al menos un valor");
-      return;
-    }
-
     // Validar que el rango es correcto
     if (minPrecio && maxPrecio && parseInt(minPrecio) > parseInt(maxPrecio)) {
-      setError("El precio mínimo no puede ser mayor que el máximo");
-      return;
+        setError("El precio mínimo no puede ser mayor que el máximo");
+        return;
     }
 
-    const min = minPrecio ? parseInt(minPrecio) : 1;
-    const max = maxPrecio ? parseInt(maxPrecio) : 5000;
-    
-    // APLICAR EL FILTRO INMEDIATAMENTE
-    onFilterChange(min, max);
-    
+    // Usar valores por defecto si los campos están vacíos
+    const minValue = minPrecio ? parseInt(minPrecio) : 1;
+    const maxValue = maxPrecio ? parseInt(maxPrecio) : 5000;
+
+    // Aplicar el filtro inmediatamente
+    onFilterChange(minValue, maxValue);
+
     // Guardar los valores aplicados para mostrar en el botón
-    setMinAplicado(minPrecio);
-    setMaxAplicado(maxPrecio);
-    
-    // Cerrar el popover
+    setMinAplicado(minPrecio || "1");
+    setMaxAplicado(maxPrecio || "5000");
+
+    // Limpiar errores y cerrar el popover
+    setError(null);
     setOpen(false);
-  };
+};
 
   const handleReset = () => {
     // Limpiar inputs

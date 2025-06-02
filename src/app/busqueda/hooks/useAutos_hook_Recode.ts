@@ -7,11 +7,14 @@ import { autosCercanosOrdenados } from "@/app/busqueda/components/map/filtroGPS"
 import * as filtrosAPI from '@/app/busqueda/service/filtrosService_Recode';
 
 export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: number, alt: number }) {
+  // ======== ESTADOS PRINCIPALES ========
   const [autos, setAutos] = useState<Auto[]>([]);
   const [autosFiltrados, setAutosFiltrados] = useState<Auto[]>([]);
   const [autosVisibles, setAutosVisibles] = useState(cantidadPorLote);
   const [cargando, setCargando] = useState(true);
   const [ordenSeleccionado, setOrdenSeleccionado] = useState('Recomendación');
+
+  // ======== ESTADOS DE FILTROS EN MEMORIA (mantener igual) ========
   const [textoBusqueda, setTextoBusqueda] = useState('');
   const [fechaFiltroInicio, setFechaFiltroInicio] = useState("");
   const [fechaFiltroFin, setFechaFiltroFin] = useState("");
@@ -20,18 +23,19 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
   const [filtrosCaracteristicas, setFiltrosCaracteristicas] = useState<{ asientos?: number; puertas?: number }>({});
   const [filtrosTransmision, setFiltrosTransmision] = useState<string[]>([]);
   const [filtrosCaracteristicasAdicionales, setFiltrosCaracteristicasAdicionales] = useState<string[]>([]);
+  const [filtroHost, setFiltroHost] = useState<string>('');
 
-  // Estados para filtros adicionales
+  // ======== ESTADOS PARA FILTROS DE BACKEND (mejorados) ========
   const [filtroPrecio, setFiltroPrecio] = useState<{min: number, max: number} | null>(null);
   const [filtroViajes, setFiltroViajes] = useState<number | null>(null);
   const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
   const [cargandoFiltros, setCargandoFiltros] = useState(false);
-  const [autosAntesFiltroViajes, setAutosAntesFiltroViajes] = useState<Auto[]>([]);
-  const [autosAntesFiltroPrecio, setAutosAntesFiltroPrecio] = useState<Auto[]>([]);
   
-  // Estado para filtro por host
-  const [filtroHost, setFiltroHost] = useState<string>('');
-  
+  // Estados para manejar la restauración de filtros
+  const [autosBaseParaBackend, setAutosBaseParaBackend] = useState<Auto[]>([]);
+  const [hayFiltrosBackendActivos, setHayFiltrosBackendActivos] = useState(false);
+
+  // ======== CARGA INICIAL (mantener igual) ========
   const fetchAutos = async () => {
     try {
       setCargando(true);
@@ -51,6 +55,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     fetchAutos();
   }, []);
 
+  // ======== UTILIDADES (mantener igual) ========
   const normalizarTexto = (texto: string) => {
     return texto
       .normalize("NFD")
@@ -58,6 +63,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
       .toLowerCase();
   };
 
+  // ======== LÓGICA DE FILTRADO EN MEMORIA (mantener la lógica original) ========
   const filtrarYOrdenarAutos = useCallback(() => {
     let resultado = [...autos];
 
@@ -73,7 +79,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
       resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
     }
 
-    // FILTRO POR HOST - Aplicar antes de otros filtros para mayor precisión
+    // FILTRO POR HOST
     if (filtroHost && filtroHost.trim()) {
         console.log("Aplicando filtro de host:", filtroHost);
         const hostNormalizado = normalizarTexto(filtroHost.trim());
@@ -172,27 +178,36 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
       resultado = autosCercanosOrdenados(resultado, punto, radio * 1000)
     }
 
-    // Ordenamiento
-    switch (ordenSeleccionado) {
-      case 'Modelo Ascendente':
-        resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
-        break;
-      case 'Modelo Descendente':
-        resultado.sort((a, b) => b.modelo.localeCompare(a.modelo));
-        break;
-      case 'Precio bajo a alto':
-        resultado.sort((a, b) => a.precioPorDia - b.precioPorDia);
-        break;
-      case 'Precio alto a bajo':
-        resultado.sort((a, b) => b.precioPorDia - a.precioPorDia);
-        break;
+    // Guardar resultado base para filtros de backend
+    setAutosBaseParaBackend(resultado);
+
+    // Si no hay filtros de backend activos, aplicar ordenamiento normal
+    if (!hayFiltrosBackendActivos) {
+      // Ordenamiento
+      switch (ordenSeleccionado) {
+        case 'Modelo Ascendente':
+          resultado.sort((a, b) => a.modelo.localeCompare(b.modelo));
+          break;
+        case 'Modelo Descendente':
+          resultado.sort((a, b) => b.modelo.localeCompare(a.modelo));
+          break;
+        case 'Precio bajo a alto':
+          resultado.sort((a, b) => a.precioPorDia - b.precioPorDia);
+          break;
+        case 'Precio alto a bajo':
+          resultado.sort((a, b) => b.precioPorDia - a.precioPorDia);
+          break;
+      }
     }
 
-    setAutosFiltrados(resultado);
+    // Solo actualizar si no hay filtros de backend activos
+    if (!hayFiltrosBackendActivos) {
+      setAutosFiltrados(resultado);
+    }
   }, [
     autos,
     textoBusqueda,
-    filtroHost, // Agregar filtroHost a las dependencias
+    filtroHost,
     filtrosCombustible,
     filtrosCaracteristicas,
     filtrosTransmision,
@@ -202,7 +217,8 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     fechaFiltroFin,
     punto,
     radio,
-    ordenSeleccionado
+    ordenSeleccionado,
+    hayFiltrosBackendActivos
   ]);
 
   useEffect(() => {
@@ -210,6 +226,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     setAutosVisibles(cantidadPorLote);
   }, [filtrarYOrdenarAutos, cantidadPorLote]);
 
+  // ======== LÓGICA DE VISUALIZACIÓN ========
   const autosActuales = useMemo(() => {
     return autosFiltrados.slice(0, autosVisibles);
   }, [autosFiltrados, autosVisibles]);
@@ -218,6 +235,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     setAutosVisibles(prev => prev + cantidadPorLote);
   };
 
+  // ======== LÓGICA DE SUGERENCIAS (mantener igual) ========
   const aplicarFormatoOriginal = (base: string, sugerenciaCompleta: string): string => {
     if (base === base.toLowerCase()) {
       return sugerenciaCompleta.toLowerCase();
@@ -271,23 +289,26 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     return aplicarFormatoOriginal(busqueda, busqueda + diferencia);
   };
 
+  // ======== FILTROS DE BACKEND MEJORADOS ========
   const aplicarFiltroPrecio = useCallback(async (min: number, max: number) => {
     try {
         setCargandoFiltros(true);
         console.log('Aplicando filtro de precio:', { min, max });
-        console.log('Autos antes del filtro:', autosFiltrados.length);
+        console.log('Base para filtro:', autosBaseParaBackend.length);
         
-        if (!filtroPrecio) {
-            setAutosAntesFiltroPrecio(autosFiltrados);
-        }
-
+        // Si se desactiva el filtro
         if (min === 0 && max === Infinity) {
-            setAutosFiltrados(autosAntesFiltroPrecio);
+            setAutosFiltrados(autosBaseParaBackend);
             setFiltroPrecio(null);
+            setHayFiltrosBackendActivos(false);
+            setOrdenSeleccionado('Recomendación');
             return;
         }
         
-        const ids = autosFiltrados.map(a => parseInt(a.idAuto, 10));
+        // Usar la base filtrada por los filtros en memoria
+        const baseParaFiltro = autosBaseParaBackend.length > 0 ? autosBaseParaBackend : autosFiltrados;
+        const ids = baseParaFiltro.map(a => parseInt(a.idAuto, 10));
+        
         const datos = await filtrosAPI.filtrarPorPrecio({ 
             minPrecio: min, 
             maxPrecio: max, 
@@ -295,7 +316,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
         });
         
         const idsFiltrados = datos.map((d: { id: number }) => d.id);
-        const nuevosFiltrados = autosFiltrados.filter(a => 
+        const nuevosFiltrados = baseParaFiltro.filter(a => 
             idsFiltrados.includes(parseInt(a.idAuto, 10))
         );
         
@@ -304,79 +325,90 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
         console.log('Autos después del filtro:', nuevosFiltrados.length);
         setAutosFiltrados(nuevosFiltrados);
         setFiltroPrecio({ min, max });
+        setHayFiltrosBackendActivos(true);
         setOrdenSeleccionado('Precio bajo a alto');
     } catch (error) {
         console.error('Error al aplicar filtro de precio:', error);
     } finally {
         setCargandoFiltros(false);
     }
-  }, [autosFiltrados, filtroPrecio, autosAntesFiltroPrecio]);
+  }, [autosBaseParaBackend, autosFiltrados]);
 
   const aplicarFiltroViajes = useCallback(async (minViajes: number) => {
     try {
         setCargandoFiltros(true);
         console.log('Aplicando filtro de viajes:', { minViajes });
-        console.log('Autos antes del filtro:', autosFiltrados.length);
+        console.log('Base para filtro:', autosBaseParaBackend.length);
         
-        if (!filtroViajes) {
-            setAutosAntesFiltroViajes(autosFiltrados);
-        }
-
         if (minViajes === 0) {
-            setAutosFiltrados(autosAntesFiltroViajes);
+            setAutosFiltrados(autosBaseParaBackend);
             setFiltroViajes(null);
+            setHayFiltrosBackendActivos(false);
             return;
         }
         
-        const ids = autosFiltrados.map(a => parseInt(a.idAuto, 10));
+        const baseParaFiltro = autosBaseParaBackend.length > 0 ? autosBaseParaBackend : autosFiltrados;
+        const ids = baseParaFiltro.map(a => parseInt(a.idAuto, 10));
+        
         const datos = await filtrosAPI.filtrarPorViajes({ 
             minViajes, 
             idsCarros: ids 
         });
         
         const idsFiltrados = datos.map((d: { id: number }) => d.id);
-        const nuevosFiltrados = autosFiltrados.filter(a => 
+        const nuevosFiltrados = baseParaFiltro.filter(a => 
             idsFiltrados.includes(parseInt(a.idAuto, 10))
         );
         
         console.log('Autos después del filtro:', nuevosFiltrados.length);
         setAutosFiltrados(nuevosFiltrados);
         setFiltroViajes(minViajes);
+        setHayFiltrosBackendActivos(true);
     } catch (error) {
         console.error('Error al aplicar filtro de viajes:', error);
     } finally {
         setCargandoFiltros(false);
     }
-  }, [autosFiltrados, filtroViajes, autosAntesFiltroViajes]);
+  }, [autosBaseParaBackend, autosFiltrados]);
 
   const aplicarFiltroCalificacion = useCallback(async (minCalificacion: number) => {
     try {
         setCargandoFiltros(true);
         console.log('Aplicando filtro de calificación:', { minCalificacion });
-        console.log('Autos antes del filtro:', autosFiltrados.length);
+        console.log('Base para filtro:', autosBaseParaBackend.length);
         
-        const ids = autosFiltrados.map(a => parseInt(a.idAuto, 10));
+        if (minCalificacion === 0) {
+            setAutosFiltrados(autosBaseParaBackend);
+            setFiltroCalificacion(null);
+            setHayFiltrosBackendActivos(false);
+            return;
+        }
+        
+        const baseParaFiltro = autosBaseParaBackend.length > 0 ? autosBaseParaBackend : autosFiltrados;
+        const ids = baseParaFiltro.map(a => parseInt(a.idAuto, 10));
+        
         const datos = await filtrosAPI.filtrarPorCalificacion({ 
             minCalificacion, 
             idsCarros: ids 
         });
         
         const idsFiltrados = datos.map((d: { id: number }) => d.id);
-        const nuevosFiltrados = autosFiltrados.filter(a => 
+        const nuevosFiltrados = baseParaFiltro.filter(a => 
             idsFiltrados.includes(parseInt(a.idAuto, 10))
         );
         
         console.log('Autos después del filtro:', nuevosFiltrados.length);
         setAutosFiltrados(nuevosFiltrados);
         setFiltroCalificacion(minCalificacion);
+        setHayFiltrosBackendActivos(true);
     } catch (error) {
         console.error('Error al aplicar filtro de calificación:', error);
     } finally {
         setCargandoFiltros(false);
     }
-  }, [autosFiltrados]);
+  }, [autosBaseParaBackend, autosFiltrados]);
 
-  // Función para limpiar todos los filtros
+  // ======== FUNCIÓN PARA LIMPIAR TODOS LOS FILTROS ========
   const limpiarFiltros = useCallback(() => {
     setTextoBusqueda('');
     setFiltroHost('');
@@ -390,6 +422,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     setFiltroPrecio(null);
     setFiltroViajes(null);
     setFiltroCalificacion(null);
+    setHayFiltrosBackendActivos(false);
     setAutosFiltrados(autos);
     setOrdenSeleccionado('Recomendación');
   }, [autos]);
@@ -427,7 +460,6 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     setFiltrosTransmision,
     filtrosCaracteristicasAdicionales,
     setFiltrosCaracteristicasAdicionales,
-    // EXPORTAR filtroHost y setFiltroHost - ESTO ES LO QUE FALTABA
     filtroHost,
     setFiltroHost,
     limpiarFiltros
