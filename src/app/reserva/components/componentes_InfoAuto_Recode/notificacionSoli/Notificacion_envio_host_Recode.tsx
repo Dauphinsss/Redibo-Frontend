@@ -9,6 +9,7 @@ import PrecioDesglosado from "@/app/reserva/components/componentes_MostrarCobert
 import TablaCondicionesVisual_Recode from "@/app/reserva/components/componentes_CondicionesDeUsoAutoVisual/TablaCondicionesVisual_Recode";
 import TablaCoberturas from "../../componentes_MostrarCobertura_Recode/tablaCoberShow";
 import NotificacionEnvioExitoso_recode from "./Notificacion_envio_exitoso_Recode";
+import SeleccionarConductores from "../../SeleccionarConductores_7-bits";
 
 interface Props {
   id_carro: number;
@@ -47,6 +48,15 @@ export default function FormularioSolicitud({
   const [precioEstimado, setPrecioEstimado] = useState(0);
   const [datosAuto, setDatosAuto] = useState<{ modelo: string; marca: string; precio_por_dia: number; host: { id: number } } | null>(null);
   const [showNotification, setShowNotification] = useState(false);
+
+  const conductoresDisponibles = [
+    { id: "1", nombre: "Juan Pérez" },
+    { id: "2", nombre: "Ana López" },
+    { id: "3", nombre: "Carlos García" },
+    { id: "4", nombre: "María Fernández" },
+    { id: "5", nombre: "Luis Martínez" }
+  ]
+  const [conductoresSeleccionados, setConductoresSeleccionados] = useState<string[]>([]);
 
   // Cargar todos los datos necesarios
   useEffect(() => {
@@ -250,7 +260,13 @@ export default function FormularioSolicitud({
         id_carro={id_carro}
       />
 
-      <h1>PAPU ME ENCONTRASTE</h1>
+      {/* 4.1. Seleccionar Conductor - 7-bits*/}
+      <SeleccionarConductores
+        conductores={conductoresDisponibles}
+        seleccionados={conductoresSeleccionados}
+        setSeleccionados={setConductoresSeleccionados}
+        label="Selecciona uno o más conductores"
+      />
       
       {/* 5. Formulario de contacto */}
       <div className="bg-white p-4 rounded-lg shadow">
