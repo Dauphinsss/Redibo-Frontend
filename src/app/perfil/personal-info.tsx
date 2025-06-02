@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import axios, { AxiosError } from "axios";
-import { isUnderage } from "@/lib/utils"; 
+import { isUnderage } from "@/lib/utils";
 import { API_URL } from "@/utils/bakend";
 interface City {
   id: number;
@@ -81,10 +81,10 @@ export function PersonalInfo() {
         }
 
         const response = await axios.get<UserProfile>(`${API_URL}/api/perfil`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = response.data;
         const isoNacimiento = parseBackendDate(data.fecha_nacimiento);
         setUserData({
@@ -189,7 +189,7 @@ export function PersonalInfo() {
     }
   };
 
-  const guardarNombre = () => {
+  const guardarNombre = async () => {
     if (!valorNombre.trim()) {
       setErrores((prev) => ({ ...prev, nombre: "Este campo es obligatorio." }));
       return;
@@ -216,20 +216,75 @@ export function PersonalInfo() {
       }));
       return;
     }
+    let esUsuarioGoogle = false;
+    try {
+      const checkResp = await axios.get<{
+        hasPassword: boolean;
+        isGoogleUser: boolean;
+      }>(`${API_URL}/api/check-user-password`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      esUsuarioGoogle = checkResp.data.isGoogleUser;
+    } catch (err) {
+      console.error("No se pudo verificar si es usuario Google:", err);
+      esUsuarioGoogle = false;
+    }
+    const payload: Record<string, string> = {
+      nombre: valorNombre.trim(),
+    };
+
+    if (!esUsuarioGoogle) {
+      const partes = valorNombre.trim().split(" ").filter((p) => p !== "");
+      const primerNombre = partes[0];
+      const primerApellido = partes[1] || "";
+      const nuevaFotoUrl = `https://ui-avatars.com/api/?name=${primerNombre}+${primerApellido}`;
+      payload.foto = nuevaFotoUrl;
+    }
+
     setErrores((prev) => {
       const copia = { ...prev };
       delete copia.nombre;
       return copia;
     });
-    actualizarCampo("nombre", valorNombre.trim(), (nuevoValor) => {
-      setUserData((prev) =>
-        prev ? { ...prev, nombre: nuevoValor as string } : prev
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/update-profile`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      setEditandoNombre(false);
-    },
-    (mensajeError) => {
-      setErrores((prev) => ({ ...prev, nombre: mensajeError }));
-    });
+
+      const data = response.data;
+      if (response.status === 200 && data.success) {
+        setUserData((prev) =>
+          prev
+            ? {
+                ...prev,
+                nombre: data.user.nombre as string,
+                foto: payload.foto
+                  ? (data.user.foto as string)
+                  : prev.foto,
+              }
+            : prev
+        );
+        setEditandoNombre(false);
+        window.location.reload();
+      } else {
+        const msg = data.message || "Error al actualizar nombre";
+        setErrores((prev) => ({ ...prev, nombre: msg }));
+      }
+    } catch (err) {
+      const errorAxios = err as AxiosError<{ message?: string }>;
+      const msg =
+        errorAxios.response?.data?.message ||
+        "Ocurrió un error al actualizar nombre";
+      setErrores((prev) => ({ ...prev, nombre: msg }));
+      console.error(err);
+    }
   };
   const guardarTelefono = () => {
     if (!valorTelefono.trim()) {
@@ -277,12 +332,12 @@ export function PersonalInfo() {
       return;
     }
     if (valorNacimiento < minDate) {
-        setErrores((prev) => ({
-          ...prev,
-          fechaNacimiento: `Por favor ingrese una fecha valida.`,
-        }));
-        return;
-      }
+      setErrores((prev) => ({
+        ...prev,
+        fechaNacimiento: `Por favor ingrese una fecha valida.`,
+      }));
+      return;
+    }
 
     if (isUnderage(valorNacimiento)) {
       setErrores((prev) => ({
@@ -376,7 +431,7 @@ export function PersonalInfo() {
       <div className="grid grid-cols-2 gap-x-8 gap-y-5">
         <div className="grid col-span-2 md:col-span-1 gap-2">
           <Label htmlFor="nombre" className="text-base">
-            Nombre Completo 
+            Nombre Completo
           </Label>
           <div className="relative min-h-[6.5rem]">
             <div className={`border rounded bg-gray-50 px-3 py-2 h-[2.75rem] flex items-center ${
@@ -504,7 +559,7 @@ export function PersonalInfo() {
 
         <div className="grid col-span-2 md:col-span-1 gap-2">
           <Label htmlFor="telefono" className="text-base">
-            Número de Teléfono 
+            Número de Teléfono
           </Label>
           <div className="relative min-h-[6.5rem]">
             <div
@@ -621,7 +676,7 @@ export function PersonalInfo() {
 
         <div className="grid col-span-2 md:col-span-1 gap-2">
           <Label htmlFor="fecha_nacimiento" className="text-base">
-            Fecha de Nacimiento 
+            Fecha de Nacimiento
           </Label>
           <div className="relative min-h-[6.5rem]">
             <div
@@ -637,7 +692,7 @@ export function PersonalInfo() {
                   value={valorNacimiento}
                   onChange={(e) => setValorNacimiento(e.target.value)}
                   min={minDate}
-                  max={today} 
+                  max={today}
                   autoFocus
                 />
               ) : (
@@ -735,10 +790,10 @@ export function PersonalInfo() {
             )}
           </div>
         </div>
-        
+
         <div className="grid col-span-2 md:col-span-1 gap-2">
           <Label htmlFor="genero" className="text-base">
-            Género 
+            Género
           </Label>
           <div className="relative min-h-[6.5rem]">
             <div
@@ -859,7 +914,7 @@ export function PersonalInfo() {
 
         <div className="grid col-span-2 md:col-span-1 gap-2">
           <Label htmlFor="ciudad" className="text-base">
-            Ciudad 
+            Ciudad
           </Label>
           <div className="relative min-h-[6.5rem]">
             <div
