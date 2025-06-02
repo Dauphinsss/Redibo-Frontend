@@ -29,6 +29,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'www.topgear.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org'
       }
     ],
   }
