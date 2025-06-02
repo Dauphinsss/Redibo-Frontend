@@ -46,16 +46,18 @@ interface InfiniteFilterCarouselProps {
   onViajesFilter: (minViajes: number) => void
   onHostFilter: (host: Host | null) => void
   onMarcaFilter: (marca: Marca | null) => void
-  onMostrarTodos: () => void // Nuevo: función para mostrar todos los resultados
-  isAllActive?: boolean // Nuevo: indica si el filtro "Todos" está activo
+  onMostrarTodos?: () => void // Función para mostrar todos los resultados
+  isAllActive?: boolean // Indica si el filtro "Todos" está activo
   disabledPrecio?: boolean
   disabledCalif?: boolean
   disabledViajes?: boolean
   disabledHost?: boolean
   disabledMarca?: boolean
-  disabledTodos?: boolean // Nuevo
+  disabledTodos?: boolean
   autoScrollDelay?: number
   className?: string
+  // Nueva prop para pasar todos los autos disponibles para extraer marcas
+  autosOriginales?: Auto[]
 }
 
 /**
@@ -84,6 +86,7 @@ export function InfiniteFilterCarousel({
   disabledTodos = false,
   autoScrollDelay = 3000,
   className = "",
+  autosOriginales = [],
 }: InfiniteFilterCarouselProps) {
 
   const autoplayPlugin = React.useRef(
@@ -92,7 +95,7 @@ export function InfiniteFilterCarousel({
 
   // Array de configuración para los filtros
   const filterItems = [
-    {
+    ...(onMostrarTodos ? [{
       id: 'todos',
       component: (
         <ButtonTodos
@@ -101,7 +104,7 @@ export function InfiniteFilterCarousel({
           isActive={isAllActive}
         />
       ),
-    },
+    }] : []),
     {
       id: 'dateRange',
       component: (
@@ -117,6 +120,7 @@ export function InfiniteFilterCarousel({
         <ButtonHost
           onFilterChange={onHostFilter}
           disabled={disabledHost}
+          autos={autosOriginales.length > 0 ? autosOriginales : autosTotales}  //nuevo que añadi
         />
       ),
     },
@@ -126,6 +130,7 @@ export function InfiniteFilterCarousel({
         <ButtonMarca
           onFilterChange={onMarcaFilter}
           disabled={disabledMarca}
+          autos={autosOriginales.length > 0 ? autosOriginales : autosTotales}
         />
       ),
     },

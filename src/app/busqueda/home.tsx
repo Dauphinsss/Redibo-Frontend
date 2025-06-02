@@ -17,9 +17,28 @@ import CustomSearchWrapper from "@/app/busqueda/hooks/customSearchHU/CustomSearc
 
 type Props = {
   ciudad?: string;
+  fechaInicio: string;
+  fechaFin: string;
 };
 
-export default function Home({ ciudad }: Props) {
+// Interfaces para el filtro de marca
+interface Marca {
+  id: number;
+  name: string;
+  models: number;
+  count: number;
+  logo?: string;
+}
+
+interface Host {
+  id: number;
+  name: string;
+  trips: number;
+  rating?: number;
+}
+
+export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
+  
   const router = useRouter();
   const [radio, setRadio] = useState(1);
   const [punto, setPunto] = useState({ lon: 0, alt: 0 });
@@ -50,31 +69,82 @@ export default function Home({ ciudad }: Props) {
     setFiltrosTransmision,
     setFiltrosCaracteristicasAdicionales,
     filtrosCaracteristicasAdicionales,
+    filtroHost,
+    setFiltroHost,
+    limpiarFiltros
   } = useAutos(8, radio, punto);
 
   const [busqueda, setBusqueda] = useState("");
   const [gpsActive, setGpsActive] = useState(false);
+  
+  // Estados para los nuevos filtros
+  const [marcaSeleccionada, setMarcaSeleccionada] = useState<Marca | null>(null);
+  const [mostrarTodos, setMostrarTodos] = useState(true);
+  const [hostSeleccionado, setHostSeleccionado] = useState<Host | null>(null);
 
   // Handlers para los filtros
   const handlePrecioFilter = (min: number, max: number) => {
-    // Aquí deberías filtrar los autos por precio
-    // filtrarAutos(busqueda, fechaInicio, fechaFin, ...otrosFiltros, min, max)
+    aplicarFiltroPrecio(min, max);
     console.log('Filtro por precio:', { min, max });
   };
+
+  const handleHostFilter = (host: Host | null) => {
+    console.log('Filtro por host:', host);
+    setHostSeleccionado(host);
+    setMostrarTodos(false);
+    
+    if (host) {
+        // Filtrar por el nombre del host
+        setFiltroHost(host.name);
+    } else {
+        // Limpiar filtro de host
+        setFiltroHost('');
+    }
+  };
+
   const handleCalifFilter = (calificacion: number) => {
-    // Aquí deberías filtrar los autos por calificación
+    aplicarFiltroCalificacion(calificacion);
     console.log('Filtro por calificación:', calificacion);
   };
+  
   const handleViajesFilter = (minViajes: number) => {
-    // Aquí deberías filtrar los autos por viajes
+    aplicarFiltroViajes(minViajes);
     console.log('Filtro por viajes:', minViajes);
   };
+  
   const handleAirportFilter = () => {
     router.push('/filtrarAeropuerto');
   };
+  
   const toggleGPSFilter = () => {
     if (gpsActive) setPunto({ lon: 0, alt: 0 });
     setGpsActive((prev) => !prev);
+  };
+
+  // Handler para el filtro de marca - conecta con la lógica existente
+  const handleMarcaFilter = (marca: Marca | null) => {
+    setMarcaSeleccionada(marca);
+    setMostrarTodos(false);
+    
+    if (marca) {
+      // Usar la función filtrarAutos existente con el nombre de la marca
+      setBusqueda(marca.name);
+      filtrarAutos(marca.name, fechaInicio, fechaFin);
+    } else {
+      // Limpiar filtro de marca
+      setBusqueda("");
+      filtrarAutos("", fechaInicio, fechaFin);
+    }
+  };
+
+  // Handler para mostrar todos los resultados
+  const handleMostrarTodos = () => {
+    setMostrarTodos(true);
+    setMarcaSeleccionada(null);
+    setHostSeleccionado(null);
+    setBusqueda("");
+    limpiarFiltros();
+    filtrarAutos("", fechaInicio, fechaFin);
   };
 
   const ViewMap = useMemo(() => dynamic(
@@ -87,7 +157,7 @@ export default function Home({ ciudad }: Props) {
 
   return (
     <div className="relative">
-      {/* Sidebar de filtros (agregado del primer código) */}
+      {/* Sidebar de filtros */}
       <SidebarFiltros
         mostrar={mostrarSidebar}
         onCerrar={() => setMostrarSidebar(false)}
@@ -103,25 +173,31 @@ export default function Home({ ciudad }: Props) {
         <div className="border-b">
           <Header />
         </div>
-        <div className="border-t px-4 sm:px-6 lg:px-8 py-3 bg-white">
-          {/* Contenedor centrado */}
-          <div className="max-w-2xl w-full mx-auto flex justify-center items-center gap-4">
-            <button
-              onClick={() => setMostrarSidebar(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-white text-black border border-gray-300 rounded-md font-semibold hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-300 transition"
-            >
-              <SlidersHorizontal size={20} />
-              Filtros
-            </button>
-
-            <div className="w-full max-w-md">
-              <SearchBar
-                placeholder="Buscar por modelo, marca"
-                onFiltrar={(query) => setBusqueda(query)}
-                onClearBusqueda={() => setBusqueda("")}
-                obtenerSugerencia={obtenerSugerencia}
-              />
-            </div>
+        <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center items-center gap-4">
+          {/* Botón de filtros alineado en el header */}
+          <button
+            onClick={() => setMostrarSidebar(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-white text-black border border-gray-300 rounded-md font-semibold hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-300 transition"
+          >
+            <SlidersHorizontal size={20} />
+            Filtros
+          </button>
+          <div className="w-full max-w-2xl">
+            <SearchBar
+              placeholder="Buscar por modelo, marca"
+              onFiltrar={(query) => {
+                setBusqueda(query);
+                setMarcaSeleccionada(null); // Limpiar marca seleccionada si se busca manualmente
+                setMostrarTodos(false);
+                // Se borró la llamada automática para que no se vuelva a buscar en todos los carros
+              }}
+              onClearBusqueda={() => {
+                setBusqueda("");
+                setMarcaSeleccionada(null);
+                setMostrarTodos(true);
+              }}
+              obtenerSugerencia={obtenerSugerencia}
+            />
           </div>
         </div>
 
@@ -138,12 +214,12 @@ export default function Home({ ciudad }: Props) {
             onPrecioFilter={handlePrecioFilter}
             onCalifFilter={handleCalifFilter}
             onViajesFilter={handleViajesFilter}
-            onHostFilter={() => { }}
-            onMarcaFilter={() => { }}
+            onHostFilter={handleHostFilter}
+            onMarcaFilter={handleMarcaFilter}
+            onMostrarTodos={handleMostrarTodos}
+            isAllActive={mostrarTodos}
             autoScrollDelay={4000}
-            onMostrarTodos={() => {
-              console.log("Mostrar todos los resultados");
-            }}
+            autosOriginales={autos}
           />
         </div>
       </div>
@@ -156,20 +232,12 @@ export default function Home({ ciudad }: Props) {
               <HeaderBusquedaRecode
                 autosTotales={autos}
                 autosFiltrados={autosFiltrados}
-                //autosMostrados={autosActuales}
                 autosMostrados={autosFiltrados}
                 ordenSeleccionado={ordenSeleccionado}
                 setOrdenSeleccionado={setOrdenSeleccionado}
                 setAutosFiltrados={setAutosFiltrados}
               />
 
-              {/* <ResultadosAutos
-                cargando={cargando}
-                autosActuales={autosActuales}
-                autosFiltrados={autosFiltrados}
-                autosVisibles={autosVisibles}
-                mostrarMasAutos={mostrarMasAutos}
-              /> */}
               <CustomSearchWrapper
                 autosFiltrados={autosFiltrados}
                 autosVisibles={autosVisibles}
