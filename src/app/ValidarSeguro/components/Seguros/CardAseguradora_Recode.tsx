@@ -2,9 +2,8 @@
 
 import { useState, useRef, useEffect, memo } from "react";
 import { FaEllipsisV } from "react-icons/fa";
-import PlanesSeguroDropdown_Recode, {
-  PlanSeguro,
-} from "./PlanesSeguroDropdown_Recode";
+import { PlanSeguro } from "../../interface/ListaAutoSeguro_Interface_Recode";
+import PlanesSeguroDropdown_Recode from "./PlanesSeguroDropdown_Recode";
 
 interface Props {
   empresa: string;

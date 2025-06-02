@@ -29,6 +29,11 @@ function ListaAseguradoras_Recode({ aseguradoras }: Props) {
                                 { id: "robo1236", nombre: "Robo3" },
                                 { id: "robo1237", nombre: "Robo4" },
                                 { id: "robo1238", nombre: "Robo5" },
+                                { id: "robo1238", nombre: "Robo1" },
+                                { id: "robo9235", nombre: "Robo2" },
+                                { id: "robo1236", nombre: "Robo3" },
+                                { id: "robo1037", nombre: "Robo4" },
+                                { id: "robo1938", nombre: "Robo5" },
                             ],
                         },
                         {

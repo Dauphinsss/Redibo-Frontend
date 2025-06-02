@@ -9,6 +9,7 @@ import { useParams } from "next/navigation";
 import { DetalleHost_Recode as DetalleHost } from "@/app/reserva/interface/DetalleHost_Recode";
 import Header from "@/components/ui/Header";
 import RatingSummary_Recode from "@/app/reserva/components/componentes_CalificacionesHost_Recode/RatingSummary_Recode";
+import ListaReseñas from "@/app/reserva/components/componentes_ComentariosHost_Recode/ListaReseñas";
 
 export default function Page() {
   const params = useParams();
@@ -71,22 +72,26 @@ export default function Page() {
             ))}
           </div>
         )}
-        <div>
-          {/* Simulación de ratings */}
-          <div className="mt-4">
+        <div className="mt-10 flex flex-col md:flex-row gap-8 items-start">
+          {/* Izquierda: Calificación del host */}
+          <div className="w-full md:w-1/3">
             <RatingSummary_Recode
-              average={4.3}
-              totalReviews={37}
-              distribution={{
-                5: 20,
-                4: 10,
-                3: 4,
-                2: 2,
-                1: 1,
+              average={0}
+              totalReviews={0}
+              distribution={{ 
+                5: 0, 
+                4: 0, 
+                3: 0, 
+                2: 0, 
+                1: 0 
               }}
             />
           </div>
-    
+
+          {/* Derecha: Comentarios */}
+          <div className="w-full md:w-2/3">
+            <ListaReseñas />
+          </div>
         </div>
       </div>
     </div>
