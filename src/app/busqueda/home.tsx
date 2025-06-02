@@ -17,8 +17,8 @@ import CustomSearchWrapper from "@/app/busqueda/hooks/customSearchHU/CustomSearc
 
 type Props = {
   ciudad?: string;
-  fechaInicio: string;
-  fechaFin: string;
+  fechaInicio?: string;
+  fechaFin?: string;
 };
 
 // Interfaces para el filtro de marca

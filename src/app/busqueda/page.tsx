@@ -8,9 +8,15 @@ type PageProps = {
 export default async function Page({ searchParams }: PageProps) {
   const mostrarpagina = true;
   const resolvedSearchParams = await searchParams;
-  const ciudad = typeof resolvedSearchParams.ciudad === 'string' ? resolvedSearchParams.ciudad : undefined; if (!mostrarpagina) {
+  const ciudad = typeof resolvedSearchParams.ciudad === 'string' ? resolvedSearchParams.ciudad : undefined;
+
+  if (!mostrarpagina) {
     return notFound();
   }
 
-  return <Home ciudad={ciudad} />;
+  // Calcular las fechas
+  const fechaInicio = new Date().toISOString(); // Fecha actual
+  const fechaFin = new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(); // Fecha 30 días después
+
+  return <Home ciudad={ciudad} fechaInicio={fechaInicio} fechaFin={fechaFin} />;
 }
