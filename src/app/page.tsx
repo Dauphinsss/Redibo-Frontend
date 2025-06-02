@@ -42,6 +42,10 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const estado = localStorage.getItem("estadoConductor");
+    if (estado) {
+      setConductor(estado);
+    }
     getInfo();
   }, []);
 

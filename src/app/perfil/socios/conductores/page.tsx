@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { API_URL } from "@/utils/bakend";
 
 interface Conductor {
   id: number;
@@ -50,7 +51,7 @@ export default function MisConductores() {
       setError("");
       try {
         const token = localStorage.getItem("auth_token");
-        const res = await axios.get("http://localhost:4000/api/partners-drivers", {
+        const res = await axios.get(`${API_URL}/api/partners-drivers`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         // Ordenar conductores alfabéticamente por nombre
