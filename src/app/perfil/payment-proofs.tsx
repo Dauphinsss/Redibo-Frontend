@@ -38,7 +38,7 @@ interface OrdenPago {
     id: number;
     fecha_emision: string;
     numero_transaccion: string;
-    monto: number;
+    saldo: number;
   }>;
 }
 
@@ -481,7 +481,7 @@ export function ComprobantesInfo() {
                       </div>
 
                       <div className="text-right hidden sm:block">
-                        <p className="font-semibold text-blue-600">
+                        <p className="font-semibold text-black-600">
                           ${orden.monto_a_pagar.toLocaleString("es-ES", {
                             minimumFractionDigits: 2,
                           })} BOB
@@ -614,7 +614,7 @@ export function ComprobantesInfo() {
                   <DollarSign className="w-4 h-4 text-muted-foreground" />
                   <div>
                     <p className="text-xs text-muted-foreground">Monto</p>
-                    <p className="font-semibold text-blue-600">
+                    <p className="font-semibold text-black-600">
                       ${selectedOrder.monto_a_pagar.toLocaleString("es-ES", {
                         minimumFractionDigits: 2,
                       })} BOB
@@ -707,7 +707,7 @@ export function ComprobantesInfo() {
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Monto Pagado:</span>
                       <span className="font-semibold text-green-600">
-                        ${selectedOrder.ComprobanteDePago[0].monto.toLocaleString("es-ES", {
+                        ${selectedOrder.ComprobanteDePago[0].saldo.toLocaleString("es-ES", {
                           minimumFractionDigits: 2,
                         })} BOB
                       </span>

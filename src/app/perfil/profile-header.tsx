@@ -151,17 +151,21 @@ export function ProfileHeader() {
               </div>
             ))}
 
-            {userData?.roles.length < 3 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="bg-black text-white rounded-full p-2 hover:bg-gray-800 transition-colors">
-                    <MoreHorizontal size={20} />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {["HOST", "RENTER"]
-                    .filter((rol) => !userData.roles.includes(rol))
-                    .map((rol) => (
+            {/* Only show the dropdown if there are roles available to add */}
+            {(() => {
+              const availableRoles = ["HOST", "RENTER"].filter(
+                (rol) => !userData.roles.includes(rol)
+              );
+              
+              return availableRoles.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="bg-black text-white rounded-full p-2 hover:bg-gray-800 transition-colors">
+                      <MoreHorizontal size={20} />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {availableRoles.map((rol) => (
                       <DropdownMenuItem
                         key={rol}
                         onClick={() => {
@@ -172,9 +176,10 @@ export function ProfileHeader() {
                         Conviértete en {traduccionesRol[rol] || rol}
                       </DropdownMenuItem>
                     ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              );
+            })()}
           </div>
         )}
       </div>
