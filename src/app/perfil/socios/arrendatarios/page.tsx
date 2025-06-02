@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import axios from "axios";
+import { API_URL } from "@/utils/bakend";
 import {
   Dialog,
   DialogContent,
@@ -50,7 +51,7 @@ export default function MisArrendatarios() {
       setError("");
       try {
         const token = localStorage.getItem("auth_token");
-        const res = await axios.get("http://localhost:4000/api/partners-renters", {
+        const res = await axios.get(`${API_URL}/api/partners-renters`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         // Ordenar arrendatarios alfabéticamente por nombre
