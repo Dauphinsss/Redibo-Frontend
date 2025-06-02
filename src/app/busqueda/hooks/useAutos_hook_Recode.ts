@@ -295,38 +295,39 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
         setCargandoFiltros(true);
         console.log('Aplicando filtro de precio:', { min, max });
         console.log('Base para filtro:', autosBaseParaBackend.length);
-        
+
         // Si se desactiva el filtro
         if (min === 0 && max === Infinity) {
             setAutosFiltrados(autosBaseParaBackend);
             setFiltroPrecio(null);
             setHayFiltrosBackendActivos(false);
-            setOrdenSeleccionado('Recomendación');
             return;
         }
-        
+
         // Usar la base filtrada por los filtros en memoria
         const baseParaFiltro = autosBaseParaBackend.length > 0 ? autosBaseParaBackend : autosFiltrados;
         const ids = baseParaFiltro.map(a => parseInt(a.idAuto, 10));
-        
+
         const datos = await filtrosAPI.filtrarPorPrecio({ 
             minPrecio: min, 
             maxPrecio: max, 
             idsCarros: ids 
         });
-        
+
         const idsFiltrados = datos.map((d: { id: number }) => d.id);
         const nuevosFiltrados = baseParaFiltro.filter(a => 
             idsFiltrados.includes(parseInt(a.idAuto, 10))
         );
-        
+
         nuevosFiltrados.sort((a, b) => a.precioPorDia - b.precioPorDia);
-        
+
         console.log('Autos después del filtro:', nuevosFiltrados.length);
         setAutosFiltrados(nuevosFiltrados);
         setFiltroPrecio({ min, max });
         setHayFiltrosBackendActivos(true);
         setOrdenSeleccionado('Precio bajo a alto');
+
+        return nuevosFiltrados; // Retornar los autos filtrados
     } catch (error) {
         console.error('Error al aplicar filtro de precio:', error);
     } finally {
