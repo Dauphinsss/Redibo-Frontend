@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import { useCardByID, useCreatePaymentOrder, useHostById, useRenter } from '../hooks/useCarByID'
 import Image from 'next/image'
+import Header from '@/components/ui/Header';
 
 export default function View({ id }: { id: number }) {
   const { mutate, error, data } = useCreatePaymentOrder();
@@ -13,21 +14,18 @@ export default function View({ id }: { id: number }) {
     mutate({
       id_carro: id,
       id_usuario_host: Number(host?.id_host ?? 0),
-      id_usuario_renter: Number(renter.id),
+      id_usuario_renter:Number(renter.id),
       monto_a_pagar: car?.precio_por_dia ?? 0,
     });
   };
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Barra superior */}
-      <header className="flex items-center gap-3 bg-gray-200 px-6 py-3">
-        
-        <h1 className="text-lg font-semibold">Redibo</h1>
-      </header>
-      <main className="flex flex-1 justify-center items-start p-8 overflow-auto">
-        <div className="flex w-full max-w-6xl">
+      <Header />
+      <main className="flex md:justify-center items-start p-8 overflow-auto">
+        <div className="flex flex-col md:flex-row justify-center items-center w-full ">
           {/* Panel izquierdo */}
-          <section className="relative w-64 bg-gray-100 p-6">
+          <section className="relative sm:w-85 bg-gray-100 p-6">
             {/* Imagen */}
             {car?.imagen && (
               <Image
@@ -47,18 +45,15 @@ export default function View({ id }: { id: number }) {
               <p>Ubicación: <span className="font-medium">{car?.direccion}</span></p>
             </div>
 
-            {/* Flecha separadora */}
-            <span className="absolute inset-y-0 right-0 my-auto w-0 h-0 border-y-8 border-y-transparent border-l-8 border-l-white" />
-
             {/* Precio */}
-            <div className="absolute bottom-6 left-6 right-6 flex justify-between text-base font-bold">
+            <div className="flex justify-between text-base font-bold">
               <span>Precio:</span>
               <span>{car?.precio_por_dia ?? "0"} bs</span>
             </div>
           </section>
 
           {/* Panel derecho */}
-          <section className="flex-1 px-10">
+          <section className="flex-1 w-full px-10">
             <h2 className="text-xl font-semibold mb-8">¿Cómo quieres pagar?</h2>
 
             {/* Mock de métodos de pago */}
@@ -89,6 +84,7 @@ export default function View({ id }: { id: number }) {
             <button
               type="button"
               onClick={handleSubmit}
+              disabled={!clickCheck}
               className={`mt-10 ml-auto block bg-gray-300 hover:bg-gray-400 px-10 py-2 rounded font-semibold ${clickCheck?'opacity-100' : 'opacity-50'}`}
             >
               Pagar
