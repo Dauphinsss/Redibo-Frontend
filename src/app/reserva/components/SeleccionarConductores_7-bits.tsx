@@ -27,20 +27,34 @@ const SeleccionarConductores: React.FC<SeleccionarConductoresProps> = ({
     };
 
     return (
-        <div className="mb-4">
+        <div>
             <label className="font-bold block mb-2">{label}</label>
-            <div className="flex flex-col gap-2 border p-3 rounded bg-gray-50">
-                {conductores.map((c) => (
-                    <label key={c.id} className="flex items-center gap-2 cursor-pointer">
+            <div className="w-full max-w-md border rounded-lg p-2 bg-gray-50">
+                <ul className = "max-h-20 overflow-y-auto space-y-1">
+                    {conductores.map((c) => (
+                        <li key={c.id} className="flex items-center gap-2">
                         <input
                             type="checkbox"
+                            id={`conductor-${c.id}`}
                             checked={seleccionados.includes(c.id)}
-                            onChange={() => handleCheckboxChange(c.id)}
+                            onChange={() => {
+                            if (seleccionados.includes(c.id)) {
+                                onChange(seleccionados.filter((id) => id !== c.id));
+                            } else {
+                                onChange([...seleccionados, c.id]);
+                            }
+                            }}
                             className="accent-black"
                         />
-                        <span className="text-sm">{c.nombre}</span>
-                    </label>
-                ))}
+                        <label
+                            htmlFor={`conductor-${c.id}`}
+                            className="select-none cursor-pointer"
+                        >
+                            {c.nombre}
+                        </label>
+                        </li>
+                    ))}
+                </ul>
             </div>
         </div>
     )
