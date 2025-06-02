@@ -265,6 +265,7 @@ export function PersonalInfo() {
         prev ? { ...prev, telefono: nuevoValor as string } : prev
       );
       setEditandoTelefono(false);
+      window.location.reload();
     });
   };
   const guardarNacimiento = () => {
