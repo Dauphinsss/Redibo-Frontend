@@ -8,6 +8,7 @@ import { useParams } from "next/navigation";
 //import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
 import { DetalleHost_Recode as DetalleHost } from "@/app/reserva/interface/DetalleHost_Recode";
 import Header from "@/components/ui/Header";
+import RatingSummary_Recode from "@/app/reserva/components/componentes_CalificacionesHost_Recode/RatingSummary_Recode";
 
 export default function Page() {
   const params = useParams();
@@ -70,6 +71,23 @@ export default function Page() {
             ))}
           </div>
         )}
+        <div>
+          {/* Simulación de ratings */}
+          <div className="mt-4">
+            <RatingSummary_Recode
+              average={4.3}
+              totalReviews={37}
+              distribution={{
+                5: 20,
+                4: 10,
+                3: 4,
+                2: 2,
+                1: 1,
+              }}
+            />
+          </div>
+    
+        </div>
       </div>
     </div>
   );
