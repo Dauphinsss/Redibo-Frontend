@@ -28,3 +28,34 @@ export interface CarImageProps {
     src?: string | null;
     alt: string;
 }
+
+export interface CarApiResponse {
+    id: number;
+    modelo: string;
+    marca: string;
+    asientos: number;
+    puertas: number;
+    transmicion: string;
+    CombustibleCarro: {
+        TipoCombustible: {
+            tipoDeCombustible: string;
+        };
+    }[];
+    Usuario: {
+        id: number;
+        nombre: string;
+    };
+    Direccion: {
+        calle: string;
+        Provincia: {
+            Ciudad: {
+                nombre: string;
+            };
+        };
+    };
+    Imagen: {
+        id: number;
+        data: string;
+        id_carro: number;
+    }[];
+}

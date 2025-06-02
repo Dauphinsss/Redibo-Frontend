@@ -1,5 +1,6 @@
-import { SeguroRaw_Recode } from "@/app/validarSeguro/interface/SeguroRaw_Recode";
 import { SeguroConCoberturas_Interface_Recode } from "@/app/validarSeguro/interface/SeguroConCoberturas_Interface_Recode";
+import { SeguroRaw_Recode } from "@/app/validarSeguro/interface/SeguroRaw_Recode";
+import { CarApiResponse, CarCardProps } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 
 export function transformSeguroTodo_Recode(
     datos?: SeguroRaw_Recode[] | null
@@ -44,3 +45,22 @@ export function transformSeguroTodo_Recode(
         : [],
     };
 }
+
+export function transformarCarrosListSeguros(apiData: CarApiResponse[]): CarCardProps[] {
+    return apiData.map((car) => ({
+        idAuto: car.id,
+        modelo: car.modelo,
+        marca: car.marca,
+        asientos: car.asientos,
+        puertas: car.puertas,
+        transmision: car.transmicion,
+        combustibles: car.CombustibleCarro.map(c => c.TipoCombustible.tipoDeCombustible),
+        host: car.Usuario.nombre,
+        ubicacion: `${car.Direccion.Provincia.Ciudad.nombre}, ${car.Direccion.calle}`,
+        src: car.Imagen.length > 0 && car.Imagen[0]?.data
+        ? car.Imagen[0].data
+        : "/images/Auto_Default.png",
+        alt: `Imagen del auto ${car.modelo}`
+    }));
+}
+
