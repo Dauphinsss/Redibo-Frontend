@@ -28,6 +28,7 @@ import {
 import type { LucideProps } from "lucide-react";
 import Loading from "@/components/loading";
 import { Footer } from "@/components/ui/footer";
+import { MdEmail } from "react-icons/md";
 
 // --- NUEVO: Utilidad para obtener roles del usuario actual ---
 function getUserRoles() {
@@ -132,12 +133,16 @@ export default function SociosPage() {
         <div className="flex items-center h-16  ">
           {/* Sidebar trigger only on mobile */}
           <button
-            className="md:hidden mr-2 p-2 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="md:hidden p-3 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
             aria-label="Abrir menú"
             onClick={() => setSidebarOpen(true)}
             data-sidebar-trigger="true"
           >
-            <UserPlus className="w-6 h-6 text-gray-700" />
+            {activeTab === "recibidas" ? (
+              <Inbox className="w-6 h-6 text-gray-500"/>
+            ) : (
+              <UserPlus className="w-6 h-6 text-gray-500" />
+            )}
           </button>
           <div className="flex-1">
             <Header />
@@ -568,7 +573,7 @@ function SolicitarAsociacion({
               )}
               <div className="flex-1">
                 <div className="font-medium">{user.nombre as string}</div>
-                <p className="text-sm text-gray-500">{user.correo as string}</p>
+                <p className="text-sm text-gray-500 truncate max-w-40 sm:max-w-full">{user.correo as string}</p>
               </div>
               {sentIds.includes(user.id as string) ? (
                 <Button
@@ -587,12 +592,13 @@ function SolicitarAsociacion({
                 <Button
                   onClick={() => handleOpenDialog(user.id as string)}
                   disabled={pendingIds.includes(user.id as string)}
-                  className="min-w-[120px]"
+                  className="md:min-w-[120px]"
                 >
                   {pendingIds.includes(user.id as string) ? (
                     <Loader2 className="animate-spin mr-2" />
                   ) : null}
-                  Enviar solicitud
+                  <span className="hidden md:block">Enviar</span>Solicitud
+                  <MdEmail className="inline-block" />
                 </Button>
               )}
             </li>
@@ -767,7 +773,7 @@ function SolicitudesRecibidas() {
             <div className="text-gray-500 text-xs">{sol.fecha as string}</div>
           </div>
           {sol.estado === "pendiente" && (
-            <div className="flex gap-2">
+            <div className="grid sm:flex gap-2">
               <Button
                 onClick={() => handleAccion(sol.id as string, "aceptar")}
                 disabled={loading && accionandoId === sol.id}
