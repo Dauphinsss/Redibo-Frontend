@@ -58,7 +58,7 @@ export function useCars({ hostId, initialPageSize = 10 }: UseCarsOptions) {
 
   const deleteCar = async (carId: number) => {
     try {
-      await axios.delete(`http://localhost:4000/api/v1/vehiculo/${carId}/eliminar`);
+      await axios.delete(`http://localhost:4000/api/v1/vehiculo/${carId}`);
       setCars((prev) => prev.filter((car) => car.id !== carId));
       return true;
     } catch (error) {
