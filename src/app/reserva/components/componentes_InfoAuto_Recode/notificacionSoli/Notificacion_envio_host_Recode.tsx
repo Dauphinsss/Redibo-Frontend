@@ -4,12 +4,15 @@ import React, { useState, useEffect } from "react";
 import { getCarById } from "@/app/reserva/services/services_reserva";
 import { Solicitud } from "@/app/reserva/interface/NotificacionSolicitud_Recode";
 import { Button } from "@/components/ui/button";
+import { Conductor } from "../../SeleccionarConductores_7-bits";
+import { API_URL } from "@/utils/bakend";
 import FechasAlquiler from "../../componentes_MostrarCobertura_Recode/filtroIni";
 import PrecioDesglosado from "@/app/reserva/components/componentes_MostrarCobertura_Recode/precioDesglosado";
 import TablaCondicionesVisual_Recode from "@/app/reserva/components/componentes_CondicionesDeUsoAutoVisual/TablaCondicionesVisual_Recode";
 import TablaCoberturas from "../../componentes_MostrarCobertura_Recode/tablaCoberShow";
 import NotificacionEnvioExitoso_recode from "./Notificacion_envio_exitoso_Recode";
 import SeleccionarConductores from "../../SeleccionarConductores_7-bits";
+import { set } from "date-fns";
 
 interface Props {
   id_carro: number;
@@ -48,14 +51,7 @@ export default function FormularioSolicitud({
   const [precioEstimado, setPrecioEstimado] = useState(0);
   const [datosAuto, setDatosAuto] = useState<{ modelo: string; marca: string; precio_por_dia: number; host: { id: number } } | null>(null);
   const [showNotification, setShowNotification] = useState(false);
-
-  const conductoresMock = [
-    { id: 1, nombre: "Juan Pérez" },
-    { id: 2, nombre: "Ana López" },
-    { id: 3, nombre: "Carlos García" },
-    { id: 4, nombre: "María Fernández" },
-    { id: 5, nombre: "Luis Martínez" }
-  ]
+  const [conductores, setConductores] = useState<Conductor[]>([]);
   const [conductoresSeleccionados, setConductoresSeleccionados] = useState<number[]>([]);
 
   // Cargar todos los datos necesarios
@@ -231,6 +227,29 @@ export default function FormularioSolicitud({
     }
   }, [fechas, datosAuto]);
 
+  useEffect(() => {
+    const fetchConductores = async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        const res = await fetch(`${API_URL}/api/conductores-asociados`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        setConductores(data.conductores || []);
+
+      } catch (error) {
+        setError("Error al cargar la lista de conductores");
+        console.error("Error al cargar conductores:", error);
+        setConductores([]);
+      }
+    };
+    fetchConductores();
+  }, []);
+
   return (
     <div className="flex flex-col gap-6 max-w-4xl mx-auto">
       {/* 1. Sección de Fechas */}
@@ -262,7 +281,7 @@ export default function FormularioSolicitud({
 
        {/* 4.1. Seleccionar Conductor - 7-bits */}
       <SeleccionarConductores
-        conductores={conductoresMock}
+        conductores={conductores}
         seleccionados={conductoresSeleccionados}
         onChange={setConductoresSeleccionados}
       />
