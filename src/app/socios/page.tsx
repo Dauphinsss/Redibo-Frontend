@@ -76,7 +76,9 @@ export default function SociosPage() {
       <div className="flex flex-col w-full min-h-screen bg-gray-50">
         <Header />
         <main className="flex-1 w-full p-6 flex flex-col items-center justify-center">
-          <h1 className="text-2xl font-bold mb-4">Debes iniciar sesión para acceder a la sección de Socios</h1>
+          <h1 className="text-2xl font-bold mb-4">
+            Debes iniciar sesión para acceder a la sección de Socios
+          </h1>
           <Button asChild>
             <a href="/login">Iniciar sesión</a>
           </Button>
@@ -87,27 +89,38 @@ export default function SociosPage() {
 
   // Tabs dinámicos según roles
   const sidebarItems = [
-    userRoles.includes("RENTER") && !userRoles.includes("DRIVER") && {
+    userRoles.includes("RENTER") &&
+      !userRoles.includes("DRIVER") && {
         id: "solicitar-driver",
         label: "Asociación a Conductor",
         icon: UserPlus,
+      },
+    userRoles.includes("DRIVER") && {
+      id: "solicitar-driver",
+      label: "Asociación a Conductor",
+      icon: UserPlus,
     },
     userRoles.includes("DRIVER") && {
-        id: "solicitar-driver",
-        label: "Asociación a Conductor",
-        icon: UserPlus,
-    },
-    userRoles.includes("DRIVER") && {
-        id: "solicitar-renter",
-        label: "Asociación a Arrendatario",
-        icon: UserPlus,
+      id: "solicitar-renter",
+      label: "Asociación a Arrendatario",
+      icon: UserPlus,
     },
     {
       id: "recibidas",
       label: "Solicitudes Recibidas",
       icon: Inbox,
     },
-  ].filter((item): item is { id: string; label: string; icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>> } => Boolean(item));
+  ].filter(
+    (
+      item
+    ): item is {
+      id: string;
+      label: string;
+      icon: React.ForwardRefExoticComponent<
+        Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
+      >;
+    } => Boolean(item)
+  );
 
   // Responsive: sidebar as drawer on mobile, sticky on desktop
   return (
@@ -142,14 +155,18 @@ export default function SociosPage() {
           )}
           <aside
             className={`fixed z-50 top-0 left-0 h-full w-72 bg-white border-r border-gray-100 shadow-sm transition-transform duration-300 md:sticky md:top-16 md:z-10 md:translate-x-0 md:block
-              ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
+              ${
+                sidebarOpen ? "translate-x-0" : "-translate-x-full"
+              } md:translate-x-0`}
             style={{ minWidth: 0 }}
             tabIndex={-1}
             aria-label="Menú lateral"
           >
             {/* Solo en móvil: nombre de la plataforma arriba */}
             <div className="md:hidden px-6 py-4 border-b border-gray-100">
-              <h3 className="tracking-wider text-black font-bold text-xl">REDIBO</h3>
+              <h3 className="tracking-wider text-black font-bold text-xl">
+                REDIBO
+              </h3>
             </div>
             <SidebarContent className="p-2 bg-white h-full flex flex-col">
               <SidebarMenu className="bg-white flex-1">
@@ -161,11 +178,23 @@ export default function SociosPage() {
                         setSidebarOpen(false); // close drawer on mobile
                       }}
                       isActive={activeTab === item.id}
-                      className={`justify-start rounded-lg transition-all duration-200 px-4 py-3 text-base my-1 w-full text-left ${activeTab === item.id ? "bg-gray-100 font-medium text-primary" : "text-gray-700"}`}
+                      className={`justify-start rounded-lg transition-all duration-200 px-4 py-3 text-base my-1 w-full text-left ${
+                        activeTab === item.id
+                          ? "bg-gray-100 font-medium text-primary"
+                          : "text-gray-700"
+                      }`}
                       style={{ minHeight: 56 }}
                     >
-                      <item.icon className={`h-5 w-5 mr-3 ${activeTab === item.id ? "text-primary" : "text-gray-500"}`} />
-                      <span className="block whitespace-nowrap text-left">{item.label}</span>
+                      <item.icon
+                        className={`h-5 w-5 mr-3 ${
+                          activeTab === item.id
+                            ? "text-primary"
+                            : "text-gray-500"
+                        }`}
+                      />
+                      <span className="block whitespace-nowrap text-left">
+                        {item.label}
+                      </span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
@@ -179,11 +208,19 @@ export default function SociosPage() {
               style={{ marginLeft: 0 }}
             >
               <div className="max-w-3xl mx-auto">
-                <h1 className="text-2xl font-bold mb-2">{getTabTitle(activeTab)}</h1>
-                <p className="mb-6 text-gray-600">{getTabDescription(activeTab, userRoles)}</p>
+                <h1 className="text-2xl font-bold mb-2">
+                  {getTabTitle(activeTab)}
+                </h1>
+                <p className="mb-6 text-gray-600">
+                  {getTabDescription(activeTab, userRoles)}
+                </p>
                 <div className="bg-white rounded-lg shadow p-4 sm:p-6 min-h-[300px]">
-                  {activeTab === "solicitar-driver" && <SolicitarAsociacion tipo="driver" userRoles={userRoles} />}
-                  {activeTab === "solicitar-renter" && <SolicitarAsociacion tipo="renter" userRoles={userRoles} />}
+                  {activeTab === "solicitar-driver" && (
+                    <SolicitarAsociacion tipo="driver" userRoles={userRoles} />
+                  )}
+                  {activeTab === "solicitar-renter" && (
+                    <SolicitarAsociacion tipo="renter" userRoles={userRoles} />
+                  )}
                   {activeTab === "recibidas" && <SolicitudesRecibidas />}
                 </div>
               </div>
@@ -228,7 +265,13 @@ function getTabDescription(tab: string, userRoles: string[]) {
   return "";
 }
 
-function SolicitarAsociacion({ tipo, userRoles }: { tipo: "driver" | "renter"; userRoles: string[] }) {
+function SolicitarAsociacion({
+  tipo,
+  userRoles,
+}: {
+  tipo: "driver" | "renter";
+  userRoles: string[];
+}) {
   const [query, setQuery] = useState("");
   const [allResults, setAllResults] = useState<Record<string, unknown>[]>([]); // Todos los usuarios
   const [results, setResults] = useState<Record<string, unknown>[]>([]); // Filtrados
@@ -241,7 +284,9 @@ function SolicitarAsociacion({ tipo, userRoles }: { tipo: "driver" | "renter"; u
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
-  const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(
+    null
+  );
   // Estado para saber si el debounce está activo
   const [isDebouncing, setIsDebouncing] = useState(false);
 
@@ -255,15 +300,22 @@ function SolicitarAsociacion({ tipo, userRoles }: { tipo: "driver" | "renter"; u
     async function fetchUsers() {
       try {
         const token = localStorage.getItem("auth_token");
-        const url = tipo === "driver" ? "/api/list-drivers" : "/api/list-renters";
+        const url =
+          tipo === "driver" ? "/api/list-drivers" : "/api/list-renters";
         // Siempre POST, pero body vacío si no hay búsqueda
-        const res = await axios.post(`${API_URL}${url}`, {}, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.post(
+          `${API_URL}${url}`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         // Leer la propiedad correcta del backend
         const list = tipo === "driver" ? res.data.drivers : res.data.renters;
         const myName = localStorage.getItem("nombre");
-        const filtered = (list || []).filter((u: Record<string, unknown>) => u.nombre !== myName);
+        const filtered = (list || []).filter(
+          (u: Record<string, unknown>) => u.nombre !== myName
+        );
         setAllResults(filtered);
         setResults(filtered);
         setFetched(true);
@@ -297,7 +349,8 @@ function SolicitarAsociacion({ tipo, userRoles }: { tipo: "driver" | "renter"; u
         setLoading(true);
         try {
           const token = localStorage.getItem("auth_token");
-          const url = tipo === "driver" ? "/api/list-drivers" : "/api/list-renters";
+          const url =
+            tipo === "driver" ? "/api/list-drivers" : "/api/list-renters";
           const res = await axios.post(
             `${API_URL}${url}`,
             { search: query },
@@ -306,10 +359,12 @@ function SolicitarAsociacion({ tipo, userRoles }: { tipo: "driver" | "renter"; u
           // Leer la propiedad correcta del backend
           const list = tipo === "driver" ? res.data.drivers : res.data.renters;
           const myName = localStorage.getItem("nombre");
-          const filtered = (list || []).filter((u: Record<string, unknown>) => u.nombre !== myName);
+          const filtered = (list || []).filter(
+            (u: Record<string, unknown>) => u.nombre !== myName
+          );
           setResults(filtered);
         } catch (err) {
-            console.error("Error al buscar usuarios:", err);
+          console.error("Error al buscar usuarios:", err);
           toast.error("Error al buscar usuarios");
           setResults([]);
         } finally {
@@ -341,7 +396,9 @@ function SolicitarAsociacion({ tipo, userRoles }: { tipo: "driver" | "renter"; u
   const handleSendRequest = async () => {
     if (!selectedUserId) return;
     setPendingIds((prev: string[]) => [...prev, selectedUserId]);
-    setErrorIds((prev: string[]) => prev.filter((eid) => eid !== selectedUserId));
+    setErrorIds((prev: string[]) =>
+      prev.filter((eid) => eid !== selectedUserId)
+    );
     setSending(true);
     try {
       const token = localStorage.getItem("auth_token");
@@ -366,10 +423,12 @@ function SolicitarAsociacion({ tipo, userRoles }: { tipo: "driver" | "renter"; u
       setMessage("");
       setSelectedUserId(null);
     } catch (err) {
-        toast.error("Error al enviar solicitud");
-        console.error("Error al enviar solicitud:", err);
+      toast.error("Error al enviar solicitud");
+      console.error("Error al enviar solicitud:", err);
     } finally {
-      setPendingIds((prev: string[]) => prev.filter((pid: string) => pid !== selectedUserId));
+      setPendingIds((prev: string[]) =>
+        prev.filter((pid: string) => pid !== selectedUserId)
+      );
       setSending(false);
     }
   };
@@ -378,12 +437,15 @@ function SolicitarAsociacion({ tipo, userRoles }: { tipo: "driver" | "renter"; u
   let modalMsg = "";
   if (tipo === "driver") {
     if (userRoles.includes("RENTER") && !userRoles.includes("DRIVER")) {
-      modalMsg = "Usted como Arrendatario está enviando una solicitud a un Conductor y puede agregar un mensaje opcional para la persona a la que envía la solicitud.";
+      modalMsg =
+        "Usted como Arrendatario está enviando una solicitud a un Conductor y puede agregar un mensaje opcional para la persona a la que envía la solicitud.";
     } else if (userRoles.includes("DRIVER")) {
-      modalMsg = "Usted como Conductor está enviando una solicitud a otro Conductor y puede agregar un mensaje opcional para la persona a la que envía la solicitud.";
+      modalMsg =
+        "Usted como Conductor está enviando una solicitud a otro Conductor y puede agregar un mensaje opcional para la persona a la que envía la solicitud.";
     }
   } else if (tipo === "renter") {
-    modalMsg = "Usted como Conductor está enviando una solicitud a un Arrendatario y puede agregar un mensaje opcional para la persona a la que envía la solicitud.";
+    modalMsg =
+      "Usted como Conductor está enviando una solicitud a un Arrendatario y puede agregar un mensaje opcional para la persona a la que envía la solicitud.";
   }
 
   React.useEffect(() => {
@@ -395,7 +457,36 @@ function SolicitarAsociacion({ tipo, userRoles }: { tipo: "driver" | "renter"; u
   // --- MODAL MENSAJE: input simple, validación de palabra y filtro de groserías ---
   // Lista simple de palabras prohibidas (puedes expandirla)
   const BAD_WORDS = [
-    "puta", "puto", "mierda", "imbecil", "idiota", "estupido", "maldito", "perra", "pendejo", "tonto", "bobo", "cabrón", "culero", "zorra", "asqueroso", "muere", "matar", "te mato", "te voy a matar", "te odio", "desgraciado", "malnacido", "asesino", "violador", "amenaza", "amenazar", "golpear", "golpearte", "te pego", "te voy a golpear"
+    "puta",
+    "puto",
+    "mierda",
+    "imbecil",
+    "idiota",
+    "estupido",
+    "maldito",
+    "perra",
+    "pendejo",
+    "tonto",
+    "bobo",
+    "cabrón",
+    "culero",
+    "zorra",
+    "asqueroso",
+    "muere",
+    "matar",
+    "te mato",
+    "te voy a matar",
+    "te odio",
+    "desgraciado",
+    "malnacido",
+    "asesino",
+    "violador",
+    "amenaza",
+    "amenazar",
+    "golpear",
+    "golpearte",
+    "te pego",
+    "te voy a golpear",
   ];
   function isValidMessage(msg: string) {
     const trimmed = msg.trim();
@@ -416,7 +507,9 @@ function SolicitarAsociacion({ tipo, userRoles }: { tipo: "driver" | "renter"; u
     <div>
       <div className="mb-4 flex items-center gap-2">
         <Input
-          placeholder={`Buscar ${tipo === "driver" ? "Driver" : "Arrendatario"} por nombre o correo`}
+          placeholder={`Buscar ${
+            tipo === "driver" ? "Driver" : "Arrendatario"
+          } por nombre o correo`}
           value={query}
           onChange={handleSearch}
           className="w-full max-w-xl"
@@ -429,33 +522,60 @@ function SolicitarAsociacion({ tipo, userRoles }: { tipo: "driver" | "renter"; u
         </div>
       )}
       {/* No mostrar nada mientras está debouncing */}
-      {isDebouncing && (
-        <div className="py-8" />
-      )}
+      {isDebouncing && <div className="py-8" />}
       {/* Mostrar mensaje solo si no hay loading, no debouncing, ya se buscó y no hay resultados */}
-      {!loading && !isDebouncing && fetched && results.length === 0 && query.length >= 1 && (
-        <div className="text-center text-gray-500 py-8">No se encontraron resultados</div>
-      )}
+      {!loading &&
+        !isDebouncing &&
+        fetched &&
+        results.length === 0 &&
+        query.length >= 1 && (
+          <div className="text-center text-gray-500 py-8">
+            No se encontraron resultados
+          </div>
+        )}
       {/* Mostrar resultados solo si no está debouncing */}
       {!isDebouncing && (
         <ul className="divide-y">
           {results.map((user) => (
-            <li key={user.id as string} className="flex items-center gap-4 py-4">
-              {user.foto && typeof user.foto === "string" && /^https?:\/\//.test(user.foto) ? (
-                <img src={user.foto as string} alt={user.nombre as string} width={40} height={40} className="rounded-full object-cover" />
+            <li
+              key={user.id as string}
+              className="flex items-center gap-4 py-4"
+            >
+              {user.foto &&
+              typeof user.foto === "string" &&
+              /^https?:\/\//.test(user.foto) ? (
+                <img
+                  src={user.foto as string}
+                  alt={user.nombre as string}
+                  width={40}
+                  height={40}
+                  className="rounded-full object-cover"
+                />
               ) : (
-                <Image src={(user.foto as string) || "/file.svg"} alt={user.nombre as string} width={40} height={40} className="rounded-full object-cover" />
+                <Image
+                  src={(user.foto as string) || "/file.svg"}
+                  alt={user.nombre as string}
+                  width={40}
+                  height={40}
+                  className="rounded-full object-cover"
+                />
               )}
               <div className="flex-1">
                 <div className="font-medium">{user.nombre as string}</div>
-                <div className="text-gray-500 text-sm">{user.email as string}</div>
+                <div className="text-gray-500 text-sm">
+                  {user.email as string}
+                </div>
               </div>
               {sentIds.includes(user.id as string) ? (
                 <Button
                   variant="outline"
                   disabled
                   className="cursor-not-allowed"
-                  title={errorIds.includes(user.id as string) ? "La solicitud ya existe" : "Pendiente"}
+                  title={
+                    errorIds.includes(user.id as string)
+                      ? "La solicitud ya existe"
+                      : "Pendiente"
+                  }
                 >
                   Pendiente
                 </Button>
@@ -465,7 +585,9 @@ function SolicitarAsociacion({ tipo, userRoles }: { tipo: "driver" | "renter"; u
                   disabled={pendingIds.includes(user.id as string)}
                   className="min-w-[120px]"
                 >
-                  {pendingIds.includes(user.id as string) ? <Loader2 className="animate-spin mr-2" /> : null}
+                  {pendingIds.includes(user.id as string) ? (
+                    <Loader2 className="animate-spin mr-2" />
+                  ) : null}
                   Enviar solicitud
                 </Button>
               )}
@@ -486,19 +608,35 @@ function SolicitarAsociacion({ tipo, userRoles }: { tipo: "driver" | "renter"; u
               className="w-full"
               placeholder="Mensaje opcional..."
               value={message}
-              onChange={e => setMessage(e.target.value)}
+              onChange={(e) => setMessage(e.target.value)}
               maxLength={50}
             />
-            <div className={`text-xs mt-1 ${message.length > 50 ? "text-red-500" : "text-gray-400"}`}>{message.length}/50</div>
+            <div
+              className={`text-xs mt-1 ${
+                message.length > 50 ? "text-red-500" : "text-gray-400"
+              }`}
+            >
+              {message.length}/50
+            </div>
             {!messageValid && message.length > 0 && (
-              <div className="text-xs text-red-500 mt-1">El mensaje debe tener al menos una palabra, máximo 50 caracteres y no contener insultos o amenazas.</div>
+              <div className="text-xs text-red-500 mt-1">
+                El mensaje debe tener al menos una palabra, máximo 50 caracteres
+                y no contener insultos o amenazas.
+              </div>
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDialog(false)} disabled={sending}>
+            <Button
+              variant="outline"
+              onClick={() => setShowDialog(false)}
+              disabled={sending}
+            >
               Cancelar
             </Button>
-            <Button onClick={handleSendRequest} disabled={sending || !messageValid}>
+            <Button
+              onClick={handleSendRequest}
+              disabled={sending || !messageValid}
+            >
               {sending ? <Loader2 className="animate-spin mr-2" /> : null}
               Enviar solicitud
             </Button>
@@ -520,29 +658,39 @@ function SolicitudesRecibidas() {
       try {
         const token = localStorage.getItem("auth_token");
         // Obtiene solicitudes pendientes donde el usuario es receptor
-        const res = await axios.get(`${API_URL}/api/list-association-requests`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          `${API_URL}/api/list-association-requests`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         // El backend ahora retorna { requests: [...], requesters: [...] }
         const { requests, requesters } = res.data;
         // Relacionar cada solicitud con su solicitante (por índice)
-        const solicitudesFormateadas = requests.map((sol: Record<string, unknown>, idx: number) => {
-          const requester = requesters[idx] || {};
-          return {
-            id: sol.id as string,
-            nombre: requester.nombre || sol.solicitanteId,
-            correo: requester.correo || "-",
-            foto: requester.foto || "/file.svg",
-            telefono: requester.telefono || "-",
-            mensaje: sol.mensaje || "",
-            fecha: formatDateDMY((sol.fechaSolicitud as string) || (sol.createdAt as string)),
-            estado: typeof sol.estado === "string" && sol.estado?.toLowerCase() === "aceptada"
-              ? "aceptado"
-              : typeof sol.estado === "string" && sol.estado?.toLowerCase() === "rechazada"
-              ? "rechazado"
-              : "pendiente",
-          };
-        });
+        const solicitudesFormateadas = requests.map(
+          (sol: Record<string, unknown>, idx: number) => {
+            const requester = requesters[idx] || {};
+            return {
+              id: sol.id as string,
+              nombre: requester.nombre || sol.solicitanteId,
+              correo: requester.correo || "-",
+              foto: requester.foto || "/file.svg",
+              telefono: requester.telefono || "-",
+              mensaje: sol.mensaje || "",
+              fecha: formatDateDMY(
+                (sol.fechaSolicitud as string) || (sol.createdAt as string)
+              ),
+              estado:
+                typeof sol.estado === "string" &&
+                sol.estado?.toLowerCase() === "aceptada"
+                  ? "aceptado"
+                  : typeof sol.estado === "string" &&
+                    sol.estado?.toLowerCase() === "rechazada"
+                  ? "rechazado"
+                  : "pendiente",
+            };
+          }
+        );
         setSolicitudes(solicitudesFormateadas);
       } catch (err) {
         console.error("Error al obtener solicitudes:", err);
@@ -569,12 +717,16 @@ function SolicitudesRecibidas() {
       );
       setSolicitudes((prev: Record<string, unknown>[]) =>
         prev.map((s: Record<string, unknown>) =>
-          s.id === id ? { ...s, estado: accion === "aceptar" ? "aceptado" : "rechazado" } : s
+          s.id === id
+            ? { ...s, estado: accion === "aceptar" ? "aceptado" : "rechazado" }
+            : s
         )
       );
-      toast.success(accion === "aceptar" ? "Solicitud aceptada" : "Solicitud rechazada");
+      toast.success(
+        accion === "aceptar" ? "Solicitud aceptada" : "Solicitud rechazada"
+      );
     } catch (err) {
-        console.error("Error al procesar la solicitud:", err);
+      console.error("Error al procesar la solicitud:", err);
       toast.error("Error al procesar la solicitud");
     } finally {
       setLoading(false);
@@ -588,15 +740,25 @@ function SolicitudesRecibidas() {
         <div className="text-center text-gray-500 py-8">Cargando...</div>
       )}
       {!loading && solicitudes.length === 0 && (
-        <div className="text-center text-gray-500 py-8">No tienes solicitudes recibidas</div>
+        <div className="text-center text-gray-500 py-8">
+          No tienes solicitudes recibidas
+        </div>
       )}
       {solicitudes.map((sol) => (
         <li key={sol.id as string} className="flex items-center gap-4 py-4">
-          <img src={(sol.foto as string) || "/file.svg"} alt={sol.nombre as string} width={40} height={40} className="rounded-full object-cover" />
+          <img
+            src={(sol.foto as string) || "/file.svg"}
+            alt={sol.nombre as string}
+            width={40}
+            height={40}
+            className="rounded-full object-cover"
+          />
           <div className="flex-1">
             <div className="font-medium">{sol.nombre as string}</div>
             <div className="text-gray-500 text-sm">{sol.correo as string}</div>
-            <div className="text-gray-500 text-sm">{sol.telefono as string}</div>
+            <div className="text-gray-500 text-sm">
+              {sol.telefono as string}
+            </div>
             <div className="text-gray-500 text-sm">{sol.mensaje as string}</div>
             <div className="text-gray-500 text-xs">{sol.fecha as string}</div>
           </div>
@@ -607,7 +769,9 @@ function SolicitudesRecibidas() {
                 disabled={loading && accionandoId === sol.id}
                 className="bg-green-600 text-white hover:bg-green-700"
               >
-                {loading && accionandoId === sol.id ? <Loader2 className="animate-spin mr-2" /> : null}
+                {loading && accionandoId === sol.id ? (
+                  <Loader2 className="animate-spin mr-2" />
+                ) : null}
                 Aceptar
               </Button>
               <Button
@@ -615,16 +779,22 @@ function SolicitudesRecibidas() {
                 disabled={loading && accionandoId === sol.id}
                 className="bg-red-600 text-white hover:bg-red-700"
               >
-                {loading && accionandoId === sol.id ? <Loader2 className="animate-spin mr-2" /> : null}
+                {loading && accionandoId === sol.id ? (
+                  <Loader2 className="animate-spin mr-2" />
+                ) : null}
                 Rechazar
               </Button>
             </div>
           )}
           {sol.estado === "aceptado" && (
-            <span className="px-3 py-1 rounded bg-green-100 text-green-700 font-medium">Aceptado</span>
+            <span className="px-3 py-1 rounded bg-green-100 text-green-700 font-medium">
+              Aceptado
+            </span>
           )}
           {sol.estado === "rechazado" && (
-            <span className="px-3 py-1 rounded bg-red-100 text-red-700 font-medium">Rechazado</span>
+            <span className="px-3 py-1 rounded bg-red-100 text-red-700 font-medium">
+              Rechazado
+            </span>
           )}
         </li>
       ))}

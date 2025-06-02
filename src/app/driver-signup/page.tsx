@@ -3,21 +3,21 @@
 import Header from "@/components/ui/Header";
 import DriverApplicationForm from "./driver-application-form";
 import { Footer } from "@/components/ui/footer";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function ConductorPage() {
-  const [estado, setEstado] = useState("NO_REQUESTED");
   const router = useRouter();
 
   useEffect(() => {
     const storedState = localStorage.getItem("estadoConductor");
-    if (storedState) {
-      setEstado(storedState);
-    }
-    if (estado !== "REQUESTED") {
+    if (storedState === null) {
       router.push("/");
+      return;
     }
+    if (storedState === "NO_REQUESTED") return
+    router.push("/");
+    
   }, []);
 
   return (
