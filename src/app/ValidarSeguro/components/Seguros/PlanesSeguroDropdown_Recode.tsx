@@ -3,17 +3,8 @@
 import { memo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import { PlanSeguro } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 
-export interface TipoSeguro {
-  id: string;
-  nombre: string;
-  descripcion?: string;
-}
-
-export interface PlanSeguro {
-  nombre: string;
-  tipos: TipoSeguro[];
-}
 
 interface Props {
   planes: PlanSeguro[];

@@ -1,12 +1,9 @@
 import { memo } from "react";
 import CardAseguradora_Recode from "./CardAseguradora_Recode";
+import { Aseguradora } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 
-interface Aseguradora {
-    id: number;
-    empresa: string;
-    fechaInicio: string;
-    fechaFin: string;
-}
+
+
 
 interface Props {
     aseguradoras: Aseguradora[];
@@ -47,7 +44,7 @@ function ListaAseguradoras_Recode({ aseguradoras }: Props) {
                                 { id: "robo1238", nombre: "Robo5" },
                             ],
                         },
-                    ]} // Aquí puedes ajustar los planes según tus necesidades
+                    ]}
                 />
             ))}
         </div>

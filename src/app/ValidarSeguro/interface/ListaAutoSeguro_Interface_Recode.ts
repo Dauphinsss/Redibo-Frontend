@@ -59,3 +59,24 @@ export interface CarApiResponse {
         id_carro: number;
     }[];
 }
+
+
+//Empieza todo sobre las aseguradoras
+
+export interface Aseguradora {
+    id: number;
+    empresa: string;
+    fechaInicio: string;
+    fechaFin: string;
+}
+export interface TipoSeguro {
+    id: string;
+    nombre: string;
+    descripcion?: string;
+}
+
+export interface PlanSeguro {
+    nombre: string;
+    tipos: TipoSeguro[];
+}
+
