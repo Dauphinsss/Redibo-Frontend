@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import {  Receipt, TrendingDown, TrendingUp, Clock, CheckCircle, XCircle, Calendar, DollarSign, Hash, Car, User, Download, Loader2, AlertCircle, Mail, CreditCard } from "lucide-react";
+import {  Receipt, TrendingDown, TrendingUp, Clock, CheckCircle, XCircle, Calendar, DollarSign, Hash, Car, Download, Loader2, AlertCircle, Mail, CreditCard } from "lucide-react";
 
 type EstadoOrden = "PENDIENTE" | "PROCESANDO" | "COMPLETADO" | "CANCELADO";
 
