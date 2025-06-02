@@ -83,7 +83,7 @@ export default function MisConductores() {
       ) : (
         <ul className="flex flex-col gap-4">
           {conductores.map((c) => (
-            <li key={c.id} className="flex items-center bg-white rounded-lg shadow p-4 gap-4">
+            <li key={c.id} className="flex items-center bg-white rounded-lg border-1 shadow p-4 gap-4">
               {c.foto && typeof c.foto === "string" && /^https?:\/\//.test(c.foto) ? (
                 <img src={c.foto} alt={c.nombre} width={56} height={56} className="rounded-full object-cover" />
               ) : (

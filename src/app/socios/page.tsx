@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, UserPlus, Inbox } from "lucide-react";
+import { Loader2, UserPlus, Inbox, Search } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import Image from "next/image";
 import axios from "axios";
@@ -26,6 +26,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import type { LucideProps } from "lucide-react";
+import Loading from "@/components/loading";
+import { Footer } from "@/components/ui/footer";
 
 // --- NUEVO: Utilidad para obtener roles del usuario actual ---
 function getUserRoles() {
@@ -65,7 +67,7 @@ export default function SociosPage() {
       <div className="flex flex-col w-full min-h-screen bg-gray-50">
         <Header />
         <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="animate-spin w-12 h-12 text-gray-400" />
+          <Loading />
         </div>
       </div>
     );
@@ -127,7 +129,7 @@ export default function SociosPage() {
     <div className="flex flex-col w-full min-h-screen bg-gray-50">
       {/* Header with sidebar trigger for mobile */}
       <div className="sticky top-0 z-30 bg-white shadow-sm">
-        <div className="flex items-center h-16 px-4 md:px-8">
+        <div className="flex items-center h-16  ">
           {/* Sidebar trigger only on mobile */}
           <button
             className="md:hidden mr-2 p-2 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
@@ -204,17 +206,17 @@ export default function SociosPage() {
           {/* Main content: margin-left on desktop, full on mobile */}
           <SidebarInset>
             <main
-              className="flex-1 w-full p-4 sm:p-6 md:p-8 transition-all duration-300"
+              className="flex-1 p-4 sm:p-6 md:p-8 transition-all duration-300"
               style={{ marginLeft: 0 }}
             >
               <div className="max-w-3xl mx-auto">
-                <h1 className="text-2xl font-bold mb-2">
+                <h1 className="text-2xl font-bold mb-2 text-center md:text-left">
                   {getTabTitle(activeTab)}
                 </h1>
-                <p className="mb-6 text-gray-600">
+                <p className="mb-6 text-gray-600 text-center md:text-left">
                   {getTabDescription(activeTab, userRoles)}
                 </p>
-                <div className="bg-white rounded-lg shadow p-4 sm:p-6 min-h-[300px]">
+                <div className="bg-white rounded-lg min-h-[300px]">
                   {activeTab === "solicitar-driver" && (
                     <SolicitarAsociacion tipo="driver" userRoles={userRoles} />
                   )}
@@ -225,6 +227,7 @@ export default function SociosPage() {
                 </div>
               </div>
             </main>
+            <Footer />
           </SidebarInset>
         </SidebarProvider>
       </div>
@@ -506,13 +509,14 @@ function SolicitarAsociacion({
   return (
     <div>
       <div className="mb-4 flex items-center gap-2">
+        <Search className="text-gray-500" />
         <Input
           placeholder={`Buscar ${
             tipo === "driver" ? "Driver" : "Arrendatario"
           } por nombre o correo`}
           value={query}
           onChange={handleSearch}
-          className="w-full max-w-xl"
+          className="w-full "
         />
       </div>
       {/* Mostrar spinner solo si loading y no está debouncing */}
@@ -535,22 +539,24 @@ function SolicitarAsociacion({
         )}
       {/* Mostrar resultados solo si no está debouncing */}
       {!isDebouncing && (
-        <ul className="divide-y">
+        <ul className="divide-y space-y-2">
           {results.map((user) => (
             <li
               key={user.id as string}
-              className="flex items-center gap-4 py-4"
+              className="flex items-center gap-4 p-4 border-1 rounded-lg"
             >
               {user.foto &&
               typeof user.foto === "string" &&
               /^https?:\/\//.test(user.foto) ? (
-                <img
-                  src={user.foto as string}
-                  alt={user.nombre as string}
-                  width={40}
-                  height={40}
-                  className="rounded-full object-cover"
-                />
+                <>
+                  <img
+                    src={user.foto as string}
+                    alt={user.nombre as string}
+                    width={40}
+                    height={40}
+                    className="rounded-full object-cover"
+                  />
+                </>
               ) : (
                 <Image
                   src={(user.foto as string) || "/file.svg"}
@@ -562,9 +568,7 @@ function SolicitarAsociacion({
               )}
               <div className="flex-1">
                 <div className="font-medium">{user.nombre as string}</div>
-                <div className="text-gray-500 text-sm">
-                  {user.email as string}
-                </div>
+                <p className="text-sm text-gray-500">{user.correo as string}</p>
               </div>
               {sentIds.includes(user.id as string) ? (
                 <Button
@@ -745,7 +749,7 @@ function SolicitudesRecibidas() {
         </div>
       )}
       {solicitudes.map((sol) => (
-        <li key={sol.id as string} className="flex items-center gap-4 py-4">
+        <li key={sol.id as string} className="flex items-center gap-4 p-4 border-1 rounded-lg">
           <img
             src={(sol.foto as string) || "/file.svg"}
             alt={sol.nombre as string}
@@ -767,7 +771,6 @@ function SolicitudesRecibidas() {
               <Button
                 onClick={() => handleAccion(sol.id as string, "aceptar")}
                 disabled={loading && accionandoId === sol.id}
-                className="bg-green-600 text-white hover:bg-green-700"
               >
                 {loading && accionandoId === sol.id ? (
                   <Loader2 className="animate-spin mr-2" />
