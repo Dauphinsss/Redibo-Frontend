@@ -49,14 +49,14 @@ export default function FormularioSolicitud({
   const [datosAuto, setDatosAuto] = useState<{ modelo: string; marca: string; precio_por_dia: number; host: { id: number } } | null>(null);
   const [showNotification, setShowNotification] = useState(false);
 
-  const conductoresDisponibles = [
-    { id: "1", nombre: "Juan Pérez" },
-    { id: "2", nombre: "Ana López" },
-    { id: "3", nombre: "Carlos García" },
-    { id: "4", nombre: "María Fernández" },
-    { id: "5", nombre: "Luis Martínez" }
+  const conductoresMock = [
+    { id: 1, nombre: "Juan Pérez" },
+    { id: 2, nombre: "Ana López" },
+    { id: 3, nombre: "Carlos García" },
+    { id: 4, nombre: "María Fernández" },
+    { id: 5, nombre: "Luis Martínez" }
   ]
-  const [conductoresSeleccionados, setConductoresSeleccionados] = useState<string[]>([]);
+  const [conductoresSeleccionados, setConductoresSeleccionados] = useState<number[]>([]);
 
   // Cargar todos los datos necesarios
   useEffect(() => {
@@ -260,12 +260,11 @@ export default function FormularioSolicitud({
         id_carro={id_carro}
       />
 
-      {/* 4.1. Seleccionar Conductor - 7-bits*/}
+       {/* 4.1. Seleccionar Conductor - 7-bits */}
       <SeleccionarConductores
-        conductores={conductoresDisponibles}
+        conductores={conductoresMock}
         seleccionados={conductoresSeleccionados}
-        setSeleccionados={setConductoresSeleccionados}
-        label="Selecciona uno o más conductores"
+        onChange={setConductoresSeleccionados}
       />
       
       {/* 5. Formulario de contacto */}
