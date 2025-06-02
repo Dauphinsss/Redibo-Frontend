@@ -148,7 +148,6 @@ export default function Home({ id }: HomeProps) {
               >
                 vista pago
               </button>
-              <div>{id}</div>
               <Reserva id={id} precio={auto.precio} />
             </div>
           </div>
