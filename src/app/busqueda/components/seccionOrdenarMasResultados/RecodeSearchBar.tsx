@@ -181,7 +181,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         aria-label="Campo de búsqueda de autos por modelo, marca"
         value={busqueda}
         //Tamañp máximo de caracteres
-        maxLength={100}
+        maxLength={50}
         onChange={(e) => {
 
           const valor = e.target.value;
@@ -189,17 +189,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
           const contieneURL = /https?:\/\/|www\./i.test(valor);
           if (contieneURL) {
             setError("No se permiten enlaces o direcciones web.");
-            return;
+          } else if (valor.length >= 50) {
+            setError("Has alcanzado el límite máximo de 50 caracteres.");
+          } else if (error) {
+            setError(""); // limpia si había error anterior
           }
-          //NUEVO: Validar longitud
-          if (valor.length >= 100) {
-            setError("Has alcanzado el límite máximo de 100 caracteres.");
-            return;
-          }
-          if (error && valor.length <= 100) {
-            setError(""); // Limpia error cuando vuelve a ser válido
-          }
-
           setBusqueda(e.target.value);
 
           if (e.target.value.trim() === "") {
@@ -274,6 +268,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
           onClick={() => {
             setBusqueda("");
             setSugerencia("");
+            setError("");
             sessionStorage.removeItem("ultimaBusqueda");
             if (onClearBusqueda) onClearBusqueda(); // <-- NUEVO
           }}
