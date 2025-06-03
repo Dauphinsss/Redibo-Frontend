@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { CalendarIcon, Search } from "lucide-react";
+import { CalendarIcon, Search, RotateCcw } from "lucide-react";
 import { format, addDays, isBefore, parse, isValid, isToday, isAfter } from "date-fns";
 import { es } from "date-fns/locale";
 import { useForm } from "react-hook-form";
@@ -205,6 +205,44 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
     }
   }, [endDate]);
 
+  // Función para manejar el evento de tecla Enter
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      // Disparar el submit del formulario
+      onSubmitWithValidation();
+    }
+  };
+
+  // Función para restablecer todos los filtros
+  const handleResetFilters = () => {
+    // Resetear el formulario
+    form.reset({
+      location: "",
+      ciudadId: "",
+      startDate: undefined,
+      endDate: undefined,
+    });
+
+    // Resetear estados locales
+    setSelectedCiudad(null);
+    setNombreCiudad("");
+    setStartDateInput("");
+    setEndDateInput("");
+    setStartDateError("");
+    setEndDateError("");
+    setBuscando(false);
+
+    // Llamar callback si está definido
+    if (onResetFilters) {
+      onResetFilters();
+    }
+
+    toast.success("Filtros restablecidos", {
+      description: "Todos los filtros han sido limpiados",
+    });
+  };
+
   // Manejador para cuando cambia la ciudad seleccionada
   const handleCiudadChange = (value: string) => {
     setSelectedCiudad(value);
@@ -238,7 +276,7 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
           }
         }
       } else {
-        setStartDateError("Fecha inválida o anterior a hoy");
+        setStartDateError("Fecha inválida");
         form.setValue("startDate", undefined as any);
       }
     } else if (formatted.length < 10) {
@@ -276,7 +314,7 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
         
         form.setValue("endDate", parsedDate);
       } else {
-        setEndDateError("Fecha inválida o anterior a hoy");
+        setEndDateError("Fecha inválida");
       }
     } else if (formatted.length < 10) {
       form.setValue("endDate", undefined as any);
@@ -349,6 +387,7 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
         <form
           onSubmit={onSubmitWithValidation}
           className="mt-8 w-full max-w-100xl bg-white p-6 rounded-lg shadow-md space-y-6"
+          onKeyDown={handleKeyDown} // Agregar el manejador de teclas al formulario
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* ComboBox para ciudad */}
@@ -367,7 +406,10 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
                       }}
                     >
                       <FormControl>
-                        <SelectTrigger className={`${!field.value ? 'text-muted-foreground' : ''} h-10 flex-1`}>
+                        <SelectTrigger 
+                          className={`${!field.value ? 'text-muted-foreground' : ''} h-10 flex-1`}
+                          onKeyDown={handleKeyDown} // Agregar manejador de teclas
+                        >
                           <SelectValue placeholder="Seleccione una ciudad" />
                         </SelectTrigger>
                       </FormControl>
@@ -415,6 +457,7 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
                         placeholder="dd/mm/aaaa"
                         value={startDateInput}
                         onChange={(e) => handleStartDateInputChange(e.target.value)}
+                        onKeyDown={handleKeyDown} // Agregar manejador de teclas
                         className="pr-10"
                         maxLength={10}
                       />
@@ -429,6 +472,7 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
                               setTempStartDate(field.value || new Date());
                               setIsStartDateOpen(true);
                             }}
+                            onKeyDown={handleKeyDown} // Agregar manejador de teclas
                           >
                             <CalendarIcon className="h-4 w-4 opacity-50" />
                           </Button>
@@ -473,7 +517,7 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
               }}
             />
 
-            {/* Campo de fecha de fin con entrada manual y botón de búsqueda */}
+            {/* Campo de fecha de fin con entrada manual y botones de búsqueda y reset */}
             <div className="flex flex-col h-24">
               <FormField
                 control={form.control}
@@ -501,6 +545,7 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
                             placeholder="dd/mm/aaaa"
                             value={endDateInput}
                             onChange={(e) => handleEndDateInputChange(e.target.value)}
+                            onKeyDown={handleKeyDown} // Agregar manejador de teclas
                             className="pr-10"
                             maxLength={10}
                             disabled={!startDate}
@@ -519,6 +564,7 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
                                     setIsEndDateOpen(true);
                                   }
                                 }}
+                                onKeyDown={handleKeyDown} // Agregar manejador de teclas
                               >
                                 <CalendarIcon className="h-4 w-4 opacity-50" />
                               </Button>
@@ -558,6 +604,26 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
                             </PopoverContent>
                           </Popover>
                         </div>
+
+                        {/* Botón de restablecer filtros */}
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                className="h-10 w-10 p-0 rounded-full flex-shrink-0"
+                                variant="outline"
+                                onClick={handleResetFilters}
+                                disabled={buscando}
+                              >
+                                <RotateCcw className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Restablecer filtros</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
 
                         {/* Botón de búsqueda redondo con tooltip */}
                         <TooltipProvider>
