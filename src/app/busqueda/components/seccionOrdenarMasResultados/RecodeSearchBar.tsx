@@ -158,6 +158,14 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
     onFiltrar(item);
     setMostrarHistorial(false);
     inputRef.current?.blur();
+
+    setHistorial(prev => {
+      const nuevo = item.trim();
+      const sinDuplicados = prev.filter(hist => hist.toLowerCase() !== nuevo.toLowerCase());
+      const nuevoHistorial = [nuevo, ...sinDuplicados].slice(0, 10);
+      guardarHistorialEnBackend(nuevoHistorial);
+      return nuevoHistorial;
+    });
   }
 
   { /* Manejar eliminación historia */ }
