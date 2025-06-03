@@ -106,3 +106,54 @@ export const getDetalleHost_Recode = async (id_host: number) => {
         return null;
     }
 }; 
+
+
+//enpoint de la hu 14 15  y 19
+
+export const getCalificacionesHost = async (id_host: number) => {
+  try {
+    const response = await apiCarById.get(`/userhost/comentarioGet/${id_host}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener calificaciones del host:", error);
+    return null;
+  }
+};
+
+export const getComentariosHost = async (id_host: number) => {
+  try {
+    const response = await apiCarById.get(`/userhost/calificacionesGet/${id_host}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener comentarios del host:", error);
+    return null;
+  }
+};
+
+export const postComentarioHost = async (id_host: number, id_renter: number, comentario: string) => {
+  try {
+    const response = await apiCarById.post("/userhost/comentarioHostPost", {
+      id_host,
+      id_renter,
+      comentario,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al comentar al host:", error);
+    return null;
+  }
+};
+
+export const postCalificacionHost = async (id_host: number, id_renter: number, calificacion: number) => {
+  try {
+    const response = await apiCarById.post("/userhost/calificacionesPost", {
+      id_host,
+      id_renter,
+      calificacion,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al calificar al host:", error);
+    return null;
+  }
+};
