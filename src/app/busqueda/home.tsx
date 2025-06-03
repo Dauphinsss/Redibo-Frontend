@@ -173,7 +173,7 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
         <div className="border-b">
           <Header />
         </div>
-        <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center items-center gap-4">
+        <div className="border-t px-4 sm:px-6 lg:px-8 py-3 flex justify-center items-center gap-16">
           {/* Botón de filtros alineado en el header */}
           <button
             onClick={() => setMostrarSidebar(true)}

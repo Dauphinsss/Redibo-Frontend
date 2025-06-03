@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
 //Importacion para el basurerito
 import { TrashIcon } from "@heroicons/react/24/solid";
+import { API_URL } from "@/utils/bakend";
 
 interface SearchBarProps {
   placeholder: string;
@@ -68,7 +69,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
     return () => clearTimeout(timer);
   }, [busqueda, obtenerSugerencia]);
 
-  // useEffect para guardar el historial en LocalStorage
+  {/* Guardar historial en localStorage y Backend */}
   useEffect(() => {
     if (historial.length > 0) {
       localStorage.setItem("historialBusqueda", JSON.stringify(historial));
@@ -77,7 +78,27 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
 
   useEffect(() => {
     const guardado = localStorage.getItem("historialBusqueda");
-    if (guardado) setHistorial(JSON.parse(guardado));
+    if (guardado) {
+      setHistorial(JSON.parse(guardado));
+    } else {
+      const token = localStorage.getItem("auth_token");
+      if(!token) return;
+      fetch(`${API_URL}/api/obtener-busquedas`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.busquedas) {
+            setHistorial(data.busquedas);
+            localStorage.setItem("historialBusqueda", JSON.stringify(data.busquedas));
+          }
+        })
+        .catch(error => console.error("Error al obtener el historial:", error));
+    }
 
     const guardada = sessionStorage.getItem("ultimaBusqueda");
     if (guardada) {
@@ -86,11 +107,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
     }
   }, [onFiltrar]);
 
-  //Agregado para el historial
+  { /* Focus para el historial */ }
   const handleFocus = () => {
     setMostrarHistorial(true);
   };
-  //Agregado para el historial
+
+  { /* Blur para el historial */}
   const handleBlur = () => {
     if (busqueda.trim()) {
       agregarAHistorial(busqueda);
@@ -99,41 +121,65 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
       setMostrarHistorial(false);
     }, 150);
   };
-  //Agregado para el historial
-  const handleDeleteHistorial = (item: string) => {
-    setHistorial((prev) => {
-      const nuevoHistorial = prev.filter((i) => i !== item);
-      if (nuevoHistorial.length === 0) {
-        localStorage.removeItem("historialBusqueda");
-      }
+
+  { /* Agregar al historial */ }
+  const guardarHistorialEnBackend = (nuevoHistorial: string[]) => {
+    localStorage.setItem("historialBusqueda", JSON.stringify(nuevoHistorial));
+    const token = localStorage.getItem("auth_token");
+    if (!token) return;
+
+    fetch(`${API_URL}/api/guardar-busquedas`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ busquedas: nuevoHistorial }),
+    });
+  };
+
+  { /* Agregar al historial y limpiar el input */ }
+  const agregarAHistorial = (valor: string) => {
+    if (!valor.trim()) return;
+    setHistorial(prev => {
+      const nuevo = valor.trim();
+      const sinDuplicados = prev.filter(item => item.toLowerCase() !== nuevo.toLowerCase());
+      const nuevoHistorial = [nuevo, ...sinDuplicados].slice(0, 10); // Limitar a 10 entradas
+      guardarHistorialEnBackend(nuevoHistorial);
       return nuevoHistorial;
     });
   };
 
-  //Agregado para el historial
+  { /* Manejar selección del historial */ }
   const handleSelectHistorial = (item: string) => {
     setBusqueda(item);
+    setSugerencia("");
+    sessionStorage.setItem("ultimaBusqueda", item);
     onFiltrar(item);
     setMostrarHistorial(false);
+    inputRef.current?.blur();
 
-    // Reordenar para que suba como más reciente
-    setHistorial((prev) => {
-      const sinDuplicados = prev.filter((i) => i !== item);
-      return [item, ...sinDuplicados].slice(0, 8);
-    })
-  };
-  //Agregado para el historial
-  const agregarAHistorial = (valor: string) => {
-    if (!valor.trim()) return;
-    setHistorial((prev) => {
-      const nuevo = valor.trim();
-      const sinDuplicados = prev.filter((item) => item !== nuevo);
-      return [nuevo, ...sinDuplicados].slice(0, 8); // máximo 10 entradas
+    setHistorial(prev => {
+      const nuevo = item.trim();
+      const sinDuplicados = prev.filter(hist => hist.toLowerCase() !== nuevo.toLowerCase());
+      const nuevoHistorial = [nuevo, ...sinDuplicados].slice(0, 10);
+      guardarHistorialEnBackend(nuevoHistorial);
+      return nuevoHistorial;
+    });
+  }
+
+  { /* Manejar eliminación historia */ }
+  const handleDeleteHistorial = (item: string) => {
+    setHistorial(prev => {
+      const nuevoHistorial = prev.filter(hist => hist.toLowerCase() !== item.toLowerCase());
+      if (nuevoHistorial.length === 0) localStorage.removeItem("historialBusqueda");
+      guardarHistorialEnBackend(nuevoHistorial);
+      return nuevoHistorial;
     });
   };
+ 
 
   return (
-
     //Añadir flex items-center para modificar el contenedor
     //<div className="relative w-full max-w-md">
     <div className="relative w-full max-w-md z-10">
@@ -143,7 +189,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         aria-label="Campo de búsqueda de autos por modelo, marca"
         value={busqueda}
         //Tamañp máximo de caracteres
-        maxLength={100}
+        maxLength={50}
         onChange={(e) => {
 
           const valor = e.target.value;
@@ -151,17 +197,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
           const contieneURL = /https?:\/\/|www\./i.test(valor);
           if (contieneURL) {
             setError("No se permiten enlaces o direcciones web.");
-            return;
+          } else if (valor.length >= 50) {
+            setError("Has alcanzado el límite máximo de 50 caracteres.");
+          } else if (error) {
+            setError(""); // limpia si había error anterior
           }
-          //NUEVO: Validar longitud
-          if (valor.length >= 100) {
-            setError("Has alcanzado el límite máximo de 100 caracteres.");
-            return;
-          }
-          if (error && valor.length <= 100) {
-            setError(""); // Limpia error cuando vuelve a ser válido
-          }
-
           setBusqueda(e.target.value);
 
           if (e.target.value.trim() === "") {
@@ -236,6 +276,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
           onClick={() => {
             setBusqueda("");
             setSugerencia("");
+            setError("");
             sessionStorage.removeItem("ultimaBusqueda");
             if (onClearBusqueda) onClearBusqueda(); // <-- NUEVO
           }}
