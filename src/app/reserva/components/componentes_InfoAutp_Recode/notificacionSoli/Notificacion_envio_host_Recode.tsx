@@ -16,12 +16,13 @@ import { SolicitudRecodePost } from "@/app/reserva/interface/EnviarGuardarNotif_
 import { transformAutoDetails_Recode } from "@/app/reserva/utils/transformAutoDetails_Recode";
 
 import { useObtenerNotif } from "@/app/reserva/hooks/useObtenerNotif_Recode";
+import { Notificacion } from "@/app/reserva/interface/NotificacionSolicitud_Recode"; 
 
 
 interface Props {
   id_carro: number;
   onSolicitudExitosa: () => void;
-  onNuevaNotificacion?: (notificacion: any) => void;
+  onNuevaNotificacion?: (notificacion: Notificacion | null) => void;
 }
 
 export default function FormularioSolicitud({
@@ -41,7 +42,7 @@ export default function FormularioSolicitud({
   const [hostEmail, setHostEmail] = useState("");
 
   const { enviarSolicitud, cargando, error } = useEnviarSolicitudRecode();
-  const { notificaciones, fetchNotif } = useObtenerNotif();
+  const { fetchNotif } = useObtenerNotif();
 
   // Carga los datos del auto
   useEffect(() => {
@@ -142,7 +143,7 @@ export default function FormularioSolicitud({
 
       if (onNuevaNotificacion && nuevasNotif.length > 0) {
         onNuevaNotificacion({
-          id: nuevasNotif[0].id,
+          id: ""+nuevasNotif[0].id,
           tipo: "host",
           mensaje: "Nueva solicitud de alquiler",
           fecha: nuevasNotif[0].fecha,

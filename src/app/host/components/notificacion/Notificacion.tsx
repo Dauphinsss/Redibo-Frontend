@@ -11,8 +11,8 @@ interface Props {
   onRechazar?: () => void;
 }
 
-export const Notificacion_Recode: React.FC<Props> =({fotoPerfil, mensaje,fotoCar,
-  notificacion,onAceptar,onRechazar}: Props) =>{
+export const Notificacion_Recode: React.FC<Props> =({fotoPerfil,fotoCar,
+  notificacion}: Props) =>{
   const esImagenValida = fotoCar && (fotoCar.startsWith("http") || fotoCar.startsWith("/"));
   const {
     nombreUsuario = 'Usuario',
@@ -20,8 +20,6 @@ export const Notificacion_Recode: React.FC<Props> =({fotoPerfil, mensaje,fotoCar
     modeloVehiculo = '',
     fechaInicio = '',
     fechaFin = '',
-    lugarRecogida = 'Ubicación no especificada',
-    lugarDevolucion = 'Ubicación no especificada'
   } = notificacion.datos;
 
 

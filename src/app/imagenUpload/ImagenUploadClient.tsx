@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import SubirImagenCloudinary from '@/app/validarSeguro/components/cobertura/ImagenUpload';
+import SubirImagenCloudinary from '@/app/ValidarSeguro/components/cobertura/ImagenUpload';
 import { postCoberturaEnlace } from '@/service/services_Recode';
 import { EnlaceInterface } from '@/app/validarSeguro/interface/CoberturaForm_Interface_Recode';
 

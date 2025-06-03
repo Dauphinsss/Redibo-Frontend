@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+
 import { NotificacionHost } from "./notificacionSolicitud";
 import { NotificacionRenter } from "./notificacionRenter";
 import { Notificacion } from "@/app/reserva/interface/NotificacionSolicitud_Recode";
@@ -11,9 +11,7 @@ interface NotificacionesCampanaProps {
 }
 
 export const NotificacionesCampana: React.FC<NotificacionesCampanaProps> = ({
-  notificaciones,
-  onAceptar,
-  onRechazar
+  notificaciones
 }) => {
   
   return (
@@ -45,8 +43,7 @@ export const NotificacionesCampana: React.FC<NotificacionesCampanaProps> = ({
                 <NotificacionHost
                   key={notif.id}
                   notificacion={notif}
-                  onAceptar={() => onAceptar?.(notif.id)}
-                  onRechazar={() => onRechazar?.(notif.id)}
+
                 />
               ))}
           </div>
