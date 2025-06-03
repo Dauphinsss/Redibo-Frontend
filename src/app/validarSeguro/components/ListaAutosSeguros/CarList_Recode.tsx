@@ -2,8 +2,8 @@
 
 import { memo, useState } from "react";
 import { CarCardProps } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
-import ListaAseguradoras_Recode from "../Seguros/ListaAseguradoras_Recode";
-import Modal_Recode from "../Seguros/Modal_Recode";
+import ListaAseguradoras_Recode from "../seguros/ListaAseguradoras_Recode";
+import Modal_Recode from "../seguros/Modal_Recode";
 import CarCard_Recode from "./cardAutoSeguro/CarCard_Recode";
 
 interface Props {
