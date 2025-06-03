@@ -25,109 +25,78 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import type { LucideProps } from "lucide-react";
 import Loading from "@/components/loading";
 import { Footer } from "@/components/ui/footer";
 import { MdEmail } from "react-icons/md";
 
-// --- NUEVO: Utilidad para obtener roles del usuario actual ---
-function getUserRoles() {
-  const rolesStr = localStorage.getItem("roles") || "";
-  if (rolesStr.includes("[")) {
-    try {
-      return JSON.parse(rolesStr);
-    } catch (error) {
-      console.error("Error parsing roles from localStorage:", error);
-      return rolesStr.split(",").map((r) => r.trim());
-    }
-  }
-  return rolesStr.split(",").map((r) => r.trim());
-}
 
 // --- MODIFICAR SociosPage para mostrar tabs dinámicos según roles ---
 export default function SociosPage() {
-  // Obtén los roles directamente de localStorage para el primer render
-  function getInitialRoles() {
-    const rolesStr = localStorage.getItem("roles") || "";
-    if (rolesStr.includes("[")) {
-      try {
-        return JSON.parse(rolesStr);
-      } catch {
-        return rolesStr.split(",").map((r) => r.trim());
-      }
-    }
-    return rolesStr.split(",").map((r) => r.trim());
-  }
-
   type SidebarItem = {
     id: string;
     label: string;
     icon: React.ElementType;
   };
 
-  // Calcula los roles y sidebarItems para el primer render
-  const initialRoles = getInitialRoles();
-  const initialSidebarItems = [
-    initialRoles.includes("RENTER") && {
-      id: "solicitar-driver",
-      label: "Solicitar asociación a Conductor",
-      icon: UserPlus,
-    },
-    initialRoles.includes("DRIVER") && {
-      id: "solicitar-renter",
-      label: "Solicitar asociación a Arrendatario",
-      icon: UserPlus,
-    },
-    {
-      id: "recibidas",
-      label: "Solicitudes Recibidas",
-      icon: Inbox,
-    },
-  ].filter(Boolean) as SidebarItem[];
-
-  // El tab inicial es el primero disponible
-  const [activeTab, setActiveTab] = useState<string>(initialSidebarItems[0].id);
-
-  // El resto de estados igual
-  const [userRoles, setUserRoles] = useState<string[]>(initialRoles);
-  const [isLogged, setIsLogged] = useState(!!localStorage.getItem("nombre"));
-  const [loadingAuth, setLoadingAuth] = useState(false);
+  const [userRoles, setUserRoles] = useState<string[]>([]);
+  const [isLogged, setIsLogged] = useState(false);
+  const [loadingAuth, setLoadingAuth] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarItems, setSidebarItems] = useState<SidebarItem[]>([]);
+  const [activeTab, setActiveTab] = useState<string | null>(null);
 
-  // Cuando los roles cambian, sincroniza el tab activo si ya no es válido
-  useEffect(() => {
-    const sidebarItems = [
-      userRoles.includes("RENTER") && {
-        id: "solicitar-driver",
-        label: "Solicitar asociación a Conductor",
-        icon: UserPlus,
-      },
-      userRoles.includes("DRIVER") && {
-        id: "solicitar-renter",
-        label: "Solicitar asociación a Arrendatario",
-        icon: UserPlus,
-      },
-      {
-        id: "recibidas",
-        label: "Solicitudes Recibidas",
-        icon: Inbox,
-      },
-    ].filter(Boolean) as SidebarItem[];
-    if (!sidebarItems.some((item) => item.id === activeTab)) {
-      setActiveTab(sidebarItems[0].id);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userRoles.join(",")]);
-
+  // Carga los datos del usuario y calcula el tab inicial SOLO en el cliente
   useEffect(() => {
     setLoadingAuth(true);
     setTimeout(() => {
-      const nombre = localStorage.getItem("nombre");
-      setIsLogged(!!nombre);
-      setUserRoles(getUserRoles());
+      const rolesStr = localStorage.getItem("roles") || "";
+      let roles: string[] = [];
+      if (rolesStr.includes("[")) {
+        try {
+          roles = JSON.parse(rolesStr);
+        } catch {
+          roles = rolesStr.split(",").map((r) => r.trim());
+        }
+      } else {
+        roles = rolesStr.split(",").map((r) => r.trim());
+      }
+      setUserRoles(roles);
+
+      const items: SidebarItem[] = [];
+      if (roles.includes("RENTER")) {
+        items.push({
+          id: "solicitar-driver",
+          label: "Asociación a Conductor",
+          icon: UserPlus,
+        });
+      }
+      if (roles.includes("DRIVER")) {
+        items.push({
+          id: "solicitar-renter",
+          label: "Asociación a Arrendatario",
+          icon: UserPlus,
+        });
+      }
+      items.push({
+        id: "recibidas",
+        label: "Solicitudes Recibidas",
+        icon: Inbox,
+      });
+      setSidebarItems(items);
+
+      setIsLogged(!!localStorage.getItem("nombre"));
+      setActiveTab(items[0]?.id || "recibidas");
       setLoadingAuth(false);
     }, 0);
   }, []);
+
+  // Si los roles cambian y el tab activo ya no es válido, actualízalo
+  useEffect(() => {
+    if (sidebarItems.length > 0 && activeTab && !sidebarItems.some(item => item.id === activeTab)) {
+      setActiveTab(sidebarItems[0].id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userRoles.join(","), sidebarItems.length]);
 
   if (loadingAuth || activeTab === null) {
     return (
@@ -208,7 +177,7 @@ export default function SociosPage() {
             </div>
             <SidebarContent className="p-2 bg-white h-full flex flex-col">
               <SidebarMenu className="bg-white flex-1">
-                {initialSidebarItems.map((item) => (
+                {sidebarItems.map((item) => (
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton
                       onClick={() => {
