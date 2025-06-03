@@ -73,7 +73,17 @@ export default function TablaRecode() {
               <tr key={i} className="border-t hover:bg-gray-50">
                 <td className="py-2 px-4">{c.tipodaño}</td>
                 <td className="py-2 px-4">{c.descripcion || "—"}</td>
-                <td className="py-2 px-4">{c.valides}</td>
+                <td className="py-2 px-4">
+                  {(() => {
+                    const val = c.valides ?? "";
+                    const match = val.match(/^(\d+)([BP])$/);
+                    if (!match) return val; // muestra el valor tal cual si no es válido
+
+                    const numero = match[1];
+                    const sufijo = match[2] === "P" ? "%" : "BOB";
+                    return `${numero} ${sufijo}`;
+                  })()}
+                </td>
                 <td className="py-2 px-4 flex gap-2">
                   <button
                     onClick={() => abrirPopup(i)}
