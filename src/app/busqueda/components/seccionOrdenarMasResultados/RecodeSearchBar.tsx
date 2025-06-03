@@ -78,7 +78,27 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
 
   useEffect(() => {
     const guardado = localStorage.getItem("historialBusqueda");
-    if (guardado) setHistorial(JSON.parse(guardado));
+    if (guardado) {
+      setHistorial(JSON.parse(guardado));
+    } else {
+      const token = localStorage.getItem("auth_token");
+      if(!token) return;
+      fetch(`${API_URL}/api/obtener-busquedas`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.busquedas) {
+            setHistorial(data.busquedas);
+            localStorage.setItem("historialBusqueda", JSON.stringify(data.busquedas));
+          }
+        })
+        .catch(error => console.error("Error al obtener el historial:", error));
+    }
 
     const guardada = sessionStorage.getItem("ultimaBusqueda");
     if (guardada) {
