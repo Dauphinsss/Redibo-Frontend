@@ -40,7 +40,7 @@ function RecodeCarCard(props: Auto) {
     combustibles[0]
   );
   const { promedioCalificacion } = useCalificaciones(idAuto);
-  const { isExpanded, toggleExpand } = useExpandingCard();
+  const { isExpanded } = useExpandingCard();
   const { presentes } = useCaracAdicionales(caracteristicasAdicionales);
   return (
     <div
