@@ -230,6 +230,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
           onClick={() => {
             setBusqueda("");
             setSugerencia("");
+            setError("");
             sessionStorage.removeItem("ultimaBusqueda");
             if (onClearBusqueda) onClearBusqueda(); // <-- NUEVO
           }}
