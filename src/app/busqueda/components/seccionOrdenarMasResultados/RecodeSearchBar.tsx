@@ -143,7 +143,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         aria-label="Campo de búsqueda de autos por modelo, marca"
         value={busqueda}
         //Tamañp máximo de caracteres
-        maxLength={100}
+        maxLength={50}
         onChange={(e) => {
 
           const valor = e.target.value;
