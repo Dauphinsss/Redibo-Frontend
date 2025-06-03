@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle } from "lucide-react";
 import React, { useState } from "react";
 import { SuccessModal } from "./SuccessNotification";
-import axiosInstance from "@/api/axios";
+import { axiosInstance } from "@/api/axios";
 import axios from "axios";
 import ErrorModal from "./ErrorModal";
 

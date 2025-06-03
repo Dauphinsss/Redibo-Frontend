@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "../../../api/axios";
+import { axiosInstance }from "../../../api/axios";
 import { Aeropuerto } from "@/app/home/types/apitypes";
 
 export function useAirports() {
