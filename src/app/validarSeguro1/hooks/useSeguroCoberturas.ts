@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { z } from "zod";
 import { getInsuranceByID } from "@/service/services_Recode";
-import { SeguroConCoberturas_Interface_Recode } from "@/app/validarSeguro/interface/SeguroConCoberturas_Interface_Recode";
+import { SeguroConCoberturas_Interface_Recode } from "@/app/validarSeguro1/interface/SeguroConCoberturas_Interface_Recode";
 import { useCoberturasStore } from "./useCoberturasStore";
 
 const SeguroSchema: z.ZodType<SeguroConCoberturas_Interface_Recode> = z.object({

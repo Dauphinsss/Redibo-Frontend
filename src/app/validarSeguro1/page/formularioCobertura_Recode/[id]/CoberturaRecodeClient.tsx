@@ -6,7 +6,7 @@ import Header from "@/components/ui/Header";
 import BotonValidacion from "@/app/validarSeguro/components/cobertura/BotonValidacion";
 import PopUpCobertura from "@/app/validarSeguro/components/cobertura/PopUpCobertura";
 import TablaRecode from "@/app/validarSeguro/components/cobertura/TablaRecode";
-import { useSeguroCoberturas } from "@/app/validarSeguro/hooks/useSeguroCoberturas";
+import { useSeguroCoberturas } from "@/app/validarSeguro1/hooks/useSeguroCoberturas";
 import FormularioRecode from "@/app/validarSeguro/components/cobertura/FormularioRecode";
 
 interface Props {

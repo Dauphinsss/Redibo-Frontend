@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { CarImageProps } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
+import { CarImageProps } from "@/app/validarSeguro1/interface/ListaAutoSeguro_Interface_Recode";
 
 function CarImage_Recode({
   src,

@@ -1,6 +1,6 @@
 import { apiRecodeGeneral } from "@/api/apis_Recode";
-import { CarCardProps, CarApiResponse, Aseguradora, AseguradoraCardPropsRaw_Recode } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
-import { transformarCarrosListSeguros, transformarSeguroListAseguradoras } from "@/app/validarSeguro/utils/transforSeguro_Recode";
+import { CarCardProps, CarApiResponse, Aseguradora, AseguradoraCardPropsRaw_Recode } from "@/app/validarSeguro1/interface/ListaAutoSeguro_Interface_Recode";
+import { transformarCarrosListSeguros, transformarSeguroListAseguradoras } from "@/app/validarSeguro1/utils/transforSeguro_Recode";
 
 export async function getCarsSeguro(): Promise<CarCardProps[]> {
     try {
