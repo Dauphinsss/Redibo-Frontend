@@ -1,8 +1,9 @@
-import { apiRecodeGeneral } from "@/api/apis_Recode";
+import { apiCobertura, apiRecodeGeneral } from "@/api/apis_Recode";
 import { CarCardProps, CarApiResponse, Aseguradora, AseguradoraCardPropsRaw_Recode } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 import { transformarCarrosListSeguros, transformarSeguroListAseguradoras, transformSeguroTodo_Recode } from "@/app/validarSeguro/utils/transforSeguro_Recode";
-import { SeguroConCoberturas_Interface_Recode } from "../interface/SeguroConCoberturas_Interface_Recode";
+import { PostCoberturaPayload, PutCoberturaPayload, SeguroConCoberturas_Interface_Recode } from "../interface/SeguroConCoberturas_Interface_Recode";
 import { SeguroRaw_Recode } from "../interface/SeguroRaw_Recode";
+import { AxiosError } from "axios";
 
 export async function getCarsSeguro(): Promise<CarCardProps[]> {
     try {
@@ -33,3 +34,57 @@ export async function getSeguroCompletoPorId(idAuto: number): Promise<SeguroConC
         return null;
     }
 }
+
+export const postCobertura = async (payload: PostCoberturaPayload): Promise<void> => {
+    try {
+        const response = await apiCobertura.post("/insertSeguro", payload);
+        console.log("Cobertura enviada:", response.data);
+    } catch (error) {
+        const axiosError = error as AxiosError;
+
+        console.error("Error al enviar cobertura:");
+        console.error("Mensaje:", axiosError.message);
+        console.error("Código:", axiosError.code);
+        console.error("Status:", axiosError.response?.status);
+        console.error("Data:", axiosError.response?.data);
+
+        throw new Error("No se pudo registrar la cobertura.");
+    }
+};
+
+export const putCobertura = async (
+    idCobertura: number,
+    payload: PutCoberturaPayload
+): Promise<void> => {
+    try {
+        const response = await apiCobertura.put(`/updateSeguro/${idCobertura}`, payload);
+        console.log("Cobertura actualizada:", response.data);
+    } catch (error) {
+        const axiosError = error as AxiosError;
+
+        console.error("Error al actualizar la cobertura:");
+        console.error("Mensaje:", axiosError.message);
+        console.error("Código:", axiosError.code);
+        console.error("Status:", axiosError.response?.status);
+        console.error("Data:", axiosError.response?.data);
+
+        throw new Error("No se pudo actualizar la cobertura.");
+    }
+};
+
+export const deleteCobertura = async (idCobertura: number): Promise<void> => {
+    try {
+        const response = await apiCobertura.delete(`/deleteSeguro/${idCobertura}`);
+        console.log("Cobertura eliminada:", response.data);
+    } catch (error) {
+        const axiosError = error as AxiosError;
+
+        console.error("Error al eliminar cobertura:");
+        console.error("Mensaje:", axiosError.message);
+        console.error("Código:", axiosError.code);
+        console.error("Status:", axiosError.response?.status);
+        console.error("Data:", axiosError.response?.data);
+
+        throw new Error("No se pudo eliminar la cobertura.");
+    }
+};
