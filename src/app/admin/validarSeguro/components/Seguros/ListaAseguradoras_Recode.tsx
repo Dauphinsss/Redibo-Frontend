@@ -1,8 +1,8 @@
 "use client";
 
 import { memo, useEffect, useState } from "react";
-import { Aseguradora } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
-import { getSegurosCards } from "@/app/validarSeguro/services/servicesSeguro";
+import { Aseguradora } from "@/app/admin/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
+import { getSegurosCards } from "@/app/admin/validarSeguro/services/servicesSeguro";
 import CardAseguradora_Recode from "./CardAseguradora_Recode";
 
 interface Props {

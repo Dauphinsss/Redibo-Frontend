@@ -3,10 +3,10 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/ui/Header";
-import PopUpCobertura from "@/app/validarSeguro/components/cobertura/PopUpCobertura";
-import TablaRecode from "@/app/validarSeguro/components/cobertura/TablaRecode";
-import { useSeguroCoberturas } from "@/app/validarSeguro/hooks/useSeguroCoberturas";
-import FormularioRecode from "@/app/validarSeguro/components/cobertura/FormularioRecode";
+import PopUpCobertura from "@/app/admin/validarSeguro/components/cobertura/PopUpCobertura";
+import TablaRecode from "@/app/admin/validarSeguro/components/cobertura/TablaRecode";
+import { useSeguroCoberturas } from "@/app/admin/validarSeguro/hooks/useSeguroCoberturas";
+import FormularioRecode from "@/app/admin/validarSeguro/components/cobertura/FormularioRecode";
 
 interface Props {
   id_seguro: number;

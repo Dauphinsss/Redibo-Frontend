@@ -1,10 +1,10 @@
 "use client";
 
 import { memo, useState } from "react";
-import { CarCardProps } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
-import ListaAseguradoras_Recode from "@/app/validarSeguro/components/seguros/ListaAseguradoras_Recode";
-import Modal_Recode from "@/app/validarSeguro/components/seguros/Modal_Recode";
+import { CarCardProps } from "@/app/admin/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 import CarCard_Recode from "./cardAutoSeguro/CarCard_Recode";
+import ListaAseguradoras_Recode from "@/app/admin/validarSeguro/components/Seguros/ListaAseguradoras_Recode";
+import Modal_Recode from "@/app/admin/validarSeguro/components/Seguros/Modal_Recode";
 
 interface Props {
   carCards: CarCardProps[];

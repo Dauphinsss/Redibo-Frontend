@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-import { useCoberturasStore } from "@/app/validarSeguro/hooks/useCoberturasStore";
-import { deleteCobertura } from "@/app/validarSeguro/services/servicesSeguro";
+import { useCoberturasStore } from "@/app/admin/validarSeguro/hooks/useCoberturasStore";
+import { deleteCobertura } from "@/app/admin/validarSeguro/services/servicesSeguro";
 import ModalEliminar from "./ModalEliminar";
 
 export default function TablaRecode() {

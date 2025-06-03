@@ -1,4 +1,4 @@
-import { CarDetailsProps } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
+import { CarDetailsProps } from "@/app/admin/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 import React, { memo } from "react";
 import { FaGasPump, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import { GiCarDoor } from "react-icons/gi";

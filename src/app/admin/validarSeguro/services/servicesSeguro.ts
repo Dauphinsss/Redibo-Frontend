@@ -1,10 +1,10 @@
 import {apiRecodeGeneral } from "@/api/apis_Recode";
-import { CarCardProps, CarApiResponse, Aseguradora, AseguradoraCardPropsRaw_Recode } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
-import { transformarCarrosListSeguros, transformarSeguroListAseguradoras, transformSeguroTodo_Recode } from "@/app/validarSeguro/utils/transforSeguro_Recode";
+import { CarCardProps, CarApiResponse, Aseguradora, AseguradoraCardPropsRaw_Recode } from "@/app/admin/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
+import { transformarCarrosListSeguros, transformarSeguroListAseguradoras, transformSeguroTodo_Recode } from "@/app/admin/validarSeguro/utils/transforSeguro_Recode";
 import {PutCoberturaPayload, SeguroConCoberturas_Interface_Recode } from "../interface/SeguroConCoberturas_Interface_Recode";
-import { SeguroRaw_Recode } from "@/app/validarSeguro/interface/SeguroRaw_Recode";
+import { SeguroRaw_Recode } from "@/app/admin/validarSeguro/interface/SeguroRaw_Recode";
 import { AxiosError } from "axios";
-import { CoberturaInterface } from "@/app/validarSeguro/interface/CoberturaForm_Interface_Recode";
+import { CoberturaInterface } from "@/app/admin/validarSeguro/interface/CoberturaForm_Interface_Recode";
 
 export async function getCarsSeguro(): Promise<CarCardProps[]> {
     try {

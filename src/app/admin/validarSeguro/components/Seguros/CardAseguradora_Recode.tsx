@@ -1,7 +1,7 @@
 "use client";
 import { memo } from "react";
 import Link from "next/link";
-import { Aseguradora } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
+import { Aseguradora } from "@/app/admin/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 
 function CardAseguradora_Recode({
   idAseguradora,
@@ -11,7 +11,7 @@ function CardAseguradora_Recode({
   fechaInicio,
   fechaFin,
 }: Aseguradora) {
-  const enlaceDestino = `/validarSeguro/pages/formularioCobertura_Recode/${idAseguradora}`;
+  const enlaceDestino = `/admin/validarSeguro/pages/formularioCobertura_Recode/${idAseguradora}`;
 
   return (
     <Link
