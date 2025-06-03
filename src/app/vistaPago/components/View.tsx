@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { useCardByID, useCreatePaymentOrder, useHostById, useRenter } from '../hooks/useCarByID'
+import { useCardByID, useCreatePaymentOrder, useHostById, useRenter, useGarantiaByCarId } from '../hooks/useCarByID'
 import Image from 'next/image'
 import Header from '@/components/ui/Header';
 
@@ -9,6 +9,7 @@ export default function View({ id }: { id: number }) {
   const { data: car } = useCardByID(id)
   const { data: host } = useHostById(id)
   const { data: renter } = useRenter()
+  const { data: garantia } = useGarantiaByCarId(id);
   const [clickCheck, setclickCheck] = useState(false)
   const handleSubmit = () => {
     mutate({
@@ -66,7 +67,7 @@ export default function View({ id }: { id: number }) {
             <div className="space-y-2">
               <div className="flex justify-between items-center border-b border-gray-400 pb-1">
                 <span className="font-semibold">Garantía</span>
-                <span className="font-semibold">000</span>
+                <span className="font-semibold">{garantia?.precio ?? "000"} bs</span>
               </div>
               <div className="flex justify-between items-center border-b border-gray-400 pb-1">
                 <span className="font-semibold">Total a pagar</span>

@@ -26,4 +26,10 @@ export const createPaymentOrder = async (data: PaymentOrderPayload) => {
   const response = await axiosInstance2.post(ordenDePago.index, data);
 
   return response.data;
-};
+}
+
+export const getGarantiaByCarId = async (id_carro: number) => {
+  const res = await axiosInstance2.get(`/garantias/carro/${id_carro}`);
+  return res.data.garantia; // garantia
+}
+;

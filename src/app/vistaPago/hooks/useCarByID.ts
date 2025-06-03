@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createPaymentOrder, getById, getHostById, getRenterById } from "../service/carInfo";
+import { createPaymentOrder, getById, getHostById, getRenterById, getGarantiaByCarId} from "../service/carInfo";
 import { Host, PaymentOrderPayload, Vehiculo } from "../types/car";
 export const useCardByID = (id: number) =>
     useQuery<Vehiculo>({
@@ -23,5 +23,12 @@ export const useRenter = ()=>{
 export const useCreatePaymentOrder = () => {
   return useMutation({
     mutationFn: (data: PaymentOrderPayload) => createPaymentOrder(data),
+  });
+};
+export const useGarantiaByCarId = (id_carro: number) => {
+  return useQuery({
+    queryKey: ['garantia', id_carro],
+    queryFn: () => getGarantiaByCarId(id_carro),
+    enabled: !!id_carro,
   });
 };
