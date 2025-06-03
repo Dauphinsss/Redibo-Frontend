@@ -17,7 +17,7 @@ export function useObtenerNotif() {
     const data: ObtenerNotif_Recode[] = await respuesta.json();
     setNotificaciones(data);
     return data; // <-- Agregado
-  } catch (err: any) {
+  } catch (err: null) {
     setError(err.message || "Error desconocido");
     return []; // <-- Agregado
   } finally {

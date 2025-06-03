@@ -41,7 +41,7 @@ export default function FormularioSolicitud({
   const [hostEmail, setHostEmail] = useState("");
 
   const { enviarSolicitud, cargando, error } = useEnviarSolicitudRecode();
-  const { notificaciones, fetchNotif } = useObtenerNotif();
+  const { fetchNotif } = useObtenerNotif();
 
   // Carga los datos del auto
   useEffect(() => {
