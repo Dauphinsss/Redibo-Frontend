@@ -59,7 +59,13 @@ export default function Home({ id }: HomeProps) {
       setLoaded(true);
     })();
   }, [id]);
-   const handleSubmit = () => {
+   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
     router.push(`/vistaPago/${id}`);
   }
 
