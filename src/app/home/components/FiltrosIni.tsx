@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { CalendarIcon, Search } from "lucide-react";
-import { format, addDays, isBefore } from "date-fns";
+import { format, addDays, isBefore, parse, isValid, isToday, isAfter } from "date-fns";
 import { es } from "date-fns/locale";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +10,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -92,13 +93,82 @@ const FormSchema = z.object({
   path: ["endDate"],
 });
 
-export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: FiltrosIniProps) {
+// Función para parsear fecha manual con formato dd/mm/aaaa
+const parseDateInput = (input: string): Date | null => {
+  // Limpiar el input
+  const cleanInput = input.replace(/[^\d\/]/g, '');
+  
+  // Verificar formato exacto dd/mm/aaaa
+  const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+  const match = cleanInput.match(dateRegex);
+  
+  if (!match) return null;
+  
+  const [, day, month, year] = match;
+  const dayNum = parseInt(day);
+  const monthNum = parseInt(month);
+  const yearNum = parseInt(year);
+  
+  // Validar rangos básicos
+  if (dayNum < 1 || dayNum > 31) return null;
+  if (monthNum < 1 || monthNum > 12) return null;
+  
+  try {
+    const parsedDate = new Date(yearNum, monthNum - 1, dayNum);
+    
+    // Validar que la fecha sea válida (por ejemplo, no 31/04)
+    if (
+      parsedDate.getFullYear() !== yearNum ||
+      parsedDate.getMonth() !== monthNum - 1 ||
+      parsedDate.getDate() !== dayNum
+    ) {
+      return null;
+    }
+    
+    // Validar que la fecha no sea anterior a hoy
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Resetear horas para comparar solo fechas
+    
+    if (isBefore(parsedDate, today)) {
+      return null;
+    }
+    
+    return parsedDate;
+  } catch {
+    return null;
+  }
+};
 
+// Función para formatear input mientras se escribe (dd/mm/aaaa)
+const formatDateInput = (input: string): string => {
+  // Remover caracteres no numéricos excepto /
+  let cleaned = input.replace(/[^\d]/g, '');
+  
+  // Limitar a 8 dígitos (ddmmyyyy)
+  cleaned = cleaned.substring(0, 8);
+  
+  // Agregar barras automáticamente
+  if (cleaned.length > 4) {
+    cleaned = cleaned.substring(0, 2) + '/' + cleaned.substring(2, 4) + '/' + cleaned.substring(4);
+  } else if (cleaned.length > 2) {
+    cleaned = cleaned.substring(0, 2) + '/' + cleaned.substring(2);
+  }
+  
+  return cleaned;
+};
+
+export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: FiltrosIniProps) {
   // Estados para el combobox de ciudades
   const [ciudades] = useState<Option[]>(CIUDADES_BOLIVIA);
   const [selectedCiudad, setSelectedCiudad] = useState<string | null>(null);
   const [nombreCiudad, setNombreCiudad] = useState<string>("");
   const [buscando, setBuscando] = useState<boolean>(false);
+
+  // Estados para entrada manual de fechas
+  const [startDateInput, setStartDateInput] = useState<string>("");
+  const [endDateInput, setEndDateInput] = useState<string>("");
+  const [startDateError, setStartDateError] = useState<string>("");
+  const [endDateError, setEndDateError] = useState<string>("");
 
   // Formulario para búsqueda por fecha y ubicación
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -122,6 +192,19 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
     }
   }, [startDate, endDate, form]);
 
+  // Sincronizar inputs manuales con fechas del formulario
+  React.useEffect(() => {
+    if (startDate) {
+      setStartDateInput(format(startDate, "dd/MM/yyyy"));
+    }
+  }, [startDate]);
+
+  React.useEffect(() => {
+    if (endDate) {
+      setEndDateInput(format(endDate, "dd/MM/yyyy"));
+    }
+  }, [endDate]);
+
   // Manejador para cuando cambia la ciudad seleccionada
   const handleCiudadChange = (value: string) => {
     setSelectedCiudad(value);
@@ -133,6 +216,70 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
       const nombreCiudad = ciudadSeleccionada.nombre;
       setNombreCiudad(nombreCiudad);
       form.setValue("location", nombreCiudad);
+    }
+  };
+
+  // Manejador para entrada manual de fecha de inicio
+  const handleStartDateInputChange = (value: string) => {
+    const formatted = formatDateInput(value);
+    setStartDateInput(formatted);
+    setStartDateError("");
+
+    if (formatted.length === 10) { // dd/mm/yyyy completo
+      const parsedDate = parseDateInput(formatted);
+      if (parsedDate) {
+        form.setValue("startDate", parsedDate);
+        // Limpiar fecha fin si es necesaria revalidación
+        if (endDate) {
+          const maxEndDate = addDays(parsedDate, 90);
+          if (!isBefore(endDate, maxEndDate) && endDate.getTime() !== maxEndDate.getTime()) {
+            form.setValue("endDate", undefined);
+            setEndDateInput("");
+          }
+        }
+      } else {
+        setStartDateError("Fecha inválida o anterior a hoy");
+        form.setValue("startDate", undefined as any);
+      }
+    } else if (formatted.length < 10) {
+      form.setValue("startDate", undefined as any);
+    }
+  };
+
+  // Manejador para entrada manual de fecha de fin
+  const handleEndDateInputChange = (value: string) => {
+    const formatted = formatDateInput(value);
+    setEndDateInput(formatted);
+    setEndDateError("");
+
+    if (formatted.length === 10) { // dd/mm/yyyy completo
+      const parsedDate = parseDateInput(formatted);
+      if (parsedDate) {
+        // Validar que haya fecha de inicio
+        if (!startDate) {
+          setEndDateError("Primero seleccione fecha de inicio");
+          return;
+        }
+
+        // Validar que no sea anterior a la fecha de inicio
+        if (isBefore(parsedDate, startDate)) {
+          setEndDateError("No puede ser anterior a la fecha de inicio");
+          return;
+        }
+        
+        // Validar que no sea mayor a 90 días después de la fecha de inicio
+        const maxEndDate = addDays(startDate, 90);
+        if (!isBefore(parsedDate, maxEndDate) && parsedDate.getTime() !== maxEndDate.getTime()) {
+          setEndDateError("No puede ser mayor a 90 días después de la fecha de inicio");
+          return;
+        }
+        
+        form.setValue("endDate", parsedDate);
+      } else {
+        setEndDateError("Fecha inválida o anterior a hoy");
+      }
+    } else if (formatted.length < 10) {
+      form.setValue("endDate", undefined as any);
     }
   };
 
@@ -166,9 +313,9 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
             <p>Ubicación: {data.location}</p>
             <p>País: Bolivia</p>
             <p>Ciudad: {nombreCiudad}</p>
-            <p>Desde: {format(data.startDate, "dd/MM/yy")}</p>
+            <p>Desde: {format(data.startDate, "dd/MM/yyyy")}</p>
             {data.endDate && (
-              <p>Hasta: {format(data.endDate, "dd/MM/yy")}</p>
+              <p>Hasta: {format(data.endDate, "dd/MM/yyyy")}</p>
             )}
             {!data.endDate && (
               <p>Hasta: No especificada</p>
@@ -179,8 +326,6 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
     });
 
     try {
-      localStorage.removeItem("mapCenter");
-      localStorage.removeItem("mapZoom");
       // Crear objeto con los datos de búsqueda para pasar a la página de búsqueda
       const searchParams = new URLSearchParams({
         ciudad: data.location,
@@ -206,7 +351,7 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
           className="mt-8 w-full max-w-100xl bg-white p-6 rounded-lg shadow-md space-y-6"
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* ComboBox para ciudad con altura fija de 24 */}
+            {/* ComboBox para ciudad */}
             <FormField
               control={form.control}
               name="ciudadId"
@@ -244,7 +389,7 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
               )}
             />
 
-            {/* Campo de fecha de inicio con altura fija */}
+            {/* Campo de fecha de inicio con entrada manual */}
             <FormField
               control={form.control}
               name="startDate"
@@ -265,58 +410,62 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
                 return (
                   <FormItem className="flex flex-col h-24">
                     <FormLabel>* Fecha de inicio:</FormLabel>
-                    <Popover open={isStartDateOpen} onOpenChange={setIsStartDateOpen}>
-                      <PopoverTrigger asChild>
-                        <FormControl>
+                    <div className="relative">
+                      <Input
+                        placeholder="dd/mm/aaaa"
+                        value={startDateInput}
+                        onChange={(e) => handleStartDateInputChange(e.target.value)}
+                        className="pr-10"
+                        maxLength={10}
+                      />
+                      <Popover open={isStartDateOpen} onOpenChange={setIsStartDateOpen}>
+                        <PopoverTrigger asChild>
                           <Button
-                            variant={"outline"}
-                            className={cn(
-                              "pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                             onClick={() => {
-                              setTempStartDate(field.value);
+                              setTempStartDate(field.value || new Date());
                               setIsStartDateOpen(true);
                             }}
                           >
-                            {field.value ? (
-                              format(field.value, "dd/MM/yy")
-                            ) : (
-                              <span>Selecciona una fecha</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            <CalendarIcon className="h-4 w-4 opacity-50" />
                           </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <div>
-                          <Calendar
-                            mode="single"
-                            selected={tempStartDate}
-                            onSelect={setTempStartDate}
-                            initialFocus
-                            locale={es}
-                            fromDate={new Date()}
-                          />
-                          <div className="flex justify-end gap-2 p-3 border-t">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={handleStartDateCancel}
-                            >
-                              Cancelar
-                            </Button>
-                            <Button
-                              size="sm"
-                              onClick={handleStartDateOk}
-                            >
-                              Ok
-                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <div>
+                            <Calendar
+                              mode="single"
+                              selected={tempStartDate}
+                              onSelect={setTempStartDate}
+                              initialFocus
+                              locale={es}
+                              fromDate={new Date()}
+                            />
+                            <div className="flex justify-end gap-2 p-3 border-t">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleStartDateCancel}
+                              >
+                                Cancelar
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={handleStartDateOk}
+                              >
+                                Ok
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                     <div className="h-5">
+                      {startDateError && (
+                        <p className="text-sm text-red-500">{startDateError}</p>
+                      )}
                       <FormMessage />
                     </div>
                   </FormItem>
@@ -324,7 +473,7 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
               }}
             />
 
-            {/* Campo de fecha de fin con botón de búsqueda y altura fija */}
+            {/* Campo de fecha de fin con entrada manual y botón de búsqueda */}
             <div className="flex flex-col h-24">
               <FormField
                 control={form.control}
@@ -347,66 +496,68 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
                     <FormItem className="flex flex-col w-full">
                       <FormLabel>Fecha de fin:</FormLabel>
                       <div className="flex gap-2 items-center">
-                        <Popover open={isEndDateOpen} onOpenChange={setIsEndDateOpen}>
-                          <PopoverTrigger asChild>
-                            <FormControl>
+                        <div className="relative flex-1">
+                          <Input
+                            placeholder="dd/mm/aaaa"
+                            value={endDateInput}
+                            onChange={(e) => handleEndDateInputChange(e.target.value)}
+                            className="pr-10"
+                            maxLength={10}
+                            disabled={!startDate}
+                          />
+                          <Popover open={isEndDateOpen} onOpenChange={setIsEndDateOpen}>
+                            <PopoverTrigger asChild>
                               <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "pl-3 text-left font-normal h-10 flex-1",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                                disabled={!form.watch("startDate")}
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                disabled={!startDate}
                                 onClick={() => {
-                                  if (form.watch("startDate")) {
-                                    setTempEndDate(field.value);
+                                  if (startDate) {
+                                    setTempEndDate(field.value || addDays(startDate, 1));
                                     setIsEndDateOpen(true);
                                   }
                                 }}
                               >
-                                {field.value ? (
-                                  format(field.value, "dd/MM/yy")
-                                ) : (
-                                  <span>Selecciona una fecha</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                <CalendarIcon className="h-4 w-4 opacity-50" />
                               </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <div>
-                              <Calendar
-                                mode="single"
-                                selected={tempEndDate}
-                                onSelect={setTempEndDate}
-                                initialFocus
-                                locale={es}
-                                fromDate={form.watch("startDate") || new Date()}
-                                toDate={form.watch("startDate") ? addDays(form.watch("startDate"), 90) : undefined}
-                                disabled={(date) =>
-                                  !form.watch("startDate") ||
-                                  isBefore(date, form.watch("startDate")) ||
-                                  (form.watch("startDate") && isBefore(addDays(form.watch("startDate"), 90), date))
-                                }
-                              />
-                              <div className="flex justify-end gap-2 p-3 border-t">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={handleEndDateCancel}
-                                >
-                                  Cancelar
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  onClick={handleEndDateOk}
-                                >
-                                  Ok
-                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <div>
+                                <Calendar
+                                  mode="single"
+                                  selected={tempEndDate}
+                                  onSelect={setTempEndDate}
+                                  initialFocus
+                                  locale={es}
+                                  fromDate={startDate || new Date()}
+                                  toDate={startDate ? addDays(startDate, 90) : undefined}
+                                  disabled={(date) =>
+                                    !startDate ||
+                                    isBefore(date, startDate) ||
+                                    (startDate && isBefore(addDays(startDate, 90), date))
+                                  }
+                                />
+                                <div className="flex justify-end gap-2 p-3 border-t">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleEndDateCancel}
+                                  >
+                                    Cancelar
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={handleEndDateOk}
+                                  >
+                                    Ok
+                                  </Button>
+                                </div>
                               </div>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
 
                         {/* Botón de búsqueda redondo con tooltip */}
                         <TooltipProvider>
@@ -422,12 +573,15 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Busca tus coches</p>
+                              <p>Buscar vehículos</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
                       </div>
                       <div className="h-5">
+                        {endDateError && (
+                          <p className="text-sm text-red-500">{endDateError}</p>
+                        )}
                         <FormMessage />
                       </div>
                     </FormItem>
