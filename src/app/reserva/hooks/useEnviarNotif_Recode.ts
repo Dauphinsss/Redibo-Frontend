@@ -25,10 +25,12 @@ export function useEnviarSolicitudRecode() {
       }
 
       setExito(true);
-    } catch (err: any) {
-      setError(err.message || "Error desconocido");
-    } finally {
-      setCargando(false);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Error desconocido");
+      }
     }
   };
 

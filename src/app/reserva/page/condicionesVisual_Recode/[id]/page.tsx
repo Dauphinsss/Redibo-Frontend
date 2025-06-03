@@ -21,9 +21,11 @@ export default function CondicionVisualPage() {
     console.log("Solicitud enviada con éxito");
   };
 
-  const handleNuevaNotificacion = (notificacion: Notificacion) => {
-    setNotificaciones(prev => [...prev, notificacion]);
-  };
+  const handleNuevaNotificacion = (notificacion: Notificacion | null) => {
+  if (!notificacion) return; 
+  setNotificaciones(prev => [...prev, notificacion]);
+};
+
 
   return (
     <main className="border-b px-4 sm:px-6 lg:px-8 py-7">
