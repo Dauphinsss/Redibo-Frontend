@@ -44,7 +44,7 @@ function CarrucelItem({ car }: CarrucelItemProps) {
             </div>
             <button
               className='text-black bg-white px-9 py-1 rounded-sm m-2 font-bold cursor-pointer'
-              onClick={() => router.push(`/infoAuto_Recode/${car.id}`)}
+              onClick={() => router.push(`/reserva/page/infoAuto_Recode/${car.id}`)}
             >
               Reservar
             </button>

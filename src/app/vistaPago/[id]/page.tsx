@@ -1,8 +1,8 @@
 import View from '../components/View';
 
-export default function Page({ params }: { params: { id: string } }) {
-  const id = Number(params.id);
+export default function Page({ params }: { params: Promise<{ id: string }>}) {
+  const id = params.then(p => p.id);
   return (
-    <View id={id} />
+    <View id={Number(id)} />
   );
 }

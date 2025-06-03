@@ -178,7 +178,16 @@ export default function RenterReviews({ reviews }: RenterReviewsProps) {
               <div key={review.id || index}>
                 <div className="flex items-start gap-4">
                   <Avatar>
-                    <AvatarImage src={review.hostPicture || "/placeholder.svg"} alt={review.hostName || "Anfitrión"} />
+                     <AvatarImage 
+                      src={review.hostPicture || "/placeholder.svg"} 
+                      alt={review.hostName || "Anfitrión"} 
+                      style={{ 
+                        objectFit: 'cover', 
+                        width: '100%', 
+                        height: '100%', 
+                        display: 'block'
+                      }} 
+                    />
                     <AvatarFallback>
                       {review.hostName && review.hostName.length > 0 ? review.hostName.charAt(0) : "A"}
                     </AvatarFallback>

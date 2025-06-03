@@ -18,15 +18,17 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AutoCard_Interfaces_Recode as Auto } from '@/app/busqueda/interface/AutoCard_Interface_Recode';
 import { useMapStore } from "@/app/busqueda/store/mapStore";
 import PuntoUsuario from "./components/PuntoUsuario";
+import { useCustomSearch } from "../../hooks/customSearchHU/useCustomSearch";
 
 interface MapProps {
   posix: LatLngExpression | LatLngTuple,
   zoom?: number,
-  autos?: Auto[],
+  autosFiltrados?: Auto[],
   radio: number,
   punto: { lon: number, alt: number },
   setpunto: (punto: { lon: number, alt: number }) => void;
   estaActivoGPS: boolean;
+  busqueda: string
 }
 
 interface GroupedAuto {
@@ -91,7 +93,9 @@ const SaveMapPosition = () => {
   return null;
 }
 
-const Map = ({ zoom = defaults.zoom, posix, autos = [], radio, punto, setpunto, estaActivoGPS }: MapProps) => {
+const Map = ({ zoom = defaults.zoom, posix, autosFiltrados = [], radio, punto, setpunto, estaActivoGPS, busqueda }: MapProps) => {
+  const autos = useCustomSearch(autosFiltrados, busqueda);
+
   const [currentAutoIndex, setCurrentAutoIndex] = useState<Record<string, number>>({});
   const [popupState, setPopupState] = useState<{ key: string; version: number } | null>(null);
 

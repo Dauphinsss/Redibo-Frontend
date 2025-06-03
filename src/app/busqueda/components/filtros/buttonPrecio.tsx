@@ -19,9 +19,11 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
   const [minPrecio, setMinPrecio] = useState<string>("");
   const [maxPrecio, setMaxPrecio] = useState<string>("");
   const [open, setOpen] = useState(false);
-  const [filtroActivo, setFiltroActivo] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [autosAntesFiltro, setAutosAntesFiltro] = useState<boolean>(false);
+  
+  // Estados para mostrar los valores aplicados (no los del input)
+  const [minAplicado, setMinAplicado] = useState<string>("");
+  const [maxAplicado, setMaxAplicado] = useState<string>("");
   
   // Resetear error cuando se cierran los campos
   useEffect(() => {
@@ -65,54 +67,56 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
   };
 
   const handleApply = () => {
-    // Validar que al menos hay un campo
-    if (!minPrecio && !maxPrecio) {
-      setError("Debes establecer al menos un valor");
-      return;
-    }
-
     // Validar que el rango es correcto
     if (minPrecio && maxPrecio && parseInt(minPrecio) > parseInt(maxPrecio)) {
-      setError("El precio mínimo no puede ser mayor que el máximo");
-      return;
+        setError("El precio mínimo no puede ser mayor que el máximo");
+        return;
     }
 
-    const min = minPrecio ? parseInt(minPrecio) : 1;
-    const max = maxPrecio ? parseInt(maxPrecio) : 5000;
-    
-    // Guardar el estado antes de aplicar el filtro si es la primera vez
-    if (!autosAntesFiltro) {
-      setAutosAntesFiltro(true);
-    }
-    
-    // Aplicar el filtro
-    onFilterChange(min, max);
-    setFiltroActivo(true);
+    // Usar valores por defecto si los campos están vacíos
+    const minValue = minPrecio ? parseInt(minPrecio) : 1;
+    const maxValue = maxPrecio ? parseInt(maxPrecio) : 5000;
+
+    // Aplicar el filtro inmediatamente
+    onFilterChange(minValue, maxValue);
+
+    // Guardar los valores aplicados para mostrar en el botón
+    setMinAplicado(minPrecio || "1");
+    setMaxAplicado(maxPrecio || "5000");
+
+    // Limpiar errores y cerrar el popover
+    setError(null);
     setOpen(false);
-  };
+};
 
   const handleReset = () => {
+    // Limpiar inputs
     setMinPrecio("");
     setMaxPrecio("");
     
-    // Restaurar al estado anterior
+    // Limpiar valores aplicados
+    setMinAplicado("");
+    setMaxAplicado("");
+    
+    // Restaurar filtro sin límites
     onFilterChange(0, Infinity);
     
-    setFiltroActivo(false);
-    setAutosAntesFiltro(false);
     setOpen(false);
   };
 
-  // Determinar el texto del botón según el estado del filtro
+  // Determinar si hay filtro activo
+  const filtroActivo = minAplicado || maxAplicado;
+
+  // Determinar el texto del botón según los valores aplicados
   const getButtonText = () => {
     if (!filtroActivo) return "Filtro por Precio";
     
-    if (minPrecio && maxPrecio) {
-      return `${formatPrecio(minPrecio)}BS - ${formatPrecio(maxPrecio)}BS`;
-    } else if (minPrecio) {
-      return `Desde ${formatPrecio(minPrecio)}BS`;
-    } else if (maxPrecio) {
-      return `Hasta ${formatPrecio(maxPrecio)}BS`;
+    if (minAplicado && maxAplicado) {
+      return `${formatPrecio(minAplicado)}BS - ${formatPrecio(maxAplicado)}BS`;
+    } else if (minAplicado) {
+      return `Desde ${formatPrecio(minAplicado)}BS`;
+    } else if (maxAplicado) {
+      return `Hasta ${formatPrecio(maxAplicado)}BS`;
     }
     
     return "Filtro por Precio";
