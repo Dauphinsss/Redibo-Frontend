@@ -1,7 +1,7 @@
 "use client";
 import { memo } from "react";
 import Link from "next/link";
-import { Aseguradora } from "../../interface/ListaAutoSeguro_Interface_Recode";
+import { Aseguradora } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 
 function CardAseguradora_Recode({
   idAseguradora,

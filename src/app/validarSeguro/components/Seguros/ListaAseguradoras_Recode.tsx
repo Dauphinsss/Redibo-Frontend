@@ -1,9 +1,9 @@
 "use client";
 
 import { memo, useEffect, useState } from "react";
-import CardAseguradora_Recode from "./CardAseguradora_Recode";
 import { Aseguradora } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
-import { getSegurosCards } from "../../services/servicesSeguro";
+import { getSegurosCards } from "@/app/validarSeguro/services/servicesSeguro";
+import CardAseguradora_Recode from "./CardAseguradora_Recode";
 
 interface Props {
     idAuto: number;
