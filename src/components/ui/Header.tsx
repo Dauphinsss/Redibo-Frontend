@@ -26,6 +26,7 @@ export default function Header() {
     null
   );
   const [isAdmin, setIsAdmin] = useState(false);
+  const [roles, setRoles] = useState<string[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -40,11 +41,11 @@ export default function Header() {
       if (rolesStr) {
         try {
           // Intentar parsear como JSON si es un array
-          const roles = rolesStr.includes("[")
+          const parsedRoles = rolesStr.includes("[")
             ? JSON.parse(rolesStr)
-            : rolesStr.split(",").map((role) => role.trim());
-
-          setIsAdmin(roles.includes("ADMIN"));
+            : rolesStr.split(",").map((r) => r.trim());
+          setRoles(parsedRoles);
+          setIsAdmin(parsedRoles.includes("ADMIN"));
         } catch (error) {
           console.log(error);
           // Si no se puede parsear como JSON, verificar si el string contiene "ADMIN"
@@ -61,6 +62,7 @@ export default function Header() {
     localStorage.clear();
     setUser(null);
     setIsAdmin(false);
+    setRoles([]);
     router.push("/");
   };
 
@@ -102,7 +104,7 @@ export default function Header() {
                 <Link href="/contacto" className="text-sm font-medium">
                   Contacto
                 </Link>
-                {user && (
+                {roles.some(role => role === "RENTER" || role === "DRIVER") && (
                   <Link href="/socios" className="text-sm font-medium">
                     Socios
                   </Link>
@@ -181,7 +183,7 @@ export default function Header() {
           <Link href="/contacto" className="text-sm font-medium">
             Contacto
           </Link>
-          {user && (
+          {roles.some(role => role === "RENTER" || role === "DRIVER") && (
             <Link href="/socios" className="text-sm font-medium">
               Socios
             </Link>

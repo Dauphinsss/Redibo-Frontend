@@ -46,14 +46,80 @@ function getUserRoles() {
 
 // --- MODIFICAR SociosPage para mostrar tabs dinámicos según roles ---
 export default function SociosPage() {
-  const [activeTab, setActiveTab] = useState("solicitar-driver");
-  const [userRoles, setUserRoles] = useState<string[]>([]);
-  const [isLogged, setIsLogged] = useState(false);
-  const [loadingAuth, setLoadingAuth] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(false); // For mobile drawer
+  // Obtén los roles directamente de localStorage para el primer render
+  function getInitialRoles() {
+    const rolesStr = localStorage.getItem("roles") || "";
+    if (rolesStr.includes("[")) {
+      try {
+        return JSON.parse(rolesStr);
+      } catch {
+        return rolesStr.split(",").map((r) => r.trim());
+      }
+    }
+    return rolesStr.split(",").map((r) => r.trim());
+  }
+
+  type SidebarItem = {
+    id: string;
+    label: string;
+    icon: React.ElementType;
+  };
+
+  // Calcula los roles y sidebarItems para el primer render
+  const initialRoles = getInitialRoles();
+  const initialSidebarItems = [
+    initialRoles.includes("RENTER") && {
+      id: "solicitar-driver",
+      label: "Solicitar asociación a Conductor",
+      icon: UserPlus,
+    },
+    initialRoles.includes("DRIVER") && {
+      id: "solicitar-renter",
+      label: "Solicitar asociación a Arrendatario",
+      icon: UserPlus,
+    },
+    {
+      id: "recibidas",
+      label: "Solicitudes Recibidas",
+      icon: Inbox,
+    },
+  ].filter(Boolean) as SidebarItem[];
+
+  // El tab inicial es el primero disponible
+  const [activeTab, setActiveTab] = useState<string>(initialSidebarItems[0].id);
+
+  // El resto de estados igual
+  const [userRoles, setUserRoles] = useState<string[]>(initialRoles);
+  const [isLogged, setIsLogged] = useState(!!localStorage.getItem("nombre"));
+  const [loadingAuth, setLoadingAuth] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Cuando los roles cambian, sincroniza el tab activo si ya no es válido
+  useEffect(() => {
+    const sidebarItems = [
+      userRoles.includes("RENTER") && {
+        id: "solicitar-driver",
+        label: "Solicitar asociación a Conductor",
+        icon: UserPlus,
+      },
+      userRoles.includes("DRIVER") && {
+        id: "solicitar-renter",
+        label: "Solicitar asociación a Arrendatario",
+        icon: UserPlus,
+      },
+      {
+        id: "recibidas",
+        label: "Solicitudes Recibidas",
+        icon: Inbox,
+      },
+    ].filter(Boolean) as SidebarItem[];
+    if (!sidebarItems.some((item) => item.id === activeTab)) {
+      setActiveTab(sidebarItems[0].id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userRoles.join(",")]);
 
   useEffect(() => {
-    // Mostrar spinner mientras se determina el estado de login
     setLoadingAuth(true);
     setTimeout(() => {
       const nombre = localStorage.getItem("nombre");
@@ -63,7 +129,7 @@ export default function SociosPage() {
     }, 0);
   }, []);
 
-  if (loadingAuth) {
+  if (loadingAuth || activeTab === null) {
     return (
       <div className="flex flex-col w-full min-h-screen bg-gray-50">
         <Header />
@@ -89,41 +155,6 @@ export default function SociosPage() {
       </div>
     );
   }
-
-  // Tabs dinámicos según roles
-  const sidebarItems = [
-    userRoles.includes("RENTER") &&
-      !userRoles.includes("DRIVER") && {
-        id: "solicitar-driver",
-        label: "Asociación a Conductor",
-        icon: UserPlus,
-      },
-    userRoles.includes("DRIVER") && {
-      id: "solicitar-driver",
-      label: "Asociación a Conductor",
-      icon: UserPlus,
-    },
-    userRoles.includes("DRIVER") && {
-      id: "solicitar-renter",
-      label: "Asociación a Arrendatario",
-      icon: UserPlus,
-    },
-    {
-      id: "recibidas",
-      label: "Solicitudes Recibidas",
-      icon: Inbox,
-    },
-  ].filter(
-    (
-      item
-    ): item is {
-      id: string;
-      label: string;
-      icon: React.ForwardRefExoticComponent<
-        Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
-      >;
-    } => Boolean(item)
-  );
 
   // Responsive: sidebar as drawer on mobile, sticky on desktop
   return (
@@ -177,7 +208,7 @@ export default function SociosPage() {
             </div>
             <SidebarContent className="p-2 bg-white h-full flex flex-col">
               <SidebarMenu className="bg-white flex-1">
-                {sidebarItems.map((item) => (
+                {initialSidebarItems.map((item) => (
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton
                       onClick={() => {
@@ -190,7 +221,7 @@ export default function SociosPage() {
                           ? "bg-gray-100 font-medium text-primary"
                           : "text-gray-700"
                       }`}
-                      style={{ minHeight: 56 }}
+                      style={{ minHeight: 56, minWidth: 0, width: "100%" }}
                     >
                       <item.icon
                         className={`h-5 w-5 mr-3 ${
@@ -199,7 +230,7 @@ export default function SociosPage() {
                             : "text-gray-500"
                         }`}
                       />
-                      <span className="block whitespace-nowrap text-left">
+                      <span className="whitespace-normal break-words text-sm md:text-base w-full block">
                         {item.label}
                       </span>
                     </SidebarMenuButton>
