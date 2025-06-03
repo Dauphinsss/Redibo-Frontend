@@ -18,7 +18,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-const API_URL = "http://localhost:4000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ||"http://localhost:4000";
 
 // Lista de características disponibles con nombres exactos
 const CARACTERISTICAS_OPTIONS = [
@@ -55,8 +55,8 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
       setError(null);
 
       try {
-        console.log(`Fetching: ${API_URL}/vehiculo/${vehiculoId}/caracteristicas-adicionales`);
-        const response = await axios.get(`${API_URL}/vehiculo/${vehiculoId}/caracteristicas-adicionales`);
+        console.log(`Fetching: ${API_URL}/api/v1/vehiculo/${vehiculoId}/caracteristicas-adicionales`);
+        const response = await axios.get(`${API_URL}/api/v1/vehiculo/${vehiculoId}/caracteristicas-adicionales`);
         console.log("Response data:", response.data);
         
         if (response.data) {
@@ -151,7 +151,7 @@ const CaracteristicasAdicionalesPage: React.FC = () => {
       // CORRECCIÓN: Usar PUT en lugar de POST para coincidir con la ruta
      
       await axios.put(
-        `${API_URL}/vehiculo/${vehiculoId}/caracteristicas-adicionales`, 
+        `${API_URL}/api/v1/vehiculo/${vehiculoId}/caracteristicas-adicionales`, 
         { 
           nuevasCaracteristicasAdicionales: caracteristicasParaEnviar 
         },

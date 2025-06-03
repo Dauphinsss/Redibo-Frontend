@@ -26,7 +26,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-const API_URL = "http://localhost:4000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 // Opciones predefinidas que coinciden con el esquema de la base de datos
 const ASIENTOS_OPTIONS = [2, 4, 5, 7, 9].map(num => ({
@@ -96,8 +96,8 @@ const CaracteristicasPage: React.FC = () => {
       }
   
       try {
-        console.log(`Intentando acceder a: ${API_URL}/vehiculo/${vehiculoId}/caracteristicas`);
-        const response = await axios.get(`${API_URL}/vehiculo/${vehiculoId}/caracteristicas`);
+        console.log(`Intentando acceder a: ${API_URL}/api/v1/vehiculo/${vehiculoId}/caracteristicas`);
+        const response = await axios.get(`${API_URL}/api/v1/vehiculo/${vehiculoId}/caracteristicas`);
         const carData = response.data;
         console.log("Datos del vehículo:", carData);
   
@@ -261,10 +261,10 @@ const CaracteristicasPage: React.FC = () => {
       };
       
       console.log("Enviando datos de características:", caracteristicasData);
-      console.log(`Intentando actualizar: ${API_URL}/vehiculo/${vehiculoId}/caracteristicas`);
+      console.log(`Intentando actualizar: ${API_URL}/api/v1/vehiculo/${vehiculoId}/caracteristicas`);
   
       // Actualizar características usando la ruta correcta
-      await axios.put(`${API_URL}/vehiculo/${vehiculoId}/caracteristicas`, caracteristicasData);
+      await axios.put(`${API_URL}/api/v1/vehiculo/${vehiculoId}/caracteristicas`, caracteristicasData);
 
       
       // Redirigir después de un breve retraso

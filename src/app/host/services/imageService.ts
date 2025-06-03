@@ -17,8 +17,8 @@ const logger = {
 };
 
 // Usar la misma base URL que en el resto de la aplicación
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v2";
-const API_URL = `${API_BASE}/images`;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const API_URL = `${API_BASE}/api/v2/images`;
 
 // Interfaces
 export interface Image {

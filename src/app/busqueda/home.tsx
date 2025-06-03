@@ -11,10 +11,34 @@ import { SlidersHorizontal } from 'lucide-react';
 import dynamic from "next/dynamic";
 import MapViwMobile from "@/app/busqueda/components/map/MapViewMobile";
 import { InfiniteFilterCarousel } from "@/app/busqueda/components/fitroCarusel/infinite-filter-carousel";
+import { CIUDADES_BOLIVIA } from "./constants";
 import { useRouter } from 'next/navigation';
+import CustomSearchWrapper from "@/app/busqueda/hooks/customSearchHU/CustomSearchWrapper";
 
+type Props = {
+  ciudad?: string;
+  fechaInicio?: string;
+  fechaFin?: string;
+};
 
-export default function Home() {
+// Interfaces para el filtro de marca
+interface Marca {
+  id: number;
+  name: string;
+  models: number;
+  count: number;
+  logo?: string;
+}
+
+interface Host {
+  id: number;
+  name: string;
+  trips: number;
+  rating?: number;
+}
+
+export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
+  
   const router = useRouter();
   const [radio, setRadio] = useState(1);
   const [punto, setPunto] = useState({ lon: 0, alt: 0 });
@@ -45,33 +69,82 @@ export default function Home() {
     setFiltrosTransmision,
     setFiltrosCaracteristicasAdicionales,
     filtrosCaracteristicasAdicionales,
+    filtroHost,
+    setFiltroHost,
+    limpiarFiltros
   } = useAutos(8, radio, punto);
 
   const [busqueda, setBusqueda] = useState("");
-  const [fechaInicio, setFechaInicio] = useState("");
-  const [fechaFin, setFechaFin] = useState("");
   const [gpsActive, setGpsActive] = useState(false);
+  
+  // Estados para los nuevos filtros
+  const [marcaSeleccionada, setMarcaSeleccionada] = useState<Marca | null>(null);
+  const [mostrarTodos, setMostrarTodos] = useState(true);
+  const [hostSeleccionado, setHostSeleccionado] = useState<Host | null>(null);
 
   // Handlers para los filtros
   const handlePrecioFilter = (min: number, max: number) => {
-    // Aquí deberías filtrar los autos por precio
-    // filtrarAutos(busqueda, fechaInicio, fechaFin, ...otrosFiltros, min, max)
+    aplicarFiltroPrecio(min, max);
     console.log('Filtro por precio:', { min, max });
   };
+
+  const handleHostFilter = (host: Host | null) => {
+    console.log('Filtro por host:', host);
+    setHostSeleccionado(host);
+    setMostrarTodos(false);
+    
+    if (host) {
+        // Filtrar por el nombre del host
+        setFiltroHost(host.name);
+    } else {
+        // Limpiar filtro de host
+        setFiltroHost('');
+    }
+  };
+
   const handleCalifFilter = (calificacion: number) => {
-    // Aquí deberías filtrar los autos por calificación
+    aplicarFiltroCalificacion(calificacion);
     console.log('Filtro por calificación:', calificacion);
   };
+  
   const handleViajesFilter = (minViajes: number) => {
-    // Aquí deberías filtrar los autos por viajes
+    aplicarFiltroViajes(minViajes);
     console.log('Filtro por viajes:', minViajes);
   };
+  
   const handleAirportFilter = () => {
     router.push('/filtrarAeropuerto');
   };
+  
   const toggleGPSFilter = () => {
     if (gpsActive) setPunto({ lon: 0, alt: 0 });
     setGpsActive((prev) => !prev);
+  };
+
+  // Handler para el filtro de marca - conecta con la lógica existente
+  const handleMarcaFilter = (marca: Marca | null) => {
+    setMarcaSeleccionada(marca);
+    setMostrarTodos(false);
+    
+    if (marca) {
+      // Usar la función filtrarAutos existente con el nombre de la marca
+      setBusqueda(marca.name);
+      filtrarAutos(marca.name, fechaInicio, fechaFin);
+    } else {
+      // Limpiar filtro de marca
+      setBusqueda("");
+      filtrarAutos("", fechaInicio, fechaFin);
+    }
+  };
+
+  // Handler para mostrar todos los resultados
+  const handleMostrarTodos = () => {
+    setMostrarTodos(true);
+    setMarcaSeleccionada(null);
+    setHostSeleccionado(null);
+    setBusqueda("");
+    limpiarFiltros();
+    filtrarAutos("", fechaInicio, fechaFin);
   };
 
   const ViewMap = useMemo(() => dynamic(
@@ -84,7 +157,7 @@ export default function Home() {
 
   return (
     <div className="relative">
-      {/* Sidebar de filtros (agregado del primer código) */}
+      {/* Sidebar de filtros */}
       <SidebarFiltros
         mostrar={mostrarSidebar}
         onCerrar={() => setMostrarSidebar(false)}
@@ -114,7 +187,14 @@ export default function Home() {
               placeholder="Buscar por modelo, marca"
               onFiltrar={(query) => {
                 setBusqueda(query);
-                filtrarAutos(query, fechaInicio, fechaFin);
+                setMarcaSeleccionada(null); // Limpiar marca seleccionada si se busca manualmente
+                setMostrarTodos(false);
+                // Se borró la llamada automática para que no se vuelva a buscar en todos los carros
+              }}
+              onClearBusqueda={() => {
+                setBusqueda("");
+                setMarcaSeleccionada(null);
+                setMostrarTodos(true);
               }}
               obtenerSugerencia={obtenerSugerencia}
             />
@@ -124,14 +204,9 @@ export default function Home() {
         {/* Carrusel de filtros */}
         <div className="px-4 sm:px-6 lg:px-8 py-3 border-t bg-gray-50">
           <InfiniteFilterCarousel
-            searchTerm={busqueda}
-            fechaInicio={fechaInicio}
-            fechaFin={fechaFin}
-            setFechaInicio={setFechaInicio}
-            setFechaFin={setFechaFin}
-            autosActuales={autosActuales}
-            autosTotales={autosFiltrados}
-            onAirportFilter={handleAirportFilter}
+            setAutosFiltrados={setAutosFiltrados}
+            autos={autos}
+
             gpsActive={gpsActive}
             onGpsToggle={toggleGPSFilter}
             radio={radio}
@@ -139,12 +214,12 @@ export default function Home() {
             onPrecioFilter={handlePrecioFilter}
             onCalifFilter={handleCalifFilter}
             onViajesFilter={handleViajesFilter}
-            onHostFilter={() => { }}
-            onMarcaFilter={() => { }}
+            onHostFilter={handleHostFilter}
+            onMarcaFilter={handleMarcaFilter}
+            onMostrarTodos={handleMostrarTodos}
+            isAllActive={mostrarTodos}
             autoScrollDelay={4000}
-            onMostrarTodos={() => {
-              console.log("Mostrar todos los resultados");
-            }}
+            autosOriginales={autos}
           />
         </div>
       </div>
@@ -157,45 +232,45 @@ export default function Home() {
               <HeaderBusquedaRecode
                 autosTotales={autos}
                 autosFiltrados={autosFiltrados}
-                autosMostrados={autosActuales}
+                autosMostrados={autosFiltrados}
                 ordenSeleccionado={ordenSeleccionado}
                 setOrdenSeleccionado={setOrdenSeleccionado}
                 setAutosFiltrados={setAutosFiltrados}
               />
 
-              <ResultadosAutos
-                cargando={cargando}
-                autosActuales={autosActuales}
+              <CustomSearchWrapper
                 autosFiltrados={autosFiltrados}
                 autosVisibles={autosVisibles}
                 mostrarMasAutos={mostrarMasAutos}
+                busqueda={busqueda}
+                cargando={cargando}
               />
             </div>
           </div>
         </main>
-        {/* Mapa en desktop */}
-        <div className="hidden lg:block w-[40%]">
-          <div className="sticky top-[210px] h-[calc(100vh-210px)] bg-gray-100 rounded shadow-inner">
+        <div className="w-0 h-0 lg:block lg:w-[40%] lg:h-auto">
+          <div className="sticky top-[204px] h-[calc(100vh-204px)] bg-gray-100 rounded shadow-inner">
             <ViewMap
-              posix={[-17.39438, -66.16018]}
-              autos={autosFiltrados}
+              posix={(ciudad) ? CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA] : CIUDADES_BOLIVIA['Cochabamba']}
+              autosFiltrados={autosFiltrados}
               radio={radio}
               punto={punto}
               setpunto={setPunto}
               estaActivoGPS={gpsActive}
+              busqueda={busqueda}
             />
           </div>
         </div>
       </div>
-      {/* Mapa en mobile */}
       <MapViwMobile>
         <ViewMap
-          posix={[-17.39438, -66.16018]}
-          autos={autosFiltrados}
+          posix={(ciudad) ? CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA] : CIUDADES_BOLIVIA['Cochabamba']}
+          autosFiltrados={autosFiltrados}
           radio={radio}
           punto={punto}
           setpunto={setPunto}
           estaActivoGPS={gpsActive}
+          busqueda={busqueda}
         />
       </MapViwMobile>
     </div>

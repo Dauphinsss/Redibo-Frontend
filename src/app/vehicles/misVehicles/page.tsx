@@ -56,7 +56,7 @@ export default function MisVehiclesPage() {
       <div className="container mx-auto py-4 sm:py-8 px-3 sm:px-4">
         <div className="flex justify-between items-center mb-4 sm:mb-6">
           <h1 className="text-xl sm:text-2xl font-bold">Mis Vehículos</h1>
-          <Link href="/">
+          <Link href="/perfil">
             <Button variant="outline" size="sm" className="h-8 px-3 sm:h-10 sm:px-4">Atrás</Button>
           </Link>
         </div>
