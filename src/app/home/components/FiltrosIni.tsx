@@ -31,6 +31,12 @@ import {
   SelectGroup,
   SelectItem,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import React from "react";
 
@@ -402,15 +408,24 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
                           </PopoverContent>
                         </Popover>
 
-                        {/* Botón de búsqueda redondo, alineado con el botón de fecha fin */}
-                        <Button
-                          type="submit"
-                          className="h-10 w-10 p-0 rounded-full flex-shrink-0"
-                          variant="default"
-                          disabled={buscando}
-                        >
-                          <Search className="h-4 w-4" />
-                        </Button>
+                        {/* Botón de búsqueda redondo con tooltip */}
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="submit"
+                                className="h-10 w-10 p-0 rounded-full flex-shrink-0"
+                                variant="default"
+                                disabled={buscando}
+                              >
+                                <Search className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Busca tus coches</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
                       <div className="h-5">
                         <FormMessage />

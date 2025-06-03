@@ -6,7 +6,7 @@ import { transformAuto } from '@/app/busqueda/utils/transformAuto_Recode';
 import { autosCercanosOrdenados } from "@/app/busqueda/components/map/filtroGPS"
 import * as filtrosAPI from '@/app/busqueda/service/filtrosService_Recode';
 
-export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: number, alt: number }) {
+export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: number, alt: number }, fechaInicio?: string, fechaFin?: string, ciudad?: string) {
   // ======== ESTADOS PRINCIPALES ========
   const [autos, setAutos] = useState<Auto[]>([]);
   const [autosFiltrados, setAutosFiltrados] = useState<Auto[]>([]);
@@ -51,6 +51,18 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     }
   };
 
+  // Efecto para aplicar filtros iniciales desde URL
+useEffect(() => {
+  if (fechaInicio) {
+    setFechaFiltroInicio(fechaInicio);
+  }
+  if (fechaFin) {
+    setFechaFiltroFin(fechaFin);
+  }
+  if (ciudad) {
+    setFiltroCiudad(ciudad);
+  }
+}, [fechaInicio, fechaFin, ciudad]);
   useEffect(() => {
     fetchAutos();
   }, []);
