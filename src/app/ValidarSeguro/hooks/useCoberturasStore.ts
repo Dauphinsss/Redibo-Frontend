@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { CoberturaInterface } from "@/app/ValidarSeguro/interface/CoberturaForm_Interface_Recode";
+import { CoberturaInterface } from "@/app/validarSeguro/interface/CoberturaForm_Interface_Recode";
 
 interface EstadoCobertura {
   lista: (CoberturaInterface & { isNew?: boolean })[];
