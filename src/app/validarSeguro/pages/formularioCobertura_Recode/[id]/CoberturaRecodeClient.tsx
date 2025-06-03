@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/ui/Header";
-import BotonValidacion from "@/app/validarSeguro/components/cobertura/BotonValidacion";
 import PopUpCobertura from "@/app/validarSeguro/components/cobertura/PopUpCobertura";
 import TablaRecode from "@/app/validarSeguro/components/cobertura/TablaRecode";
 import { useSeguroCoberturas } from "@/app/validarSeguro/hooks/useSeguroCoberturas";
@@ -48,9 +47,6 @@ export default function CoberturaRecodeClient({ id_seguro }: Props) {
               <>
                 <FormularioRecode initialDataFor={seguro} />
                 <TablaRecode />
-                <div className="mt-6 flex justify-center">
-                  <BotonValidacion idSeguro={seguro.id_seguro} />
-                </div>
               </>
             )}
           </div>

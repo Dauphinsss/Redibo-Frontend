@@ -3,6 +3,7 @@
 import { memo, useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useCoberturasStore } from "@/app/validarSeguro/hooks/useCoberturasStore";
+import { postCobertura, putCobertura } from "../../services/servicesSeguro";
 
 function PopUpCobertura() {
   const {
@@ -47,15 +48,33 @@ function PopUpCobertura() {
     if (!draft || tipodañoInvalido || valorInvalido) return;
 
     setIsSaving(true);
-    setTimeout(() => {
+
+    try {
       if (indice !== undefined) {
+        await putCobertura(draft.id, {
+          id_seguro: draft.id_carro,
+          tipoda_o: draft.tipodaño,
+          descripcion: draft.descripcion,
+          cantidadCobertura: draft.valides,
+        });
         editar(indice, draft);
       } else {
-        agregar(draft);
+        await postCobertura({
+          id_SeguroCarro: draft.id_carro,
+          tipodaño: draft.tipodaño,
+          descripcion: draft.descripcion ?? "",
+          cantidadCobertura: draft.valides,
+        });
+        agregar({ ...draft, id: Date.now() });
       }
-      setIsSaving(false);
+
       cerrarPopup();
-    }, 800);
+    } catch (error) {
+      console.error("Error al guardar cobertura:", error);
+      alert("No se pudo guardar la cobertura.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (!abierta || !draft) return null;
@@ -75,15 +94,11 @@ function PopUpCobertura() {
         </h3>
 
         <div className="space-y-4">
-          {/* Tipo de daño */}
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Tipo de daño *
-            </label>
+            <label className="block text-sm font-medium mb-1">Tipo de daño *</label>
             <input
               type="text"
               placeholder="Ej. Golpe frontal"
-              title="Tipo de daño"
               className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
                 tipodañoInvalido
                   ? "border-red-500 focus:ring-red-500"
@@ -94,18 +109,14 @@ function PopUpCobertura() {
               onBlur={() => setTocado((prev) => ({ ...prev, tipodaño: true }))}
             />
             {tipodañoInvalido && (
-              <p className="text-xs text-red-500 mt-1">
-                Mínimo 3 caracteres requeridos.
-              </p>
+              <p className="text-xs text-red-500 mt-1">Mínimo 3 caracteres requeridos.</p>
             )}
           </div>
 
-          {/* Descripción */}
           <div>
             <label className="block text-sm font-medium mb-1">Descripción</label>
             <textarea
               placeholder="Describe brevemente el daño"
-              title="Descripción del daño"
               className="w-full border border-gray-300 rounded px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-black"
               rows={3}
               value={draft.descripcion}
@@ -113,7 +124,6 @@ function PopUpCobertura() {
             />
           </div>
 
-          {/* Monto */}
           <div>
             <label className="block text-sm font-medium mb-1">Monto *</label>
             <div className="flex gap-2">
@@ -121,7 +131,6 @@ function PopUpCobertura() {
                 type="text"
                 inputMode="numeric"
                 placeholder={tipoMonto === "%" ? "Ej. 40 (máx. 100)" : "Ej. 1000"}
-                title="Monto numérico"
                 className={`flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
                   valorInvalido
                     ? "border-red-500 focus:ring-red-500"
@@ -140,7 +149,6 @@ function PopUpCobertura() {
               />
               <select
                 value={tipoMonto}
-                title="Tipo de valor"
                 onChange={(e) => {
                   setTipoMonto(e.target.value);
                   actualizarValides(valor, e.target.value);
@@ -163,7 +171,6 @@ function PopUpCobertura() {
           </div>
         </div>
 
-        {/* Botones */}
         <div className="mt-6 flex justify-end gap-2">
           <button
             onClick={cerrarPopup}
@@ -183,19 +190,8 @@ function PopUpCobertura() {
                 fill="none"
                 viewBox="0 0 24 24"
               >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8z"
-                />
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
               </svg>
             )}
             {isSaving ? "Guardando..." : indice !== undefined ? "Actualizar" : "Guardar"}

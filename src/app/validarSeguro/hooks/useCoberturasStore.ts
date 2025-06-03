@@ -31,7 +31,7 @@ export const useCoberturasStore = create<EstadoCobertura>((set) => ({
 
   agregar: (c) =>
     set((s) => ({
-      lista: [...s.lista, { ...c, isNew: true }],
+      lista: [...s.lista, c],
     })),
 
   editar: (i, c) =>
