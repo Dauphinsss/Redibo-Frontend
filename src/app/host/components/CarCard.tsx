@@ -55,7 +55,7 @@ export function CarCard({ car, images, onDelete }: CarCardProps) {
     { label: "Características del coche", path: `/host/home/editar/Caraccocheedit/${car.id}` },
     { label: "Características adicionales", path: `/host/home/editar/CarAdd/${car.id}` },
     { label: "Imágenes del coche y precio", path: `/host/home/editar/CarIma/${car.id}` },
-    { label: "Condicones de uso", path: `/host/pages/condicionUsoAuto/${car.id}` },
+    { label: "Condiciones de uso", path: `/host/pages/condicionUsoAuto/${car.id}` },
   ];
 
   return (
