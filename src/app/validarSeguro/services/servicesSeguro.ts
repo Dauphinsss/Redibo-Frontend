@@ -4,7 +4,7 @@ import { transformarCarrosListSeguros, transformarSeguroListAseguradoras, transf
 import {PutCoberturaPayload, SeguroConCoberturas_Interface_Recode } from "../interface/SeguroConCoberturas_Interface_Recode";
 import { SeguroRaw_Recode } from "@/app/validarSeguro/interface/SeguroRaw_Recode";
 import { AxiosError } from "axios";
-import { CoberturaInterface } from "../interface/CoberturaForm_Interface_Recode";
+import { CoberturaInterface } from "@/app/validarSeguro/interface/CoberturaForm_Interface_Recode";
 
 export async function getCarsSeguro(): Promise<CarCardProps[]> {
     try {
