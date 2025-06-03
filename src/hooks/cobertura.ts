@@ -1,5 +1,6 @@
+import { CoberturaInterface } from "@/app/validarSeguro1/interface/CoberturaForm_Interface_Recode";
 import axios from "axios";
-import { CoberturaInterface } from "@/interface/CoberturaForm_Interface_Recode";
+
 
 const API_BASE = "/api/seguros";
 
