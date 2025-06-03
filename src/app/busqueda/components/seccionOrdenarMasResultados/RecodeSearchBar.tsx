@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
 //Importacion para el basurerito
 import { TrashIcon } from "@heroicons/react/24/solid";
+import { API_URL } from "@/utils/bakend";
 
 interface SearchBarProps {
   placeholder: string;
@@ -68,7 +69,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
     return () => clearTimeout(timer);
   }, [busqueda, obtenerSugerencia]);
 
-  // useEffect para guardar el historial en LocalStorage
+  {/* Guardar historial en localStorage y Backend */}
   useEffect(() => {
     if (historial.length > 0) {
       localStorage.setItem("historialBusqueda", JSON.stringify(historial));
@@ -86,11 +87,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
     }
   }, [onFiltrar]);
 
-  //Agregado para el historial
+  { /* Focus para el historial */ }
   const handleFocus = () => {
     setMostrarHistorial(true);
   };
-  //Agregado para el historial
+
+  { /* Blur para el historial */}
   const handleBlur = () => {
     if (busqueda.trim()) {
       agregarAHistorial(busqueda);
@@ -99,41 +101,57 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
       setMostrarHistorial(false);
     }, 150);
   };
-  //Agregado para el historial
-  const handleDeleteHistorial = (item: string) => {
-    setHistorial((prev) => {
-      const nuevoHistorial = prev.filter((i) => i !== item);
-      if (nuevoHistorial.length === 0) {
-        localStorage.removeItem("historialBusqueda");
-      }
+
+  { /* Agregar al historial */ }
+  const guardarHistorialEnBackend = (nuevoHistorial: string[]) => {
+    localStorage.setItem("historialBusqueda", JSON.stringify(nuevoHistorial));
+    const token = localStorage.getItem("auth_token");
+    if (!token) return;
+
+    fetch(`${API_URL}/api/guardar-busquedas`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ busquedas: nuevoHistorial }),
+    });
+  };
+
+  { /* Agregar al historial y limpiar el input */ }
+  const agregarAHistorial = (valor: string) => {
+    if (!valor.trim()) return;
+    setHistorial(prev => {
+      const nuevo = valor.trim();
+      const sinDuplicados = prev.filter(item => item.toLowerCase() !== nuevo.toLowerCase());
+      const nuevoHistorial = [nuevo, ...sinDuplicados].slice(0, 10); // Limitar a 10 entradas
+      guardarHistorialEnBackend(nuevoHistorial);
       return nuevoHistorial;
     });
   };
 
-  //Agregado para el historial
+  { /* Manejar selección del historial */ }
   const handleSelectHistorial = (item: string) => {
     setBusqueda(item);
+    setSugerencia("");
+    sessionStorage.setItem("ultimaBusqueda", item);
     onFiltrar(item);
     setMostrarHistorial(false);
+    inputRef.current?.blur();
+  }
 
-    // Reordenar para que suba como más reciente
-    setHistorial((prev) => {
-      const sinDuplicados = prev.filter((i) => i !== item);
-      return [item, ...sinDuplicados].slice(0, 8);
-    })
-  };
-  //Agregado para el historial
-  const agregarAHistorial = (valor: string) => {
-    if (!valor.trim()) return;
-    setHistorial((prev) => {
-      const nuevo = valor.trim();
-      const sinDuplicados = prev.filter((item) => item !== nuevo);
-      return [nuevo, ...sinDuplicados].slice(0, 8); // máximo 10 entradas
+  { /* Manejar eliminación historia */ }
+  const handleDeleteHistorial = (item: string) => {
+    setHistorial(prev => {
+      const nuevoHistorial = prev.filter(hist => hist.toLowerCase() !== item.toLowerCase());
+      if (nuevoHistorial.length === 0) localStorage.removeItem("historialBusqueda");
+      guardarHistorialEnBackend(nuevoHistorial);
+      return nuevoHistorial;
     });
   };
+ 
 
   return (
-
     //Añadir flex items-center para modificar el contenedor
     //<div className="relative w-full max-w-md">
     <div className="relative w-full max-w-md z-10">
