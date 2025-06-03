@@ -59,13 +59,13 @@ function PopUpCobertura() {
         });
         editar(indice, draft);
       } else {
-        await postCobertura({
+        const nuevaCobertura = await postCobertura({
           id_SeguroCarro: draft.id_carro,
           tipodaño: draft.tipodaño,
           descripcion: draft.descripcion ?? "",
           cantidadCobertura: draft.valides,
         });
-        agregar({ ...draft, id: Date.now() });
+        agregar(nuevaCobertura);
       }
 
       cerrarPopup();

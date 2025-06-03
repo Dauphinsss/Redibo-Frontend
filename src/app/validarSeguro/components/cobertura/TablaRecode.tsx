@@ -1,26 +1,43 @@
 "use client";
 
+import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { useCoberturasStore } from "@/app/validarSeguro/hooks/useCoberturasStore";
 import { deleteCobertura } from "@/app/validarSeguro/services/servicesSeguro";
+import ModalEliminar from "./ModalEliminar";
 
 export default function TablaRecode() {
   const { lista, abrirPopup, eliminar } = useCoberturasStore();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [indexAEliminar, setIndexAEliminar] = useState<number | null>(null);
+  const [idCoberturaAEliminar, setIdCoberturaAEliminar] = useState<number | undefined>(undefined);
 
-  const handleEliminar = async (index: number, id?: number) => {
-    const confirmar = window.confirm("¿Estás seguro de que deseas eliminar esta cobertura?");
-    if (!confirmar) return;
+  const handleClickEliminar = (index: number, id?: number) => {
+    setIndexAEliminar(index);
+    setIdCoberturaAEliminar(id);
+    setModalVisible(true);
+  };
+
+  const handleConfirmarEliminar = async () => {
+    if (indexAEliminar === null) return;
 
     try {
-      if (id) {
-        await deleteCobertura(id);
-        console.log(`Cobertura ${id} eliminada del backend.`);
+      if (idCoberturaAEliminar) {
+        await deleteCobertura(idCoberturaAEliminar);
+        console.log(`Cobertura ${idCoberturaAEliminar} eliminada del backend.`);
       }
+      eliminar(indexAEliminar);
     } catch (error) {
       console.error("Error al eliminar cobertura en backend:", error);
     } finally {
-      eliminar(index); // actualizar local
+      limpiarEstadoEliminacion();
     }
+  };
+
+  const limpiarEstadoEliminacion = () => {
+    setIndexAEliminar(null);
+    setIdCoberturaAEliminar(undefined);
+    setModalVisible(false);
   };
 
   return (
@@ -66,7 +83,7 @@ export default function TablaRecode() {
                     <Pencil size={16} />
                   </button>
                   <button
-                    onClick={() => handleEliminar(i, c.id)}
+                    onClick={() => handleClickEliminar(i, c.id)}
                     className="text-red-600 hover:text-red-800 transition"
                     title="Eliminar"
                   >
@@ -78,6 +95,12 @@ export default function TablaRecode() {
           )}
         </tbody>
       </table>
+
+      <ModalEliminar
+        visible={modalVisible}
+        onClose={limpiarEstadoEliminacion}
+        onConfirm={handleConfirmarEliminar}
+      />
     </section>
   );
 }
