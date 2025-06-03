@@ -31,6 +31,12 @@ function PopUpCobertura() {
     }
   }, [draft]);
 
+  useEffect(() => {
+    if (abierta) {
+      setTocado({ tipodaño: false, valor: false });
+    }
+  }, [abierta]);
+
   const actualizarValides = (nuevoValor: string, tipo: string) => {
     const sufijo = tipo === "BOB" ? "B" : "P";
     if (draft) setDraft({ ...draft, valides: `${nuevoValor}${sufijo}` });
