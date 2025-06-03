@@ -1,58 +1,22 @@
-"use client";
-
-import { useState, useRef, useEffect, memo } from "react";
-import { FaEllipsisV } from "react-icons/fa";
-import { PlanSeguro } from "../../interface/ListaAutoSeguro_Interface_Recode";
-import PlanesSeguroDropdown_Recode from "./PlanesSeguroDropdown_Recode";
-
-interface Props {
-  empresa: string;
-  fechaInicio: string;
-  fechaFin: string;
-  planes: PlanSeguro[];
-}
+"use client";import { memo } from "react";
+import { Aseguradora } from "../../interface/ListaAutoSeguro_Interface_Recode";
 
 function CardAseguradora_Recode({
+  //idAseguradora,
   empresa,
+  nombre,
+  tipoSeguro,
   fechaInicio,
   fechaFin,
-  planes,
-}: Props) {
-  const [mostrarPlanes, setMostrarPlanes] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Cerrar con clic fuera
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setMostrarPlanes(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+}: Aseguradora) {
 
   return (
-    <div
-      ref={dropdownRef}
-      className="border rounded-xl p-4 w-full flex flex-col gap-2 bg-white shadow-sm dark:bg-gray-900 cursor-pointer"
-      onClick={() => setMostrarPlanes(false)} // Cierre si haces clic en la tarjeta
-    >
+    <div className="border rounded-xl p-4 w-full flex flex-col gap-2 bg-white shadow-sm dark:bg-gray-900 cursor-pointer">
       <div className="flex justify-between items-center">
-        <h3 className="font-bold text-lg text-black dark:text-white">{empresa}</h3>
-        <button
-          onClick={(e) => {
-            e.stopPropagation(); // Evita que el clic en el botón cierre el dropdown
-            setMostrarPlanes((prev) => !prev);
-          }}
-          aria-label="Opciones"
-          className="p-1 text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white"
-        >
-          <FaEllipsisV className="text-xl" />
-        </button>
+        <h2 className="font-bold text-lg text-black dark:text-white">{empresa}</h2>
+        <h3 className="font-medium text-lg text-black dark:text-white">{nombre}</h3>
+        <h3 className="font-medium text-lg text-black dark:text-white">{tipoSeguro}</h3>
       </div>
 
       <div className="flex justify-between text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -65,12 +29,6 @@ function CardAseguradora_Recode({
           <p>{fechaFin}</p>
         </div>
       </div>
-
-      <PlanesSeguroDropdown_Recode
-        planes={planes}
-        visible={mostrarPlanes}
-        onClose={() => setMostrarPlanes(false)}
-      />
     </div>
   );
 }

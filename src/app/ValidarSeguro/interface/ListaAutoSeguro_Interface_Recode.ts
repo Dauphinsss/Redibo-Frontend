@@ -64,19 +64,22 @@ export interface CarApiResponse {
 //Empieza todo sobre las aseguradoras
 
 export interface Aseguradora {
-    id: number;
+    idAseguradora: number;
     empresa: string;
+    nombre: string;
+    tipoSeguro: string;
     fechaInicio: string;
     fechaFin: string;
 }
-export interface TipoSeguro {
-    id: string;
-    nombre: string;
-    descripcion?: string;
-}
 
-export interface PlanSeguro {
-    nombre: string;
-    tipos: TipoSeguro[];
+export interface AseguradoraCardPropsRaw_Recode {
+    id: number;
+    fechaInicio: string;
+    fechaFin: string;
+    Seguro: {
+        id: number;
+        empresa: string;
+        nombre: string;
+        tipoSeguro: string;
+    };
 }
-

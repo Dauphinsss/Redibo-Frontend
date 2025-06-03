@@ -33,36 +33,36 @@ function Modal_Recode({ isOpen, onClose, title = "", children }: Props) {
         <AnimatePresence>
             {isOpen && (
                 <motion.div
-                onClick={handleClickOutside}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50"
+                    onClick={handleClickOutside}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50"
                 >
-                <motion.div
-                    ref={modalRef}
-                    initial={{ scale: 0.95, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.95, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="bg-white rounded-xl max-w-lg w-full shadow-xl relative flex flex-col max-h-[80vh]"
-                >
-                    {/* Encabezado fijo */}
-                    <div className="p-4 border-b sticky top-0 z-10 bg-white flex justify-between items-center rounded-t-xl">
-                        <h2 className="text-xl font-bold">{title}</h2>
-                        <button
-                            onClick={onClose}
-                            className="text-gray-400 hover:text-black text-lg font-bold"
-                        >
-                            ×
-                        </button>
-                    </div>
+                    <motion.div
+                        ref={modalRef}
+                        initial={{ scale: 0.95, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.95, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="bg-white rounded-xl max-w-lg w-full shadow-xl relative flex flex-col max-h-[80vh]"
+                    >
+                        {/* Encabezado fijo */}
+                        <div className="p-4 border-b sticky top-0 z-10 bg-white flex justify-between items-center rounded-t-xl">
+                            <h2 className="text-xl font-bold">{title}</h2>
+                            <button
+                                onClick={onClose}
+                                className="text-gray-400 hover:text-black text-lg font-bold"
+                            >
+                                ×
+                            </button>
+                        </div>
 
-                    {/* Contenido con scroll */}
-                    <div className="p-6 overflow-y-auto">
-                        {children}
-                    </div>
-                </motion.div>
+                        {/* Contenido con scroll */}
+                        <div className="p-6 overflow-y-auto">
+                            {children}
+                        </div>
+                    </motion.div>
                 </motion.div>
             )}
         </AnimatePresence>

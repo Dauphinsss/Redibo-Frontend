@@ -1,6 +1,6 @@
 import { SeguroConCoberturas_Interface_Recode } from "@/app/validarSeguro/interface/SeguroConCoberturas_Interface_Recode";
 import { SeguroRaw_Recode } from "@/app/validarSeguro/interface/SeguroRaw_Recode";
-import { CarApiResponse, CarCardProps } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
+import { Aseguradora, AseguradoraCardPropsRaw_Recode, CarApiResponse, CarCardProps } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 
 export function transformSeguroTodo_Recode(
     datos?: SeguroRaw_Recode[] | null
@@ -61,6 +61,28 @@ export function transformarCarrosListSeguros(apiData: CarApiResponse[]): CarCard
         ? car.Imagen[0].data
         : "/images/Auto_Default.png",
         alt: `Imagen del auto ${car.modelo}`
+    }));
+}
+
+
+
+
+export function formatearFechaDDMMAAAA(fechaISO: string): string {
+    const fecha = new Date(fechaISO);
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const anio = fecha.getFullYear();
+    return `${dia}/${mes}/${anio}`;
+}
+
+export function transformarSeguroListAseguradoras(apiData: AseguradoraCardPropsRaw_Recode[]): Aseguradora[] {
+    return apiData.map((aseguradora) => ({
+        idAseguradora: aseguradora.id,
+        empresa: aseguradora.Seguro.empresa || "Desconocida",
+        nombre: aseguradora.Seguro.nombre || "Sin nombre",
+        tipoSeguro: aseguradora.Seguro.tipoSeguro || "Sin tipo",
+        fechaInicio: formatearFechaDDMMAAAA(aseguradora.fechaInicio) || "Sin fecha de inicio",
+        fechaFin: formatearFechaDDMMAAAA(aseguradora.fechaFin) || "Sin fecha de fin",
     }));
 }
 
