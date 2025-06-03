@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { postCobertura, putCobertura } from "@/service/services_Recode";
-import { useCoberturasStore } from "@/app/validarSeguro1/hooks/useCoberturasStore";
+import { useCoberturasStore } from "@/app/validarSeguro/hooks/useCoberturasStore";
 
 interface Props {
   idSeguro: number;

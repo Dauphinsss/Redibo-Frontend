@@ -6,10 +6,10 @@ import { transformCondiciones_Recode } from "@/app/reserva/utils/transformCondic
 import axios, { AxiosError } from "axios";
 import { RawHostDetails_Recode } from "@/app/reserva/interface/RawHostDetails_Recode";
 import { transformDetailsHost_Recode } from "@/app/reserva/utils/transformDetailsHost_Recode";
-import { transformSeguroTodo_Recode } from "@/app/validarSeguro1/utils/transforSeguro_Recode";
-import { PostCoberturaPayload, PutCoberturaPayload, SeguroConCoberturas_Interface_Recode } from "@/app/validarSeguro1/interface/SeguroConCoberturas_Interface_Recode";
-import { SeguroRaw_Recode } from "@/app/validarSeguro1/interface/SeguroRaw_Recode";
-import { EnlaceInterface } from "@/app/validarSeguro1/interface/CoberturaForm_Interface_Recode";
+import { transformSeguroTodo_Recode } from "@/app/validarSeguro/utils/transforSeguro_Recode";
+import { PostCoberturaPayload, PutCoberturaPayload, SeguroConCoberturas_Interface_Recode } from "@/app/validarSeguro/interface/SeguroConCoberturas_Interface_Recode";
+import { SeguroRaw_Recode } from "@/app/validarSeguro/interface/SeguroRaw_Recode";
+import { EnlaceInterface } from "@/app/validarSeguro/interface/CoberturaForm_Interface_Recode";
 
 
 

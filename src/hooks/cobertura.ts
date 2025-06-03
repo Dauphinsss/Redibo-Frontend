@@ -1,4 +1,4 @@
-import { CoberturaInterface } from "@/app/validarSeguro1/interface/CoberturaForm_Interface_Recode";
+import { CoberturaInterface } from "@/app/validarSeguro/interface/CoberturaForm_Interface_Recode";
 import axios from "axios";
 
 

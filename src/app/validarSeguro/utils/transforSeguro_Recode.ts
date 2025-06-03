@@ -1,6 +1,6 @@
-import { SeguroConCoberturas_Interface_Recode } from "@/app/validarSeguro1/interface/SeguroConCoberturas_Interface_Recode";
-import { SeguroRaw_Recode } from "@/app/validarSeguro1/interface/SeguroRaw_Recode";
-import { Aseguradora, AseguradoraCardPropsRaw_Recode, CarApiResponse, CarCardProps } from "@/app/validarSeguro1/interface/ListaAutoSeguro_Interface_Recode";
+import { SeguroConCoberturas_Interface_Recode } from "@/app/validarSeguro/interface/SeguroConCoberturas_Interface_Recode";
+import { SeguroRaw_Recode } from "@/app/validarSeguro/interface/SeguroRaw_Recode";
+import { Aseguradora, AseguradoraCardPropsRaw_Recode, CarApiResponse, CarCardProps } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 
 export function transformSeguroTodo_Recode(
     datos?: SeguroRaw_Recode[] | null

@@ -2,7 +2,7 @@ import React, { memo } from "react";
 import CarImage_Recode from "./CarImage_Recode";
 import CarButton_Recode from "./CarButton_Recode";
 import CarDetails_Recode from "./CarDetails_Recode";
-import { CarCardProps } from "@/app/validarSeguro1/interface/ListaAutoSeguro_Interface_Recode";
+import { CarCardProps } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
 
 
 function CarCard_Recode({

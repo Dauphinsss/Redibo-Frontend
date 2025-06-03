@@ -1,6 +1,6 @@
 import { apiRecodeGeneral } from "@/api/apis_Recode";
-import { CarCardProps, CarApiResponse, Aseguradora, AseguradoraCardPropsRaw_Recode } from "@/app/validarSeguro1/interface/ListaAutoSeguro_Interface_Recode";
-import { transformarCarrosListSeguros, transformarSeguroListAseguradoras, transformSeguroTodo_Recode } from "@/app/validarSeguro1/utils/transforSeguro_Recode";
+import { CarCardProps, CarApiResponse, Aseguradora, AseguradoraCardPropsRaw_Recode } from "@/app/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
+import { transformarCarrosListSeguros, transformarSeguroListAseguradoras, transformSeguroTodo_Recode } from "@/app/validarSeguro/utils/transforSeguro_Recode";
 import { SeguroConCoberturas_Interface_Recode } from "../interface/SeguroConCoberturas_Interface_Recode";
 import { SeguroRaw_Recode } from "../interface/SeguroRaw_Recode";
 

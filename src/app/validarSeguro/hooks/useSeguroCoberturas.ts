@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { z } from "zod";
-import { SeguroConCoberturas_Interface_Recode } from "@/app/validarSeguro1/interface/SeguroConCoberturas_Interface_Recode";
+import { SeguroConCoberturas_Interface_Recode } from "@/app/validarSeguro/interface/SeguroConCoberturas_Interface_Recode";
 import { useCoberturasStore } from "./useCoberturasStore";
 import { getSeguroCompletoPorId } from "../services/servicesSeguro";
 
