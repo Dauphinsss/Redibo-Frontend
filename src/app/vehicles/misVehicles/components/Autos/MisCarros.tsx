@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { API_URL } from "@/utils/bakend";
 import dynamic from 'next/dynamic';
 const AlertsPanelClient = dynamic(() => import('./AlertsPanel.client'), { ssr: false });
@@ -103,7 +103,7 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
   const [selectedCarId, setSelectedCarId] = useState<number | null>(null);
   const [stats, setStats] = useState<{total: number, autos_con_placa: number} | null>(null);
 
-  // Estado para la lista de vehículos inactivos
+  
   const [inactiveCarsList, setInactiveCarsList] = useState<InactiveCarListItem[]>([]);
 
   
@@ -160,227 +160,184 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
   
   // const onDragEnd = (result: DropResult) => { ... };
 
-  useEffect(() => {
-    
+  
+  const fetchAllData = async () => {
+    setLoading(true);
+    setError(null);
+    setDebugResponse(null);
 
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      setDebugResponse(null);
-
-      try {
-        const token = localStorage.getItem("auth_token");
-        if (!token) {
-          
-          console.error("No se encontró el token de autenticación");
-          setLoading(false); 
-          return; 
-        }
-
-        
-        const carsUrl = `${API_URL}/api/carros/${hostId}`;
-        const proximasReservasUrl = `${API_URL}/api/reservas/proximas/${hostId}`;
-        const vehiculosInactivosCountUrl = `${API_URL}/api/carros/inactivos/${hostId}`;
-        const vehiculosInactivosListUrl = `${API_URL}/api/carros/inactivos-list/${hostId}`;
-        const pendingCalificationsUrl = `${API_URL}/api/calificaciones-reserva/count-pending-host?hostId=${hostId}`;
-
-        
-        const [carsResponse, proximasReservasResponse, vehiculosInactivosCountResponse, vehiculosInactivosListResponse, calificacionesResponse] = await Promise.all([
-          fetch(carsUrl, { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(proximasReservasUrl, { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(vehiculosInactivosCountUrl, { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(vehiculosInactivosListUrl, { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(pendingCalificationsUrl, { headers: { Authorization: `Bearer ${token}` } }),
-        ]);
-
-        
-        let totalMantenimientos = 0;
-        let formattedCars: Car[] = [];
-        
-        if (carsResponse.ok) {
-          const carsData = await carsResponse.json();
-          
-          
-          if (carsData.autos && Array.isArray(carsData.autos)) {
-            formattedCars = carsData.autos.map((car: BackendCarResponse) => {
-                 return {
-                    id: car.id,
-                    vim: car.vim || car.vin || '',
-                    anio: car.anio || car.año || 0,
-                    marca: car.marca || '',
-                    modelo: car.modelo || '',
-                    placa: car.placa || '',
-                    asientos: car.asientos || 0,
-                    puertas: car.puertas || 0,
-                    soat: car.soat || false,
-                    precio_por_dia: car.precio_por_dia || 0,
-                    num_mantenimientos: car.num_mantenimientos || 0,
-                    transmision: car.transmision || car.transmicion || '',
-                    estado: car.estado === 'Disponible' ? 'DISPONIBLE' : 
-                           car.estado === 'Reservado' ? 'RESERVADO' : 'MANTENIMIENTO',
-                    direccion: {
-                      calle: car.direccion || '',
-                      num_casa: car.num_casa || '',
-                      provincia: {
-                        nombre: car.provincia || '',
-                        ciudad: {
-                          nombre: car.ciudad || ''
-                        }
-                      }
-                    },
-                    combustiblesporCarro: car.combustibles ? 
-                      car.combustibles.map(c => ({
-                        combustible: { tipoDeCombustible: c.tipoDeCombustible }
-                      })) : [],
-                    caracteristicasAdicionalesCarro: car.caracteristicas ? 
-                      car.caracteristicas.map(c => ({
-                        carasteristicasAdicionales: { nombre: c.nombre }
-                      })) : [],
-                    imagenes: car.imagenes ? 
-                      car.imagenes.map(img => ({
-                        data: img.url,
-                        public_id: img.public_id
-                      })) : []
-                  };
-            });
-            
-            setCars(formattedCars); 
-            setStats({
-              total: carsData.total || 0,
-              autos_con_placa: carsData.autos_con_placa || 0
-            });
-
-           
-            totalMantenimientos = formattedCars.filter(car => car.num_mantenimientos > 0).length;
-
-           
-            const carsWithPendingMaintenance = formattedCars.filter(car => car.num_mantenimientos > 0);
-            setPendingMaintenanceCarsList(carsWithPendingMaintenance);
-
-          } else if (carsResponse.status === 404) { 
-             const errorData = await carsResponse.json();
-             if (errorData.message === "No se encontraron autos para este host") {
-                 setCars([]); 
-                 setStats({total: 0, autos_con_placa: 0});
-                 totalMantenimientos = 0; 
-             } else { 
-                const errorText = await carsResponse.text();
-                throw new Error(`Error al obtener los autos: ${carsResponse.status} ${errorText}`);
-             }
-          } else { 
-             const errorText = await carsResponse.text();
-             throw new Error(`Error al obtener los autos: ${carsResponse.status} ${errorText}`);
-          }
-        } else { 
-             const errorText = await carsResponse.text();
-             console.error(`Error al obtener los autos (HTTP ${carsResponse.status}): ${errorText}`);
-            
-        }
-
-        
-        let totalProximasReservas = 0;
-        if (proximasReservasResponse.ok) {
-          const data = await proximasReservasResponse.json();
-          if (data.count !== undefined && typeof data.count === 'number') {
-             totalProximasReservas = data.count;
-          } else {
-             console.error("Formato de respuesta inesperado para próximas reservas (conteo):", data);
-           }
-        } else {
-             const errorText = await proximasReservasResponse.text();
-             console.error(`Error al obtener próximas reservas (HTTP ${proximasReservasResponse.status}): ${errorText}`);
-        }
-
-        
-        let totalVehiculosInactivos = 0;
-        if (vehiculosInactivosCountResponse.ok) {
-          const data = await vehiculosInactivosCountResponse.json();
-          if (data.count !== undefined && typeof data.count === 'number') {
-            totalVehiculosInactivos = data.count;
-          } else {
-            console.error("Formato de respuesta inesperado para conteo de vehículos inactivos:", data);
-          }
-        } else { 
-             const errorText = await vehiculosInactivosCountResponse.text();
-             console.error(`Error al obtener conteo de vehículos inactivos (HTTP ${vehiculosInactivosCountResponse.status}): ${errorText}`);
-        }
-
-        
-        let listaVehiculosInactivos: InactiveCarListItem[] = [];
-        if (vehiculosInactivosListResponse.ok) {
-             const data = await vehiculosInactivosListResponse.json();
-             if (Array.isArray(data)) {
-                 listaVehiculosInactivos = data as InactiveCarListItem[]; 
-             } else {
-                 console.error("Formato de respuesta inesperado para lista de vehículos inactivos:", data);
-             }
-        } else { 
-            const errorText = await vehiculosInactivosListResponse.text();
-            console.error(`Error al obtener lista de vehículos inactivos (HTTP ${vehiculosInactivosListResponse.status}): ${errorText}`);
-        }
-
-        
-        let totalCalificacionesPendientes = 0;
-        console.log("Procesando respuesta de calificaciones pendientes..."); // Log 1
-        console.log("calificacionesResponse.ok:", calificacionesResponse.ok); // Log 2
-        if (calificacionesResponse.ok) {
-          const calificacionesData = await calificacionesResponse.json();
-          console.log("JSON de calificaciones pendientes recibido:", calificacionesData); // Log 3
-          if (calificacionesData && typeof calificacionesData.count === 'number') {
-            totalCalificacionesPendientes = calificacionesData.count;
-            console.log("Conteo de calificaciones pendientes procesado correctamente:", totalCalificacionesPendientes); // Log 4
-          } else {
-             console.error("Formato de respuesta inesperado para conteo de calificaciones pendientes:", calificacionesData); // Log 5
-          }
-        } else { 
-             const errorText = await calificacionesResponse.text();
-             console.error(`Error al obtener calificaciones (HTTP ${calificacionesResponse.status}): ${errorText}`); // Log 6
-        }
-
-        
-        setAlertas({
-          proximasReservas: totalProximasReservas,
-          mantenimientos: totalMantenimientos,
-          vehiculosInactivos: totalVehiculosInactivos,
-          calificacionesPendientes: totalCalificacionesPendientes,
-        });
-        setInactiveCarsList(listaVehiculosInactivos);
-        console.log("Estado 'alertas' actualizado:", {
-          proximasReservas: totalProximasReservas,
-          mantenimientos: totalMantenimientos,
-          vehiculosInactivos: totalVehiculosInactivos,
-          calificacionesPendientes: totalCalificacionesPendientes,
-        });
-
-      } catch (err) {
-        console.error("Error en fetchData completo:", err);
-        if (!(err instanceof Error && err.message === "No se encontró el token de autenticación")) {
-           setError(err instanceof Error ? err.message : 'Error desconocido durante la actualización.');
-        }
-      } finally {
+    try {
+      const token = localStorage.getItem("auth_token");
+      if (!token) {
+        console.error("No se encontró el token de autenticación");
         setLoading(false); 
+        return; 
       }
-    };
 
-    
+      const carsUrl = `${API_URL}/api/carros/${hostId}`;
+      const proximasReservasUrl = `${API_URL}/api/reservas/proximas/${hostId}`;
+      const vehiculosInactivosCountUrl = `${API_URL}/api/carros/inactivos/${hostId}`;
+      const vehiculosInactivosListUrl = `${API_URL}/api/carros/inactivos-list/${hostId}`;
+      const pendingCalificationsUrl = `${API_URL}/api/calificaciones-reserva/count-pending-host?hostId=${hostId}`;
+      const mantenimientosVencidosUrl = `${API_URL}/api/mantenimiento/mantenimientos-vencidos/${hostId}`;
 
-    fetchData();
+      const [carsResponse, proximasReservasResponse, vehiculosInactivosCountResponse, vehiculosInactivosListResponse, calificacionesResponse, mantenimientosResponse] = await Promise.all([
+        fetch(carsUrl, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(proximasReservasUrl, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(vehiculosInactivosCountUrl, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(vehiculosInactivosListUrl, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(pendingCalificationsUrl, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(mantenimientosVencidosUrl, { headers: { Authorization: `Bearer ${token}` } })
+      ]);
 
-    
-    const intervalId = setInterval(fetchData, 60000);
+      let totalMantenimientos = 0;
+      let formattedCars: Car[] = [];
+      let carsWithPendingMaintenance: Car[] = [];
+      
+      if (carsResponse.ok) {
+        const carsData = await carsResponse.json();
+        
+        if (carsData.autos && Array.isArray(carsData.autos)) {
+          formattedCars = carsData.autos.map((car: BackendCarResponse) => {
+               return {
+                  id: car.id,
+                  vim: car.vim || car.vin || '',
+                  anio: car.anio || car.año || 0,
+                  marca: car.marca || '',
+                  modelo: car.modelo || '',
+                  placa: car.placa || '',
+                  asientos: car.asientos || 0,
+                  puertas: car.puertas || 0,
+                  soat: car.soat || false,
+                  precio_por_dia: car.precio_por_dia || 0,
+                  num_mantenimientos: car.num_mantenimientos || 0,
+                  transmision: car.transmision || car.transmicion || '',
+                  estado: car.estado === 'Disponible' ? 'DISPONIBLE' : 
+                         car.estado === 'Reservado' ? 'RESERVADO' : 'MANTENIMIENTO',
+                  direccion: {
+                    calle: car.direccion || '',
+                    num_casa: car.num_casa || '',
+                    provincia: {
+                      nombre: car.provincia || '',
+                      ciudad: {
+                        nombre: car.ciudad || ''
+                      }
+                    }
+                  },
+                  combustiblesporCarro: car.combustibles ? 
+                    car.combustibles.map(c => ({
+                      combustible: { tipoDeCombustible: c.tipoDeCombustible }
+                    })) : [],
+                  caracteristicasAdicionalesCarro: car.caracteristicas ? 
+                    car.caracteristicas.map(c => ({
+                      carasteristicasAdicionales: { nombre: c.nombre }
+                    })) : [],
+                  imagenes: car.imagenes ? 
+                    car.imagenes.map(img => ({
+                      data: img.url,
+                      public_id: img.public_id
+                    })) : []
+                };
+          });
+          
+          setCars(formattedCars); 
+          setStats({
+            total: carsData.total || 0,
+            autos_con_placa: carsData.autos_con_placa || 0
+          });
+        }
+      }
 
-    
+      // Procesar mantenimientos vencidos
+      if (mantenimientosResponse.ok) {
+        const mantenimientosData = await mantenimientosResponse.json();
+        if (Array.isArray(mantenimientosData)) {
+          totalMantenimientos = mantenimientosData.length;
+          carsWithPendingMaintenance = formattedCars.filter(car => 
+            mantenimientosData.some(mant => mant.Carro.id === car.id)
+          );
+          setPendingMaintenanceCarsList(carsWithPendingMaintenance);
+        }
+      }
+
+      let totalProximasReservas = 0;
+      if (proximasReservasResponse.ok) {
+        const data = await proximasReservasResponse.json();
+        if (data.count !== undefined && typeof data.count === 'number') {
+           totalProximasReservas = data.count;
+        } else {
+           console.error("Formato de respuesta inesperado para próximas reservas (conteo):", data);
+         }
+      }
+
+      let totalVehiculosInactivos = 0;
+      if (vehiculosInactivosCountResponse.ok) {
+        const data = await vehiculosInactivosCountResponse.json();
+        if (data.count !== undefined && typeof data.count === 'number') {
+          totalVehiculosInactivos = data.count;
+        } else {
+          console.error("Formato de respuesta inesperado para conteo de vehículos inactivos:", data);
+        }
+      }
+
+      let listaVehiculosInactivos: InactiveCarListItem[] = [];
+      if (vehiculosInactivosListResponse.ok) {
+           const data = await vehiculosInactivosListResponse.json();
+           if (Array.isArray(data)) {
+               listaVehiculosInactivos = data as InactiveCarListItem[]; 
+           } else {
+               console.error("Formato de respuesta inesperado para lista de vehículos inactivos:", data);
+           }
+      }
+
+      let totalCalificacionesPendientes = 0;
+      if (calificacionesResponse.ok) {
+        const calificacionesData = await calificacionesResponse.json();
+        if (calificacionesData && typeof calificacionesData.count === 'number') {
+          totalCalificacionesPendientes = calificacionesData.count;
+        } else {
+           console.error("Formato de respuesta inesperado para conteo de calificaciones pendientes:", calificacionesData);
+        }
+      }
+
+      setAlertas({
+        proximasReservas: totalProximasReservas,
+        mantenimientos: totalMantenimientos,
+        vehiculosInactivos: totalVehiculosInactivos,
+        calificacionesPendientes: totalCalificacionesPendientes,
+      });
+      setInactiveCarsList(listaVehiculosInactivos);
+
+    } catch (err) {
+      console.error("Error en fetchAllData completo:", err);
+      if (!(err instanceof Error && err.message === "No se encontró el token de autenticación")) {
+         setError(err instanceof Error ? err.message : 'Error desconocido durante la actualización.');
+      }
+    } finally {
+      setLoading(false); 
+    }
+  };
+
+  
+  const refreshAlerts = useCallback(() => {
+    fetchAllData();
+  }, [hostId]); 
+
+  useEffect(() => {
+    fetchAllData();
+
+    const intervalId = setInterval(fetchAllData, 60000); 
+
     const handleFocusOrVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         console.log('Window focused or tab visible, refetching data...');
-        fetchData(); 
+        fetchAllData(); 
       }
     };
 
     window.addEventListener('focus', handleFocusOrVisibilityChange);
     document.addEventListener('visibilitychange', handleFocusOrVisibilityChange);
 
-  
     return () => {
       clearInterval(intervalId);
       window.removeEventListener('focus', handleFocusOrVisibilityChange);
@@ -429,7 +386,11 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
       {/* Panel de Alertas - Importado dinámicamente */}
       <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Panel de Alertas</h1>
       {/* Renderizar el componente cliente pasándole los datos necesarios */}
-      <AlertsPanelClient alertas={alertas} initialAlertsOrder={initialAlertsOrder} />
+      <AlertsPanelClient 
+        alertas={alertas} 
+        initialAlertsOrder={initialAlertsOrder} 
+        refreshAlerts={refreshAlerts}
+      />
 
       {/* Cartilla de Vehículos Inactivos */}
        {inactiveCarsList.length > 0 && (
