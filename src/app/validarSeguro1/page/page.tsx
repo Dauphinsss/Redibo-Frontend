@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CarList_Recode from "@/app/validarSeguro/components/ListaAutosSeguros/CarList_Recode";
+import CarList_Recode from "@/app/validarSeguro1/components/ListaAutosSeguros/CarList_Recode";
 import { CarCardProps } from "@/app/validarSeguro1/interface/ListaAutoSeguro_Interface_Recode";
 import { getCarsSeguro } from "@/app/validarSeguro1/services/servicesSeguro";
 
