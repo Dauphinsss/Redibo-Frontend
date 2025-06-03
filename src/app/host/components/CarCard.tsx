@@ -56,6 +56,7 @@ export function CarCard({ car, images, onDelete }: CarCardProps) {
     { label: "Características adicionales", path: `/host/home/editar/CarAdd/${car.id}` },
     { label: "Imágenes del coche y precio", path: `/host/home/editar/CarIma/${car.id}` },
     { label: "Condiciones de uso", path: `/host/pages/condicionUsoAuto/${car.id}` },
+    { label: "Garantía", path: `/host/home/editar/Garantia/${car.id}` },//roma estuvo aqui
   ];
 
   return (
