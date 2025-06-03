@@ -2,7 +2,7 @@
 
 import { Pencil, Trash2 } from "lucide-react";
 import { useCoberturasStore } from "@/app/validarSeguro/hooks/useCoberturasStore";
-import { deleteCobertura } from "../../services/servicesSeguro";
+import { deleteCobertura } from "@/app/validarSeguro/services/servicesSeguro";
 
 export default function TablaRecode() {
   const { lista, abrirPopup, eliminar } = useCoberturasStore();
