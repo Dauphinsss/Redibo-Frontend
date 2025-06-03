@@ -6,7 +6,7 @@ function AutoSkeletonList() {
         {Array.from({ length: 6 }).map((_, i) => (
             <div
             key={i}
-            className="w-full max-w-[750px] md:h-[320px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-4 animate-pulse"
+            className="w-full max-w-[800px] md:h-[260px] border border-black rounded-[15px] p-6 shadow-sm bg-white flex flex-col md:flex-row gap-4 animate-pulse"
             >
             {/* Imagen */}
             <div className="w-full md:w-[230px] h-[150px] md:h-full bg-gray-300 rounded-[10px]" />
