@@ -27,6 +27,7 @@ export default function CoberturaRecodeClient({ id_seguro }: Props) {
   useEffect(() => {
     if (!isLoading && !seguro) {
       router.replace("/not-found");
+      console.error("No se encontró información del seguro con ID:", id_seguro);
     }
   }, [seguro, isLoading, router]);
 
