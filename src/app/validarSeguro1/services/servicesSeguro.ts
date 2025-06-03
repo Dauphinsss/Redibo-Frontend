@@ -1,6 +1,8 @@
 import { apiRecodeGeneral } from "@/api/apis_Recode";
 import { CarCardProps, CarApiResponse, Aseguradora, AseguradoraCardPropsRaw_Recode } from "@/app/validarSeguro1/interface/ListaAutoSeguro_Interface_Recode";
-import { transformarCarrosListSeguros, transformarSeguroListAseguradoras } from "@/app/validarSeguro1/utils/transforSeguro_Recode";
+import { transformarCarrosListSeguros, transformarSeguroListAseguradoras, transformSeguroTodo_Recode } from "@/app/validarSeguro1/utils/transforSeguro_Recode";
+import { SeguroConCoberturas_Interface_Recode } from "../interface/SeguroConCoberturas_Interface_Recode";
+import { SeguroRaw_Recode } from "../interface/SeguroRaw_Recode";
 
 export async function getCarsSeguro(): Promise<CarCardProps[]> {
     try {
@@ -19,5 +21,15 @@ export async function getSegurosCards(idAuto: number): Promise<Aseguradora[]> {
     } catch (error) {
         console.error("Error al obtener los seguros del auto:", error);
         return [];
+    }
+}
+
+export async function getSeguroCompletoPorId(idAuto: number): Promise<SeguroConCoberturas_Interface_Recode | null> {
+    try {
+        const response = await apiRecodeGeneral.get<SeguroRaw_Recode[]>(`/infoSeguro/${idAuto}`);
+        return transformSeguroTodo_Recode(response.data);
+    } catch (error) {
+        console.error("Error al obtener el seguro completo por ID:", error);
+        return null;
     }
 }

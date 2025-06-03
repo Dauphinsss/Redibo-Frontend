@@ -10,18 +10,18 @@ import { useSeguroCoberturas } from "@/app/validarSeguro1/hooks/useSeguroCobertu
 import FormularioRecode from "@/app/validarSeguro1/components/cobertura/FormularioRecode";
 
 interface Props {
-  id_carro: string;
+  id_seguro: number;
 }
 
-export default function CoberturaRecodeClient({ id_carro }: Props) {
+export default function CoberturaRecodeClient({ id_seguro }: Props) {
   const router = useRouter();
-  const { data: seguro, isLoading } = useSeguroCoberturas(id_carro);
+  const { data: seguro, isLoading } = useSeguroCoberturas(id_seguro);
 
   useEffect(() => {
-    if (!id_carro || isNaN(Number(id_carro))) {
+    if (!id_seguro || isNaN(Number(id_seguro))) {
       router.replace("/not-found");
     }
-  }, [id_carro, router]);
+  }, [id_seguro, router]);
 
   useEffect(() => {
     if (!isLoading && !seguro) {

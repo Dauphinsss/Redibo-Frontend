@@ -48,7 +48,7 @@ export const useCoberturasStore = create<EstadoCobertura>((set) => ({
 
   abrirPopup: (indice) =>
     set((state) => {
-      const draft =
+      const draft: CoberturaInterface =
         indice !== undefined
           ? state.lista[indice]
           : {

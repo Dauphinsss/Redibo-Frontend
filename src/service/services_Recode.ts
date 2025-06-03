@@ -1,6 +1,5 @@
 import {apiCarById, apiCobertura} from "@/api/apis_Recode";
 import { CondicionesUsoResponse } from "@/app/reserva/interface/CondicionesUsoVisual_interface_Recode";
-import {EnlaceInterface } from "@/app/validarSeguro1/interface/CoberturaForm_Interface_Recode";
 
 import { RawCondicionesUsoResponse } from "@/app/reserva/interface/RawCondicionesUsoVisuali_Interface_Recode";
 import { transformCondiciones_Recode } from "@/app/reserva/utils/transformCondicionesVisuali_Recode";

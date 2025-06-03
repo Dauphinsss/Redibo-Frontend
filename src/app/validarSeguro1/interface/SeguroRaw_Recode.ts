@@ -1,44 +1,37 @@
 export interface SeguroRaw_Recode {
     id: number;
-    marca: string;
-    modelo: string;
+    fechaInicio: string;
+    fechaFin: string;
+    enlaceSeguro: string | null;
 
-    Imagen: {
+    Carro: {
         id: number;
-        data: string;
-        id_carro: number;
-    }[];
-
-    Usuario: {
-        id: number;
-        nombre: string;
-        telefono: string;
-        foto: string;
-        UsuarioRol: {
-        Rol: {
+        marca: string;
+        modelo: string;
+        Imagen: {
             id: number;
-            rol: string;
-        };
+            data: string;
+            id_carro: number;
         }[];
+        Usuario: {
+            id: number;
+            nombre: string;
+            telefono: string;
+            foto: string | null;
+        };
     };
 
-    SeguroCarro: {
-        fechaInicio: string;
-        fechaFin: string;
-        enlaceSeguro: string;
+    Seguro: {
+        id: number;
+        empresa: string;
+        nombre: string;
+        tipoSeguro: string;
+    };
 
-        Seguro: {
-            id: number;
-            empresa: string;
-            nombre: string;
-            tipoSeguro: string;
-        };
-
-        tiposeguro: {
-            id: number;
-            tipoda_o: string;
-            descripcion: string;
-            cantidadCobertura: string;
-        }[];
+    tiposeguro: {
+        id: number;
+        tipoda_o: string;
+        descripcion: string;
+        cantidadCobertura: string;
     }[];
 }

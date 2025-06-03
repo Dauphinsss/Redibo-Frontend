@@ -43,7 +43,7 @@ export default function FormularioRecode({ initialDataFor }: Props) {
         <p className="text-gray-500">{initialDataFor.nombre_empresa_seguro}</p>
         <p className="text-gray-500">{initialDataFor.tipo_seguro}</p>
         <a
-          href={initialDataFor.enlaceSeguroURL}
+          href={initialDataFor.enlaceSeguroURL ?? undefined}
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-600 hover:underline text-xs mt-2 inline-block"

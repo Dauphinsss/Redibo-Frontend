@@ -16,7 +16,7 @@ export interface SeguroConCoberturas_Interface_Recode {
     nombre_seguro: string;
     tipo_seguro: string;
     nombre_empresa_seguro: string;
-    enlaceSeguroURL: string;
+    enlaceSeguroURL: string | null;
     fecha_inicio: string;
     fecha_fin: string;
 
@@ -30,6 +30,7 @@ export interface CoberturaTransformada {
     descripcion_cobertura?: string;
     cantida_cobertura: string;
 }
+
 
 export interface PostCoberturaPayload {
     id_SeguroCarro: number;

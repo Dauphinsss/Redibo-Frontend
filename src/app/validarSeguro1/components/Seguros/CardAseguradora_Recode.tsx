@@ -11,7 +11,7 @@ function CardAseguradora_Recode({
   fechaInicio,
   fechaFin,
 }: Aseguradora) {
-  const enlaceDestino = `/detalle-seguro/${idAseguradora}`;
+  const enlaceDestino = `/formularioCobertura_Recode/${idAseguradora}`;
 
   return (
     <Link

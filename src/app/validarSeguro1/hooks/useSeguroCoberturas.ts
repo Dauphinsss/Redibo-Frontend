@@ -1,8 +1,8 @@
 import useSWR from "swr";
 import { z } from "zod";
-import { getInsuranceByID } from "@/service/services_Recode";
 import { SeguroConCoberturas_Interface_Recode } from "@/app/validarSeguro1/interface/SeguroConCoberturas_Interface_Recode";
 import { useCoberturasStore } from "./useCoberturasStore";
+import { getSeguroCompletoPorId } from "../services/servicesSeguro";
 
 const SeguroSchema: z.ZodType<SeguroConCoberturas_Interface_Recode> = z.object({
   id_carro: z.number(),
@@ -15,7 +15,7 @@ const SeguroSchema: z.ZodType<SeguroConCoberturas_Interface_Recode> = z.object({
   fotoURL_propietario: z.string(),
   fecha_inicio: z.string(),
   fecha_fin: z.string(),
-  enlaceSeguroURL: z.string(),
+  enlaceSeguroURL: z.string().nullable(),
   id_seguro: z.number(),
   nombre_empresa_seguro: z.string(),
   nombre_seguro: z.string(),
@@ -30,9 +30,9 @@ const SeguroSchema: z.ZodType<SeguroConCoberturas_Interface_Recode> = z.object({
   ),
 });
 
-export const useSeguroCoberturas = (id_carro: string) =>
-  useSWR(id_carro ? ["seguro", id_carro] : null, async () => {
-    const raw = await getInsuranceByID(id_carro);
+export const useSeguroCoberturas = (id_seguro: number) =>
+  useSWR(id_seguro ? ["seguro", id_seguro] : null, async () => {
+    const raw = await getSeguroCompletoPorId(id_seguro);
     if (!raw) return null;
 
     const parsed = SeguroSchema.safeParse(raw);
