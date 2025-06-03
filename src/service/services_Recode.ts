@@ -9,6 +9,7 @@ import { transformDetailsHost_Recode } from "@/app/reserva/utils/transformDetail
 import { transformSeguroTodo_Recode } from "@/app/validarSeguro1/utils/transforSeguro_Recode";
 import { PostCoberturaPayload, PutCoberturaPayload, SeguroConCoberturas_Interface_Recode } from "@/app/validarSeguro1/interface/SeguroConCoberturas_Interface_Recode";
 import { SeguroRaw_Recode } from "@/app/validarSeguro1/interface/SeguroRaw_Recode";
+import { EnlaceInterface } from "@/app/validarSeguro1/interface/CoberturaForm_Interface_Recode";
 
 
 

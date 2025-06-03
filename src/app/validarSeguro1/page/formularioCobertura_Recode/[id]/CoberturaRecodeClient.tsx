@@ -19,6 +19,7 @@ export default function CoberturaRecodeClient({ id_seguro }: Props) {
 
   useEffect(() => {
     if (!id_seguro || isNaN(Number(id_seguro))) {
+      console.error("ID de seguro inválido:", id_seguro);
       router.replace("/not-found");
     }
   }, [id_seguro, router]);
