@@ -1,7 +1,6 @@
 import React, { memo, useState } from "react";
 import Image from "next/image";
-import { CarIcon } from "lucide-react";
-
+import { CarIcon } from "lucide-react"; 
 interface CarImageProps {
   src?: string | null;
   alt: string;
@@ -15,8 +14,8 @@ function CarImage_Recode({ src, alt }: CarImageProps) {
   };
 
   // Dimensiones consistentes para la imagen y el placeholder
-  const imageWidth = 160;
-  const imageHeight = 128;
+  const imageWidth = 160; 
+  const imageHeight = 128; 
 
   return (
     <div 
@@ -29,11 +28,11 @@ function CarImage_Recode({ src, alt }: CarImageProps) {
             src={src}
             alt={alt}
             layout="fill"
-            objectFit="cover"
+            objectFit="contain"
             sizes={`${imageWidth}px`} 
-            onError={handleError} 
+            onError={handleError}
             loading="lazy"
-            unoptimized={src.startsWith('http')}
+            unoptimized={!!src && (src.startsWith('http') || src.startsWith('https'))}
           />
         </div>
       ) : (
