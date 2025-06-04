@@ -1,4 +1,4 @@
-import {apiCarById, apiCobertura} from "@/api/apis_Recode";
+import {apiCarById, apiCobertura, apiRecodeComentario, apiRecodePuntos} from "@/api/apis_Recode";
 import { CondicionesUsoResponse } from "@/app/reserva/interface/CondicionesUsoVisual_interface_Recode";
 
 import { RawCondicionesUsoResponse } from "@/app/reserva/interface/RawCondicionesUsoVisuali_Interface_Recode";
@@ -112,7 +112,7 @@ export const getDetalleHost_Recode = async (id_host: number) => {
 
 export const getCalificacionesHost = async (id_host: number) => {
   try {
-    const response = await apiCarById.get(`/userhost/comentarioGet/${id_host}`);
+    const response = await apiRecodePuntos.get(`/userhost/comentarioGet/${id_host}`);
     return response.data;
   } catch (error) {
     console.error("Error al obtener calificaciones del host:", error);
@@ -122,7 +122,7 @@ export const getCalificacionesHost = async (id_host: number) => {
 
 export const getComentariosHost = async (id_host: number) => {
   try {
-    const response = await apiCarById.get(`/userhost/calificacionesGet/${id_host}`);
+    const response = await apiRecodeComentario.get(`/userhost/calificacionesGet/${id_host}`);
     return response.data;
   } catch (error) {
     console.error("Error al obtener comentarios del host:", error);
@@ -132,7 +132,7 @@ export const getComentariosHost = async (id_host: number) => {
 
 export const postComentarioHost = async (id_host: number, id_renter: number, comentario: string) => {
   try {
-    const response = await apiCarById.post("/userhost/comentarioHostPost", {
+    const response = await apiRecodeComentario.post("/userhost/comentarioHostPost", {
       id_host,
       id_renter,
       comentario,
@@ -146,7 +146,7 @@ export const postComentarioHost = async (id_host: number, id_renter: number, com
 
 export const postCalificacionHost = async (id_host: number, id_renter: number, calificacion: number) => {
   try {
-    const response = await apiCarById.post("/userhost/calificacionesPost", {
+    const response = await apiRecodePuntos.post("/userhost/calificacionesPost", {
       id_host,
       id_renter,
       calificacion,
