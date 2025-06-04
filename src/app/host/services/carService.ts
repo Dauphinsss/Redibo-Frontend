@@ -215,7 +215,19 @@ export async function createFullCar(
   images: File[] = []
 ): Promise<CreateFullCarResponse> {
   try {
-    const resp = await API.post<CreateFullCarResponse>('/api/v2/cars/full', payload);
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      return { 
+        success: false, 
+        data: { id: -1 },
+        message: "No se encontró el token de autenticación"
+      };
+    }
+    const resp = await API.post<CreateFullCarResponse>('/api/v2/cars/full', payload, 
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
     const result = resp.data;
     
     // Si la creación fue exitosa y hay imágenes, subirlas
