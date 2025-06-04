@@ -164,10 +164,11 @@ export function ButtonMarca({
               placeholder="Buscar marca de vehículo..."
               className="pl-10"
             />
-            <div className="text-xs text-right text-muted-foreground mt-1">
-              {searchTerm.length}/50 caracteres
-            </div>
-
+            {searchTerm.length >=45 &&(
+              <div className="text-xs text-right text-muted-foreground mt-1">
+                {searchTerm.length}/50 caracteres
+              </div>
+            )}
           </div>
         </div>
 
