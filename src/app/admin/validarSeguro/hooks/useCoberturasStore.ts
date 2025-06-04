@@ -1,67 +1,67 @@
 import { create } from "zustand";
-import { CoberturaInterface } from "@/app/admin/validarSeguro/interface/CoberturaForm_Interface_Recode";
-
+import { CoberturaInterface } from "../interface/SeguroConCoberturas_Interface_Recode";
 interface EstadoCobertura {
   lista: (CoberturaInterface & { isNew?: boolean })[];
-  id_carro_actual: number;
+  id_poliza_actual: number;
   popup: { abierta: boolean; indice?: number };
   draft: CoberturaInterface | null;
 
-  setLista: (nuevas: CoberturaInterface[], id_carro: number) => void;
+  setLista: (nuevas: CoberturaInterface[], id_poliza_param: number) => void;
   agregar: (c: CoberturaInterface) => void;
   editar: (i: number, c: CoberturaInterface) => void;
   eliminar: (i: number) => void;
 
   abrirPopup: (indice?: number) => void;
   cerrarPopup: () => void;
-  setDraft: (c: CoberturaInterface) => void;
+  setDraft: (c: CoberturaInterface | null) => void;
 }
 
 export const useCoberturasStore = create<EstadoCobertura>((set) => ({
   lista: [],
-  id_carro_actual: 0,
+  id_poliza_actual: 0,
   popup: { abierta: false },
   draft: null,
 
-  setLista: (nuevas, id_carro) =>
+  setLista: (nuevas, id_poliza_param) =>
     set({
       lista: nuevas.map((c) => ({ ...c, isNew: false })),
-      id_carro_actual: id_carro,
+      id_poliza_actual: id_poliza_param,
     }),
 
   agregar: (c) =>
-    set((s) => ({
-      lista: [...s.lista, c],
+    set((state) => ({
+      lista: [...state.lista, { ...c, isNew: true }], 
     })),
 
   editar: (i, c) =>
-    set((s) => ({
-      lista: s.lista.map((item, idx) =>
+    set((state) => ({
+      lista: state.lista.map((item, idx) =>
         idx === i ? { ...c, isNew: item.isNew } : item
       ),
     })),
 
   eliminar: (i) =>
-    set((s) => ({
-      lista: s.lista.filter((_, idx) => idx !== i),
+    set((state) => ({
+      lista: state.lista.filter((_, idx) => idx !== i),
     })),
 
-  abrirPopup: (indice) =>
+  abrirPopup: (indice?: number) =>
     set((state) => {
-      const draft: CoberturaInterface =
-        indice !== undefined
-          ? state.lista[indice]
-          : {
-              id: Date.now(),
-              id_carro: state.id_carro_actual,
-              tipodaño: "",
-              descripcion: "",
-              valides: "0B",
-            };
-
+      let draftData: CoberturaInterface;
+      if (indice !== undefined && state.lista[indice]) {
+        draftData = { ...state.lista[indice] };
+      } else {
+        draftData = {
+          id: Date.now(),
+          id_poliza: state.id_poliza_actual, 
+          tipodaño: "",
+          descripcion: "",
+          valides: "0B",
+        };
+      }
       return {
         popup: { abierta: true, indice },
-        draft,
+        draft: draftData,
       };
     }),
 
