@@ -90,6 +90,10 @@ export function ButtonMarca({
   }, [searchTerm, allMarcas]);
 
   const handleMarcaSelect = (marca: Marca) => {
+    if (!navigator.onLine) {
+    alert("Error de conexión. Verifique su red."); // criterio de aceptacion 23
+    return;
+    }
     setSelectedMarca(marca);
     onFilterChange(marca);
     setSearchTerm('');
@@ -161,8 +165,19 @@ export function ButtonMarca({
                 //const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ-]/g, ''); permite guiones "Mercedes-Benz"
                 setSearchTerm(onlyValid.trim());
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const filtered = allMarcas.filter(marca =>// Ejecutar la búsqueda manualmente
+                    marca.name.toLowerCase().includes(searchTerm.toLowerCase())
+                  );
+                  setMarcas(filtered);
+                }
+              }}
               placeholder="Buscar marca de vehículo..."
-              className="pl-10"
+              //className="pl-10"
+              //className="pl-10 focus:ring-2 focus:ring-primary focus:border-primary"//detecta cambios de color de borde
+              className="pl-10 border border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+
             />
             {searchTerm.length >=45 &&(
               <div className="text-xs text-right text-muted-foreground mt-1">
