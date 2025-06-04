@@ -1,31 +1,49 @@
-import React from "react";
+import React, { memo, useState } from "react";
 import Image from "next/image";
-import { CarImageProps } from "@/app/admin/validarSeguro/interface/ListaAutoSeguro_Interface_Recode";
+import { CarIcon } from "lucide-react";
 
-function CarImage_Recode({
-  src,
-  alt,
-}: CarImageProps) {
+interface CarImageProps {
+  src?: string | null;
+  alt: string;
+}
+
+function CarImage_Recode({ src, alt }: CarImageProps) {
+  const [error, setError] = useState(false);
+
+  const handleError = () => {
+    setError(true);
+  };
+
+  // Dimensiones consistentes para la imagen y el placeholder
+  const imageWidth = 160;
+  const imageHeight = 128;
+
   return (
-    <div className="w-40 h-32 rounded-xl overflow-hidden shadow-md bg-gray-100 flex items-center justify-center">
-      {src ? (
-        <div className="relative w-[180px] h-full flex items-center justify-center">
+    <div 
+      className="flex-shrink-0 rounded-lg overflow-hidden shadow-md bg-gray-100 flex items-center justify-center"
+      style={{ width: `${imageWidth}px`, height: `${imageHeight}px` }}
+    >
+      {src && !error ? (
+        <div className="relative w-full h-full">
           <Image
             src={src}
             alt={alt}
-            fill
-            className="object-contain"
-            sizes="160px"
+            layout="fill"
+            objectFit="cover"
+            sizes={`${imageWidth}px`} 
+            onError={handleError} 
             loading="lazy"
+            unoptimized={src.startsWith('http')}
           />
         </div>
       ) : (
-        <span className="text-sm bg-gray-200 text-black flex items-center justify-center h-full w-full">
-          Sin imagen
-        </span>
+        <div className="w-full h-full flex flex-col items-center justify-center bg-gray-200 text-gray-500">
+          <CarIcon className="w-12 h-12 mb-1" />
+          <span className="text-xs text-center px-1">Imagen no disponible</span>
+        </div>
       )}
     </div>
   );
-};
+}
 
-export default CarImage_Recode;
+export default memo(CarImage_Recode);

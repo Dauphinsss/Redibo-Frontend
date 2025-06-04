@@ -15,7 +15,7 @@ function CarList_Recode({ carCards }: Props) {
   const [idSeleccionado, setIdSeleccionado] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  const ITEMS_PER_PAGE = 3;
+  const ITEMS_PER_PAGE = 5;
   const totalPages = Math.ceil(carCards.length / ITEMS_PER_PAGE);
 
   const currentItems = carCards.slice(
