@@ -298,6 +298,7 @@ export default function RenterDetails() {
                 <ReportProfileDialog
                   renterId={String(renterDetails.id)}
                   renterName={`${renterDetails.firstName} ${renterDetails.lastName}`}
+                  renterRole="RENTER"
                 >
                   <Button
                     variant="outline"
