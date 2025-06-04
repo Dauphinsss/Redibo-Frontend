@@ -104,14 +104,12 @@ function PopUpCobertura() {
         });
         
         agregar({ 
-            ...nuevaCoberturaDesdeBackend, // Asume que tiene id, tipodaño, descripcion, valides
-            id_poliza: coberturaParaEnviar.id_poliza // Aseguramos que id_poliza esté presente
+            ...nuevaCoberturaDesdeBackend,
+            id_poliza: coberturaParaEnviar.id_poliza
         });
       }
       
-      // Mutar la clave de SWR para forzar la recarga de datos en useSeguroCoberturas
-      // La clave debe coincidir con la usada en useSWR en useSeguroCoberturas.ts
-      mutate(["seguroCompleto", id_poliza_actual]); // <--- NUEVO: Mutar SWR
+      mutate(["seguroCompleto", id_poliza_actual]);
       
       cerrarPopup();
     } catch (error) {
@@ -190,7 +188,7 @@ function PopUpCobertura() {
               onBlur={() => setTouchedFields((prev) => ({...prev, descripcion: true}))}
               maxLength={200}
             />
-             {esDescripcionInvalida && (
+            {esDescripcionInvalida && (
               <p className="text-xs text-red-500 mt-1">La descripción no puede exceder los 200 caracteres.</p>
             )}
           </div>
@@ -212,17 +210,17 @@ function PopUpCobertura() {
                 onChange={(e) => {
                   const val = e.target.value;
                   if (/^\d*\.?\d*$/.test(val)) {
-                     if (tipoMonto === "%" && parseFloat(val) > 100 && val.length <=3 && !val.includes('.')) {
-                        setValor("100"); 
-                        actualizarValidesEnDraft("100", tipoMonto);
-                     } else if (tipoMonto === "BOB" && val.length > 7) {
-                        setValor(val.slice(0,7));
-                        actualizarValidesEnDraft(val.slice(0,7), tipoMonto);
-                     }
-                     else {
-                        setValor(val);
-                        actualizarValidesEnDraft(val, tipoMonto);
-                     }
+                    if (tipoMonto === "%" && parseFloat(val) > 100 && val.length <=3 && !val.includes('.')) {
+                      setValor("100"); 
+                      actualizarValidesEnDraft("100", tipoMonto);
+                    } else if (tipoMonto === "BOB" && val.length > 7) {
+                      setValor(val.slice(0,7));
+                      actualizarValidesEnDraft(val.slice(0,7), tipoMonto);
+                    }
+                    else {
+                      setValor(val);
+                      actualizarValidesEnDraft(val, tipoMonto);
+                    }
                   }
                 }}
                 onBlur={() => setTouchedFields((prev) => ({ ...prev, valor: true }))}
