@@ -33,6 +33,7 @@ export function ButtonMarca({
 }: ButtonMarcaProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [tempSearchTerm, setTempSearchTerm] = useState(''); // Término temporal mientras se busca
   const [marcas, setMarcas] = useState<Marca[]>([]);
   const [allMarcas, setAllMarcas] = useState<Marca[]>([]);
   const [selectedMarca, setSelectedMarca] = useState<Marca | null>(null);
@@ -171,11 +172,11 @@ export function ButtonMarca({
 
   // Filtrar marcas según el término de búsqueda
   useEffect(() => {
-    if (searchTerm.length > 0) {
+    if (tempSearchTerm.length > 0) {
       setLoading(true);
       const timer = setTimeout(() => {
         const filtered = allMarcas.filter(marca =>
-          marca.name.toLowerCase().includes(searchTerm.toLowerCase())
+          marca.name.toLowerCase().includes(tempSearchTerm.toLowerCase())
         );
         setMarcas(filtered);
         setLoading(false);
@@ -184,7 +185,7 @@ export function ButtonMarca({
     } else {
       setMarcas(allMarcas.slice(0, 10));
     }
-  }, [searchTerm, allMarcas]);
+  }, [tempSearchTerm, allMarcas]);
 
   const handleMarcaSelect = async (marca: Marca) => {
     // Verificar conexión antes de aplicar el filtro
@@ -195,7 +196,9 @@ export function ButtonMarca({
     
     setSelectedMarca(marca);
     onFilterChange(marca);
+    // Limpiar búsquedas al seleccionar
     setSearchTerm('');
+    setTempSearchTerm('');
     setIsOpen(false);
   };
 
@@ -210,15 +213,26 @@ export function ButtonMarca({
     
     setSelectedMarca(null);
     onFilterChange(null);
+    // Limpiar búsquedas al limpiar selección
     setSearchTerm('');
+    setTempSearchTerm('');
   };
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (open) {
+      // Al abrir, resetear el término temporal para mostrar marcas por defecto
+      setTempSearchTerm('');
       setTimeout(() => inputRef.current?.focus(), 100);
-      if (searchTerm === '') {
-        setMarcas(allMarcas.slice(0, 10));
+      // Mostrar algunas marcas por defecto cuando se abre
+      setMarcas(allMarcas.slice(0, 10));
+    } else {
+      // Al cerrar sin seleccionar, limpiar la búsqueda temporal
+      // pero mantener searchTerm para la próxima apertura si había una selección previa
+      setTempSearchTerm('');
+      // Si no hay marca seleccionada, también limpiar searchTerm
+      if (!selectedMarca) {
+        setSearchTerm('');
       }
     }
   };
@@ -271,26 +285,31 @@ export function ButtonMarca({
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 ref={inputRef}
-                value={searchTerm}
+                value={tempSearchTerm}
                 onChange={(e) => {
                   const value = e.target.value.slice(0, 50);
                   const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]/g, '');
-                  setSearchTerm(onlyValid.trim());
+                  setTempSearchTerm(onlyValid.trim());
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     const filtered = allMarcas.filter(marca =>
-                      marca.name.toLowerCase().includes(searchTerm.toLowerCase())
+                      marca.name.toLowerCase().includes(tempSearchTerm.toLowerCase())
                     );
                     setMarcas(filtered);
+                  }
+                  // Limpiar búsqueda con Escape
+                  if (e.key === 'Escape') {
+                    setTempSearchTerm('');
+                    setMarcas(allMarcas.slice(0, 10));
                   }
                 }}
                 placeholder="Buscar marca de vehículo..."
                 className="pl-10 border border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-500"
               />
-              {searchTerm.length >= 45 && (
+              {tempSearchTerm.length >= 45 && (
                 <div className="text-xs text-right text-muted-foreground mt-1">
-                  {searchTerm.length}/50 caracteres
+                  {tempSearchTerm.length}/50 caracteres
                 </div>
               )}
             </div>
@@ -330,10 +349,10 @@ export function ButtonMarca({
                   </button>
                 ))}
               </div>
-            ) : searchTerm.length > 0 ? (
+            ) : tempSearchTerm.length > 0 ? (
               <div className="p-4 text-center">
                 <p className="text-sm text-muted-foreground">
-                  No se encontraron marcas con &quot;{searchTerm}&quot;
+                  No se encontraron marcas con &quot;{tempSearchTerm}&quot;
                 </p>
               </div>
             ) : allMarcas.length === 0 ? (
