@@ -15,6 +15,7 @@ import { ButtonMarca } from "../filtros/buttonMarca";
 import { ButtonTodos } from "../filtros/buttonTodos";
 import { AutoCard_Interfaces_Recode as Auto } from '@/app/busqueda/interface/AutoCard_Interface_Recode';
 import { ButtonGPS } from "../map/ButtonGPS";
+import { Coor } from "../../types/apitypes";
 
 // Interfaces para los nuevos filtros
 interface Host {
@@ -58,6 +59,7 @@ interface InfiniteFilterCarouselProps {
   className?: string
   // Nueva prop para pasar todos los autos disponibles para extraer marcas
   autosOriginales?: Auto[]
+  punto: Coor
 }
 
 /**
@@ -87,6 +89,7 @@ export function InfiniteFilterCarousel({
   autoScrollDelay = 3000,
   className = "",
   autosOriginales = [],
+  punto
 }: InfiniteFilterCarouselProps) {
 
   const autoplayPlugin = React.useRef(
@@ -164,6 +167,7 @@ export function InfiniteFilterCarousel({
           onGpsToggle={onGpsToggle}
           radio={radio}
           setRadio={setRadio}
+          punto={punto}
         />
       ),
     },

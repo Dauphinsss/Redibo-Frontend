@@ -14,6 +14,7 @@ import { InfiniteFilterCarousel } from "@/app/busqueda/components/fitroCarusel/i
 import { CIUDADES_BOLIVIA } from "./constants";
 import { useRouter } from 'next/navigation';
 import CustomSearchWrapper from "@/app/busqueda/hooks/customSearchHU/CustomSearchWrapper";
+import { Coor } from "./types/apitypes";
 
 type Props = {
   ciudad?: string;
@@ -38,10 +39,10 @@ interface Host {
 }
 
 export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
-  
+
   const router = useRouter();
   const [radio, setRadio] = useState(1);
-  const [punto, setPunto] = useState({ lon: 0, alt: 0 });
+  const [punto, setPunto] = useState<Coor>({ lon: 0, alt: 0 });
 
   const [mostrarSidebar, setMostrarSidebar] = useState(false);
 
@@ -76,7 +77,7 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
 
   const [busqueda, setBusqueda] = useState("");
   const [gpsActive, setGpsActive] = useState(false);
-  
+
   // Estados para los nuevos filtros
   const [marcaSeleccionada, setMarcaSeleccionada] = useState<Marca | null>(null);
   const [mostrarTodos, setMostrarTodos] = useState(true);
@@ -92,13 +93,13 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
     console.log('Filtro por host:', host);
     setHostSeleccionado(host);
     setMostrarTodos(false);
-    
+
     if (host) {
-        // Filtrar por el nombre del host
-        setFiltroHost(host.name);
+      // Filtrar por el nombre del host
+      setFiltroHost(host.name);
     } else {
-        // Limpiar filtro de host
-        setFiltroHost('');
+      // Limpiar filtro de host
+      setFiltroHost('');
     }
   };
 
@@ -106,16 +107,16 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
     aplicarFiltroCalificacion(calificacion);
     console.log('Filtro por calificación:', calificacion);
   };
-  
+
   const handleViajesFilter = (minViajes: number) => {
     aplicarFiltroViajes(minViajes);
     console.log('Filtro por viajes:', minViajes);
   };
-  
+
   const handleAirportFilter = () => {
     router.push('/filtrarAeropuerto');
   };
-  
+
   const toggleGPSFilter = () => {
     if (gpsActive) setPunto({ lon: 0, alt: 0 });
     setGpsActive((prev) => !prev);
@@ -125,7 +126,7 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
   const handleMarcaFilter = (marca: Marca | null) => {
     setMarcaSeleccionada(marca);
     setMostrarTodos(false);
-    
+
     if (marca) {
       // Usar la función filtrarAutos existente con el nombre de la marca
       setBusqueda(marca.name);
@@ -220,6 +221,7 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
             isAllActive={mostrarTodos}
             autoScrollDelay={4000}
             autosOriginales={autos}
+            punto={punto}
           />
         </div>
       </div>

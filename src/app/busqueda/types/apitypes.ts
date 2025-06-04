@@ -6,3 +6,5 @@ export type Car = {
   imagenes: string
   veces_alquilado: number
 }
+
+export type Coor = { lon: number, alt: number }

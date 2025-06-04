@@ -1,11 +1,14 @@
+import { Coor } from "../../types/apitypes";
+
 interface RadioControlProps {
   radio: number;
   setRadio: (value: number | ((prev: number) => number)) => void;
-  punto: { lon: number, alt: number };
+  punto: Coor;
+  gpsActive: boolean;
 }
 
-export default function Radio({ radio, setRadio, punto }: RadioControlProps) {
-  const isDisabled = punto.alt === 0 && punto.lon === 0;
+export default function Radio({ radio, setRadio, punto, gpsActive }: RadioControlProps) {
+  const isDisabled = (punto.alt === 0 && punto.lon === 0) || !gpsActive;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRadio(parseInt(e.target.value));
@@ -30,6 +33,7 @@ export default function Radio({ radio, setRadio, punto }: RadioControlProps) {
           onChange={handleChange}
           className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 focus:outline-none"
           aria-label="Ajustar radio"
+          disabled={isDisabled}
         />
         <div className="flex justify-between text-xs text-gray-500 mt-1 px-1">
           <span>1 km</span>
