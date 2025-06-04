@@ -33,15 +33,15 @@ export default function Home({ id }: HomeProps) {
   const [numComentarios, setNumComentarios] = useState(0);
   const [comentariosConCalificacion, setComentariosConCalificacion] = useState<number[]>([]);
   const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
- const promedioCalificacion = calificaciones.length > 0
-  ? (calificaciones.reduce((acc, cal) => acc + cal, 0) / calificaciones.length).toFixed(1)
-  : "0.0";  
-  
+  const promedioCalificacion = calificaciones.length > 0
+    ? (calificaciones.reduce((acc, cal) => acc + cal, 0) / calificaciones.length).toFixed(1)
+    : "0.0";
+
   const [ordenSeleccionado] = useState("Más reciente");
 
   const {
-  comentariosFiltrados,
-  formatearFecha
+    comentariosFiltrados,
+    formatearFecha
   } = useComentariosAuto(Number(id), filtroCalificacion, ordenSeleccionado);
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export default function Home({ id }: HomeProps) {
       setLoaded(true);
     })();
   }, [id]);
-   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const token = localStorage.getItem("auth_token");
     if (!token) {
@@ -138,8 +138,8 @@ export default function Home({ id }: HomeProps) {
                   />
                 </div>
               ))}
+            </div>
           </div>
-        </div>
           <div className="lg:w-1/3">
             <div className="sticky top-4 flex flex-col gap-4">
               <InfoDestacable
@@ -149,8 +149,8 @@ export default function Home({ id }: HomeProps) {
                 soat={auto.soat}
               />
               <button
-                onClick={handleSubmit }
-                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+                onClick={handleSubmit}
+                className="px-4 py-2 rounded-xl bg-black text-white hover:bg-gray-600 transition"
               >
                 vista pago
               </button>
