@@ -26,21 +26,20 @@ export default function Page() {
 
   function formatearFecha(fechaISO: string): string {
     const fecha = new Date(fechaISO);
-    const dia = String(fecha.getDate()+1).padStart(2, "0");
+    const dia = String(fecha.getDate() + 1).padStart(2, "0");
     const mes = String(fecha.getMonth() + 1).padStart(2, "0");
     const año = fecha.getFullYear();
-  return `${dia}/${mes}/${año}`;
+    return `${dia}/${mes}/${año}`;
   }
 
-
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div>
       <div className="sticky top-0 z-50 bg-white shadow overflow-visible">
-              <div className="border-b px-4 sm:px-6 lg:px-8 py-7">
-                <Header />
-              </div>
-            </div>
-      <div className="flex flex-col md:flex-row gap-6 items-start">
+        <div>
+          <Header />
+        </div>
+      </div>
+      <div className="flex flex-col md:flex-row gap-6 items-start p-6 max-w-6xl mx-auto">
         <PerfilHost
           nombreHost={host.nombre}
           fotoPerfil={host.foto}
@@ -52,7 +51,7 @@ export default function Page() {
         />
       </div>
 
-      <div className="mt-10 relative">
+      <div className="mt-20 relative flex flex-col max-w-6xl mx-auto">
         <h2 className="text-lg font-semibold mb-4">Mis Autos:</h2>
 
         {host.autos.length === 0 ? (
@@ -62,7 +61,7 @@ export default function Page() {
             {host.autos.map((auto, index) => (
               <div key={index} className="min-w-[250px] flex-shrink-0">
                 <TarjetaCar
-                  fotoAuto={auto.imagen} 
+                  fotoAuto={auto.imagen}
                   modeloAuto={auto.modelo}
                   marcaAuto={auto.marca}
                 />
