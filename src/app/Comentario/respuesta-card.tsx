@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -9,7 +8,6 @@ import { Badge } from "@/components/ui/badge"
 import { Star, Send, MessageCircle, Car, Calendar, User } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-
 // Simulando la URL de la API
 import { API_URL } from "@/utils/bakend"
 interface RespuestaHost {
@@ -42,7 +40,6 @@ interface RespuestaRenter {
   }
   comentariosRespuesta?: RespuestaHost[]
 }
-
 interface RespuestaCardProps {
   respuesta: RespuestaRenter
   onUpdateAction: () => void
