@@ -31,7 +31,7 @@ import {
   LogOut,
   Settings,
   HelpCircle,
-  Receipt, // Importamos icono para órdenes de pago
+  Receipt,MessageSquare, // Importamos icono para órdenes de pago
 } from "lucide-react";
 import { SteeringWheel } from "./steering-wheel-icon";
 import { Footer } from "@/components/ui/footer";
@@ -180,6 +180,14 @@ export default function ProfilePage() {
       icon: Receipt,
       alwaysShow: false,
       requiresRole: "RENTER",
+    },
+    {
+      id: "comentarios",
+      title: "Respuestas de Arrendatarios",
+      icon: MessageSquare,
+      alwaysShow: false,
+      requiresRole: "HOST",
+      onClick: () => router.push("/Comentario/HostRespuesta")
     },
     {
       id: "actividad-automovil",
