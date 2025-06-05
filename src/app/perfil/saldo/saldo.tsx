@@ -116,12 +116,14 @@ export default function SaldoImproved() {
     setIsDragOver(false);
   }, []);
 
+  const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
 
     const files = Array.from(e.dataTransfer.files);
-    const imageFile = files.find((file) => file.type.startsWith("image/"));
+    const imageFile = files.find((file) => allowedTypes.includes(file.type));
 
     if (imageFile) {
       handleFileSelection(imageFile);
@@ -129,9 +131,15 @@ export default function SaldoImproved() {
   }, []);
 
   const handleFileSelection = (file: File) => {
+    // Permitir los tipo de archivos permitidos
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Solo se permiten archivos PNG, JPG o JPEG.");
+      return;
+    }
+
     if (file.size > 10 * 1024 * 1024) {
       // 10MB limit
-      alert("El archivo es demasiado grande. Máximo 10MB.");
+      toast.error("El archivo es demasiado grande. Máximo 10MB.");
       return;
     }
 
@@ -294,6 +302,7 @@ export default function SaldoImproved() {
                             <Input
                               id="amount"
                               type="number"
+                              min="0"
                               placeholder="0.00"
                               value={withdrawAmount}
                               onChange={(e) => {
@@ -302,6 +311,11 @@ export default function SaldoImproved() {
                                   validateAmount(e.target.value);
                                 } else {
                                   setAmountError("");
+                                }
+                              }}
+                              onKeyDown={(e) => {
+                                if (["e", "E", "+", "-"].includes(e.key)) {
+                                e.preventDefault();
                                 }
                               }}
                               className="mt-1"
@@ -467,12 +481,14 @@ export default function SaldoImproved() {
 
                                 {/* Image preview */}
                                 {qrPreview && (
-                                  <div className="relative">
+                                  <div
+                                    className="relative cursor-pointer group"
+                                    onClick={() => setIsImageModalOpen(true)}
+                                  >
                                     <img
                                       src={qrPreview || "/placeholder.svg"}
                                       alt="Vista previa del QR"
                                       className="w-full h-32 object-cover rounded-lg border cursor-pointer"
-                                      onClick={() => setIsImageModalOpen(true)}
                                     />
                                     <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors rounded-lg flex items-center justify-center opacity-0 hover:opacity-100">
                                       <Eye className="w-6 h-6 text-white" />
