@@ -376,7 +376,8 @@ export function ButtonMarca({
                 value={tempSearchTerm}
                 onChange={(e) => {
                   const value = e.target.value.slice(0, 50);
-                  const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]/g, '');
+                  //const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]/g, '');
+                  const onlyValid = value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑ]/g, '');//NO PERMITE NUMEROS
                   setTempSearchTerm(onlyValid.trim());
                 }}
                 onKeyDown={handleKeyDown}
