@@ -24,9 +24,11 @@ interface ReportProfileDialogProps {
   renterId: string
   renterName: string
   renterRole: string
+  viewerRoles: string[]
+  targetUserRoles: { rol: string }[];
 }
 
-export default function ReportProfileDialog({ children, renterId, renterName, renterRole }: ReportProfileDialogProps) {
+export default function ReportProfileDialog({ children, renterId, renterName, renterRole, viewerRoles, targetUserRoles }: ReportProfileDialogProps) {
   const [reason, setReason] = useState("")
   const [additionalInfo, setAdditionalInfo] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -35,12 +37,14 @@ export default function ReportProfileDialog({ children, renterId, renterName, re
   const [reachedDailyLimit, setReachedDailyLimit] = useState(false)
   const maxLength = 200 // Límite máximo de caracteres
 
-  
-  if (renterRole !== "RENTER") {
-    return null
+  const isViewerHost = viewerRoles.includes("HOST");
+  const isTargetUserRenter = targetUserRoles.some(roleObj => roleObj.rol === "RENTER");
+  const isViewingOwnProfile = false; 
+
+  if (!isViewerHost || !isTargetUserRenter || isViewingOwnProfile) {
+    return null;
   }
 
-  
   useEffect(() => {
     const checkPreviousReports = async () => {
       try {
@@ -69,7 +73,6 @@ export default function ReportProfileDialog({ children, renterId, renterName, re
     }
   }, [renterId, isOpen])
 
- 
   useEffect(() => {
     if (!isOpen) {
       setReason("");
