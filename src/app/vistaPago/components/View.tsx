@@ -3,8 +3,12 @@ import React, { useState } from 'react'
 import { useCardByID, useCreatePaymentOrder, useHostById, useRenter, useGarantiaByCarId } from '../hooks/useCarByID'
 import Image from 'next/image'
 import Header from '@/components/ui/Header';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function View({ id }: { id: number }) {
+    const router = useRouter();
+  const [mostrarModal, setMostrarModal] = useState(false);
   const { mutate, error, data } = useCreatePaymentOrder();
   const { data: car } = useCardByID(id)
   const { data: host } = useHostById(id)
@@ -12,6 +16,7 @@ export default function View({ id }: { id: number }) {
   const { data: garantia } = useGarantiaByCarId(id);
   const [clickCheck, setclickCheck] = useState(false)
   const handleSubmit = () => {
+    setMostrarModal(true)
     mutate({
       id_carro: id,
       id_usuario_host: Number(host?.id_host ?? 0),
@@ -86,10 +91,27 @@ export default function View({ id }: { id: number }) {
               type="button"
               onClick={handleSubmit}
               disabled={!clickCheck}
-              className={`mt-10 ml-auto block bg-gray-300 hover:bg-gray-400 px-10 py-2 rounded font-semibold ${clickCheck?'opacity-100' : 'opacity-50'}`}
+              className={`mt-10 ml-auto block bg-gray-300 hover:bg-gray-400 px-10 py-2 rounded font-semibold ${clickCheck ? 'opacity-100' : 'opacity-50'}`}
             >
               Pagar
             </button>
+            {mostrarModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-sm">
+                <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md relative">
+                  <button
+                    onClick={() => setMostrarModal(false)}
+                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+                  >
+                    ✕
+                  </button>
+                  <h2 className="text-xl font-bold mb-4">Mensaje</h2>
+                  <p className="mb-4">¡Gracias! Tu pago está siendo verificado. Te notificaremos en breve.</p>
+                  <Link href="/busqueda" onClick={() => setMostrarModal(false)} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition">
+                    Seguir alquilando
+                  </Link>
+                </div>
+              </div>
+            )}
           </section>
         </div>
       </main>
