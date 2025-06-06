@@ -87,7 +87,7 @@ export const Airports =  [
     },
     {
         "nombre": "Aeropuerto de Copacabana",
-        "ciudad": { "nombre":"La Paz."},
+        "ciudad": { "nombre":"La Paz"},
         "latitud": -16.1922,
         "longitud": -69.0974
     },
@@ -165,13 +165,13 @@ export const Airports =  [
     },
     {
         "nombre": "Aeropuerto Capitán Germán Quiroga Guardia",
-        "ciudad": { "nombre":"Beni "},
+        "ciudad": { "nombre":"Beni"},
         "latitud": -14.866667,
         "longitud": -66.75
     },
     {
         "nombre": "Aeropuerto de San Ignacio de Moxos",
-        "ciudad": { "nombre":"Beni "},
+        "ciudad": { "nombre":"Beni"},
         "latitud": -14.9656,
         "longitud": -65.6335
     },
@@ -219,13 +219,13 @@ export const Airports =  [
     },
     {
         "nombre": "Aeropuerto El Trompillo",
-        "ciudad": { "nombre":"Santa Cruz "},
+        "ciudad": { "nombre":"Santa Cruz"},
         "latitud": -17.811389,
         "longitud": -63.171389
     },
     {
         "nombre": "Aeropuerto Internacional Viru Viru",
-        "ciudad": { "nombre":"Santa Cruz "},
+        "ciudad": { "nombre":"Santa Cruz"},
         "latitud": -17.644722,
         "longitud": -63.135278
     },
