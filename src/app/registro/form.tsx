@@ -108,6 +108,21 @@ export default function Form() {
 
   }, []);
 
+const normalizarNombre = (name: string): string => {
+  if (!name) return "";
+  return name
+    .normalize("NFC")
+    .trim()
+    .replace(/\s+/g, " ")
+    .split(" ")
+    .map((word) => {
+      if (word.length === 0) return word;
+      return word.charAt(0).toLocaleUpperCase("es-ES") + 
+             word.slice(1).toLocaleLowerCase("es-ES");
+    })
+    .join(" ");
+};
+
   const nombreValido = (name: string) => {
     if (!name) return false;
 
@@ -205,7 +220,7 @@ export default function Form() {
       password.length < 8 ||
       !/[A-Z]/.test(password) ||
       !/[0-9]/.test(password) ||
-      !/[^A-Za-z0-9]/.test(password)
+      !/[^A-Za-z0-9áéíóúÁÉÍÓÚñÑ]/.test(password)
     ) {
       toast.error("Por favor, ingrese una contraseña válida.");
       return;
@@ -217,7 +232,7 @@ export default function Form() {
     }
 
     const usuario = {
-      nombre: name,
+      nombre: normalizarNombre(name),
       correo: email,
       fechaNacimiento: birthdate,
       genero: gender,
@@ -744,12 +759,7 @@ export default function Form() {
                     }}
                     className={`w-full border rounded-md h-10 px-3 text-sm ${(cityTouched || isFormDirty) && (!city || city === 0) ? "border-red-500" : ""
                       }`}
-
-
-
                   >
-
-
                     <option value={0} disabled>
                       Seleccione una ciudad
                     </option>
@@ -764,8 +774,6 @@ export default function Form() {
                       Debes seleccionar una ciudad
                     </p>
                   )}
-
-
                 </div>
               </div>
 
@@ -829,7 +837,7 @@ export default function Form() {
                       <p className="text-sm text-red-500">
                         Debe contener al menos un número
                       </p>
-                    ) : !/[^A-Za-z0-9]/.test(password) ? (
+                    ) : !/[^A-Za-z0-9áéíóúÁÉÍÓÚñÑ]/.test(password) ? (
                       <p className="text-sm text-red-500">
                         Debe contener al menos un carácter especial
                       </p>
@@ -931,8 +939,6 @@ export default function Form() {
 
               </span>
             </div>
-
-
 
             <p className="text-sm text-gray-600">
               ¿Ya tienes una cuenta?{" "}

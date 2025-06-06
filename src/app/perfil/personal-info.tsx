@@ -189,19 +189,36 @@ export function PersonalInfo() {
     }
   };
 
+  const normalizarNombre = (name: string): string => {
+    if (!name) return "";
+    return name
+      .normalize("NFC")
+      .trim()
+      .replace(/\s+/g, " ")
+      .split(" ")
+      .map((word) => {
+        if (word.length === 0) return word;
+        return word.charAt(0).toLocaleUpperCase("es-ES") + 
+              word.slice(1).toLocaleLowerCase("es-ES");
+      })
+      .join(" ");
+  };
+
   const guardarNombre = async () => {
+    const cleaned = valorNombre.trim().replace(/\s+/g, " ");
+
     if (!valorNombre.trim()) {
       setErrores((prev) => ({ ...prev, nombre: "Este campo es obligatorio." }));
       return;
     }
-    if (valorNombre.trim().length < 3) {
+    if (cleaned.length < 3) {
       setErrores((prev) => ({
         ...prev,
         nombre: "El nombre debe tener al menos 3 caracteres.",
       }));
       return;
     }
-    if (valorNombre.trim().length > 60) {
+    if (cleaned.length > 60) {
       setErrores((prev) => ({
         ...prev,
         nombre: "El nombre no puede exceder los 60 caracteres.",
@@ -213,6 +230,14 @@ export function PersonalInfo() {
       setErrores((prev) => ({
         ...prev,
         nombre: "Sólo se permiten letras y espacios.",
+      }));
+      return;
+    }
+    const palabras = cleaned.split(" ");
+    if (palabras.length < 2 || palabras.some((p) => p.length < 2)) {
+      setErrores((prev) => ({
+        ...prev,
+        nombre: "Ingresa un nombre o apellido válido.",
       }));
       return;
     }
@@ -230,11 +255,11 @@ export function PersonalInfo() {
       esUsuarioGoogle = false;
     }
     const payload: Record<string, string> = {
-      nombre: valorNombre.trim(),
+      nombre: normalizarNombre(valorNombre),
     };
 
     if (!esUsuarioGoogle) {
-      const partes = valorNombre.trim().split(" ").filter((p) => p !== "");
+      const partes = normalizarNombre(valorNombre).split(" ").filter((p) => p !== "");
       const primerNombre = partes[0];
       const primerApellido = partes[1] || "";
       const nuevaFotoUrl = `https://ui-avatars.com/api/?name=${primerNombre}+${primerApellido}`;
@@ -301,7 +326,7 @@ export function PersonalInfo() {
       }));
       return;
     }
-    if (!/^[467]/.test(valorTelefono.trim())) {
+    if (!/^[467]\d{7}/.test(valorTelefono.trim())) {
       setErrores((prev) => ({
         ...prev,
         telefono: "El teléfono debe comenzar con 4, 6 o 7.",
@@ -331,7 +356,7 @@ export function PersonalInfo() {
       }));
       return;
     }
-    if (valorNacimiento < minDate) {
+    if (valorNacimiento < minDate || valorNacimiento > today) {
       setErrores((prev) => ({
         ...prev,
         fechaNacimiento: `Por favor ingrese una fecha valida.`,
@@ -571,8 +596,9 @@ export function PersonalInfo() {
                 <input
                   type="text"
                   id="telefono"
-                  className="w-full bg-transparent outline-none text-gray-800"
+                  className="w-full bg-transparent outline-none text-gray-800" 
                   value={valorTelefono}
+                  maxLength={8}
                   onChange={(e) =>
                     setValorTelefono(e.target.value.replace(/[^0-9]/g, ""))
                   }
@@ -809,7 +835,7 @@ export function PersonalInfo() {
                   onChange={(e) => setValorGenero(e.target.value)}
                   autoFocus
                 >
-                  <option value="">--Selecciona--</option>
+                  <option value="" disabled>Seleccione un género</option>
                   <option value="MASCULINO">Masculino</option>
                   <option value="FEMENINO">Femenino</option>
                   <option value="OTRO">Otro</option>
@@ -930,7 +956,7 @@ export function PersonalInfo() {
                   onChange={(e) => setValorCiudad(e.target.value)}
                   autoFocus
                 >
-                  <option value="">--Selecciona ciudad--</option>
+                  <option value="" disabled>Seleccione una ciudad</option>
                   {listaCiudades.map((ciud) => (
                     <option key={ciud.id} value={ciud.nombre}>
                       {ciud.nombre}

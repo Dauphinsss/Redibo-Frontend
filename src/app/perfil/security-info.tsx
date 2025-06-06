@@ -29,7 +29,7 @@ export const SecurityInfo = () => {
     return password.length >= 8 &&
            /[A-Z]/.test(password) &&
            /[0-9]/.test(password) &&
-           /[^A-Za-z0-9]/.test(password);
+           /[^A-Za-z0-9áéíóúÁÉÍÓÚñÑ]/.test(password);
   };
 
   const handleLogout = () => {
@@ -400,7 +400,7 @@ export const SecurityInfo = () => {
                     <p className="text-sm text-red-500">
                       Debe contener al menos un número
                     </p>
-                  ) : !/[^A-Za-z0-9]/.test(newPassword) ? (
+                  ) : !/[^A-Za-z0-9áéíóúÁÉÍÓÚñÑ]/.test(newPassword) ? (
                     <p className="text-sm text-red-500">
                       Debe contener al menos un carácter especial
                     </p>

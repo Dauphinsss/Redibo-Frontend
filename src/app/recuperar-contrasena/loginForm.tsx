@@ -42,7 +42,7 @@ export function LoginForm() {
   // Maneja el reenvío del código
   const handleResendCode = async () => {
     setResendDisabled(true);
-    setResendTimer(90); // Temporizador de 90 segundos después del reenvío
+    setResendTimer(90); // Temporizador
 
     try {
       const response = await axios.post(`${API_URL}/api/auth/request-recovery-code`, {
@@ -65,7 +65,7 @@ export function LoginForm() {
       password.length >= 8 &&
       /[A-Z]/.test(password) &&
       /[0-9]/.test(password) &&
-      /[^A-Za-z0-9]/.test(password)
+      /[^A-Za-z0-9áéíóúÁÉÍÓÚñÑ]/.test(password)
     );
   };
 
@@ -400,7 +400,7 @@ export function LoginForm() {
               <p className="text-sm text-red-500">
                 Debe contener al menos un número
               </p>
-            ) : !/[^A-Za-z0-9]/.test(newPassword) ? (
+            ) : !/[^A-Za-z0-9áéíóúÁÉÍÓÚñÑ]/.test(newPassword) ? (
               <p className="text-sm text-red-500">
                 Debe contener al menos un carácter especial
               </p>
