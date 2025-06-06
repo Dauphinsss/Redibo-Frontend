@@ -24,15 +24,15 @@ interface Carro {
   id: number
   marca: string
   modelo: string
-  imagenes: {
+  Imagen: {
     data: string
   }[]
 }
 
 interface Reserva {
   id: number
-  fecha_inicio: string
-  fecha_fin: string
+  fecha_inicio: Date
+  fecha_fin: Date
   estado: "PENDIENTE" | "CONFIRMADA" | "EN_CURSO" | "COMPLETADA" | "CANCELADA"
   Usuario: Usuario
   Carro: Carro
@@ -43,13 +43,13 @@ type SortableField = "marca" | "modelo" | "nombre" | "correo" | "telefono" | "fe
 
 export default function VehiclesRentadosPage() {
   const [reservaciones, setReservaciones] = useState<Reserva[]>([])
-  const [allReservaciones, setAllReservaciones] = useState<Reserva[]>([])
   const [registrosPorPagina, setRegistrosPorPagina] = useState("5")
   const [paginaActual, setPaginaActual] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [totalReservaciones, setTotalReservaciones] = useState(0)
   const [userId, setUserId] = useState<string | null>(null)
+  const [filtroEstado, setFiltroEstado] = useState<string>("")
   const [sortConfig, setSortConfig] = useState<{
     key: SortableField
     direction: SortDirection
@@ -95,29 +95,37 @@ export default function VehiclesRentadosPage() {
         throw new Error("No se encontró el token de autenticación")
       }
 
+      let apiUrl = `${API_URL}/api/reservas?hostId=${userId}&page=${paginaActual}&limit=${registrosPorPagina}`;
+
+      if (filtroEstado) {
+        apiUrl = `${apiUrl}&estado=${filtroEstado}`;
+      }
+
+      
+
       const response = await fetch(
-        `${API_URL}/api/reservas/completadas?hostId=${userId}`,
+        apiUrl,
         {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       )
-
 
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`)
       }
 
       const data = await response.json()
-      const reservas = data.reservas || data
-
-      setAllReservaciones(reservas)
-      setTotalReservaciones(reservas.length)
-
-      const sorted = sortReservations(reservas, sortConfig.key, sortConfig.direction)
-      setReservaciones(sorted.slice(0, Number(registrosPorPagina)))
+      
+      if (data && Array.isArray(data.reservas)) {
+        setReservaciones(data.reservas)
+        setTotalReservaciones(data.total)
+      } else {
+         setReservaciones([]);
+         setTotalReservaciones(0);
+      }
 
     } catch (error: unknown) {
       console.error("Error:", error)
@@ -127,22 +135,28 @@ export default function VehiclesRentadosPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [userId, registrosPorPagina, sortConfig])
+  }, [userId, registrosPorPagina, sortConfig, filtroEstado, paginaActual])
 
   useEffect(() => {
     if (userId) {
       cargarReservaciones()
     }
   }, [userId, cargarReservaciones])
-
-  useEffect(() => {
-    if (allReservaciones.length > 0) {
-      const sorted = sortReservations(allReservaciones, sortConfig.key, sortConfig.direction)
-      const startIndex = (paginaActual - 1) * Number(registrosPorPagina)
-      const endIndex = startIndex + Number(registrosPorPagina)
-      setReservaciones(sorted.slice(startIndex, endIndex))
+  
+  const getVarianteBadge = (estado: string) => {
+    switch (estado) {
+      case "COMPLETADA":
+        return "default"
+      case "CONFIRMADA":
+        return "secondary"
+      case "EN_CURSO":
+        return "secondary"
+      case "CANCELADA":
+        return "destructive"
+      default:
+        return "outline"
     }
-  }, [sortConfig, paginaActual, registrosPorPagina, allReservaciones])
+  }
 
   const sortReservations = (reservations: Reserva[], key: SortableField, direction: SortDirection): Reserva[] => {
     return [...reservations].sort((a, b) => {
@@ -203,10 +217,6 @@ export default function VehiclesRentadosPage() {
     return sortConfig.direction === 'asc'
       ? <ArrowUp className="ml-2 h-3 w-3" />
       : <ArrowDown className="ml-2 h-3 w-3" />
-  }
-
-  const getVarianteBadge = (estado: string) => {
-    return "outline"
   }
 
   const totalPaginas = Math.ceil(totalReservaciones / Number(registrosPorPagina))
@@ -304,67 +314,70 @@ export default function VehiclesRentadosPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {reservaciones.map((reserva) => (
-                    <TableRow key={reserva.id}>
-                      <TableCell>
-                        {reserva.Carro.marca} {reserva.Carro.modelo}
-                      </TableCell>
-                      <TableCell>
-                        {reserva.Usuario ? (
-                          <Link href={`/usuario/${reserva.Usuario.id}`} className="hover:underline cursor-pointer">
-                            {reserva.Usuario.nombre}
-                          </Link>
-                        ) : (
-                          <span className="text-muted-foreground">Sin datos</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          <div>{reserva.Usuario?.correo}</div>
-                          <div className="text-muted-foreground">{reserva.Usuario?.telefono}</div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {new Date(reserva.fecha_inicio).toLocaleDateString("es-ES", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(reserva.fecha_fin).toLocaleDateString("es-ES", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          // variant={getVarianteBadge(reserva.estado)}
-                          className="bg-white text-black border border-gray-300"
-                        >
-                          {reserva.estado.replace("_", " ")}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {reserva.estado === "COMPLETADA" && (
-                          <Link href={`/calificaciones/calificacionesAlRenter?reservaId=${reserva.id}`}>
-                            <Button
-                              variant="default"
-                              size="sm"
-                              className="bg-black text-white hover:bg-gray-800"
-                            >
-                              Calificar
-                            </Button>
-                          </Link>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {reservaciones.map((reserva) => {
+                    console.log("Estado de la reserva:", reserva.estado);
+                    return (
+                      <TableRow key={reserva.id}>
+                        <TableCell>
+                          {reserva.Carro.marca} {reserva.Carro.modelo}
+                        </TableCell>
+                        <TableCell>
+                          {reserva.Usuario ? (
+                            <Link href={`/usuario/${reserva.Usuario.id}`} className="hover:underline cursor-pointer">
+                              {reserva.Usuario.nombre}
+                            </Link>
+                          ) : (
+                            <span className="text-muted-foreground">Sin datos</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm">
+                            <div>{reserva.Usuario?.correo}</div>
+                            <div className="text-muted-foreground">{reserva.Usuario?.telefono}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(reserva.fecha_inicio).toLocaleDateString("es-ES", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(reserva.fecha_fin).toLocaleDateString("es-ES", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className="bg-white text-black border border-gray-300"
+                          >
+                            {reserva.estado.replace("_", " ")}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {reserva.estado === "COMPLETADA" && (
+                            <Link href={`/calificaciones/calificacionesAlRenter?reservaId=${reserva.id}`}>
+                              <Button
+                                variant="default"
+                                size="sm"
+                                className="bg-black text-white hover:bg-gray-800"
+                              >
+                                Calificar
+                              </Button>
+                            </Link>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
                 </TableBody>
               </Table>
             </div>
