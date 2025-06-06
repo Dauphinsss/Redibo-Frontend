@@ -6,6 +6,7 @@ import Driver from "./driver-signup";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_URL } from "@/utils/bakend";
+import { toast } from "sonner";
 
 interface Info {
   nombre: string;
@@ -15,16 +16,12 @@ interface Info {
 }
 
 export default function Home() {
-  const request = () => {
-    return conductor === "NO_REQUESTED";
-  };
-  const [conductor, setConductor] = useState("NO_REQUESTED");
-  const [token, setToken] = useState<string | null>(null);
+  const [conductor, setConductor] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const getInfo = async () => {
     try {
       const authToken = localStorage.getItem("auth_token");
       if (!authToken) return;
-      setToken(authToken);
       const response = await axios.get<Info>(`${API_URL}/api/info`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -37,8 +34,20 @@ export default function Home() {
         localStorage.setItem("estadoConductor", estadoConductor);
       if (roles) localStorage.setItem("roles", JSON.stringify(roles));
     } catch (error) {
-      console.error("Error fetching info:", error);
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          toast.error("Sesión expirada. Por favor, inicia sesión nuevamente.");
+          localStorage.removeItem("auth_token");
+          localStorage.removeItem("nombre");
+          localStorage.removeItem("foto");
+          localStorage.removeItem("estadoConductor");
+          localStorage.removeItem("roles");
+        } else {
+          toast.error("Error al obtener la información del usuario.");
+        }
+      }
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -58,14 +67,14 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      <Header isLoading={isLoading} />
       <main className="flex flex-col items-center pt-8">
         <h1 className="text-4xl font-bold text-center">REDIBO</h1>
         <div className="mt-8 w-full max-w-7xl flex justify-center">
           <Carrucel />
         </div>
 
-        {request() && token && <Driver />}
+        {conductor === "NO_REQUESTED" && <Driver />}
       </main>
       <Footer />
     </div>
