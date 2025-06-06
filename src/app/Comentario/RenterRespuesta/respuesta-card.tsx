@@ -38,9 +38,15 @@ interface RespuestaRenter {
       marca: string
       modelo: string
       Imagen?: Array<{ data: string }>
+      Usuario: UsuarioHost
     }
   }
   comentariosRespuesta?: RespuestaHost[]
+}
+interface UsuarioHost{
+  id: number
+  nombre: string
+  foto?: string
 }
 interface RespuestaCardProps {
   respuesta: RespuestaRenter
@@ -57,14 +63,14 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
   const maxlevel = obtenerNivelComentario(respuesta.comentariosRespuesta);
   const idNuevo = obtenerIdMasProfundo(respuesta.comentariosRespuesta);
   // Verificar si el comentario tiene respuestas
- const tieneRespuestas = Array.isArray(respuesta.comentariosRespuesta) && respuesta.comentariosRespuesta.length > 0;
+ const tieneRespuestas = Array.isArray(respuesta.comentariosRespuesta) && respuesta.comentariosRespuesta.length >= 0;
   console.log("Respuesta:", respuesta)
   console.log("Tiene respuestas:", tieneRespuestas)
   // Validar si el botón debe estar habilitado
   const botonHabilitado =  nuevaRespuesta.trim().length > 10 &&
   !enviando &&
   Array.isArray(respuesta.comentariosRespuesta) &&
-  respuesta.comentariosRespuesta.length > 0;
+  (respuesta.comentariosRespuesta.length >= 0);
 
  const enviarRespuesta = async (nivel: number,comentario: string, idNuevo: number |  null, respuestaPadreId: number | null,   ) => {
   if (!botonHabilitado) return
@@ -72,17 +78,22 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
   try {
     setEnviando(true)
     const token = localStorage.getItem("auth_token")
-
     if (!token) {
       throw new Error("No se encontró el token de autenticación")
     }
-
     let method = ""
     let url = ""
     let body = {}
-
     // Decidir POST o PUT según el nivel
-    if (nivel % 2 === 1) { // niveles impares -> POST
+    if (nivel === 0) { // niveles impares -> POST
+      method = "POST"
+      url = `${API_URL}/api/comentarioRespuestas/comentarioRenter`
+      body = {
+        comentario: comentario,
+        calreserId: respuesta.id, // id del padre en POST
+        // Otros campos si es necesario
+      }
+    }else if(nivel%2 === 0){
       method = "POST"
       url = `${API_URL}/api/comentarioRespuestas/comentario`
       body = {
@@ -90,7 +101,7 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
         respuestaPadreId: respuestaPadreId, // id del padre en POST
         // Otros campos si es necesario
       }
-    } else { // niveles pares -> PUT
+    }else { // niveles pares -> PUT
       if (!idNuevo) {
         throw new Error("Para PUT se requiere idNuevo")
       }
@@ -147,13 +158,13 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
       <div className="bg-blue-50 rounded-lg p-4">
         <div className="flex items-center gap-2 mb-2">
           <Avatar className="w-6 h-6">
-            <AvatarFallback className="text-xs bg-black text-white">{nivel % 2 === 0 ? 'H' : 'R'}</AvatarFallback>
+             <AvatarFallback className="text-xs bg-black text-white">{nivel % 2 === 0 ? 'H' : 'R'}</AvatarFallback>
           </Avatar>
-          <span className="text-sm font-medium text-black">
-            {nivel % 2 === 0 ? "Host (Tú)" : "Respuesta del renter"}
+          <span className="text-sm font-medium text-gray">
+            {nivel % 2 === 0 ? "Respuesta del Host " : "Renter (Tú)"}
           </span>
 
-          <span className="text-xs text-black">{formatearFecha(respuestaHost.fecha_creacion)}</span>
+          <span className="text-xs text-gray-500">{formatearFecha(respuestaHost.fecha_creacion)}</span>
         </div>
         <p className="text-sm text-black mb-2">{respuestaHost.comentario}</p>
 
@@ -214,15 +225,15 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
           <div className="flex items-center gap-3">
             <Avatar className="w-10 h-10">
               <AvatarImage
-                src={respuesta.reserva.Usuario.foto || "/placeholder.svg"}
-                alt={respuesta.reserva.Usuario.nombre}
+                src={respuesta.reserva.Carro.Usuario.foto || "/placeholder.svg"}
+                alt={respuesta.reserva.Carro.Usuario.nombre}
               />
               <AvatarFallback>
                 <User className="w-5 h-5" />
               </AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="font-semibold text-lg">{respuesta.reserva.Usuario.nombre}</h3>
+              <h3 className="font-semibold text-lg">{respuesta.reserva.Carro.Usuario.nombre}</h3>
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <Calendar className="w-4 h-4" />
                 {formatearFecha(respuesta.fecha_creacion)}
@@ -232,7 +243,7 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">{renderStars(Math.round(  (respuesta.comportamiento + respuesta.cuidado_vehiculo + respuesta.puntualidad) / 3))}</div>
             <Badge variant={tieneRespuestas ? "default" : "secondary"}>
-              {tieneRespuestas ? "Respondido" : "Pendiente"}
+              {tieneRespuestas ?  "Respondido":"Pendiente"}
             </Badge>
           </div>
         </div>
@@ -255,7 +266,7 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
             <MessageCircle className="w-4 h-4 text-gray-600" />
             <span className="text-sm font-medium text-black">Comentario del Host </span>
           </div>
-          <p className="text-black">{respuesta.comentario}</p>
+          <p className="text-gray-800">{respuesta.comentario}</p>
         </div>
 
         {/* Mostrar respuestas existentes */}
@@ -290,7 +301,7 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
         {/* Formulario para nueva respuesta */}
         {!mostrarFormulario &&
             Array.isArray(respuesta.comentariosRespuesta) &&
-            respuesta.comentariosRespuesta.length > 0 &&
+            respuesta.comentariosRespuesta.length >= 0 &&
             !tieneRespuestas && (
               <Button onClick={() => setMostrarFormulario(true)} className="w-full" variant="outline">
                 <MessageCircle className="w-4 h-4 mr-2" />
@@ -299,9 +310,11 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
             )}
 
         {!mostrarFormulario && tieneRespuestas && (
-          <Button onClick={() => setMostrarFormulario(true)} className="w-full" variant="outline"
-          disabled={maxlevel > 4}
-          title={maxlevel > 4 ? "Se alcanzó el nivel máximo de respuestas" : "Agregar otra respuesta"}>
+          <Button onClick={() => setMostrarFormulario(true)}
+          className="w-full" variant="outline"
+          disabled={maxlevel > 3}
+          title={maxlevel > 3 ? "Se alcanzó el nivel máximo de respuestas" : "Agregar otra respuesta"}
+          >
             <MessageCircle className="w-4 h-4 mr-2" />
             Agregar otra respuesta
           </Button>

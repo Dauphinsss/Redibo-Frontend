@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { RespuestaCard } from "../respuesta-card"
+import { RespuestaCard } from "./respuesta-card"
 import { Loader2 } from "lucide-react"
 import Header from "@/components/ui/Header"
 import { API_URL } from "@/utils/bakend"
@@ -10,7 +10,7 @@ interface RespuestaRenter {
   id: number
   comentario: string
   fecha_creacion: string
-    comportamiento:   number
+  comportamiento:   number
   cuidado_vehiculo: number
   puntualidad:      number
   reserva: {
@@ -25,9 +25,15 @@ interface RespuestaRenter {
       marca: string
       modelo: string
       Imagen?: Array<{ data: string }>
+      Usuario: UsuarioHost
     }
   }
   comentariosRespuesta?: RespuestaHost[]
+}
+interface UsuarioHost{
+  id: number
+  nombre: string
+  foto?: string
 }
 
 interface RespuestaHost {
@@ -86,7 +92,7 @@ export default function ResponderRespuestasPage() {
         throw new Error("No se encontró el token de autenticación")
       }
 
-      const response = await fetch(`${API_URL}/api/comentarioRespuestas/comentarioCadena?idusuario=${hostId}`, {
+      const response = await fetch(`${API_URL}/api/comentarioRespuestas/comentarioCadenaRenter?idusuario=${hostId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -132,12 +138,12 @@ export default function ResponderRespuestasPage() {
     // - Nivel par (2, 4, 6...): Renter respondió después del host → Pendiente (esperando respuesta del host)
 
     if (nivel === 0) {
-      return "pendiente" // Sin respuestas
+      return "respondido" // Sin respuestas
     }
 
     // Si el nivel es impar, la última respuesta fue del host (respondido)
     // Si el nivel es par, la última respuesta fue del renter (pendiente)
-    return nivel % 2 === 1 ? "respondido" : "pendiente"
+    return nivel % 2 === 1 ? "pendiente" : "respondido"
   }
 
   // Filtrar respuestas según la pestaña activa
@@ -198,9 +204,9 @@ const contadores = {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1 container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-2">Respuestas de arrendatarios</h1>
+        <h1 className="text-3xl font-bold mb-2">Comentarios de los Hosts</h1>
         <p className="text-gray-600 mb-8">
-          Gestiona y responde a los comentarios y calificaciones que han dejado tus arrendatarios.
+          Gestiona y responde a los comentarios que han realizado los host para ti.
         </p>
 
         <Tabs defaultValue="todos" className="w-full" onValueChange={setActiveTab}>

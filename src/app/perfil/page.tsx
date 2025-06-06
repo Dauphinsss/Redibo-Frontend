@@ -20,7 +20,10 @@ import { PaymentInfo } from "./payment-info";
 import { DriverInfo } from "./driver-info";
 import { RatingsInfo } from "./ratings-info";
 import { VehiclesInfo } from "./vehicles-info";
-import { ReservationsList } from "./orders-info"; // Importamos el nuevo componente
+import { ReservationsList } from "./orders-info"; 
+// Importamos el Inboxinfo para mostrar comentarios
+import { InboxInfo } from "./inbox-info";
+// Importamos el nuevo componente
 import {
   CreditCard,
   User,
@@ -47,7 +50,8 @@ type SectionType =
   | "driver"
   | "ratings"
   | "vehicles"
-  | "orders";
+  | "orders"
+  |  "inbox";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -126,6 +130,8 @@ export default function ProfilePage() {
         return <RatingsInfo />;
       case "vehicles":
         return <VehiclesInfo />;
+      case "inbox":
+        return<InboxInfo/>;
       case "orders":
         return <ReservationsList />;
       default:
@@ -140,6 +146,7 @@ export default function ProfilePage() {
     ratings: "Calificaciones",
     vehicles: "Vehículos",
     orders: "Órdenes de Pago",
+    inbox: "Comentarios",
   };
 
   const menuItems = [
@@ -181,13 +188,11 @@ export default function ProfilePage() {
       alwaysShow: false,
       requiresRole: "RENTER",
     },
-    {
-      id: "comentarios",
-      title: "Respuestas de Arrendatarios",
+     {
+      id: "inbox",
+      title: "Comentarios",
       icon: MessageSquare,
-      alwaysShow: false,
-      requiresRole: "HOST",
-      onClick: () => router.push("/Comentario/HostRespuesta")
+      alwaysShow: true,
     },
     {
       id: "actividad-automovil",
