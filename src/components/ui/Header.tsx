@@ -21,13 +21,27 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-export default function Header() {
+export default function Header({isLoading}: {isLoading?: boolean}) {
   const [user, setUser] = useState<{ nombre: string; foto: string } | null>(
     null
   );
   const [isAdmin, setIsAdmin] = useState(false);
   const [roles, setRoles] = useState<string[]>([]);
   const router = useRouter();
+
+  useEffect(() => {
+    if (isLoading) {
+      // Si está cargando, no hacer nada
+      return;
+    }
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      setUser(null);
+      setIsAdmin(false);
+      setRoles([]);
+      return;
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     const nombre = localStorage.getItem("nombre");
@@ -57,6 +71,8 @@ export default function Header() {
       setIsAdmin(false);
     }
   }, []);
+
+
 
   const handleLogout = () => {
     localStorage.clear();
