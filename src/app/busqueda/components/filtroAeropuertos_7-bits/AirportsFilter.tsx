@@ -5,6 +5,7 @@ import haversine from 'haversine-distance'
 import { AutoCard_Interfaces_Recode as Auto } from '@/app/busqueda/interface/AutoCard_Interface_Recode';
 import { useAirports } from '@/app/busqueda/hooks/useAirports'
 import { Button } from "@/components/ui/button"
+import { useMapStore } from "@/app/busqueda/store/mapStore";
 import {
   Popover,
   PopoverContent,
@@ -13,8 +14,8 @@ import {
 import { Airports } from "../../constants";
 
 interface Props {            
-    autos: Auto[];    
-    setAutosFiltrados: (autos: Auto[]) => void;   
+    autos: Auto[];
+    setAutosFiltrados: (autos: Auto[]) => void;    
 }
 
 const AirportsFilter: React.FC<Props> = ({            
@@ -45,6 +46,7 @@ const AirportsFilter: React.FC<Props> = ({
   const [showMessage, setShowMessage] = useState(false);
 
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(false);
 
   const handleCityChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setSelectedCity(e.target.value)
@@ -58,12 +60,14 @@ const AirportsFilter: React.FC<Props> = ({
   const handleClick = () => {      
     if (selectedAirport != '') {
       setShowMessage(false);
+      setOpen(false)
       const index = parseInt(selectedAirport);
       const latitude = content[index].latitud      
       setSelectedLatitude(latitude)
       const longitude = content[index].longitud
-      setSelectedLongitude(longitude)            
-      
+      setSelectedLongitude(longitude)
+      setSelectedPoint({ lat: latitude, lon: longitude})
+      setActive(true)
       const filteredCars = cars.filter((item) => {
         const distance =  calcularDistancia(latitude, longitude, item.latitud, item.longitud);
         if(distance <= selectedRadius){           
@@ -71,8 +75,7 @@ const AirportsFilter: React.FC<Props> = ({
         }
       })      
 
-      setAutosFiltrados(filteredCars);      
-      console.log(filteredCars);
+      setAutosFiltrados(filteredCars);            
     }
     else{
       setShowMessage(true);
@@ -83,6 +86,9 @@ const AirportsFilter: React.FC<Props> = ({
     setSelectedAirport('');
     setShowMessage(false);
     setAutosFiltrados(cars);
+    setOpen(false)
+    setActive(false)
+    setSelectedPoint({ lat: -17.39449, lon: -66.16003})
   }  
 
   function calcularDistancia(latAeropuerto: number, lonAeropuerto: number, latAuto: number, lonAuto: number) {
@@ -91,14 +97,16 @@ const AirportsFilter: React.FC<Props> = ({
     const distanceM = haversine(a,b)
     const distanceKm = Math.round(((distanceM/1000) + Number.EPSILON) * 100) / 100;
     return distanceKm;      
-  }    
+  } 
+  
+  const setSelectedPoint = useMapStore((state) => state.setSelectedPoint);
     
   return (    
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant={open ? "secondary" : "outline"}
-          className={`w-[200px] justify-between ${open ? "bg-gray-100 hover:bg-gray-200 ring-2 ring-gray-300" : ""}`}          
+          variant={active ? "default" : "outline"}
+          className={`w-[200px] justify-between ${open ? "ring-2 ring-gray-300" : ""}`}          
         >
           Filtro por Aeropuertos
           <span className="ml-2">↓</span>
