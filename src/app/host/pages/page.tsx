@@ -6,8 +6,46 @@ import { useCars } from "../hooks/useCars";
 import { useCarImages, CarImage } from "@/app/host/hooks/useCarImages";
 import { CarList } from "../components/CarList";
 import { EmptyState } from "@/app/host/components/EmptyState";
+import { API_URL } from "@/utils/bakend";
+import { useState, useEffect } from "react";
 
 export default function ViewCarsPage() {
+  const [userId, setUserId] = useState<number | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
+  const [userError, setUserError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      setUserError("No hay sesión activa.");
+      setUserLoading(false);
+      return;
+    }
+
+    const fetchUserId = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/perfil`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          setUserId(userData.id);
+        } else {
+          setUserError("Error al obtener información del usuario.");
+        }
+      } catch (error) {
+        console.error("Error fetching user ID:", error);
+        setUserError("Error de conexión al obtener datos del usuario.");
+      } finally {
+        setUserLoading(false);
+      }
+    };
+
+    fetchUserId();
+  }, []);
+
   const {
     cars,
     hasMore,
@@ -15,7 +53,7 @@ export default function ViewCarsPage() {
     error: carsError,
     fetchMoreData,
     deleteCar,
-  } = useCars({ hostId: 1 });
+  } = useCars({ hostId: userId });
 
   const {
     carImages,
@@ -23,14 +61,14 @@ export default function ViewCarsPage() {
     error: imagesError,
   } = useCarImages(cars);
 
-  if (carsLoading) {
+  if (carsLoading || userLoading) {
     return <h3 className="text-center p-4">Cargando carros...</h3>;
   }
 
-  if (carsError) {
+  if (carsError || userError) {
     return (
       <h3 className="text-center p-4 text-red-500">
-        Error cargando vehículos: {carsError.message}
+        {carsError ? carsError.message : userError}
       </h3>
     );
   }
