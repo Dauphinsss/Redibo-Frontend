@@ -93,7 +93,7 @@ export default function MisConductores() {
       >
         <ChevronLeft /> Volver
       </Button>
-      <div className="w-4xl mx-auto p-4 text-center md:text-left max-w-[98vw]">
+      <div className="w-4xl mx-auto p-4 text-center md:text-left max-w-screen ">
         <h1 className="text-2xl font-bold mb-2">Mis Conductores</h1>
         <p className="mb-6 text-gray-600">
           Gestiona y revisa la información de tus conductores asociados
