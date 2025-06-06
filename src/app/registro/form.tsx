@@ -108,6 +108,50 @@ export default function Form() {
 
   }, []);
 
+  const nombreValido = (name: string) => {
+    if (!name) return false;
+
+    const cleaned = name.trim().replace(/\s+/g, " ");
+    if (cleaned.length < 3 || cleaned.length > 50) return false;
+
+    const letrasValidas = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    if (!letrasValidas.test(cleaned)) return false;
+
+    const palabras = cleaned.split(" ");
+    if (palabras.length < 2 || palabras.some((p) => p.length < 2)) return false;
+
+    return true;
+  };
+
+  const isValidEmail = (email: string) => {
+    if (
+      !email ||
+      email.includes(" ") ||
+      email.includes("..") ||
+      email.startsWith(".") ||
+      email.endsWith(".")
+    ) {
+      return false;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(email)) {
+        return false;
+      }
+      const domainPart = email.split('@')[1];
+      const domainBlocks = domainPart.split('.');
+      if (domainBlocks.length > 5) {
+        return false;
+      }
+      const domainBlockRegex = /^[a-zA-Z0-9-]+$/;
+      for (const block of domainBlocks) {
+        if (!domainBlockRegex.test(block)) {
+          return false;
+        }
+      }
+
+      return true;
+    };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,45 +164,23 @@ export default function Form() {
     setPasswordTouched(true);
     setPhoneTouched(true);
 
-    // Validación de ciudad
-    if (!city || city === 0) {
-      toast.error("Debes seleccionar una ciudad");
-      setCityTouched(true);
-      return;
-    }
-
-
-
     if (password !== confirmPassword) {
       toast.error("Las contraseñas no coinciden.");
       return;
     }
 
-
-    if (
-      !name ||
-      name.length < 3 ||
-      name.length > 50 ||
-      !/^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$/.test(name) ||
-      name.trim().split(/\s+/).length < 2
-    ) {
+    if (!nombreValido(name)) {
       toast.error("Por favor, ingrese un nombre válido.");
       return;
     }
 
-    if (
-      !email ||
-      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(email) ||
-      email.includes("..") ||
-      email.startsWith(".") ||
-      email.endsWith(".")
-    ) {
+    if (!isValidEmail(email)) {
       toast.error("Por favor, ingrese un correo electrónico válido.");
       return;
     }
 
-    if (!phone || phone.length !== 8) {
-      toast.error("El teléfono debe tener exactamente 8 números.");
+    if (!phone || phone.length !== 8 || !/^[467]\d{7}$/.test(phone)) {
+      toast.error("El teléfono debe tener exactamente 8 números y comenzar con 4, 6 o 7.");
       return;
     }
 
@@ -172,7 +194,11 @@ export default function Form() {
       return;
     }
 
-
+    if (!city || city === 0) {
+      toast.error("Debes seleccionar una ciudad");
+      setCityTouched(true);
+      return;
+    }
 
     if (
       !password ||
@@ -486,7 +512,6 @@ export default function Form() {
               </div>
 
               {/* Correo electrónico */}
-              {/* Correo electrónico */}
               <div className="space-y-2">
                 <Label htmlFor="email">Correo electrónico *</Label>
                 <div className="flex flex-col gap-2">
@@ -500,10 +525,12 @@ export default function Form() {
                     className={
                       emailTouched &&
                         (!email ||
-                          !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(
+                          !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
                             email
                           ) ||
-                          email.includes(".."))
+                          email.includes("..") ||
+                          email.startsWith(".") ||
+                          email.split('@')[1]?.split('.').length > 5)
                         ? "border-red-500"
                         : ""
                     }
@@ -516,13 +543,18 @@ export default function Form() {
                         </p>
                       )}
                       {email.length > 0 &&
-                        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(
+                        !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
                           email
                         ) && (
                           <p className="text-sm text-red-500">
                             Ingrese un correo válido
                           </p>
                         )}
+                      {email.includes(" ") && (
+                        <p className="text-sm text-red-500">
+                          El correo no debe contener espacios
+                        </p>
+                      )}
                       {email.includes("..") && (
                         <p className="text-sm text-red-500">
                           El correo no debe contener puntos consecutivos
@@ -538,6 +570,26 @@ export default function Form() {
                           El correo no debe terminar con un punto
                         </p>
                       )}
+                      {email.split('@')[1]?.split('.').filter(block => block.length >= 2).length > 5 && (
+                        <p className="text-sm text-red-500">
+                          El correo debe contener máximo 5 subdominios
+                        </p>
+                      )}
+                      {(() => {
+                        const domainPart = email.split('@')[1] || "";
+                        const domainBlockRegex = /^[a-zA-Z0-9-]+$/;
+                        const domainBlocks = domainPart.split('.').filter(block => /[a-zA-Z0-9]/.test(block));
+                        for (const block of domainBlocks) {
+                          if (!domainBlockRegex.test(block) || block.length === 0) {
+                            return (
+                              <p className="text-sm text-red-500">
+                                Debes ingresar subdominios válidos en el correo
+                              </p>
+                            );
+                          }
+                        }
+                        return null;
+                      })()}
                     </>
                   )}
                 </div>
