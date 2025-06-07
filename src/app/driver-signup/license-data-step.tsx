@@ -29,7 +29,11 @@ export default function LicenseDataStep({
           placeholder="Ej: 123456789"
           max={15}
           value={licenseData.numeroLicencia}
-          onChange={(e) => onDataChange("numeroLicencia", e.target.value)}
+          onChange={(e) => {
+            // Solo permite números
+            const value = e.target.value.replace(/\D/g, "");
+            onDataChange("numeroLicencia", value);
+          }}
         />
       </div>
 
