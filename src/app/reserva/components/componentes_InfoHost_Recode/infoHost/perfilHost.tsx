@@ -59,9 +59,13 @@ function PerfilHost({
               <FaTreeCity className="text-lg" />
               <strong>Ciudad:</strong> {ciudadHost}
             </li>
-            <li className="mt-12 flex items-center gap-3">
-              <PiGenderIntersexBold className="text-lg" />
-              <strong>Género:</strong> {generoHost}
+            <li className="mt-12 flex flex-col items-start">
+              <div className="flex items-center">
+                <PiGenderIntersexBold className="text-lg" />
+                <span>{generoHost}</span>
+              </div>
+              <hr className="w-full border-gray-400" />
+              <span>Género:</span>
             </li>
           </ul>
 
