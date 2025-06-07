@@ -88,7 +88,7 @@ export const getInsuranceByID = async (id_carro: string): Promise<ValidarInterfa
 
 export const getCalificacionesHost = async (id_host: number) => {
   try {
-    const response = await apiRecodePuntos.get(`/userhost/comentarioGet/${id_host}`);
+    const response = await apiRecodePuntos.get(`/userhost/calificacionesGet/${id_host}`);
     return response.data;
   } catch (error) {
     console.error("Error al obtener calificaciones del host:", error);
@@ -98,7 +98,7 @@ export const getCalificacionesHost = async (id_host: number) => {
 
 export const getComentariosHost = async (id_host: number) => {
   try {
-    const response = await apiRecodeComentario.get(`/userhost/calificacionesGet/${id_host}`);
+    const response = await apiRecodeComentario.get(`/userhost/comentarioGet/${id_host}`);
     return response.data;
   } catch (error) {
     console.error("Error al obtener comentarios del host:", error);

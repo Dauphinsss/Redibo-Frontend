@@ -5,13 +5,7 @@ import TarjetaReseña from "./TarjetaReseña";
 import CajaComentario from "./CajaComentario";
 import { getComentariosHost, postComentarioHost } from "@/app/reserva/services/services_reserva";
 
-// type Reseña = {
-//     nombre: string;
-//     fecha: string;
-//     calificacion: number;
-//     comentario: string;
-//     respuestas?: Respuesta[];
-// };
+
 type Comentario = {
   id: number;
   id_host: number;
@@ -26,37 +20,11 @@ type Props = {
 }
 
 
-// const reseñasEjemplo: Reseña[] = [
-//     {
-//         nombre: "Nombre de renter",
-//         fecha: "12 de mayo de 2025",
-//         calificacion: 3,
-//         comentario: "Buen servicio, aunque se puede mejorar.",
-//         respuestas: [
-//         {
-//             nombre: "Nombre de host",
-//             fecha: "13 de mayo de 2025",
-//             contenido: "Gracias por el comentario, tomaremos nota.",
-//         },
-//         ],
-//     },
-//     {
-//         nombre: "Otro renter",
-//         fecha: "10 de mayo de 2025",
-//         calificacion: 5,
-//         comentario: "Excelente todo.",
-//     },
-// ];
-
 const ListaReseñas = ({id_host, id_renter}: Props) => {
     const [comentarios, setComentarios] = useState<Comentario[]>([]);
     const [comentario, setComentario] = useState("")
 
-    // const manejarEnvio = () => {
-    //     if (comentario.trim() === "") return;
-    //     console.log("Comentario enviado:", comentario);
-    //     setComentario("");
-    // };
+    
     const cargarComentarios = async () => {
     const data = await getComentariosHost(id_host);
     if (data) {
@@ -70,10 +38,19 @@ const ListaReseñas = ({id_host, id_renter}: Props) => {
 
   const manejarEnvio = async () => {
     if (comentario.trim() === "") return;
+
     const response = await postComentarioHost(id_host, id_renter, comentario);
+
     if (response) {
+      const nuevoComentario: Comentario = {
+        id: Date.now(),
+        id_host,
+        id_renter,
+        comentario,
+        fecha: new Date().toISOString(),
+      }
+      setComentarios([nuevoComentario, ...comentarios]);
       setComentario("");
-      cargarComentarios();
     }
   };
 
@@ -96,7 +73,7 @@ const ListaReseñas = ({id_host, id_renter}: Props) => {
                         key={i}
                         nombre={`Renter ${res.id_renter}`}
                         fecha={new Date(res.fecha).toLocaleDateString()}
-                        calificacion={0} // Puedes ajustar esto si tienes la calificación
+                        calificacion={0} 
                         comentario={res.comentario}
                         respuestas={[]}
                         onResponder={() => console.log("Responder a:", res.id_renter)}
