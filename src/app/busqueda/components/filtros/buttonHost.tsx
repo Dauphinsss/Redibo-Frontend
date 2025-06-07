@@ -84,8 +84,12 @@ export function ButtonHost({
     setLoading(true);
     const timer = setTimeout(() => {
       const term = searchTerm.trim().replace(/\s{2,}/g, ' ');
+
+      const normalizeString = (str: string) =>
+        str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
       const filtered = allHosts.filter(host =>
-        host.name.toLowerCase().includes(term.toLowerCase())
+        normalizeString(host.name).includes(normalizeString(term))
       );
       setHosts(filtered);
       setLoading(false);
@@ -94,7 +98,7 @@ export function ButtonHost({
   } else {
     setHosts(allHosts.slice(0, 10));
   }
- }, [searchTerm, allHosts]);
+}, [searchTerm, allHosts]);
 
 
   const handleHostSelect = (host: Host) => {
@@ -161,7 +165,7 @@ export function ButtonHost({
               onChange={(e) => {
               const value = e.target.value;
               // Solo eliminar caracteres inválidos, dejar espacios
-              const cleaned = value.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '');
+              const cleaned = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
               setSearchTerm(cleaned.slice(0, 50));
             }}
 
