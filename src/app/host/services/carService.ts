@@ -29,7 +29,7 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Interceptor para manejar 401/403: eliminamos token y propagamos error
+// Interceptor para manejar 401/403
 API.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
@@ -122,38 +122,6 @@ function transformBackendCar(b: BackendCar): Car {
   };
 }
 
-// Exportamos la función createFullCar independientemente
-export async function createFullCar(
-  payload: CreateFullCarPayload,
-  images: File[] = []
-): Promise<CreateFullCarResponse> {
-  try {
-    const resp = await API.post<CreateFullCarResponse>(
-      "/api/v2/cars/full",
-      payload
-    );
-    const result = resp.data;
-
-    if (result.success && result.data.id && images.length) {
-      const carId = result.data.id;
-      try {
-        await Promise.all(images.map(file => uploadImage(carId, file)));
-      } catch (imgErr) {
-        logger.error("Error al subir imágenes:", imgErr);
-      }
-    }
-
-    return result;
-  } catch (err) {
-    logger.error("Error al crear vehículo:", err);
-    return { 
-      success: false, 
-      data: { id: -1 }, 
-      message: "No se pudo crear el vehículo" 
-    };
-  }
-}
-
 // Clase principal del servicio
 class CarService {
   // Obtener lista de carros de un host autenticado
@@ -184,7 +152,31 @@ class CarService {
     payload: CreateFullCarPayload,
     images: File[] = []
   ): Promise<CreateFullCarResponse> {
-    return createFullCar(payload, images);
+    try {
+      const resp = await API.post<CreateFullCarResponse>(
+        "/api/v2/cars/full",
+        payload
+      );
+      const result = resp.data;
+
+      if (result.success && result.data.id && images.length) {
+        const carId = result.data.id;
+        try {
+          await Promise.all(images.map(file => uploadImage(carId, file)));
+        } catch (imgErr) {
+          logger.error("Error al subir imágenes:", imgErr);
+        }
+      }
+
+      return result;
+    } catch (err) {
+      logger.error("Error al crear vehículo:", err);
+      return { 
+        success: false, 
+        data: { id: -1 }, 
+        message: "No se pudo crear el vehículo" 
+      };
+    }
   }
 
   async getCarById(carId: number): Promise<Car | null> {
@@ -271,3 +263,11 @@ class CarService {
 
 // Exportamos una instancia única del servicio
 export const carService = new CarService();
+
+// Exportamos las funciones como alias de los métodos de la instancia
+export const createFullCar = carService.createFullCar.bind(carService);
+export const getCarById = carService.getCarById.bind(carService);
+export const updateCar = carService.updateCar.bind(carService);
+export const replaceCarImage = carService.replaceCarImage.bind(carService);
+export const removeCarImage = carService.removeCarImage.bind(carService);
+export const deleteCar = carService.deleteCar.bind(carService);

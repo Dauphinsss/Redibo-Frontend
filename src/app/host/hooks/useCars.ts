@@ -7,7 +7,7 @@ interface UseCarsOptions {
   initialPageSize?: number;
 }
 
-export function useCars({ initialPageSize = 10 }: UseCarsOptions) {
+export function useCars({ initialPageSize = 10 }: UseCarsOptions = {}) {
   const [cars, setCars] = useState<Car[]>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [skip, setSkip] = useState<number>(0);
