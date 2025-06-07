@@ -122,6 +122,38 @@ function transformBackendCar(b: BackendCar): Car {
   };
 }
 
+// Exportamos la función createFullCar independientemente
+export async function createFullCar(
+  payload: CreateFullCarPayload,
+  images: File[] = []
+): Promise<CreateFullCarResponse> {
+  try {
+    const resp = await API.post<CreateFullCarResponse>(
+      "/api/v2/cars/full",
+      payload
+    );
+    const result = resp.data;
+
+    if (result.success && result.data.id && images.length) {
+      const carId = result.data.id;
+      try {
+        await Promise.all(images.map(file => uploadImage(carId, file)));
+      } catch (imgErr) {
+        logger.error("Error al subir imágenes:", imgErr);
+      }
+    }
+
+    return result;
+  } catch (err) {
+    logger.error("Error al crear vehículo:", err);
+    return { 
+      success: false, 
+      data: { id: -1 }, 
+      message: "No se pudo crear el vehículo" 
+    };
+  }
+}
+
 // Clase principal del servicio
 class CarService {
   // Obtener lista de carros de un host autenticado
@@ -152,31 +184,7 @@ class CarService {
     payload: CreateFullCarPayload,
     images: File[] = []
   ): Promise<CreateFullCarResponse> {
-    try {
-      const resp = await API.post<CreateFullCarResponse>(
-        "/api/v2/cars/full",
-        payload
-      );
-      const result = resp.data;
-
-      if (result.success && result.data.id && images.length) {
-        const carId = result.data.id;
-        try {
-          await Promise.all(images.map(file => uploadImage(carId, file)));
-        } catch (imgErr) {
-          logger.error("Error al subir imágenes:", imgErr);
-        }
-      }
-
-      return result;
-    } catch (err) {
-      logger.error("Error al crear vehículo:", err);
-      return { 
-        success: false, 
-        data: { id: -1 }, 
-        message: "No se pudo crear el vehículo" 
-      };
-    }
+    return createFullCar(payload, images);
   }
 
   async getCarById(carId: number): Promise<Car | null> {
