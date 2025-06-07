@@ -25,6 +25,26 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
   //Aqui agregamos los atributos y variables necesarias para el historial
   const [historial, setHistorial] = useState<string[]>([]);
   const [mostrarHistorial, setMostrarHistorial] = useState(false);
+  //NUEVO: estado para verificar si está en línea
+  const [estaEnLinea, setEstaEnLinea] = useState(true);
+
+  //NUEVO: Escuchar el estado de conexión
+  useEffect(() => {
+    const actualizarConexion = () => {
+      setEstaEnLinea(navigator.onLine);
+    };
+
+    window.addEventListener("online", actualizarConexion);
+    window.addEventListener("offline", actualizarConexion);
+
+    // Estado inicial
+    actualizarConexion();
+
+    return () => {
+      window.removeEventListener("online", actualizarConexion);
+      window.removeEventListener("offline", actualizarConexion);
+    };
+  }, []);
 
   // Mostrar el botón si hay texto
   useEffect(() => {
@@ -145,7 +165,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         //Tamañp máximo de caracteres
         maxLength={100}
         onChange={(e) => {
-
           const valor = e.target.value;
           // NUEVO: Detectar si contiene una URL común
           const contieneURL = /https?:\/\/|www\./i.test(valor);
@@ -153,6 +172,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
             setError("No se permiten enlaces o direcciones web.");
             return;
           }
+          // NUEVO: Validar conexión a internet
+          if (!navigator.onLine) {
+            setError("Sin conexión a internet. No se puede realizar la búsqueda.");
+            return;
+          }
+
           //NUEVO: Validar longitud
           if (valor.length >= 100) {
             setError("Has alcanzado el límite máximo de 100 caracteres.");
@@ -174,6 +199,14 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         ref={inputRef}
         onFocus={handleFocus}
         onBlur={handleBlur}
+
+        onPaste={(e) => {
+          const textoPegado = e.clipboardData.getData("text");
+          if ((busqueda + textoPegado).length > 100) {
+            e.preventDefault(); // ❌ Cancela el pegado
+            setError("El texto pegado excede el límite de 100 caracteres.");
+          }
+        }}
 
         onKeyDown={(e) => {
           if ((e.key === "ArrowRight" || e.key === "Tab") && sugerencia) {
@@ -204,7 +237,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
             inputRef.current?.blur();
           }
         }}
-        className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[14px] md:text-base"
+        className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[14px] md:text-base lg:text-lg"
       />
 
       {/* Mostrar error si hay */}
@@ -216,7 +249,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
       <button
         type="button"
         aria-label="Buscar autos"
-        className="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black text-white rounded-md flex items-center justify-center"
+        className="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black text-white rounded-md flex items-center justify-center hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={() => {
           // Ejecutar búsqueda manual si se desea
           if (busqueda.trim() !== "") {
@@ -224,6 +257,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
             inputRef.current?.blur();
           }
         }}
+        //NUEVO:Desactiva el boton
+        disabled={busqueda.trim() === ""} // 👉 aquí deshabilitas la lupa si está vacío
       >
         <MagnifyingGlassIcon className="h-5 w-5" />
       </button>
