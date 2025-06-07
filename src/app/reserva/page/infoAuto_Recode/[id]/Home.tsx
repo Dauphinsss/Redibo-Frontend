@@ -20,6 +20,7 @@ import CalificaionRecode from '@/app/reserva/components/componentes_InfoAuto_Rec
 import PopUpComentarios from '@/app/reserva/components/componentes_InfoAuto_Recode/PopUp/popUpComentarios'; //@/app/busqueda/homeBuscador_Recode/components/PopUp/popUpComentarios
 import { useComentariosAuto } from '@/app/reserva/hooks/useComentario_hook_Recode';
 import VerComentario from '@/app/reserva/components/componentes_InfoAuto_Recode/verComentario/verComentarioRecode';
+import CrearComentario from "@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/Comentarios_Autos"; //@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/CrearComentario_Recode
 
 interface HomeProps {
   id: string;
@@ -139,6 +140,12 @@ export default function Home({ id }: HomeProps) {
                 </div>
               ))}
             </div>
+            
+            <div className="mt-8">
+              <h2 className="text-xl font-bold mb-4">Escribe tu comentario</h2>
+              <CrearComentario id_carro={Number(id)} />
+            </div>
+
           </div>
           <div className="lg:w-1/3">
             <div className="sticky top-4 flex flex-col gap-4">
