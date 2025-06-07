@@ -43,7 +43,7 @@ const TarjetaReseña = ({
                         onClick={onResponder}
                         className="mt-2 text-sm text-gray-700 flex items-center gap-1"
                         >
-                        💬 Responder
+                        
                         </button>
                     )}
 
