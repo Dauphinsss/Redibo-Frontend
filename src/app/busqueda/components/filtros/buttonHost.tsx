@@ -15,14 +15,14 @@ interface Host {
   name: string;
   trips: number;
   rating?: number;
-  autosCount: number; // Cantidad de autos del host
+  autosCount: number;
 }
 
 interface ButtonHostProps {
   onFilterChange: (host: Host | null) => void;
   disabled?: boolean;
   className?: string;
-  autos?: Auto[]; // Nueva prop para recibir los autos disponibles
+  autos?: Auto[];
 }
 
 export function ButtonHost({
@@ -39,22 +39,19 @@ export function ButtonHost({
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Función para extraer hosts únicos de los autos
   const extractHostsFromAutos = (autosList: Auto[]): Host[] => {
-    const hostsMap = new Map<string, { autosCount: number, reservas: number }>();
-    
+    const hostsMap = new Map<string, { autosCount: number; reservas: number }>();
+
     autosList.forEach(auto => {
       const hostName = auto.nombreHost;
       if (hostName && hostName !== "Sin nombre") {
         if (!hostsMap.has(hostName)) {
           hostsMap.set(hostName, { autosCount: 0, reservas: 0 });
         }
-        
         const hostData = hostsMap.get(hostName)!;
         hostData.autosCount++;
-        // Contar reservas del auto (trips)
         if (auto.reservas && Array.isArray(auto.reservas)) {
-          hostData.reservas += auto.reservas.filter(r => 
+          hostData.reservas += auto.reservas.filter(r =>
             ['confirmado', 'completado'].includes(r.estado?.toLowerCase() || '')
           ).length;
         }
@@ -65,20 +62,19 @@ export function ButtonHost({
       id: index + 1,
       name,
       trips: data.reservas,
-      rating: 4.5 + Math.random() * 0.4, // Rating simulado entre 4.5 y 4.9
+      rating: 4.5 + Math.random() * 0.4,
       autosCount: data.autosCount
-    })).sort((a, b) => b.autosCount - a.autosCount); // Ordenar por cantidad de autos
+    })).sort((a, b) => b.autosCount - a.autosCount);
   };
 
-  // Inicializar hosts cuando se reciben los autos
   useEffect(() => {
     if (autos.length > 0) {
       const extractedHosts = extractHostsFromAutos(autos);
       setAllHosts(extractedHosts);
+      setHosts(extractedHosts.slice(0, 10)); // Mostrar los primeros 10 al inicio
     }
   }, [autos]);
 
-  // Filtrar hosts según el término de búsqueda
   useEffect(() => {
     if (searchTerm.length > 0) {
       setLoading(true);
@@ -91,14 +87,14 @@ export function ButtonHost({
       }, 300);
       return () => clearTimeout(timer);
     } else {
-      setHosts(allHosts.slice(0, 10)); // Mostrar los primeros 10 hosts por defecto
+      setHosts(allHosts.slice(0, 10));
     }
   }, [searchTerm, allHosts]);
 
   const handleHostSelect = (host: Host) => {
     setSelectedHost(host);
     onFilterChange(host);
-    setSearchTerm('');
+    setSearchTerm(host.name);  // Aquí actualizamos el input con el nombre seleccionado
     setIsOpen(false);
   };
 
@@ -113,8 +109,9 @@ export function ButtonHost({
     setIsOpen(open);
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 100);
-      // Mostrar algunos hosts por defecto cuando se abre
-      if (searchTerm === '') {
+      if (searchTerm === '' && selectedHost) {
+        setSearchTerm(selectedHost.name); // Mantener texto si hay selección previa
+      } else if (searchTerm === '') {
         setHosts(allHosts.slice(0, 10));
       }
     }
@@ -152,7 +149,7 @@ export function ButtonHost({
       <PopoverContent className="w-80 p-0" align="start">
         <div className="p-3 border-b">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
             <Input
               ref={inputRef}
               value={searchTerm}
@@ -161,7 +158,7 @@ export function ButtonHost({
                 const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]/g, '');
                 setSearchTerm(onlyValid.trim());
               }}
-              placeholder="Buscar host por nombre..."
+              placeholder="Escriba el nombre del host..."
               className="pl-10"
             />
             <div className="text-xs text-right text-muted-foreground mt-1">
