@@ -11,31 +11,31 @@ export default function ViewCarsPage() {
   const {
     cars,
     hasMore,
-    loading: carsLoading,
-    error: carsError,
+    loading,
+    error,
     fetchMoreData,
     deleteCar,
-  } = useCars({ hostId: 1 });
+  } = useCars();
 
   const {
     carImages,
-    loading: imagesLoading,
-    error: imagesError,
+    loading: loadingImages,
+    error: errorImages,
   } = useCarImages(cars);
 
-  if (carsLoading) {
+  if (loading) {
     return <h3 className="text-center p-4">Cargando carros...</h3>;
   }
 
-  if (carsError) {
+  if (error) {
     return (
       <h3 className="text-center p-4 text-red-500">
-        Error cargando vehículos: {carsError.message}
+        Error cargando vehículos: {error.message}
       </h3>
     );
   }
 
-  if (!carsLoading && cars.length === 0) {
+  if (!loading && cars.length === 0) {
     return <EmptyState />;
   }
 
@@ -58,12 +58,12 @@ export default function ViewCarsPage() {
 
       {/* Main content with padding to avoid header overlap */}
       <main className="pt-20 p-6 flex flex-col items-center">
-        {imagesLoading && (
+        {loadingImages && (
           <p className="text-center p-2">Cargando imágenes...</p>
         )}
-        {imagesError && (
+        {errorImages && (
           <p className="text-center p-2 text-red-500">
-            Error cargando imágenes: {imagesError.message}
+            Error cargando imágenes: {errorImages.message}
           </p>
         )}
 

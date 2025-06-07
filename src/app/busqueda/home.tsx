@@ -15,6 +15,7 @@ import { CIUDADES_BOLIVIA } from "./constants";
 import { useRouter } from 'next/navigation';
 import CustomSearchWrapper from "@/app/busqueda/hooks/customSearchHU/CustomSearchWrapper";
 import { Coor } from "./types/apitypes";
+import { useSearchParams } from 'next/navigation';
 
 type Props = {
   ciudad?: string;
@@ -39,7 +40,10 @@ interface Host {
 }
 
 export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
-
+  const searchParams = useSearchParams();
+  const ciudadParam = ciudad || searchParams.get('ciudad') || '';
+  const fechaInicioParam = fechaInicio || searchParams.get('fechaInicio') || '';
+  const fechaFinParam = fechaFin || searchParams.get('fechaFin') || '';
   const router = useRouter();
   const [radio, setRadio] = useState(1);
   const [punto, setPunto] = useState<Coor>({ lon: 0, alt: 0 });
@@ -73,7 +77,7 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
     filtroHost,
     setFiltroHost,
     limpiarFiltros
-  } = useAutos(8, radio, punto);
+  } = useAutos(8, radio, punto, fechaInicioParam, fechaFinParam, ciudadParam);
 
   const [busqueda, setBusqueda] = useState("");
   const [gpsActive, setGpsActive] = useState(false);
