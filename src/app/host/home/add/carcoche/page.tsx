@@ -66,6 +66,7 @@ function CaracteristicasCocheInner() {
   const handleSegurosAdicionalesChange = useCallback((items: SeguroAdicional[]) => {
     setSegurosAdicionales(items);
   }, []);
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
   // Validación del formulario
   useEffect(() => {
@@ -170,7 +171,7 @@ function CaracteristicasCocheInner() {
         />
         
         <CampoSeguroMultiple
-          apiUrl="http://localhost:4000"
+          apiUrl={API_BASE}
           error={segurosAdicionalesError}
           setError={setSegurosAdicionalesError}
           onChange={handleSegurosAdicionalesChange}

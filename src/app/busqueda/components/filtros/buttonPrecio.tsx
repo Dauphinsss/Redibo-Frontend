@@ -22,8 +22,8 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
   const [error, setError] = useState<string | null>(null);
   
   // Estados para mostrar los valores aplicados (no los del input)
-  const [minAplicado, setMinAplicado] = useState<string>("");
-  const [maxAplicado, setMaxAplicado] = useState<string>("");
+  const [minAplicado, setMinAplicado] = useState<number | null>(null);
+  const [maxAplicado, setMaxAplicado] = useState<number | null>(null);
   
   // Resetear error cuando se cierran los campos
   useEffect(() => {
@@ -33,9 +33,8 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
   }, [open]);
 
   // Formatear número para mostrar como precio
-  const formatPrecio = (value: string) => {
-    if (!value) return "";
-    return parseInt(value).toLocaleString('es-ES');
+  const formatPrecio = (value: number) => {
+    return value.toLocaleString('es-ES');
   };
 
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,28 +65,28 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
     }
   };
 
-  const handleApply = () => {
+  const handleApply = async () => {
     // Validar que el rango es correcto
     if (minPrecio && maxPrecio && parseInt(minPrecio) > parseInt(maxPrecio)) {
         setError("El precio mínimo no puede ser mayor que el máximo");
         return;
     }
 
-    // Usar valores por defecto si los campos están vacíos
+    // Determinar los valores a aplicar
     const minValue = minPrecio ? parseInt(minPrecio) : 1;
     const maxValue = maxPrecio ? parseInt(maxPrecio) : 5000;
 
-    // Aplicar el filtro inmediatamente
-    onFilterChange(minValue, maxValue);
+    // Aplicar el filtro y esperar su resolución
+    await onFilterChange(minValue, maxValue);
 
-    // Guardar los valores aplicados para mostrar en el botón
-    setMinAplicado(minPrecio || "1");
-    setMaxAplicado(maxPrecio || "5000");
+    // Guardar los valores aplicados
+    setMinAplicado(minValue);
+    setMaxAplicado(maxValue);
 
     // Limpiar errores y cerrar el popover
     setError(null);
     setOpen(false);
-};
+  };
 
   const handleReset = () => {
     // Limpiar inputs
@@ -95,8 +94,8 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
     setMaxPrecio("");
     
     // Limpiar valores aplicados
-    setMinAplicado("");
-    setMaxAplicado("");
+    setMinAplicado(null);
+    setMaxAplicado(null);
     
     // Restaurar filtro sin límites
     onFilterChange(0, Infinity);
@@ -105,18 +104,21 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
   };
 
   // Determinar si hay filtro activo
-  const filtroActivo = minAplicado || maxAplicado;
+  const filtroActivo = minAplicado !== null || maxAplicado !== null;
 
   // Determinar el texto del botón según los valores aplicados
   const getButtonText = () => {
     if (!filtroActivo) return "Filtro por Precio";
     
+    const minMostrar = minAplicado || 1;
+    const maxMostrar = maxAplicado || 5000;
+    
     if (minAplicado && maxAplicado) {
-      return `${formatPrecio(minAplicado)}BS - ${formatPrecio(maxAplicado)}BS`;
+      return `${formatPrecio(minMostrar)}BS - ${formatPrecio(maxMostrar)}BS`;
     } else if (minAplicado) {
-      return `Desde ${formatPrecio(minAplicado)}BS`;
+      return `Desde ${formatPrecio(minMostrar)}BS`;
     } else if (maxAplicado) {
-      return `Hasta ${formatPrecio(maxAplicado)}BS`;
+      return `Hasta ${formatPrecio(maxMostrar)}BS`;
     }
     
     return "Filtro por Precio";

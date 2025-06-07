@@ -1,15 +1,13 @@
 // src/app/host/hooks/useCars.ts
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Car } from "@/app/host/types";
-import { getCars } from "@/app/host/services/carService";
+import { carService } from "@/app/host/services/carService";
 
 interface UseCarsOptions {
-  hostId: number;
   initialPageSize?: number;
 }
 
-export function useCars({ hostId, initialPageSize = 10 }: UseCarsOptions) {
+export function useCars({ initialPageSize = 10 }: UseCarsOptions) {
   const [cars, setCars] = useState<Car[]>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [skip, setSkip] = useState<number>(0);
@@ -22,11 +20,7 @@ export function useCars({ hostId, initialPageSize = 10 }: UseCarsOptions) {
 
   async function loadInitialCars() {
     try {
-      const result = await getCars({ 
-        skip: 0, 
-        take: initialPageSize, 
-        hostId 
-      });
+      const result = await carService.getCars(0, initialPageSize);
       
       setCars(result.data);
       setHasMore(result.data.length > 0 && result.data.length < result.total);
@@ -41,11 +35,7 @@ export function useCars({ hostId, initialPageSize = 10 }: UseCarsOptions) {
 
   const fetchMoreData = async () => {
     try {
-      const result = await getCars({ 
-        skip, 
-        take: initialPageSize, 
-        hostId 
-      });
+      const result = await carService.getCars(skip, initialPageSize);
       
       setCars((prev) => [...prev, ...result.data]);
       setSkip((prev) => prev + result.data.length);
@@ -58,9 +48,12 @@ export function useCars({ hostId, initialPageSize = 10 }: UseCarsOptions) {
 
   const deleteCar = async (carId: number) => {
     try {
-      await axios.delete(`http://localhost:4000/api/v1/vehiculo/${carId}`);
-      setCars((prev) => prev.filter((car) => car.id !== carId));
-      return true;
+      const success = await carService.deleteCar(carId);
+      if (success) {
+        setCars((prev) => prev.filter((car) => car.id !== carId));
+        return true;
+      }
+      throw new Error("No se pudo eliminar el vehículo");
     } catch (error) {
       console.error("Error al eliminar el vehículo:", error);
       setError(error instanceof Error ? error : new Error("Error al eliminar el vehículo"));
