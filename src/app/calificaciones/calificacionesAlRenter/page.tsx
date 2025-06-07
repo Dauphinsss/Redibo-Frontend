@@ -1,7 +1,7 @@
 "use client"
 import Toast from "./Toast"
 import { useEffect, useState } from "react"
-import { Trash2, AlertCircle } from "lucide-react"
+import { Trash2 } from "lucide-react"
 import Header from "@/components/ui/Header"
 import { Footer } from "@/components/ui/footer"
 import leoProfanity from "leo-profanity"
@@ -72,28 +72,75 @@ export default function CalificacionesAlRenterPage() {
   const [showRatingPanel, setShowRatingPanel] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [comentarioOfensivo, setComentarioOfensivo] = useState(false)
-  const [usuariosBloqueados, setUsuariosBloqueados] = useState<{[key: string]: boolean}>({})
+  const [usuariosBloqueados, setUsuariosBloqueados] = useState<{ [key: string]: boolean }>({})
   const [showToast, setShowToast] = useState(false)
-  const [showToastEliminacion,setShowToastEliminacion]=useState(false)
-  
+  const [showToastEliminacion, setShowToastEliminacion] = useState(false)
+  const [autoSelectReservaId, setAutoSelectReservaId] = useState<string | null>(null)
+
   useEffect(() => {
     try {
-      
       leoProfanity.add(leoProfanity.getDictionary("es"))
 
       // Agregar palabras adicionales al diccionario
       leoProfanity.add([
-        "puta","mierda",        "cabrón","joder",        "coño",
-        "gilipollas",        "capullo",        "idiota",        "imbécil",
-        "pendejo",        "marica",        "maricón",        "cojones",
-        "hostia",        "hijo de puta",        "hijoputa",        "malparido",
-        "cabron",         "pendeja",        "pendejas",	"pendejos",        "pendejadas",
-        "Huevón", "boludo","pelotudo","Empobrecedo","Zorra","pelagato","Analfabeto",
-        "ignorante","palurdo","berzotas","gaznápiro",
-        "papanatas","papanatas","papanatas","papanatas",
-        "Idiota","imbécil","lerdo","mameluco","mentecato",
-        " estupido","atontao","orate","loco","subnormal","deficiente","majadero","zoquete",
-        "Puto","puta","perra","cabron","HDP","pt","puto","puta",
+        "puta",
+        "mierda",
+        "cabrón",
+        "joder",
+        "coño",
+        "gilipollas",
+        "capullo",
+        "idiota",
+        "imbécil",
+        "pendejo",
+        "marica",
+        "maricón",
+        "cojones",
+        "hostia",
+        "hijo de puta",
+        "hijoputa",
+        "malparido",
+        "cabron",
+        "pendeja",
+        "pendejas",
+        "pendejos",
+        "pendejadas",
+        "Huevón",
+        "boludo",
+        "pelotudo",
+        "Empobrecedo",
+        "Zorra",
+        "pelagato",
+        "Analfabeto",
+        "ignorante",
+        "palurdo",
+        "berzotas",
+        "gaznápiro",
+        "papanatas",
+        "papanatas",
+        "papanatas",
+        "papanatas",
+        "Idiota",
+        "imbécil",
+        "lerdo",
+        "mameluco",
+        "mentecato",
+        " estupido",
+        "atontao",
+        "orate",
+        "loco",
+        "subnormal",
+        "deficiente",
+        "majadero",
+        "zoquete",
+        "Puto",
+        "puta",
+        "perra",
+        "cabron",
+        "HDP",
+        "pt",
+        "puto",
+        "puta",
       ])
     } catch (error) {
       console.error("Error al cargar el diccionario:", error)
@@ -131,8 +178,8 @@ export default function CalificacionesAlRenterPage() {
     const token = localStorage.getItem("auth_token")
     if (!token) return
 
-    const bloqueados: {[key: string]: boolean} = {}
-    
+    const bloqueados: { [key: string]: boolean } = {}
+
     for (const usuario of usuarios) {
       try {
         const response = await fetch(`${API_URL}/api/reportes/usuario-bloqueado/${usuario.id}`, {
@@ -140,7 +187,7 @@ export default function CalificacionesAlRenterPage() {
             Authorization: `Bearer ${token}`,
           },
         })
-        
+
         if (response.ok) {
           const data = await response.json()
           bloqueados[usuario.id] = data.bloqueado
@@ -153,11 +200,10 @@ export default function CalificacionesAlRenterPage() {
         console.error("Error al verificar estado del usuario:", error)
       }
     }
-    
+
     setUsuariosBloqueados(bloqueados)
   }
 
-  
   useEffect(() => {
     if (!hostId) return
 
@@ -172,7 +218,6 @@ export default function CalificacionesAlRenterPage() {
 
         console.log("Fetching data for hostId:", hostId)
 
-        
         const rentalsResponse = await fetch(`${API_URL}/api/reservas/completadas?hostId=${hostId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -183,7 +228,6 @@ export default function CalificacionesAlRenterPage() {
         }
         const rentalsData = await rentalsResponse.json()
 
-        
         const ratingsResponse = await fetch(`${API_URL}/api/calificaciones-reserva?hostId=${hostId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -248,6 +292,45 @@ export default function CalificacionesAlRenterPage() {
     fetchData()
   }, [hostId])
 
+  // Manejar parámetros de URL para auto-selección
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search)
+    const idreserva = searchParams.get("idreserva")
+    if (idreserva) {
+      console.log("URL parameter idreserva found:", idreserva)
+      setAutoSelectReservaId(idreserva)
+    }
+  }, [])
+
+  // Auto-seleccionar reserva cuando los datos estén cargados
+  useEffect(() => {
+    if (autoSelectReservaId && renters.length > 0 && !isLoading) {
+      console.log("Attempting auto-selection for reservation ID:", autoSelectReservaId)
+      console.log(
+        "Available renters:",
+        renters.map((r) => ({ id: r.id, idReserva: r.idReserva, name: `${r.firstName} ${r.lastName}` })),
+      )
+
+      // Convertir a string para comparación ya que el URL param es string
+      const renterToSelect = renters.find((renter) => renter.idReserva?.toString() === autoSelectReservaId)
+
+      if (renterToSelect) {
+        console.log("Found matching renter:", renterToSelect)
+        handleSeleccionar(renterToSelect)
+        setAutoSelectReservaId(null) // Limpiar para evitar re-selección
+
+        // Limpiar URL parameter después de la selección
+        const url = new URL(window.location.href)
+        url.searchParams.delete("idreserva")
+        window.history.replaceState({}, "", url.toString())
+      } else {
+        console.log("No matching renter found for reservation ID:", autoSelectReservaId)
+        // Mostrar mensaje de error si no se encuentra la reserva
+        setError(`No se encontró la reserva con ID ${autoSelectReservaId} o no está disponible para calificar.`)
+      }
+    }
+  }, [autoSelectReservaId, renters, isLoading])
+
   function estaDentroDePeriodoCalificacion(fechaFin: string): boolean {
     const fechaFinRenta = new Date(fechaFin)
     const fechaActual = new Date()
@@ -299,17 +382,11 @@ export default function CalificacionesAlRenterPage() {
 
       if (!selected) return
 
-      
-      if (
-        rating.comportamiento === 0 ||
-        rating.cuidado_vehiculo === 0 ||
-        rating.puntualidad === 0
-      ) {
+      if (rating.comportamiento === 0 || rating.cuidado_vehiculo === 0 || rating.puntualidad === 0) {
         setError("Por favor, completa todas las calificaciones")
         return
       }
 
-      
       if (leoProfanity.check(rating.comentario)) {
         setComentarioOfensivo(true)
         setError("El comentario contiene lenguaje inapropiado")
@@ -317,7 +394,7 @@ export default function CalificacionesAlRenterPage() {
       }
 
       const existingRating = calificaciones.find(
-        (c) => c.renterId === selected.id && c.reservaId === selected.idReserva
+        (c) => c.renterId === selected.id && c.reservaId === selected.idReserva,
       )
 
       const url = existingRating
@@ -342,16 +419,16 @@ export default function CalificacionesAlRenterPage() {
       })
 
       if (!response.ok) {
-        let errorMsg = "Error al guardar la calificación";
+        let errorMsg = "Error al guardar la calificación"
         try {
-          const errorData = await response.json();
-          errorMsg = errorData?.error || errorMsg;
-          console.error("Error al guardar la calificación:", errorData);
+          const errorData = await response.json()
+          errorMsg = errorData?.error || errorMsg
+          console.error("Error al guardar la calificación:", errorData)
         } catch (e) {
-          console.error("Error al parsear la respuesta de error:", e);
+          console.error("Error al parsear la respuesta de error:", e)
         }
-        setError(errorMsg);
-        throw new Error(errorMsg);
+        setError(errorMsg)
+        throw new Error(errorMsg)
       }
 
       // Actualizar la lista de calificaciones
@@ -373,22 +450,13 @@ export default function CalificacionesAlRenterPage() {
       }
 
       if (existingRating) {
-        setCalificaciones(
-          calificaciones.map((c) =>
-            c.id === existingRating.id ? newCalificacion : c
-          )
-        )
+        setCalificaciones(calificaciones.map((c) => (c.id === existingRating.id ? newCalificacion : c)))
       } else {
         setCalificaciones([...calificaciones, newCalificacion])
       }
 
-      
       setRenters(
-        renters.map((r) =>
-          r.id === selected.id && r.idReserva === selected.idReserva
-            ? { ...r, rated: true }
-            : r
-        )
+        renters.map((r) => (r.id === selected.id && r.idReserva === selected.idReserva ? { ...r, rated: true } : r)),
       )
       setShowToast(true)
       setShowRatingPanel(false)
@@ -408,57 +476,50 @@ export default function CalificacionesAlRenterPage() {
   }
 
   async function handleBorrar(calificacionId: string) {
-    console.log("Frontend - ID de calificación a eliminar:", calificacionId);
-    const confirmed = window.confirm("¿Estás seguro de que quieres eliminar esta calificación?");
+    console.log("Frontend - ID de calificación a eliminar:", calificacionId)
+    const confirmed = window.confirm("¿Estás seguro de que quieres eliminar esta calificación?")
     if (!confirmed) {
-        return; 
+      return
     }
 
     try {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("auth_token")
       if (!token) {
-        throw new Error("No se encontró el token de autenticación");
+        throw new Error("No se encontró el token de autenticación")
       }
 
-      
       const response = await fetch(`${API_URL}/api/calificaciones-reserva/${calificacionId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
+      })
 
       if (!response.ok) {
-        
-         const errorBody = response.status !== 204 ? await response.json() : null;
-         const errorMessage = errorBody?.error || `Error al eliminar calificación: ${response.status} ${response.statusText}`; 
-         throw new Error(errorMessage);
+        const errorBody = response.status !== 204 ? await response.json() : null
+        const errorMessage =
+          errorBody?.error || `Error al eliminar calificación: ${response.status} ${response.statusText}`
+        throw new Error(errorMessage)
       }
 
-      
-      setCalificaciones(calificaciones.filter(calif => calif.id !== calificacionId));
+      setCalificaciones(calificaciones.filter((calif) => calif.id !== calificacionId))
 
-      
-      const deletedCalificacion = calificaciones.find(calif => calif.id === calificacionId);
+      const deletedCalificacion = calificaciones.find((calif) => calif.id === calificacionId)
 
-      
       if (deletedCalificacion && deletedCalificacion.reservaId) {
-        setRenters(prevRenters =>
-          prevRenters.map(renter =>
-            renter.idReserva === deletedCalificacion.reservaId
-              ? { ...renter, rated: false }
-              : renter
-          )
-        );
+        setRenters((prevRenters) =>
+          prevRenters.map((renter) =>
+            renter.idReserva === deletedCalificacion.reservaId ? { ...renter, rated: false } : renter,
+          ),
+        )
       }
 
-      setShowToastEliminacion(true); // Mostrar toast de éxito
-      setTimeout(() => setShowToastEliminacion(false), 3000);
-
+      setShowToastEliminacion(true) // Mostrar toast de éxito
+      setTimeout(() => setShowToastEliminacion(false), 3000)
     } catch (error: any) {
-      console.error("Error al eliminar calificación:", error);
-      
-      toast.error(error.message || "Error al eliminar calificación.");
+      console.error("Error al eliminar calificación:", error)
+
+      toast.error(error.message || "Error al eliminar calificación.")
     }
   }
 
@@ -504,17 +565,9 @@ export default function CalificacionesAlRenterPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      {showToast && (
-        <Toast
-          message="¡Guardado exitosamente!"
-          onCloseAction={() => setShowToast(false)}
-        />
-      )}
+      {showToast && <Toast message="¡Guardado exitosamente!" onCloseAction={() => setShowToast(false)} />}
       {showToastEliminacion && (
-        <Toast
-          message="¡Eliminación exitosa!"
-          onCloseAction={() => setShowToastEliminacion(false)}
-        />
+        <Toast message="¡Eliminación exitosa!" onCloseAction={() => setShowToastEliminacion(false)} />
       )}
       <main className="flex-1 container mx-auto py-8">
         <h1 className="text-2xl font-bold text-gray-800 ml-8">Calificaciones al Arrendatario</h1>
@@ -560,9 +613,12 @@ export default function CalificacionesAlRenterPage() {
                       {Array.isArray(renters) && renters.length > 0 ? (
                         renters.map((renter) => {
                           const calificacion = calificaciones.find((c) => c.reservaId === renter.idReserva)
-                         
+
                           return (
-                            <div key={renter.idReserva} className="rental-item flex flex-col md:flex-row justify-between gap-4 p-4 bg-gray-100 rounded-xl shadow-sm">
+                            <div
+                              key={renter.idReserva}
+                              className="rental-item flex flex-col md:flex-row justify-between gap-4 p-4 bg-gray-100 rounded-xl shadow-sm"
+                            >
                               <div className="rental-item-left flex gap-3">
                                 <div className="rental-image-placeholder bg-gray-200 w-12 h-12 rounded-full">
                                   <img
@@ -664,7 +720,9 @@ export default function CalificacionesAlRenterPage() {
                                       </button>
                                       {estaDentroDePeriodoCalificacion(renter.fechaFin?.toString() || "") && (
                                         <button
-                                          onClick={() => { if (calificacion) handleBorrar(calificacion.id) }}
+                                          onClick={() => {
+                                            if (calificacion) handleBorrar(calificacion.id)
+                                          }}
                                           className="delete-button"
                                           aria-label="Eliminar calificación"
                                         >
@@ -695,7 +753,7 @@ export default function CalificacionesAlRenterPage() {
                           <h3>
                             {selected.carMake} {selected.carModel}
                           </h3>
-                           <div className="rating-car-status">Completado</div>
+                          <div className="rating-car-status">Completado</div>
                         </div>
 
                         <div className="rating-car-details">
@@ -708,27 +766,27 @@ export default function CalificacionesAlRenterPage() {
                           </div>
                           <div className="rating-car-info">
                             <div className="rating-car-model">
-                               {selected.firstName} {selected.lastName}
+                              {selected.firstName} {selected.lastName}
                             </div>
                             <div className="rating-date">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                              <line x1="16" y1="2" x2="16" y2="6"></line>
-                              <line x1="8" y1="2" x2="8" y2="6"></line>
-                              <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                            <span>{formatDate(selected.fechaFin?.toString() || "")}</span>
-                          </div>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                              </svg>
+                              <span>{formatDate(selected.fechaFin?.toString() || "")}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -917,41 +975,46 @@ export default function CalificacionesAlRenterPage() {
                         <div className="rating-actions">
                           {!selected.rated && estaDentroDePeriodoCalificacion(selected.fechaFin?.toString() || "") && (
                             <>
+                              <button
+                                onClick={handleGuardar}
+                                disabled={
+                                  !rating.comportamiento ||
+                                  !rating.cuidado_vehiculo ||
+                                  !rating.puntualidad ||
+                                  comentarioOfensivo ||
+                                  ((rating.comentario.length < 10 || rating.comentario.length > 200) &&
+                                    rating.comentario.length != 0)
+                                }
+                                className="save-rating-button"
+                              >
+                                Guardar calificación
+                              </button>
+                            </>
+                          )}
+
+                          {selected.rated && estaDentroDePeriodoCalificacion(selected.fechaFin?.toString() || "") && (
+                            <button onClick={() => handleBorrar(selected.id)} className="delete-rating-button">
+                              <Trash2 size={16} />
+                              Borrar calificación
+                            </button>
+                          )}
+
+                          {selected.rated && estaDentroDePeriodoCalificacion(selected.fechaFin?.toString() || "") && (
                             <button
                               onClick={handleGuardar}
                               disabled={
                                 !rating.comportamiento ||
                                 !rating.cuidado_vehiculo ||
                                 !rating.puntualidad ||
-                                comentarioOfensivo ||((  rating.comentario.length < 10 ||
-                                  rating.comentario.length > 200) && rating.comentario.length!=0)
+                                comentarioOfensivo ||
+                                ((rating.comentario.length < 10 || rating.comentario.length > 200) &&
+                                  rating.comentario.length != 0)
                               }
-                              className="save-rating-button"
-                            >
-                              Guardar calificación
-                            </button>
-                            
-                            </>
-                          )}
-
-                          {selected.rated && estaDentroDePeriodoCalificacion(selected.fechaFin?.toString() || "") && (
-                          <button onClick={() => handleBorrar(selected.id)} className="delete-rating-button">
-                          <Trash2 size={16} />
-                          Borrar calificación
-                          </button>
-                          )}
-
-                          {selected.rated && estaDentroDePeriodoCalificacion(selected.fechaFin?.toString() || "") && (
-                            <button
-                              onClick={handleGuardar}
-                              disabled={!rating.comportamiento || !rating.cuidado_vehiculo || !rating.puntualidad || comentarioOfensivo ||((  rating.comentario.length < 10 ||
-                                rating.comentario.length > 200) && rating.comentario.length!=0)}
                               className="save-rating-button"
                             >
                               Guardar
                             </button>
-                          )
-                          }
+                          )}
 
                           <button onClick={() => setShowRatingPanel(false)} className="close-rating-button">
                             {selected.rated || !estaDentroDePeriodoCalificacion(selected.fechaFin?.toString() || "")

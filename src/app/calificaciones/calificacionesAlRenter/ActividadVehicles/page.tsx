@@ -95,38 +95,32 @@ export default function VehiclesRentadosPage() {
         throw new Error("No se encontró el token de autenticación")
       }
 
-      let apiUrl = `${API_URL}/api/reservas?hostId=${userId}&page=${paginaActual}&limit=${registrosPorPagina}`;
+      let apiUrl = `${API_URL}/api/reservas?hostId=${userId}&page=${paginaActual}&limit=${registrosPorPagina}`
 
       if (filtroEstado) {
-        apiUrl = `${apiUrl}&estado=${filtroEstado}`;
+        apiUrl = `${apiUrl}&estado=${filtroEstado}`
       }
 
-      
-
-      const response = await fetch(
-        apiUrl,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+      const response = await fetch(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-      )
+      })
 
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`)
       }
 
       const data = await response.json()
-      
+
       if (data && Array.isArray(data.reservas)) {
         setReservaciones(data.reservas)
         setTotalReservaciones(data.total)
       } else {
-         setReservaciones([]);
-         setTotalReservaciones(0);
+        setReservaciones([])
+        setTotalReservaciones(0)
       }
-
     } catch (error: unknown) {
       console.error("Error:", error)
       const errorMessage = error instanceof Error ? error.message : "Error desconocido"
@@ -142,7 +136,7 @@ export default function VehiclesRentadosPage() {
       cargarReservaciones()
     }
   }, [userId, cargarReservaciones])
-  
+
   const getVarianteBadge = (estado: string) => {
     switch (estado) {
       case "COMPLETADA":
@@ -163,18 +157,12 @@ export default function VehiclesRentadosPage() {
       const valueA = getSortableValue(a, key)
       const valueB = getSortableValue(b, key)
 
-      if (typeof valueA === 'string' && typeof valueB === 'string') {
-        return direction === 'asc'
-          ? valueA.localeCompare(valueB)
-          : valueB.localeCompare(valueA)
+      if (typeof valueA === "string" && typeof valueB === "string") {
+        return direction === "asc" ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA)
       } else if (valueA instanceof Date && valueB instanceof Date) {
-        return direction === 'asc'
-          ? valueA.getTime() - valueB.getTime()
-          : valueB.getTime() - valueA.getTime()
-      } else if (typeof valueA === 'number' && typeof valueB === 'number') {
-        return direction === 'asc'
-          ? valueA - valueB
-          : valueB - valueA
+        return direction === "asc" ? valueA.getTime() - valueB.getTime() : valueB.getTime() - valueA.getTime()
+      } else if (typeof valueA === "number" && typeof valueB === "number") {
+        return direction === "asc" ? valueA - valueB : valueB - valueA
       }
       return 0
     })
@@ -182,31 +170,31 @@ export default function VehiclesRentadosPage() {
 
   const getSortableValue = (reserva: Reserva, key: SortableField): string | Date | number => {
     switch (key) {
-      case 'marca':
+      case "marca":
         return reserva.Carro.marca.toLowerCase()
-      case 'modelo':
+      case "modelo":
         return reserva.Carro.modelo.toLowerCase()
-      case 'nombre':
+      case "nombre":
         return reserva.Usuario.nombre.toLowerCase()
-      case 'correo':
+      case "correo":
         return reserva.Usuario.correo.toLowerCase()
-      case 'telefono':
+      case "telefono":
         return reserva.Usuario.telefono
-      case 'fecha_inicio':
+      case "fecha_inicio":
         return new Date(reserva.fecha_inicio)
-      case 'fecha_fin':
+      case "fecha_fin":
         return new Date(reserva.fecha_fin)
-      case 'estado':
+      case "estado":
         return reserva.estado
       default:
-        return ''
+        return ""
     }
   }
 
   const handleSort = (key: SortableField) => {
-    let direction: SortDirection = 'asc'
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc'
+    let direction: SortDirection = "asc"
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc"
     }
     setSortConfig({ key, direction })
     setPaginaActual(1)
@@ -214,9 +202,11 @@ export default function VehiclesRentadosPage() {
 
   const getSortIcon = (key: SortableField) => {
     if (sortConfig.key !== key) return null
-    return sortConfig.direction === 'asc'
-      ? <ArrowUp className="ml-2 h-3 w-3" />
-      : <ArrowDown className="ml-2 h-3 w-3" />
+    return sortConfig.direction === "asc" ? (
+      <ArrowUp className="ml-2 h-3 w-3" />
+    ) : (
+      <ArrowDown className="ml-2 h-3 w-3" />
+    )
   }
 
   const totalPaginas = Math.ceil(totalReservaciones / Number(registrosPorPagina))
@@ -315,7 +305,7 @@ export default function VehiclesRentadosPage() {
                 </TableHeader>
                 <TableBody>
                   {reservaciones.map((reserva) => {
-                    console.log("Estado de la reserva:", reserva.estado);
+                    console.log("Estado de la reserva:", reserva.estado)
                     return (
                       <TableRow key={reserva.id}>
                         <TableCell>
@@ -355,21 +345,14 @@ export default function VehiclesRentadosPage() {
                           })}
                         </TableCell>
                         <TableCell>
-                          <Badge
-                            variant="outline"
-                            className="bg-white text-black border border-gray-300"
-                          >
+                          <Badge variant="outline" className="bg-white text-black border border-gray-300">
                             {reserva.estado.replace("_", " ")}
                           </Badge>
                         </TableCell>
                         <TableCell>
                           {reserva.estado === "COMPLETADA" && (
-                            <Link href={`/calificaciones/calificacionesAlRenter?reservaId=${reserva.id}`}>
-                              <Button
-                                variant="default"
-                                size="sm"
-                                className="bg-black text-white hover:bg-gray-800"
-                              >
+                            <Link href={`/calificaciones/calificacionesAlRenter?idreserva=${reserva.id}`}>
+                              <Button variant="default" size="sm" className="bg-black text-white hover:bg-gray-800">
                                 Calificar
                               </Button>
                             </Link>
@@ -420,15 +403,15 @@ export default function VehiclesRentadosPage() {
 
                 {/* Mostrar números de página */}
                 {Array.from({ length: Math.min(5, totalPaginas) }, (_, i) => {
-                  let pageNum;
+                  let pageNum
                   if (totalPaginas <= 5) {
-                    pageNum = i + 1;
+                    pageNum = i + 1
                   } else if (paginaActual <= 3) {
-                    pageNum = i + 1;
+                    pageNum = i + 1
                   } else if (paginaActual >= totalPaginas - 2) {
-                    pageNum = totalPaginas - 4 + i;
+                    pageNum = totalPaginas - 4 + i
                   } else {
-                    pageNum = paginaActual - 2 + i;
+                    pageNum = paginaActual - 2 + i
                   }
 
                   return (
@@ -440,7 +423,7 @@ export default function VehiclesRentadosPage() {
                     >
                       {pageNum}
                     </Button>
-                  );
+                  )
                 })}
 
                 <Button
