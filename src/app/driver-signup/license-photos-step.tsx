@@ -4,6 +4,7 @@ import type { LicensePhotos } from "./types"
 interface LicensePhotosStepProps {
   licensePhotos: LicensePhotos
   onPhotoChange: (type: "front" | "back", file: File | null) => void
+  errors: { [key: string]: string };
 }
 
 export default function LicensePhotosStep({ licensePhotos, onPhotoChange }: LicensePhotosStepProps) {
