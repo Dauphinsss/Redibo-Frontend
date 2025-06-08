@@ -1,54 +1,69 @@
 // src/contexts/seguros/segurosActions.ts
 import { SeguroAdicional } from './types';
 import { segurosService, SeguroAdicionalPayload } from '@/app/host/services/segurosService';
+import { saveSegurosToStorage } from './segurosStorage';
 
 // Estado local de seguros (fuera del closure para acceso global)
 let _segurosAdicionales: SeguroAdicional[] = [];
+let _setSegurosAdicionales: React.Dispatch<React.SetStateAction<SeguroAdicional[]>> | null = null;
+
+// Exportar la función resetSeguros directamente
+export function resetSeguros() {
+  // Limpiar la variable global
+  _segurosAdicionales = [];
+  
+  // Limpiar el estado del contexto si existe
+  if (_setSegurosAdicionales) {
+    _setSegurosAdicionales([]);
+  }
+  
+  // Limpiar el localStorage
+  saveSegurosToStorage([]);
+}
 
 // Acciones para manejar los seguros
 export const createSegurosActions = (
   setSegurosAdicionales: React.Dispatch<React.SetStateAction<SeguroAdicional[]>>,
 ) => {
+  // Guardar la referencia al setter del estado
+  _setSegurosAdicionales = setSegurosAdicionales;
+  
   return {
     setSegurosAdicionales: (seguros: SeguroAdicional[]) => {
       _segurosAdicionales = seguros;
       setSegurosAdicionales(seguros);
+      // Actualizar también el localStorage
+      saveSegurosToStorage(seguros);
     },
     
     agregarSeguro: (seguro: SeguroAdicional) => {
-      _segurosAdicionales = [..._segurosAdicionales, seguro];
-      setSegurosAdicionales(prev => {
-        const next = [...prev, seguro];
-        _segurosAdicionales = next;
-        return next;
-      });
+      const updated = [..._segurosAdicionales, seguro];
+      _segurosAdicionales = updated;
+      setSegurosAdicionales(updated);
+      // Actualizar también el localStorage
+      saveSegurosToStorage(updated);
     },
     
     eliminarSeguro: (id: number) => {
-      _segurosAdicionales = _segurosAdicionales.filter(seguro => seguro.id !== id);
-      setSegurosAdicionales(prev => {
-        const next = prev.filter(seguro => seguro.id !== id);
-        _segurosAdicionales = next;
-        return next;
-      });
+      const updated = _segurosAdicionales.filter(seguro => seguro.id !== id);
+      _segurosAdicionales = updated;
+      setSegurosAdicionales(updated);
+      // Actualizar también el localStorage
+      saveSegurosToStorage(updated);
     },
     
     actualizarSeguro: (id: number, seguroActualizado: Partial<SeguroAdicional>) => {
-      _segurosAdicionales = _segurosAdicionales.map(seguro =>
+      const updated = _segurosAdicionales.map(seguro =>
         seguro.id === id ? { ...seguro, ...seguroActualizado } : seguro
       );
-      setSegurosAdicionales(prev => {
-        const next = prev.map(seguro =>
-          seguro.id === id ? { ...seguro, ...seguroActualizado } : seguro
-        );
-        _segurosAdicionales = next;
-        return next;
-      });
+      _segurosAdicionales = updated;
+      setSegurosAdicionales(updated);
+      // Actualizar también el localStorage
+      saveSegurosToStorage(updated);
     },
     
     resetSeguros: () => {
-      _segurosAdicionales = [];
-      setSegurosAdicionales([]);
+      resetSeguros(); // Usar la función global de reset
     }
   };
 };

@@ -197,6 +197,24 @@ export default function CampoMapa({
   const [geoError, setGeoError] = useState("");
   const mapRef = useRef<Map>(null);
 
+  // Modificamos el useEffect para manejar la inicialización del mapa
+  useEffect(() => {
+    if (mapRef.current) {
+      const map = mapRef.current;
+      const bounds = L.latLngBounds(
+        L.latLng(BOLIVIA_BOUNDS.southWest[0], BOLIVIA_BOUNDS.southWest[1]),
+        L.latLng(BOLIVIA_BOUNDS.northEast[0], BOLIVIA_BOUNDS.northEast[1])
+      );
+      
+      map.setMaxBounds(bounds);
+      map.on('drag', () => {
+        if (!map.getBounds().intersects(bounds)) {
+          map.fitBounds(bounds);
+        }
+      });
+    }
+  }, []);
+
   // Validar cuando cambia la posición o los datos de ubicación
   useEffect(() => {
     if (position && departamento && selectedDepartmentName) {
@@ -277,19 +295,6 @@ export default function CampoMapa({
     }
   }, [position, onLocationSelect]);
 
-  const handleMapReady = useCallback((map: Map) => {
-    const bounds = L.latLngBounds(
-      L.latLng(BOLIVIA_BOUNDS.southWest[0], BOLIVIA_BOUNDS.southWest[1]),
-      L.latLng(BOLIVIA_BOUNDS.northEast[0], BOLIVIA_BOUNDS.northEast[1])
-    );
-    map.setMaxBounds(bounds);
-    map.on('drag', () => {
-      if (!map.getBounds().intersects(bounds)) {
-        map.fitBounds(bounds);
-      }
-    });
-  }, []);
-
   return (
     <div className={`space-y-4 ${className}`}>
       <h2 className="text-lg font-medium">Seleccione en el mapa:</h2>
@@ -307,8 +312,19 @@ export default function CampoMapa({
             style={{ height: "100%", width: "100%" }}
             doubleClickZoom={false}
             whenReady={() => {
+              setIsLoading(false);
               if (mapRef.current) {
-                handleMapReady(mapRef.current);
+                const map = mapRef.current;
+                const bounds = L.latLngBounds(
+                  L.latLng(BOLIVIA_BOUNDS.southWest[0], BOLIVIA_BOUNDS.southWest[1]),
+                  L.latLng(BOLIVIA_BOUNDS.northEast[0], BOLIVIA_BOUNDS.northEast[1])
+                );
+                map.setMaxBounds(bounds);
+                map.on('drag', () => {
+                  if (!map.getBounds().intersects(bounds)) {
+                    map.fitBounds(bounds);
+                  }
+                });
               }
             }}
             ref={mapRef}
