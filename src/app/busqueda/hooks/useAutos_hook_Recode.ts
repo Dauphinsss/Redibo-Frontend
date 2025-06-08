@@ -83,8 +83,12 @@ useEffect(() => {
     if (textoBusqueda.trim()) {
       const query = normalizarTexto(textoBusqueda.trim());
       resultado = resultado.filter(auto => {
-        const autoTexto = `${auto.marca} ${auto.modelo}`;
-        const textoNormalizado = normalizarTexto(autoTexto).replace(/[^\p{L}\p{N}\s.\-\/]/gu, "").replace(/\s+/g, " ").trim();
+        const campos = [
+          `${auto.marca} ${auto.marca}`,
+          `${auto.modelo} ${auto.modelo}`,
+          auto.nombreHost
+        ]
+        const textoNormalizado = normalizarTexto(campos.join(" ")).replace(/[^\p{L}\p{N}\s.\-\/]/gu, "").replace(/\s+/g, " ").trim();
         const palabrasBusqueda = query.split(" ");
         return palabrasBusqueda.every(palabra => textoNormalizado.includes(palabra));
       });
@@ -273,6 +277,7 @@ useEffect(() => {
       const combinaciones = [
         `${auto.marca} ${auto.modelo}`,
         `${auto.modelo} ${auto.marca}`,
+        auto.nombreHost
       ];
 
       return combinaciones.some((combinado) => {
@@ -289,6 +294,7 @@ useEffect(() => {
     const posiblesSugerencias = [
       `${match.marca} ${match.modelo}`,
       `${match.modelo} ${match.marca}`,
+      match.nombreHost
     ];
 
     const sugerencia = posiblesSugerencias.find((s) => {

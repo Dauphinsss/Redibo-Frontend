@@ -189,7 +189,7 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
           </button>
           <div className="w-full max-w-2xl">
             <SearchBar
-              placeholder="Buscar por modelo, marca"
+              placeholder="Buscar por modelo, marca, nombre Host"
               onFiltrar={(query) => {
                 setBusqueda(query);
                 setMarcaSeleccionada(null); // Limpiar marca seleccionada si se busca manualmente
