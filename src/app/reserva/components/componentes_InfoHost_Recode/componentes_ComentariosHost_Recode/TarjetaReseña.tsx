@@ -1,5 +1,8 @@
+import { useState } from "react";
 import EstrellasMostrar from "./EstrellasMostrar";
 import TarjetaRespuesta from "./TarjetaRespuesta";
+import { postCalificacionHost } from "@/app/reserva/services/services_reserva";
+import EstrellasInteractiva from "./EstrellasInteractiva";
 
 export type Respuesta = {
     nombre: string;
@@ -15,6 +18,8 @@ type Props = {
     respuestas?: Respuesta[];
     onResponder?: () => void;
     className?: string;
+    id_host: number;
+    id_renter: number;
 };
 
 const TarjetaReseña = ({
@@ -25,7 +30,21 @@ const TarjetaReseña = ({
     respuestas = [],
     onResponder,
     className = "",
+    id_host,
+    id_renter,
 }: Props) => {
+    const [calificacionActual, setCalificacionActual] = useState(calificacion);
+
+    const handleCalificacion = async (nuevaCalificacion: number) => {
+        const resultado = await postCalificacionHost(id_host, id_renter, nuevaCalificacion);
+            if (resultado) {
+                setCalificacionActual(nuevaCalificacion);
+                console.log("✅ Calificación enviada:", resultado);
+            } else {
+                console.error("❌ Error al enviar calificación");
+        }
+    };
+
     return (
         <div className={`mb-6 ${className}`}>
             <div className="flex gap-3 items-start">
@@ -35,7 +54,11 @@ const TarjetaReseña = ({
                         <p className="font-bold">{nombre}</p>
                         <p className="text-xs text-gray-500">{fecha}</p>
                     </div>
-                    <EstrellasMostrar valor={calificacion} />
+
+                    <EstrellasInteractiva
+                    valorInicial={calificacionActual}
+                    onCalificar={handleCalificacion}
+                    />
                     <p className="text-sm mt-2">{comentario}</p>
 
                     {onResponder && (

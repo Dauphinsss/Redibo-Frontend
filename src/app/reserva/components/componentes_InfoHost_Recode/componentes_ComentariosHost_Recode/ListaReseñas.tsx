@@ -77,6 +77,8 @@ const ListaReseñas = ({id_host, id_renter}: Props) => {
                         comentario={res.comentario}
                         respuestas={[]}
                         onResponder={() => console.log("Responder a:", res.id_renter)}
+                        id_host={id_host}
+                        id_renter={id_renter}
                     />
                 ))}
             </div>
