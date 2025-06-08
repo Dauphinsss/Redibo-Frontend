@@ -14,7 +14,7 @@ function CarCardHost({ nombreHost, calificacion }: Props) {
         <FaUser /> {nombreHost}
       </div>
       <div className="flex items-center  text-black gap-x-2">
-        <span className="mb-2">{calificacion}</span>
+        <span className="mt-1">{calificacion}</span>
         <Estrellas promedio={calificacion} />
       </div>
     </div>
