@@ -53,17 +53,42 @@ export default function CampoSeguroMultiple({
     const fetchSeguros = async () => {
       setIsLoading(true);
       try {
-        const url = `${apiUrl}${endpointPrefix}/seguros`;
+        // Asegurarnos de que la URL se construya correctamente
+        const baseUrl = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+        const prefix = endpointPrefix.startsWith('/') ? endpointPrefix : `/${endpointPrefix}`;
+        const url = `${baseUrl}${prefix}/seguros`;
+        
+        console.log('Fetching seguros from:', url); // Para debugging
+        
         const response = await axios.get(url);
+        
+        if (!response.data) {
+          throw new Error('No data received from server');
+        }
+        
         const data = response.data.success ? response.data.data : [];
         setSeguros(data);
         setError?.("");
       } catch (err) {
         console.error("Error fetching seguros:", err);
-        const msg = axios.isAxiosError(err)
-          ? err.response?.data?.message || "Error al cargar los seguros disponibles"
-          : "Error desconocido al obtener seguros";
-        setError?.(msg);
+        let errorMessage = "Error desconocido al obtener seguros";
+        
+        if (axios.isAxiosError(err)) {
+          if (err.response) {
+            // El servidor respondió con un código de estado fuera del rango 2xx
+            errorMessage = err.response.data?.message || `Error del servidor: ${err.response.status}`;
+            console.error('Error response:', err.response.data);
+          } else if (err.request) {
+            // La petición fue hecha pero no se recibió respuesta
+            errorMessage = "No se recibió respuesta del servidor";
+            console.error('Error request:', err.request);
+          } else {
+            // Algo ocurrió al configurar la petición
+            errorMessage = err.message;
+          }
+        }
+        
+        setError?.(errorMessage);
       } finally {
         setIsLoading(false);
       }
