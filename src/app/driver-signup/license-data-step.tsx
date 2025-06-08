@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,6 +22,23 @@ export default function LicenseDataStep({
   licenseData,
   onDataChange,
 }: LicenseDataStepProps) {
+  const [fechaError, setFechaError] = useState("");
+  const isFechaValida = () => {
+    if (!licenseData.fechaEmision || !licenseData.fechaVencimiento) return true;
+    return (
+      new Date(licenseData.fechaEmision).getTime() <
+      new Date(licenseData.fechaVencimiento).getTime()
+    );
+  };
+
+  const handleNext = () => {
+    if (!isFechaValida()) {
+      setFechaError("La fecha de emisión debe ser anterior a la fecha de vencimiento.");
+      return;
+    }
+    setFechaError("");
+    onNextStep();
+  };
   return (
     <div className="space-y-4">
       <div className="space-y-2">
@@ -46,7 +65,14 @@ export default function LicenseDataStep({
             min="1970-01-01"
             max="2024-12-31"
             value={licenseData.fechaEmision}
-            onChange={(e) => onDataChange("fechaEmision", e.target.value)}
+            onChange={(e) => {
+              onDataChange("fechaEmision", e.target.value);
+              if (licenseData.fechaVencimiento && e.target.value >= licenseData.fechaVencimiento) {
+                setFechaError("La fecha de emisión debe ser anterior a la fecha de vencimiento.");
+              } else {
+                setFechaError("");
+              }
+            }}
           />
         </div>
 
@@ -58,10 +84,20 @@ export default function LicenseDataStep({
             min="2024-01-01"
             max="2050-12-31"
             value={licenseData.fechaVencimiento}
-            onChange={(e) => onDataChange("fechaVencimiento", e.target.value)}
+            onChange={(e) => {
+              onDataChange("fechaVencimiento", e.target.value);
+              if (licenseData.fechaEmision && e.target.value <= licenseData.fechaEmision) {
+                setFechaError("La fecha de vencimiento debe ser posterior a la fecha de emisión.");
+              } else {
+                setFechaError("");
+              }
+            }}
           />
         </div>
       </div>
+      {fechaError && (
+        <div className="text-red-500 text-sm mt-1">{fechaError}</div>
+      )}
 
       <div className="space-y-2">
         <Label>Categoría de Licencia *</Label>
@@ -97,6 +133,9 @@ export default function LicenseDataStep({
           <li>• Si los datos no coinciden tu solicitud sera rechazada</li>
         </ul>
       </div>
+      <Button onClick={handleNext}>
+        Siguiente
+      </Button>
     </div>
   );
 }
