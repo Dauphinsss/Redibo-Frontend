@@ -346,6 +346,7 @@ export function ButtonMarca({
                   variant="secondary"
                   className="mr-2 px-1 py-0 text-xs cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
                   onClick={clearSelection}
+                  title="Limpiar"
                 >
                   <X className="w-3 h-3" />
                 </Badge>
