@@ -32,8 +32,8 @@ export default function View({ id }: { id: number }) {
         <div className="flex flex-col md:flex-row justify-center items-center w-full ">
           {/* Panel izquierdo */}
           <section className="relative sm:w-85 bg-gray-100 p-6">
-            {/* Imagen */}
-            {car?.imagen && (
+            {/* Imagen o Contenedor plano */}
+            {car?.imagen ? (
               <Image
                 src={car.imagen}
                 alt="vehiculo"
@@ -41,7 +41,13 @@ export default function View({ id }: { id: number }) {
                 height={300}
                 className="rounded mb-6"
               />
-
+            ) : (
+              <div
+                className="bg-gray-200 rounded mb-6 flex items-center justify-center text-gray-500"
+                style={{ width: 295, height: 200 }}
+              >
+                Sin imagen disponible
+              </div>
             )}
 
             {/* Detalles */}
