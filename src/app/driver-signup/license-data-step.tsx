@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+//import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -37,7 +37,6 @@ export default function LicenseDataStep({
       return;
     }
     setFechaError("");
-    onNextStep();
   };
   return (
     <div className="space-y-4">
@@ -133,9 +132,6 @@ export default function LicenseDataStep({
           <li>• Si los datos no coinciden tu solicitud sera rechazada</li>
         </ul>
       </div>
-      <Button onClick={handleNext}>
-        Siguiente
-      </Button>
     </div>
   );
 }
