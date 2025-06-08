@@ -39,4 +39,17 @@ const apiRecodeGeneral = axios.create({
     },
 });
 
-export { apiAllCards, apiCarById, apiFormularioCondicionesUsoAuto, getCondicionesUsoAutoAPI, apiCobertura, apiRecodeGeneral };
+const apiRecodeComentario = axios.create({
+    baseURL: "https://search-car-backend.vercel.app",
+    headers:{
+        "Content-Type": "application/json",
+    }
+})
+const apiRecodePuntos = axios.create({
+    baseURL: "https://search-car-backend.vercel.app",
+    headers:{
+        "Content-Type": "application/json",
+    }
+})
+
+export { apiAllCards, apiCarById, apiFormularioCondicionesUsoAuto, getCondicionesUsoAutoAPI, apiCobertura, apiRecodeGeneral, apiRecodeComentario, apiRecodePuntos };
