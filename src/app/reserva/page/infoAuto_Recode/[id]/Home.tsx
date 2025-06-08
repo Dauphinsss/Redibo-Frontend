@@ -1,5 +1,5 @@
 'use client';
-
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
   getCarById,
@@ -20,27 +20,29 @@ import CalificaionRecode from '@/app/reserva/components/componentes_InfoAuto_Rec
 import PopUpComentarios from '@/app/reserva/components/componentes_InfoAuto_Recode/PopUp/popUpComentarios'; //@/app/busqueda/homeBuscador_Recode/components/PopUp/popUpComentarios
 import { useComentariosAuto } from '@/app/reserva/hooks/useComentario_hook_Recode';
 import VerComentario from '@/app/reserva/components/componentes_InfoAuto_Recode/verComentario/verComentarioRecode';
+import CrearComentario from "@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/Comentarios_Autos"; //@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/CrearComentario_Recode
 
 interface HomeProps {
   id: string;
 }
 
 export default function Home({ id }: HomeProps) {
+  const router = useRouter();
   const [auto, setAuto] = useState<AutoDetails_interface_Recode | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [calificaciones, setCalificaciones] = useState<number[]>([]);
   const [numComentarios, setNumComentarios] = useState(0);
   const [comentariosConCalificacion, setComentariosConCalificacion] = useState<number[]>([]);
   const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
- const promedioCalificacion = calificaciones.length > 0
-  ? (calificaciones.reduce((acc, cal) => acc + cal, 0) / calificaciones.length).toFixed(1)
-  : "0.0";  
-  
+  const promedioCalificacion = calificaciones.length > 0
+    ? (calificaciones.reduce((acc, cal) => acc + cal, 0) / calificaciones.length).toFixed(1)
+    : "0.0";
+
   const [ordenSeleccionado] = useState("Más reciente");
 
   const {
-  comentariosFiltrados,
-  formatearFecha
+    comentariosFiltrados,
+    formatearFecha
   } = useComentariosAuto(Number(id), filtroCalificacion, ordenSeleccionado);
 
   useEffect(() => {
@@ -58,8 +60,17 @@ export default function Home({ id }: HomeProps) {
       setLoaded(true);
     })();
   }, [id]);
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+    router.push(`/vistaPago/${id}`);
+  }
 
-  if (!loaded || !auto) return null;
+  if (!loaded || !auto) return null
 
   return (
     <>
@@ -128,8 +139,14 @@ export default function Home({ id }: HomeProps) {
                   />
                 </div>
               ))}
+            </div>
+            
+            <div className="mt-8">
+              <h2 className="text-xl font-bold mb-4">Escribe tu comentario</h2>
+              <CrearComentario id_carro={Number(id)} />
+            </div>
+
           </div>
-        </div>
           <div className="lg:w-1/3">
             <div className="sticky top-4 flex flex-col gap-4">
               <InfoDestacable
@@ -138,6 +155,12 @@ export default function Home({ id }: HomeProps) {
                 anio={auto.anio}
                 soat={auto.soat}
               />
+              <button
+                onClick={handleSubmit}
+                className="px-4 py-2 rounded-xl bg-black text-white hover:bg-gray-600 transition"
+              >
+                vista pago
+              </button>
               <Reserva id={id} precio={auto.precio} />
             </div>
           </div>

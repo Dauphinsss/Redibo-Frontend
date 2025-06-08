@@ -8,4 +8,11 @@ const axiosInstance = axios.create({
   },
 });
 
-export default axiosInstance;
+const axiosInstance2 = axios.create({
+  baseURL: "https://backend-is.vercel.app/api/",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+export { axiosInstance, axiosInstance2 };

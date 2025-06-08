@@ -621,6 +621,7 @@ const EditarDireccionPage: React.FC = () => {
             value={numCasa}
             onChange={handleNumCasaChange}
             disabled={!selectedProvincia}
+            maxLength={4}
             className={`w-full max-w-full md:max-w-lg mt-2 p-2 border ${touched.numCasa && numCasaError ? 'border-red-500' : 'border-gray-300'} rounded`}
             placeholder="Ingrese solo números"
           />

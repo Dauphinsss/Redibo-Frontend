@@ -3,30 +3,56 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { AutoCard_Interfaces_Recode as Auto } from '@/app/busqueda/interface/AutoCard_Interface_Recode'
+import { useEffect, useState } from "react"
 
 interface Props {
-  searchTerm: string
-  fechaInicio: string
-  fechaFin: string
-  setFechaInicio: (fecha: string) => void
-  setFechaFin: (fecha: string) => void
   autosActuales: Auto[]
-  autosTotales: Auto[]
-  onAplicarFiltro: (inicio: string, fin: string) => void
+  setAutosFiltrados: (autos: Auto[]) => void
 }
 
 const DateRangeFilter: React.FC<Props> = ({
-  fechaInicio,
-  fechaFin,
-  setFechaInicio,
-  setFechaFin,
-  searchTerm,
   autosActuales,
-  autosTotales,
-  onAplicarFiltro,
+  setAutosFiltrados,
 }) => {
+
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaFin, setFechaFin] = useState("");
   const todayLocal = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
     .toISOString().split("T")[0]
+
+  useEffect(() => {
+    const resultado = autosActuales.filter(auto => {
+
+      if (!auto.reservas || auto.reservas.length === 0) return true;
+
+      const filtroInicio = fechaInicio ? new Date(fechaInicio) : null;
+      const filtroFin = fechaFin ? new Date(fechaFin) : null;
+
+      return !auto.reservas.some(reserva => {
+        if (!['pendiente', 'confirmado'].includes(reserva.estado)) return false;
+
+        const inicioReserva = new Date(reserva.fecha_inicio);
+        const finReserva = new Date(reserva.fecha_fin);
+
+        if (filtroInicio && !filtroFin) {
+          return finReserva >= filtroInicio;
+        }
+
+        if (!filtroInicio && filtroFin) {
+          return inicioReserva <= filtroFin;
+        }
+
+        if (filtroInicio && filtroFin) {
+          return (
+            inicioReserva <= filtroFin &&
+            finReserva >= filtroInicio
+          );
+        }
+        return false;
+      });
+    });
+    setAutosFiltrados(resultado)
+  }, [fechaInicio, fechaFin]);
 
   return (
     <Popover>
@@ -65,10 +91,6 @@ const DateRangeFilter: React.FC<Props> = ({
             onChange={(e) => setFechaFin(e.target.value)}
             className="border px-2 py-1 rounded text-sm"
           />
-        </div>
-
-        <div className="text-xs text-muted-foreground bg-muted rounded px-2 py-1 whitespace-nowrap">
-          Mostrando {autosActuales.length} de {autosTotales.length} resultados
         </div>
       </PopoverContent>
     </Popover>

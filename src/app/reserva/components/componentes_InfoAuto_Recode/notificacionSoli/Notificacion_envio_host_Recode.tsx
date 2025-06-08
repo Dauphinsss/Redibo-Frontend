@@ -1,14 +1,20 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { getCarById } from "@/app/reserva/services/services_reserva";
 import { Solicitud } from "@/app/reserva/interface/NotificacionSolicitud_Recode";
 import { Button } from "@/components/ui/button";
+import { Conductor } from "../../SeleccionarConductores_7-bits";
+import { API_URL } from "@/utils/bakend";
 import FechasAlquiler from "../../componentes_MostrarCobertura_Recode/filtroIni";
 import PrecioDesglosado from "@/app/reserva/components/componentes_MostrarCobertura_Recode/precioDesglosado";
 import TablaCondicionesVisual_Recode from "@/app/reserva/components/componentes_CondicionesDeUsoAutoVisual/TablaCondicionesVisual_Recode";
 import TablaCoberturas from "../../componentes_MostrarCobertura_Recode/tablaCoberShow";
 import NotificacionEnvioExitoso_recode from "./Notificacion_envio_exitoso_Recode";
+import SeleccionarConductores from "../../SeleccionarConductores_7-bits";
+import { set } from "date-fns";
+import FormularioPago from "./formulario-pago"
+import FormularioGarantia from "./formulario-garantia"
 
 interface Props {
   id_carro: number;
@@ -47,6 +53,14 @@ export default function FormularioSolicitud({
   const [precioEstimado, setPrecioEstimado] = useState(0);
   const [datosAuto, setDatosAuto] = useState<{ modelo: string; marca: string; precio_por_dia: number; host: { id: number } } | null>(null);
   const [showNotification, setShowNotification] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showGarantiaModal, setShowGarantiaModal] = useState(false);
+
+  const menuRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [conductores, setConductores] = useState<Conductor[]>([]);
+  const [conductoresSeleccionados, setConductoresSeleccionados] = useState<number[]>([]);
 
   // Cargar todos los datos necesarios
   useEffect(() => {
@@ -221,6 +235,29 @@ export default function FormularioSolicitud({
     }
   }, [fechas, datosAuto]);
 
+  useEffect(() => {
+    const fetchConductores = async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        const res = await fetch(`${API_URL}/api/conductores-asociados`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        setConductores(data.conductores || []);
+
+      } catch (error) {
+        setError("Error al cargar la lista de conductores");
+        console.error("Error al cargar conductores:", error);
+        setConductores([]);
+      }
+    };
+    fetchConductores();
+  }, []);
+
   return (
     <div className="flex flex-col gap-6 max-w-4xl mx-auto">
       {/* 1. Sección de Fechas */}
@@ -250,6 +287,13 @@ export default function FormularioSolicitud({
         id_carro={id_carro}
       />
 
+       {/* 4.1. Seleccionar Conductor - 7-bits */}
+      <SeleccionarConductores
+        conductores={conductores}
+        seleccionados={conductoresSeleccionados}
+        onChange={setConductoresSeleccionados}
+      />
+      
       {/* 5. Formulario de contacto */}
       <div className="bg-white p-4 rounded-lg shadow">
         <h2 className="text-lg font-semibold mb-4">Información de contacto</h2>
@@ -312,18 +356,75 @@ export default function FormularioSolicitud({
             <p className="font-semibold">Total estimado: {precioEstimado.toFixed(2)} BOB</p>
             <p className="text-sm text-gray-600">
               {fechas.inicio && fechas.fin
-                ? `${new Date(fechas.inicio).toLocaleDateString()} - ${new Date(fechas.fin).toLocaleDateString()}`
+                ? `${new Date(fechas.inicio).toLocaleDateString()} - ${new Date(
+                    fechas.fin
+                  ).toLocaleDateString()}`
                 : "Selecciona fechas válidas"}
             </p>
           </div>
-          
-          <Button
-            onClick={handleEnviarSolicitud}
-            disabled={loading || !fechas.inicio || !fechas.fin || !renterNombre || !renterEmail}
-            className="bg-black hover:bg-gray-800 text-white px-6 py-2"
-          >
-            {loading ? "Enviando..." : "Confirmar reserva"}
-          </Button>
+
+          {/* Botón de menú de reserva */}
+          <div className="relative inline-block" ref={containerRef}>
+            <Button
+              //onClick={handleEnviarSolicitud}
+              onClick={() => setShowMenu(!showMenu)}
+              disabled={
+                loading ||
+                !fechas.inicio ||
+                !fechas.fin ||
+                !renterNombre ||
+                !renterEmail
+              }
+              className="bg-black hover:bg-gray-800 text-white px-6 py-2"
+            >
+              {loading ? "Enviando..." : "Reservar"}
+            </Button>
+            {showMenu && (
+              <div
+                ref={menuRef}
+                className="absolute mt-2 z-50 w-48 bg-white rounded-md shadow-lg border border-gray-200"
+              >
+                <div
+                  className="p-3 hover:bg-gray-100 cursor-pointer transition-colors rounded-t-md"
+                  onClick={() => {
+                    setShowMenu(false);
+                    setShowPaymentModal(true);
+                  }}
+                >
+                  <span className="font-medium">Pago de Reserva</span>
+                </div>
+                <div
+                  className="p-3 hover:bg-gray-100 cursor-pointer transition-colors rounded-b-md"
+                  onClick={() => {
+                    setShowMenu(false);
+                    setShowGarantiaModal(true);
+                  }}
+                >
+                  <span className="font-medium">Pago por Garantía</span>
+                </div>
+              </div>
+            )}
+            {/* Modales */}
+            {showPaymentModal && (
+              <FormularioPago
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+                carModel={datosAuto?.modelo ?? ""}
+                carPrice={precioEstimado ?? 0}
+                nombreUsuario={renterNombre}
+              />
+            )}
+
+            {showGarantiaModal && (
+              <FormularioGarantia
+              isOpen={showGarantiaModal}
+              usuario={renterNombre}
+              onClose={() => setShowGarantiaModal(false)}
+              carModel={datosAuto?.modelo ?? ""}
+              garantiaPrice={precioEstimado ?? 0}
+              />
+            )}
+          </div>
         </div>
       </div>
       {/* Notificación de envío exitoso */}

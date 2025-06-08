@@ -3,9 +3,7 @@
 
 import * as React from "react";
 import Autoplay from "embla-carousel-autoplay";
-import { Map } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import DateRangeFilter from "@/app/busqueda/components/filtrofechas_7-bits/DateRangeFilter";
 import AirportsFilter from "../filtroAeropuertos_7-bits/AirportsFilter"
@@ -17,6 +15,7 @@ import { ButtonMarca } from "../filtros/buttonMarca";
 import { ButtonTodos } from "../filtros/buttonTodos";
 import { AutoCard_Interfaces_Recode as Auto } from '@/app/busqueda/interface/AutoCard_Interface_Recode';
 import { ButtonGPS } from "../map/ButtonGPS";
+import { Coor } from "../../types/apitypes";
 
 // Interfaces para los nuevos filtros
 interface Host {
@@ -36,14 +35,6 @@ interface Marca {
 
 // Props extendidas para incluir los nuevos filtros
 interface InfiniteFilterCarouselProps {
-  searchTerm: string
-  fechaInicio: string
-  fechaFin: string
-  setFechaInicio: (fecha: string) => void
-  setFechaFin: (fecha: string) => void
-  autosActuales: Auto[]
-  autosTotales: Auto[]
-  //onAirportFilter: () => void
   autos: Auto[]
   setAutosFiltrados: (autos: Auto[]) => void
 
@@ -56,16 +47,19 @@ interface InfiniteFilterCarouselProps {
   onViajesFilter: (minViajes: number) => void
   onHostFilter: (host: Host | null) => void
   onMarcaFilter: (marca: Marca | null) => void
-  onMostrarTodos: () => void // Nuevo: función para mostrar todos los resultados
-  isAllActive?: boolean // Nuevo: indica si el filtro "Todos" está activo
+  onMostrarTodos?: () => void // Función para mostrar todos los resultados
+  isAllActive?: boolean // Indica si el filtro "Todos" está activo
   disabledPrecio?: boolean
   disabledCalif?: boolean
   disabledViajes?: boolean
   disabledHost?: boolean
   disabledMarca?: boolean
-  disabledTodos?: boolean // Nuevo
+  disabledTodos?: boolean
   autoScrollDelay?: number
   className?: string
+  // Nueva prop para pasar todos los autos disponibles para extraer marcas
+  autosOriginales?: Auto[]
+  punto: Coor
 }
 
 /**
@@ -73,16 +67,8 @@ interface InfiniteFilterCarouselProps {
  * Ahora incluye filtros por Host, Marca y botón "Todos" para limpiar filtros.
  */
 export function InfiniteFilterCarousel({
-  searchTerm,
-  fechaInicio,
-  fechaFin,
-  setFechaInicio,
-  setFechaFin,
-  autosActuales,
-  autosTotales,
-  //onAirportFilter,
   autos,
-  setAutosFiltrados,  
+  setAutosFiltrados,
   gpsActive,
   onGpsToggle,
   radio,
@@ -102,6 +88,8 @@ export function InfiniteFilterCarousel({
   disabledTodos = false,
   autoScrollDelay = 3000,
   className = "",
+  autosOriginales = [],
+  punto
 }: InfiniteFilterCarouselProps) {
 
   const autoplayPlugin = React.useRef(
@@ -110,7 +98,7 @@ export function InfiniteFilterCarousel({
 
   // Array de configuración para los filtros
   const filterItems = [
-    {
+    ...(onMostrarTodos ? [{
       id: 'todos',
       component: (
         <ButtonTodos
@@ -119,22 +107,13 @@ export function InfiniteFilterCarousel({
           isActive={isAllActive}
         />
       ),
-    },
+    }] : []),
     {
       id: 'dateRange',
       component: (
         <DateRangeFilter
-          searchTerm={searchTerm}
-          fechaInicio={fechaInicio}
-          fechaFin={fechaFin}
-          setFechaInicio={setFechaInicio}
-          setFechaFin={setFechaFin}
-          autosActuales={autosActuales}
-          autosTotales={autosTotales}
-          onAplicarFiltro={(inicio, fin) => {
-            setFechaInicio(inicio);
-            setFechaFin(fin);
-          }}
+          autosActuales={autos}
+          setAutosFiltrados={setAutosFiltrados}
         />
       )
     },
@@ -144,6 +123,7 @@ export function InfiniteFilterCarousel({
         <ButtonHost
           onFilterChange={onHostFilter}
           disabled={disabledHost}
+          autos={autosOriginales.length > 0 ? autosOriginales : autos}  //nuevo que añadi
         />
       ),
     },
@@ -153,6 +133,7 @@ export function InfiniteFilterCarousel({
         <ButtonMarca
           onFilterChange={onMarcaFilter}
           disabled={disabledMarca}
+          autos={autosOriginales.length > 0 ? autosOriginales : autos}
         />
       ),
     },
@@ -171,9 +152,9 @@ export function InfiniteFilterCarousel({
     {
       id: 'aeropuerto',
       component: (
-        <AirportsFilter                    
+        <AirportsFilter
           autos={autos}
-          setAutosFiltrados={setAutosFiltrados}          
+          setAutosFiltrados={setAutosFiltrados}
         />
       ),
       expandable: true,
@@ -186,6 +167,7 @@ export function InfiniteFilterCarousel({
           onGpsToggle={onGpsToggle}
           radio={radio}
           setRadio={setRadio}
+          punto={punto}
         />
       ),
     },

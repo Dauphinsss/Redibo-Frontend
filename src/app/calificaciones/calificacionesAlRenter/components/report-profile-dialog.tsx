@@ -23,9 +23,12 @@ interface ReportProfileDialogProps {
   children: React.ReactNode
   renterId: string
   renterName: string
+  renterRole: string
+  viewerRoles: string[]
+  targetUserRoles: { rol: string }[];
 }
 
-export default function ReportProfileDialog({ children, renterId, renterName }: ReportProfileDialogProps) {
+export default function ReportProfileDialog({ children, renterId, renterName, renterRole, viewerRoles, targetUserRoles }: ReportProfileDialogProps) {
   const [reason, setReason] = useState("")
   const [additionalInfo, setAdditionalInfo] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -34,7 +37,14 @@ export default function ReportProfileDialog({ children, renterId, renterName }: 
   const [reachedDailyLimit, setReachedDailyLimit] = useState(false)
   const maxLength = 200 // Límite máximo de caracteres
 
-  // Verificar si el usuario ya ha reportado a este arrendatario
+  const isViewerHost = viewerRoles.includes("HOST");
+  const isTargetUserRenter = targetUserRoles.some(roleObj => roleObj.rol === "RENTER");
+  const isViewingOwnProfile = false; 
+
+  if (!isViewerHost || !isTargetUserRenter || isViewingOwnProfile) {
+    return null;
+  }
+
   useEffect(() => {
     const checkPreviousReports = async () => {
       try {
@@ -63,7 +73,6 @@ export default function ReportProfileDialog({ children, renterId, renterName }: 
     }
   }, [renterId, isOpen])
 
-  // Limpiar los campos cuando se cierra el modal
   useEffect(() => {
     if (!isOpen) {
       setReason("");
@@ -147,10 +156,12 @@ export default function ReportProfileDialog({ children, renterId, renterName }: 
   const getDialogMessage = () => {
     if (hasReportedBefore) {
       return (
-        <div className="mt-2 flex items-center text-black text-sm">
-          <AlertCircle className="h-4 w-4 mr-2" />
-          Ya has reportado a este usuario anteriormente. No puedes enviar múltiples reportes al mismo usuario.
-        </div>
+        <>
+          <AlertCircle className="h-4 w-4 mr-2 inline" />
+          <span className="text-black text-sm">
+            Ya has reportado a este usuario anteriormente. No puedes enviar múltiples reportes al mismo usuario.
+          </span>
+        </>
       )
     }
     if (reachedDailyLimit) {

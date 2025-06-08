@@ -8,7 +8,7 @@ import {
   FinalizacionData, 
 } from './types';
 import { validateForm } from './formValidation';
-import { createFullCar, CreateFullCarPayload } from "@/app/host/services/carService";
+import { carService, CreateFullCarPayload } from "@/app/host/services/carService";
 import { uploadImage } from "@/app/host/services/imageService";
 import { enviarSegurosAlBackend } from "../seguros/segurosActions";
 
@@ -84,7 +84,7 @@ export const createSubmitAction = (
     };
 
     try {
-      const result = await createFullCar(payload);
+      const result = await carService.createFullCar(payload);
       if (!result.success) {
         setSubmitError(result.message || "Error al crear el carro");
         return { success: false, error: result.message };

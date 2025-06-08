@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { API_URL } from "@/utils/bakend"
 import Link from "next/link"
+import { ArrowUp, ArrowDown } from "lucide-react"
 
 interface Usuario {
   id: number
@@ -37,7 +38,10 @@ interface Reserva {
   Carro: Carro
 }
 
-export default function ActividadVehiclesPage() {
+type SortDirection = "asc" | "desc"
+type SortableField = "marca" | "modelo" | "nombre" | "correo" | "telefono" | "fecha_inicio" | "fecha_fin" | "estado"
+
+export default function VehiclesRentadosPage() {
   const [reservaciones, setReservaciones] = useState<Reserva[]>([])
   const [registrosPorPagina, setRegistrosPorPagina] = useState("5")
   const [paginaActual, setPaginaActual] = useState(1)
@@ -46,9 +50,12 @@ export default function ActividadVehiclesPage() {
   const [totalReservaciones, setTotalReservaciones] = useState(0)
   const [userId, setUserId] = useState<string | null>(null)
   const [filtroEstado, setFiltroEstado] = useState<string>("")
+  const [sortConfig, setSortConfig] = useState<{
+    key: SortableField
+    direction: SortDirection
+  }>({ key: "fecha_inicio", direction: "desc" })
 
   useEffect(() => {
-   
     const token = localStorage.getItem("auth_token")
     if (token) {
       const fetchUserId = async () => {
@@ -88,42 +95,32 @@ export default function ActividadVehiclesPage() {
         throw new Error("No se encontró el token de autenticación")
       }
 
-      
-      let apiUrl = `${API_URL}/api/reservas?hostId=${userId}&page=${paginaActual}&limit=${registrosPorPagina}`;
-
+      let apiUrl = `${API_URL}/api/reservas?hostId=${userId}&page=${paginaActual}&limit=${registrosPorPagina}`
 
       if (filtroEstado) {
-           apiUrl = `${apiUrl}&estado=${filtroEstado}`;
+        apiUrl = `${apiUrl}&estado=${filtroEstado}`
       }
 
-      const response = await fetch(
-        apiUrl,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+      const response = await fetch(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-      )
+      })
 
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`)
       }
 
       const data = await response.json()
-      console.log("Datos de reserva recibidos del backend:", data); 
 
-      
       if (data && Array.isArray(data.reservas)) {
         setReservaciones(data.reservas)
         setTotalReservaciones(data.total)
       } else {
-         console.error("Formato de respuesta inesperado del backend para /api/reservas:", data);
-         setReservaciones([]);
-         setTotalReservaciones(0);
-         
+        setReservaciones([])
+        setTotalReservaciones(0)
       }
-
     } catch (error: unknown) {
       console.error("Error:", error)
       const errorMessage = error instanceof Error ? error.message : "Error desconocido"
@@ -132,7 +129,7 @@ export default function ActividadVehiclesPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [userId, registrosPorPagina, paginaActual, filtroEstado])
+  }, [userId, registrosPorPagina, sortConfig, filtroEstado, paginaActual])
 
   useEffect(() => {
     if (userId) {
@@ -155,26 +152,72 @@ export default function ActividadVehiclesPage() {
     }
   }
 
-  const totalPaginas = Math.ceil(totalReservaciones / Number.parseInt(registrosPorPagina))
-  const indiceInicio = (paginaActual - 1) * Number.parseInt(registrosPorPagina)
-  const indiceFin = Math.min(indiceInicio + Number.parseInt(registrosPorPagina), totalReservaciones)
+  const sortReservations = (reservations: Reserva[], key: SortableField, direction: SortDirection): Reserva[] => {
+    return [...reservations].sort((a, b) => {
+      const valueA = getSortableValue(a, key)
+      const valueB = getSortableValue(b, key)
+
+      if (typeof valueA === "string" && typeof valueB === "string") {
+        return direction === "asc" ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA)
+      } else if (valueA instanceof Date && valueB instanceof Date) {
+        return direction === "asc" ? valueA.getTime() - valueB.getTime() : valueB.getTime() - valueA.getTime()
+      } else if (typeof valueA === "number" && typeof valueB === "number") {
+        return direction === "asc" ? valueA - valueB : valueB - valueA
+      }
+      return 0
+    })
+  }
+
+  const getSortableValue = (reserva: Reserva, key: SortableField): string | Date | number => {
+    switch (key) {
+      case "marca":
+        return reserva.Carro.marca.toLowerCase()
+      case "modelo":
+        return reserva.Carro.modelo.toLowerCase()
+      case "nombre":
+        return reserva.Usuario.nombre.toLowerCase()
+      case "correo":
+        return reserva.Usuario.correo.toLowerCase()
+      case "telefono":
+        return reserva.Usuario.telefono
+      case "fecha_inicio":
+        return new Date(reserva.fecha_inicio)
+      case "fecha_fin":
+        return new Date(reserva.fecha_fin)
+      case "estado":
+        return reserva.estado
+      default:
+        return ""
+    }
+  }
+
+  const handleSort = (key: SortableField) => {
+    let direction: SortDirection = "asc"
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc"
+    }
+    setSortConfig({ key, direction })
+    setPaginaActual(1)
+  }
+
+  const getSortIcon = (key: SortableField) => {
+    if (sortConfig.key !== key) return null
+    return sortConfig.direction === "asc" ? (
+      <ArrowUp className="ml-2 h-3 w-3" />
+    ) : (
+      <ArrowDown className="ml-2 h-3 w-3" />
+    )
+  }
+
+  const totalPaginas = Math.ceil(totalReservaciones / Number(registrosPorPagina))
+  const indiceInicio = (paginaActual - 1) * Number(registrosPorPagina) + 1
+  const indiceFin = Math.min(indiceInicio + Number(registrosPorPagina) - 1, totalReservaciones)
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <div className="container mx-auto py-8 px-4 flex-1">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Actividad de mis vehículos</h1>
-          <Link href="/perfil">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 px-3 sm:h-10 sm:px-4"
-            >
-              Atrás
-            </Button>
-          </Link>
-        </div>
+        <h1 className="text-2xl font-bold mb-6">Vehículos Rentados</h1>
 
         {isLoading ? (
           <div className="flex justify-center items-center min-h-[400px]">
@@ -193,7 +236,136 @@ export default function ActividadVehiclesPage() {
           </div>
         ) : (
           <>
-            <div className="flex justify-between items-center mb-6">
+            <div className="border rounded-lg overflow-hidden bg-white">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="font-semibold">
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort("marca")}
+                        className="flex items-center px-0 hover:bg-transparent"
+                      >
+                        MARCA/MODELO
+                        {getSortIcon("marca")}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="font-semibold">
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort("nombre")}
+                        className="flex items-center px-0 hover:bg-transparent"
+                      >
+                        CLIENTE
+                        {getSortIcon("nombre")}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="font-semibold">
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort("correo")}
+                        className="flex items-center px-0 hover:bg-transparent"
+                      >
+                        CONTACTO
+                        {getSortIcon("correo")}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="font-semibold">
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort("fecha_inicio")}
+                        className="flex items-center px-0 hover:bg-transparent"
+                      >
+                        FECHA INICIO
+                        {getSortIcon("fecha_inicio")}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="font-semibold">
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort("fecha_fin")}
+                        className="flex items-center px-0 hover:bg-transparent"
+                      >
+                        FECHA FIN
+                        {getSortIcon("fecha_fin")}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="font-semibold">
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort("estado")}
+                        className="flex items-center px-0 hover:bg-transparent"
+                      >
+                        ESTADO
+                        {getSortIcon("estado")}
+                      </Button>
+                    </TableHead>
+                    <TableHead className="font-semibold">ACCIONES</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {reservaciones.map((reserva) => {
+                    console.log("Estado de la reserva:", reserva.estado)
+                    return (
+                      <TableRow key={reserva.id}>
+                        <TableCell>
+                          {reserva.Carro.marca} {reserva.Carro.modelo}
+                        </TableCell>
+                        <TableCell>
+                          {reserva.Usuario ? (
+                            <Link href={`/usuario/${reserva.Usuario.id}`} className="hover:underline cursor-pointer">
+                              {reserva.Usuario.nombre}
+                            </Link>
+                          ) : (
+                            <span className="text-muted-foreground">Sin datos</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm">
+                            <div>{reserva.Usuario?.correo}</div>
+                            <div className="text-muted-foreground">{reserva.Usuario?.telefono}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(reserva.fecha_inicio).toLocaleDateString("es-ES", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(reserva.fecha_fin).toLocaleDateString("es-ES", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="bg-white text-black border border-gray-300">
+                            {reserva.estado.replace("_", " ")}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {reserva.estado === "COMPLETADA" && (
+                            <Link href={`/calificaciones/calificacionesAlRenter?idreserva=${reserva.id}`}>
+                              <Button variant="default" size="sm" className="bg-black text-white hover:bg-gray-800">
+                                Calificar
+                              </Button>
+                            </Link>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Mostrar</span>
                 <Select
@@ -214,96 +386,50 @@ export default function ActividadVehiclesPage() {
                 </Select>
                 <span className="text-sm text-muted-foreground">registros</span>
               </div>
-            </div>
 
-            <div className="border rounded-lg overflow-hidden bg-white">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="font-semibold">MARCA/MODELO</TableHead>
-                    <TableHead className="font-semibold">CLIENTE</TableHead>
-                    <TableHead className="font-semibold">CONTACTO</TableHead>
-                    <TableHead className="font-semibold">FECHA INICIO</TableHead>
-                    <TableHead className="font-semibold">FECHA FIN</TableHead>
-                    <TableHead className="font-semibold">ESTADO</TableHead>
-                    <TableHead className="font-semibold">ACCIONES</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {reservaciones.map((reserva) => (
-                    <TableRow key={reserva.id}>
-                      <TableCell>
-                        {reserva.Carro.marca} {reserva.Carro.modelo}
-                      </TableCell>
-                      <TableCell>
-                        {reserva.Usuario ? (
-                          <Link href={`/usuario/${reserva.Usuario.id}`} className="hover:underline cursor-pointer">
-                            {reserva.Usuario.nombre}
-                          </Link>
-                        ) : (
-                          <span className="text-muted-foreground">Sin datos</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          <div>{reserva.Usuario?.correo}</div>
-                          <div className="text-muted-foreground">{reserva.Usuario?.telefono}</div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {new Date(reserva.fecha_inicio).toLocaleDateString("es-ES", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(reserva.fecha_fin).toLocaleDateString("es-ES", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={getVarianteBadge(reserva.estado)}>{reserva.estado}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        {reserva.estado === "COMPLETADA" && (
-                          <Link href={`/calificaciones/calificacionesAlRenter?reservaId=${reserva.id}`}>
-                            <Button variant="outline" size="sm">
-                              Calificar
-                            </Button>
-                          </Link>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-
-            <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
               <div className="text-sm text-muted-foreground">
-                Mostrando {indiceInicio + 1} a {indiceFin} de {totalReservaciones} reservaciones
+                Mostrando {indiceInicio} a {indiceFin} de {totalReservaciones} reservaciones
               </div>
+
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPaginaActual((prev) => prev - 1)}
+                  onClick={() => setPaginaActual((prev) => Math.max(prev - 1, 1))}
                   disabled={paginaActual === 1}
                 >
                   Anterior
                 </Button>
-                <span className="px-3 py-2 rounded-md bg-primary text-primary-foreground">{paginaActual}</span>
+
+                {/* Mostrar números de página */}
+                {Array.from({ length: Math.min(5, totalPaginas) }, (_, i) => {
+                  let pageNum
+                  if (totalPaginas <= 5) {
+                    pageNum = i + 1
+                  } else if (paginaActual <= 3) {
+                    pageNum = i + 1
+                  } else if (paginaActual >= totalPaginas - 2) {
+                    pageNum = totalPaginas - 4 + i
+                  } else {
+                    pageNum = paginaActual - 2 + i
+                  }
+
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={paginaActual === pageNum ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setPaginaActual(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  )
+                })}
+
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPaginaActual((prev) => prev + 1)}
+                  onClick={() => setPaginaActual((prev) => Math.min(prev + 1, totalPaginas))}
                   disabled={paginaActual === totalPaginas}
                 >
                   Siguiente

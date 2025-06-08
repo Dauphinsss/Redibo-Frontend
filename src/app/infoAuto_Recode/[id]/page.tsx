@@ -8,7 +8,7 @@ import Reserva from "@/app/infoAuto_Recode/components/RecodeReserva";
 import { getCarById } from "@/app/infoAuto_Recode/service/services_Recode";
 import NotFound from "@/app/not-found";
 import { transformAutoDetails_Recode } from "@/app/infoAuto_Recode/utils/transformAutoDetails_Recode";
-
+import Link from "next/link";
 export default async function Page({
   params,
 }: {
