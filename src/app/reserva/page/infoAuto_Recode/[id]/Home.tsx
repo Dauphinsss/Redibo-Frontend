@@ -172,7 +172,8 @@ export default function Home({ id }: HomeProps) {
                     idComentario={comentario.id}
                     idUsuarioComentario={comentario.Usuario.id}
                     userId={userId}
-                    onEliminar={() => {}}
+                    onEliminar={handleEliminarComentario}
+                    onResponder={() => {}}
                     nombreCompleto={comentario.Usuario.nombre}
                     fotoUser=""
                     fechaComentario={formatearFecha(comentario.comentado_en)}
