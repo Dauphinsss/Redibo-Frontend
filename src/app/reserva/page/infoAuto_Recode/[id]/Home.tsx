@@ -55,12 +55,8 @@ export default function Home({ id }: HomeProps) {
 
   const [userId, setUserId] = useState<number>(0);
 
-
-  const { comentariosFiltrados, formatearFecha } = useComentariosAuto(
-    Number(id),
-    filtroCalificacion,
-    ordenSeleccionado
-  );
+  const { comentariosFiltrados, formatearFecha, refetchComentarios } =
+    useComentariosAuto(Number(id), filtroCalificacion, ordenSeleccionado);
 
   useEffect(() => {
     setUserId(getUserIdFromStorage());
@@ -92,23 +88,55 @@ export default function Home({ id }: HomeProps) {
   if (!loaded || !auto) return null;
 
   const handleEliminarComentario = async (idComentario: number) => {
-    const confirmacion = confirm("¿Seguro que deseas eliminar este comentario?");
+    const confirmacion = confirm(
+      "¿Seguro que deseas eliminar este comentario?"
+    );
     if (!confirmacion) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/comentarios-carro/${idComentario}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-        },
-      });
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+      const res = await fetch(
+        `${API_URL}/api/comentarios-carro/${idComentario}`,
+        {
+          method: "DELETE",
+          headers: {
+        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+          },
+        }
+      );
 
       if (!res.ok) throw new Error("No se pudo eliminar el comentario");
 
-      router.refresh();
+      await refetchComentarios();
     } catch (err) {
       console.error("Error al eliminar comentario:", err);
       alert("Error al eliminar comentario.");
+    }
+  };
+
+  const handleResponderComentario = async (
+    comentarioId: number,
+    respuesta: string
+  ) => {
+    try {
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+      const res = await fetch(`${API_URL}/api/comentarios-carro/respuestas`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
+        body: JSON.stringify({ id_comentario: comentarioId, respuesta }),
+      });
+
+      if (!res.ok) throw new Error("No se pudo enviar la respuesta");
+
+      await refetchComentarios(); // o actualizás el estado si lo estás manejando
+    } catch (err) {
+      console.error("Error al responder comentario:", err);
+      alert("Hubo un problema al enviar tu respuesta.");
     }
   };
 
@@ -132,22 +160,6 @@ export default function Home({ id }: HomeProps) {
 
             <DescripcionAuto descripcion={auto.descripcion} />
 
-            {/* <div className="mt-4 mb-4 flex justify-end">
-              <PopUpComentarios
-                idCar={id}
-                nombreCompleto={auto.nombreHost}
-                fotoHost=""
-                modeloAuto={auto.modelo}
-                marcaAuto={auto.marca}
-                calificaciones={calificaciones}
-                numComentarios={numComentarios}
-                comentariosConCalificacion={comentariosConCalificacion}
-                imagenes={auto.imagenes}
-                nombreUser=""
-                fotoUser=""
-              />
-            </div> */}
-
             <DescriHost
               idHost={auto.idHost}
               nombreHost={auto.nombreHost}
@@ -170,17 +182,27 @@ export default function Home({ id }: HomeProps) {
                 <div key={comentario.id} className="p-3">
                   <VerComentario
                     idComentario={comentario.id}
-                    idUsuarioComentario={comentario.Usuario.id}
+                    idUsuarioComentario={comentario.usuario.id}
                     userId={userId}
                     onEliminar={handleEliminarComentario}
-                    onResponder={() => {}}
-                    nombreCompleto={comentario.Usuario.nombre}
-                    fotoUser=""
-                    fechaComentario={formatearFecha(comentario.comentado_en)}
-                    comentario={comentario.contenido}
+                    onResponder={handleResponderComentario}
+                    nombreCompleto={comentario.usuario.nombre}
+                    fotoUser={
+                      "foto" in comentario.usuario
+                        ? String(comentario.usuario.foto)
+                        : ""
+                    }
+                    fechaComentario={formatearFecha(comentario.fecha_creacion)}
+                    comentario={comentario.comentario}
                     calificacionUsr={comentario.Calificacion?.calf_carro ?? 0}
                     cantDontlikes={comentario.dont_likes ?? 0}
                     cantLikes={comentario.likes ?? 0}
+                    respuestas={comentario.respuestas.map((r) => ({
+                      id: r.id,
+                      comentado_en: r.comentado_en,
+                      respuesta: r.respuesta,
+                      host: r.host,
+                    }))}
                   />
                 </div>
               ))}
@@ -188,9 +210,13 @@ export default function Home({ id }: HomeProps) {
 
             <div className="mt-8">
               <h2 className="text-xl font-bold mb-4">Escribe tu comentario</h2>
-              <CrearComentario id_carro={Number(id)} />
+              <CrearComentario
+                id_carro={Number(id)}
+                onComentarioCreado={refetchComentarios}
+              />
             </div>
           </div>
+
           <div className="lg:w-1/3">
             <div className="sticky top-4 flex flex-col gap-4">
               <InfoDestacable
