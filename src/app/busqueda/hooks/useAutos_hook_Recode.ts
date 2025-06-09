@@ -26,11 +26,11 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
   const [filtroHost, setFiltroHost] = useState<string>('');
 
   // ======== ESTADOS PARA FILTROS DE BACKEND (mejorados) ========
-  const [filtroPrecio, setFiltroPrecio] = useState<{min: number, max: number} | null>(null);
+  const [filtroPrecio, setFiltroPrecio] = useState<{ min: number, max: number } | null>(null);
   const [filtroViajes, setFiltroViajes] = useState<number | null>(null);
   const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
   const [cargandoFiltros, setCargandoFiltros] = useState(false);
-  
+
   // Estados para manejar la restauración de filtros
   const [autosBaseParaBackend, setAutosBaseParaBackend] = useState<Auto[]>([]);
   const [hayFiltrosBackendActivos, setHayFiltrosBackendActivos] = useState(false);
@@ -42,6 +42,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
       const rawData: RawAuto[] = await getAllCars();
       const transformed = rawData.map(transformAuto);
       setAutos(transformed);
+      console.log('Autod despues del fetch', transformed);
       setAutosFiltrados(transformed);
     } catch (error) {
       console.error('Error al cargar los autos:', error);
@@ -52,17 +53,17 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
   };
 
   // Efecto para aplicar filtros iniciales desde URL
-useEffect(() => {
-  if (fechaInicio) {
-    setFechaFiltroInicio(fechaInicio);
-  }
-  if (fechaFin) {
-    setFechaFiltroFin(fechaFin);
-  }
-  if (ciudad) {
-    setFiltroCiudad(ciudad);
-  }
-}, [fechaInicio, fechaFin, ciudad]);
+  useEffect(() => {
+    if (fechaInicio) {
+      setFechaFiltroInicio(fechaInicio);
+    }
+    if (fechaFin) {
+      setFechaFiltroFin(fechaFin);
+    }
+    if (ciudad) {
+      setFiltroCiudad(ciudad);
+    }
+  }, [fechaInicio, fechaFin, ciudad]);
   useEffect(() => {
     fetchAutos();
   }, []);
@@ -93,24 +94,23 @@ useEffect(() => {
 
     // FILTRO POR HOST
     if (filtroHost && filtroHost.trim()) {
-        console.log("Aplicando filtro de host:", filtroHost);
-        const hostNormalizado = normalizarTexto(filtroHost.trim());
-        resultado = resultado.filter(auto => {
-            if (!auto.nombreHost || auto.nombreHost === "Sin nombre") {
-                return false;
-            }
-            const nombreHostNormalizado = normalizarTexto(auto.nombreHost);
-            return nombreHostNormalizado.includes(hostNormalizado);
-        });
-        console.log(`Autos filtrados por host "${filtroHost}":`, resultado.length);
+      console.log("Aplicando filtro de host:", filtroHost);
+      const hostNormalizado = normalizarTexto(filtroHost.trim());
+      resultado = resultado.filter(auto => {
+        if (!auto.nombreHost || auto.nombreHost === "Sin nombre") {
+          return false;
+        }
+        const nombreHostNormalizado = normalizarTexto(auto.nombreHost);
+        return nombreHostNormalizado.includes(hostNormalizado);
+      });
+      console.log(`Autos filtrados por host "${filtroHost}":`, resultado.length);
     }
 
+    const filtroInicio = fechaFiltroInicio ? new Date(fechaFiltroInicio) : null;
+    const filtroFin = fechaFiltroFin ? new Date(fechaFiltroFin) : null;
     // Filtro por fechas de disponibilidad
     resultado = resultado.filter(auto => {
       if (!auto.reservas || auto.reservas.length === 0) return true;
-
-      const filtroInicio = fechaFiltroInicio ? new Date(fechaFiltroInicio) : null;
-      const filtroFin = fechaFiltroFin ? new Date(fechaFiltroFin) : null;
 
       return !auto.reservas.some(reserva => {
         if (!['pendiente', 'confirmado'].includes(reserva.estado)) return false;
@@ -138,51 +138,51 @@ useEffect(() => {
 
     // Filtro por tipo de combustible
     if (filtrosCombustible.length > 0) {
-        console.log("Aplicando filtro de combustible:", filtrosCombustible);
-        resultado = resultado.filter(auto => {
-            return auto.combustibles.some(combustible =>
-                filtrosCombustible.includes(combustible)
-            );
-        });
+      console.log("Aplicando filtro de combustible:", filtrosCombustible);
+      resultado = resultado.filter(auto => {
+        return auto.combustibles.some(combustible =>
+          filtrosCombustible.includes(combustible)
+        );
+      });
     }
 
     // Filtro por características del coche (asientos y puertas)
     if (filtrosCaracteristicas.asientos) {
-        console.log("Aplicando filtro de asientos:", filtrosCaracteristicas.asientos);
-        resultado = resultado.filter(auto => auto.asientos === filtrosCaracteristicas.asientos);
+      console.log("Aplicando filtro de asientos:", filtrosCaracteristicas.asientos);
+      resultado = resultado.filter(auto => auto.asientos === filtrosCaracteristicas.asientos);
     }
     if (filtrosCaracteristicas.puertas) {
-        console.log("Aplicando filtro de puertas:", filtrosCaracteristicas.puertas);
-        resultado = resultado.filter(auto => auto.puertas === filtrosCaracteristicas.puertas);
+      console.log("Aplicando filtro de puertas:", filtrosCaracteristicas.puertas);
+      resultado = resultado.filter(auto => auto.puertas === filtrosCaracteristicas.puertas);
     }
 
     // Filtro por transmisión
     if (filtrosTransmision.length > 0) {
-        console.log("Aplicando filtro de transmisión:", filtrosTransmision);
-        resultado = resultado.filter(auto => {
-            return filtrosTransmision.some(transmision =>
-                auto.transmision.toLowerCase().includes(transmision.toLowerCase())
-            );
-        });
+      console.log("Aplicando filtro de transmisión:", filtrosTransmision);
+      resultado = resultado.filter(auto => {
+        return filtrosTransmision.some(transmision =>
+          auto.transmision.toLowerCase().includes(transmision.toLowerCase())
+        );
+      });
     }
 
     // Filtro por características adicionales 
     if (filtrosCaracteristicasAdicionales.length > 0) {
-        resultado = resultado.filter(auto => {
-            return filtrosCaracteristicasAdicionales.every(caracteristica =>
-                (auto.caracteristicasAdicionales || []).some(c => 
-                    normalizarTexto(c).includes(normalizarTexto(caracteristica))
-                )
-            );
-        });
+      resultado = resultado.filter(auto => {
+        return filtrosCaracteristicasAdicionales.every(caracteristica =>
+          (auto.caracteristicasAdicionales || []).some(c =>
+            normalizarTexto(c).includes(normalizarTexto(caracteristica))
+          )
+        );
+      });
     }
 
     // Filtro por ciudad
     if (filtroCiudad && filtroCiudad.trim()) {
-        console.log("Aplicando filtro de ciudad:", filtroCiudad);
-        resultado = resultado.filter(auto =>
-            normalizarTexto(auto.ciudad).includes(normalizarTexto(filtroCiudad))
-        );
+      console.log("Aplicando filtro de ciudad:", filtroCiudad);
+      resultado = resultado.filter(auto =>
+        normalizarTexto(auto.ciudad).includes(normalizarTexto(filtroCiudad))
+      );
     }
 
     // Filtro por GPS (proximidad)
@@ -304,120 +304,120 @@ useEffect(() => {
   // ======== FILTROS DE BACKEND MEJORADOS ========
   const aplicarFiltroPrecio = useCallback(async (min: number, max: number) => {
     try {
-        setCargandoFiltros(true);
-        console.log('Aplicando filtro de precio:', { min, max });
-        console.log('Base para filtro:', autosBaseParaBackend.length);
+      setCargandoFiltros(true);
+      console.log('Aplicando filtro de precio:', { min, max });
+      console.log('Base para filtro:', autosBaseParaBackend.length);
 
-        // Si se desactiva el filtro
-        if (min === 0 && max === Infinity) {
-            setAutosFiltrados(autosBaseParaBackend);
-            setFiltroPrecio(null);
-            setHayFiltrosBackendActivos(false);
-            return;
-        }
+      // Si se desactiva el filtro
+      if (min === 0 && max === Infinity) {
+        setAutosFiltrados(autosBaseParaBackend);
+        setFiltroPrecio(null);
+        setHayFiltrosBackendActivos(false);
+        return;
+      }
 
-        // Usar la base filtrada por los filtros en memoria
-        const baseParaFiltro = autosBaseParaBackend.length > 0 ? autosBaseParaBackend : autosFiltrados;
-        const ids = baseParaFiltro.map(a => parseInt(a.idAuto, 10));
+      // Usar la base filtrada por los filtros en memoria
+      const baseParaFiltro = autosBaseParaBackend.length > 0 ? autosBaseParaBackend : autosFiltrados;
+      const ids = baseParaFiltro.map(a => parseInt(a.idAuto, 10));
 
-        const datos = await filtrosAPI.filtrarPorPrecio({ 
-            minPrecio: min, 
-            maxPrecio: max, 
-            idsCarros: ids 
-        });
+      const datos = await filtrosAPI.filtrarPorPrecio({
+        minPrecio: min,
+        maxPrecio: max,
+        idsCarros: ids
+      });
 
-        const idsFiltrados = datos.map((d: { id: number }) => d.id);
-        const nuevosFiltrados = baseParaFiltro.filter(a => 
-            idsFiltrados.includes(parseInt(a.idAuto, 10))
-        );
+      const idsFiltrados = datos.map((d: { id: number }) => d.id);
+      const nuevosFiltrados = baseParaFiltro.filter(a =>
+        idsFiltrados.includes(parseInt(a.idAuto, 10))
+      );
 
-        nuevosFiltrados.sort((a, b) => a.precioPorDia - b.precioPorDia);
+      nuevosFiltrados.sort((a, b) => a.precioPorDia - b.precioPorDia);
 
-        console.log('Autos después del filtro:', nuevosFiltrados.length);
-        setAutosFiltrados(nuevosFiltrados);
-        setFiltroPrecio({ min, max });
-        setHayFiltrosBackendActivos(true);
-        setOrdenSeleccionado('Precio bajo a alto');
+      console.log('Autos después del filtro:', nuevosFiltrados.length);
+      setAutosFiltrados(nuevosFiltrados);
+      setFiltroPrecio({ min, max });
+      setHayFiltrosBackendActivos(true);
+      setOrdenSeleccionado('Precio bajo a alto');
 
-        return nuevosFiltrados; // Retornar los autos filtrados
+      return nuevosFiltrados; // Retornar los autos filtrados
     } catch (error) {
-        console.error('Error al aplicar filtro de precio:', error);
+      console.error('Error al aplicar filtro de precio:', error);
     } finally {
-        setCargandoFiltros(false);
+      setCargandoFiltros(false);
     }
   }, [autosBaseParaBackend, autosFiltrados]);
 
   const aplicarFiltroViajes = useCallback(async (minViajes: number) => {
     try {
-        setCargandoFiltros(true);
-        console.log('Aplicando filtro de viajes:', { minViajes });
-        console.log('Base para filtro:', autosBaseParaBackend.length);
-        
-        if (minViajes === 0) {
-            setAutosFiltrados(autosBaseParaBackend);
-            setFiltroViajes(null);
-            setHayFiltrosBackendActivos(false);
-            return;
-        }
-        
-        const baseParaFiltro = autosBaseParaBackend.length > 0 ? autosBaseParaBackend : autosFiltrados;
-        const ids = baseParaFiltro.map(a => parseInt(a.idAuto, 10));
-        
-        const datos = await filtrosAPI.filtrarPorViajes({ 
-            minViajes, 
-            idsCarros: ids 
-        });
-        
-        const idsFiltrados = datos.map((d: { id: number }) => d.id);
-        const nuevosFiltrados = baseParaFiltro.filter(a => 
-            idsFiltrados.includes(parseInt(a.idAuto, 10))
-        );
-        
-        console.log('Autos después del filtro:', nuevosFiltrados.length);
-        setAutosFiltrados(nuevosFiltrados);
-        setFiltroViajes(minViajes);
-        setHayFiltrosBackendActivos(true);
+      setCargandoFiltros(true);
+      console.log('Aplicando filtro de viajes:', { minViajes });
+      console.log('Base para filtro:', autosBaseParaBackend.length);
+
+      if (minViajes === 0) {
+        setAutosFiltrados(autosBaseParaBackend);
+        setFiltroViajes(null);
+        setHayFiltrosBackendActivos(false);
+        return;
+      }
+
+      const baseParaFiltro = autosBaseParaBackend.length > 0 ? autosBaseParaBackend : autosFiltrados;
+      const ids = baseParaFiltro.map(a => parseInt(a.idAuto, 10));
+
+      const datos = await filtrosAPI.filtrarPorViajes({
+        minViajes,
+        idsCarros: ids
+      });
+
+      const idsFiltrados = datos.map((d: { id: number }) => d.id);
+      const nuevosFiltrados = baseParaFiltro.filter(a =>
+        idsFiltrados.includes(parseInt(a.idAuto, 10))
+      );
+
+      console.log('Autos después del filtro:', nuevosFiltrados.length);
+      setAutosFiltrados(nuevosFiltrados);
+      setFiltroViajes(minViajes);
+      setHayFiltrosBackendActivos(true);
     } catch (error) {
-        console.error('Error al aplicar filtro de viajes:', error);
+      console.error('Error al aplicar filtro de viajes:', error);
     } finally {
-        setCargandoFiltros(false);
+      setCargandoFiltros(false);
     }
   }, [autosBaseParaBackend, autosFiltrados]);
 
   const aplicarFiltroCalificacion = useCallback(async (minCalificacion: number) => {
     try {
-        setCargandoFiltros(true);
-        console.log('Aplicando filtro de calificación:', { minCalificacion });
-        console.log('Base para filtro:', autosBaseParaBackend.length);
-        
-        if (minCalificacion === 0) {
-            setAutosFiltrados(autosBaseParaBackend);
-            setFiltroCalificacion(null);
-            setHayFiltrosBackendActivos(false);
-            return;
-        }
-        
-        const baseParaFiltro = autosBaseParaBackend.length > 0 ? autosBaseParaBackend : autosFiltrados;
-        const ids = baseParaFiltro.map(a => parseInt(a.idAuto, 10));
-        
-        const datos = await filtrosAPI.filtrarPorCalificacion({ 
-            minCalificacion, 
-            idsCarros: ids 
-        });
-        
-        const idsFiltrados = datos.map((d: { id: number }) => d.id);
-        const nuevosFiltrados = baseParaFiltro.filter(a => 
-            idsFiltrados.includes(parseInt(a.idAuto, 10))
-        );
-        
-        console.log('Autos después del filtro:', nuevosFiltrados.length);
-        setAutosFiltrados(nuevosFiltrados);
-        setFiltroCalificacion(minCalificacion);
-        setHayFiltrosBackendActivos(true);
+      setCargandoFiltros(true);
+      console.log('Aplicando filtro de calificación:', { minCalificacion });
+      console.log('Base para filtro:', autosBaseParaBackend.length);
+
+      if (minCalificacion === 0) {
+        setAutosFiltrados(autosBaseParaBackend);
+        setFiltroCalificacion(null);
+        setHayFiltrosBackendActivos(false);
+        return;
+      }
+
+      const baseParaFiltro = autosBaseParaBackend.length > 0 ? autosBaseParaBackend : autosFiltrados;
+      const ids = baseParaFiltro.map(a => parseInt(a.idAuto, 10));
+
+      const datos = await filtrosAPI.filtrarPorCalificacion({
+        minCalificacion,
+        idsCarros: ids
+      });
+
+      const idsFiltrados = datos.map((d: { id: number }) => d.id);
+      const nuevosFiltrados = baseParaFiltro.filter(a =>
+        idsFiltrados.includes(parseInt(a.idAuto, 10))
+      );
+
+      console.log('Autos después del filtro:', nuevosFiltrados.length);
+      setAutosFiltrados(nuevosFiltrados);
+      setFiltroCalificacion(minCalificacion);
+      setHayFiltrosBackendActivos(true);
     } catch (error) {
-        console.error('Error al aplicar filtro de calificación:', error);
+      console.error('Error al aplicar filtro de calificación:', error);
     } finally {
-        setCargandoFiltros(false);
+      setCargandoFiltros(false);
     }
   }, [autosBaseParaBackend, autosFiltrados]);
 
