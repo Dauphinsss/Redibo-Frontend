@@ -9,6 +9,7 @@ export interface ComentariosCar {
     dont_likes: number | null;  
     Usuario: {
         nombre: string;
+        id: number;
     };
     respuestas: {
         id: number;
