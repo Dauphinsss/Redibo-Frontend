@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
@@ -42,8 +42,21 @@ export default function RenterReviews({ reviews }: RenterReviewsProps) {
   const [sortOrder, setSortOrder] = useState<SortOrder>("newest")
   const [ratingFilter, setRatingFilter] = useState<RatingFilter>("all")
   const [showFilters, setShowFilters] = useState(false)
+  const [forceUpdate, setForceUpdate] = useState(0)
   const initialReviewsCount = 2
   //const [expandedComment, setExpandedComment] = useState<number | null>(null)
+
+  // Actualizar el tiempo relativo cada minuto
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setForceUpdate(prev => prev + 1)
+    }, 60000) // 60000 ms = 1 minuto
+
+   
+    setForceUpdate(prev => prev + 1)
+
+    return () => clearInterval(interval)
+  }, [])
 
   const filteredAndSortedReviews = useMemo(() => {
     let filtered = [...reviews]
@@ -57,7 +70,7 @@ export default function RenterReviews({ reviews }: RenterReviewsProps) {
       const dateB = new Date(b.createdAt).getTime()
       return sortOrder === "newest" ? dateB - dateA : dateA - dateB
     })
-  }, [reviews, ratingFilter, sortOrder])
+  }, [reviews, ratingFilter, sortOrder, forceUpdate])
 
   const displayedReviews = expanded ? filteredAndSortedReviews : filteredAndSortedReviews.slice(0, initialReviewsCount)
 

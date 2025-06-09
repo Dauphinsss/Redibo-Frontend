@@ -6,7 +6,7 @@ import { transformAuto } from '@/app/busqueda/utils/transformAuto_Recode';
 import { autosCercanosOrdenados } from "@/app/busqueda/components/map/filtroGPS"
 import * as filtrosAPI from '@/app/busqueda/service/filtrosService_Recode';
 
-export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: number, alt: number }) {
+export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: number, alt: number }, fechaInicio?: string, fechaFin?: string, ciudad?: string) {
   // ======== ESTADOS PRINCIPALES ========
   const [autos, setAutos] = useState<Auto[]>([]);
   const [autosFiltrados, setAutosFiltrados] = useState<Auto[]>([]);
@@ -51,6 +51,18 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     }
   };
 
+  // Efecto para aplicar filtros iniciales desde URL
+useEffect(() => {
+  if (fechaInicio) {
+    setFechaFiltroInicio(fechaInicio);
+  }
+  if (fechaFin) {
+    setFechaFiltroFin(fechaFin);
+  }
+  if (ciudad) {
+    setFiltroCiudad(ciudad);
+  }
+}, [fechaInicio, fechaFin, ciudad]);
   useEffect(() => {
     fetchAutos();
   }, []);
@@ -295,38 +307,39 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
         setCargandoFiltros(true);
         console.log('Aplicando filtro de precio:', { min, max });
         console.log('Base para filtro:', autosBaseParaBackend.length);
-        
+
         // Si se desactiva el filtro
         if (min === 0 && max === Infinity) {
             setAutosFiltrados(autosBaseParaBackend);
             setFiltroPrecio(null);
             setHayFiltrosBackendActivos(false);
-            setOrdenSeleccionado('Recomendación');
             return;
         }
-        
+
         // Usar la base filtrada por los filtros en memoria
         const baseParaFiltro = autosBaseParaBackend.length > 0 ? autosBaseParaBackend : autosFiltrados;
         const ids = baseParaFiltro.map(a => parseInt(a.idAuto, 10));
-        
+
         const datos = await filtrosAPI.filtrarPorPrecio({ 
             minPrecio: min, 
             maxPrecio: max, 
             idsCarros: ids 
         });
-        
+
         const idsFiltrados = datos.map((d: { id: number }) => d.id);
         const nuevosFiltrados = baseParaFiltro.filter(a => 
             idsFiltrados.includes(parseInt(a.idAuto, 10))
         );
-        
+
         nuevosFiltrados.sort((a, b) => a.precioPorDia - b.precioPorDia);
-        
+
         console.log('Autos después del filtro:', nuevosFiltrados.length);
         setAutosFiltrados(nuevosFiltrados);
         setFiltroPrecio({ min, max });
         setHayFiltrosBackendActivos(true);
         setOrdenSeleccionado('Precio bajo a alto');
+
+        return nuevosFiltrados; // Retornar los autos filtrados
     } catch (error) {
         console.error('Error al aplicar filtro de precio:', error);
     } finally {

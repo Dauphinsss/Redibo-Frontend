@@ -14,11 +14,20 @@ import CampoProvincia from "../../../components/Direccion/CampoProvincia";
 import CampoCalle from "../../../components/Direccion/CampoCalle";
 import CampoNumCasa from "../../../components/Direccion/CampoNumCasa";
 import BotonesFormulario from "../../../components/Direccion/BotonesFormulario";
+import { Loader2 } from "lucide-react";
 
 // Carga dinámica de CampoMapa para SSR-safe
 const CampoMapa = dynamic(
   () => import("../../../components/Direccion/CampoMapa"),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="h-96 w-full flex items-center justify-center bg-gray-100">
+        <Loader2 className="animate-spin h-8 w-8 text-gray-500" />
+        <span className="ml-2">Cargando mapa...</span>
+      </div>
+    )
+  }
 );
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";

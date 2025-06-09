@@ -36,6 +36,7 @@ interface RenterDetailsType {
   email: string
   phone: string
   memberSince: string
+  role: string
   reviews: {
     id: number | string
     rating: number
@@ -82,6 +83,30 @@ export default function RenterDetails() {
   const { toast } = useToast()
   const [rating, setRating] = useState<number | null>(null)
   const [total, setTotal] = useState<number>(0)
+  const [currentUserRoles, setCurrentUserRoles] = useState<string[]>([])
+
+  useEffect(() => {
+    const loadCurrentUserRoles = async () => {
+      try {
+        const token = localStorage.getItem("auth_token")
+        if (!token) return
+
+        const response = await fetch(`${API_URL}/api/perfil`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        if (response.ok) {
+          const userData = await response.json()
+          setCurrentUserRoles(userData.roles || [])
+        }
+      } catch (error) {
+        console.error("Error al obtener los roles del usuario:", error)
+      }
+    }
+
+    loadCurrentUserRoles()
+  }, [])
 
   useEffect(() => {
     const loadRenterDetails = async () => {
@@ -115,13 +140,11 @@ export default function RenterDetails() {
           calificaciones = await calificacionesRes.json()
         }
 
-        // Mapear las calificaciones obtenidas a la estructura de reviews esperada por el componente RenterReviews
+        
         const reviews = calificaciones.map((c: Calificacion) => ({
           id: c.id,
-          // La calificación es para el Renter, el host es quien califica.
-          // La información del host (calificador) debería venir a través de la relación reserva -> carro -> usuario (anfitrión)
-          renterId: c.id_usuario || c.usuarioId, // ID del usuario calificado (este renter)
-          // Acceder a la información del host a través de la cadena de relaciones
+          
+          renterId: c.id_usuario || c.usuarioId, 
           hostName: (c.reserva && c.reserva.Carro && c.reserva.Carro.Usuario && c.reserva.Carro.Usuario.nombre) ? c.reserva.Carro.Usuario.nombre : "Anfitrión",
           hostPicture: c.reserva?.Carro?.Usuario?.foto || undefined,
           reservationId: c.id_reserva || c.reservationId,
@@ -130,7 +153,7 @@ export default function RenterDetails() {
           carCareRating: c.cuidado_vehiculo,
           punctualidadRating: c.puntualidad,
           comment: c.comentario,
-          renterName: usuario.nombre, // El nombre del renter es el usuario actual de la página
+          renterName: usuario.nombre,
           createdAt: c.fecha_creacion ? new Date(c.fecha_creacion) : null,
           updatedAt: c.updatedAt ? new Date(c.updatedAt) : null,
           date: c.fecha_creacion ? new Date(c.fecha_creacion).toLocaleDateString() : "",
@@ -163,11 +186,12 @@ export default function RenterDetails() {
           email: usuario.correo,
           phone: usuario.telefono,
           memberSince: usuario.fecha_creacion ? new Date(usuario.fecha_creacion).toLocaleDateString("es-ES") : "-",
+          role: usuario.rol || "RENTER",
           reviews: formattedReviews,
           reviewCount: reviews.length,
           completedRentals: reviews.length,
           rentalHistory: reviews.map((r) => ({
-            id: r.reservationId,
+            id: r.id,
             car_model: r.car_model,
             dates: r.date,
             status: "Completado",
@@ -294,20 +318,26 @@ export default function RenterDetails() {
                   </span>
                               </div>
 
-                {/* Reportar perfil */}
-                <ReportProfileDialog
-                  renterId={String(renterDetails.id)}
-                  renterName={`${renterDetails.firstName} ${renterDetails.lastName}`}
-                  renterRole="RENTER"
-                >
-                  <Button
-                    variant="outline"
-                    className="w-full border-red-200 text-red-500 hover:bg-red-50 flex items-center justify-center"
+                {/* Reportar perfil - Solo visible si el usuario es SOLO HOST y el perfil visto es RENTER */}
+                {currentUserRoles.includes("HOST") && 
+                 !currentUserRoles.includes("RENTER") && 
+                 renterDetails.role === "RENTER" && (
+                  <ReportProfileDialog
+                    renterId={String(renterDetails.id)}
+                    renterName={`${renterDetails.firstName} ${renterDetails.lastName}`}
+                    renterRole={renterDetails.role}
+                    viewerRoles={currentUserRoles}
+                    targetUserRoles={[{ rol: renterDetails.role }]}
                   >
-                    <Flag className="h-4 w-4 mr-2" />
-                    Reportar perfil
-                  </Button>
-                </ReportProfileDialog>
+                    <Button
+                      variant="outline"
+                      className="w-full border-red-200 text-red-500 hover:bg-red-50 flex items-center justify-center"
+                    >
+                      <Flag className="h-4 w-4 mr-2" />
+                      Reportar perfil
+                    </Button>
+                  </ReportProfileDialog>
+                )}
                                 </div>
             </Card>
 

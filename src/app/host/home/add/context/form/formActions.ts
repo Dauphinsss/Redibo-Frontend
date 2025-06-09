@@ -8,9 +8,9 @@ import {
   FinalizacionData, 
 } from './types';
 import { validateForm } from './formValidation';
-import { createFullCar, CreateFullCarPayload } from "@/app/host/services/carService";
+import { carService, CreateFullCarPayload } from "@/app/host/services/carService";
 import { uploadImage } from "@/app/host/services/imageService";
-import { enviarSegurosAlBackend } from "../seguros/segurosActions";
+import { enviarSegurosAlBackend, getSegurosAdicionales, resetSeguros} from "../seguros/segurosActions";
 
 // Acciones de actualización de formulario
 export const createUpdateFormActions = (
@@ -84,21 +84,28 @@ export const createSubmitAction = (
     };
 
     try {
-      const result = await createFullCar(payload);
+      const result = await carService.createFullCar(payload);
       if (!result.success) {
         setSubmitError(result.message || "Error al crear el carro");
         return { success: false, error: result.message };
       }
       const carId = result.data.id;
       await Promise.all(imagenes.map(file => uploadImage(carId, file)));
-      // Nuevo: asociar seguros adicionales al carro
+      
       const segurosResult = await enviarSegurosAlBackend(carId);
       if (!segurosResult.success) {
         setSubmitError(segurosResult.error || "Error al asociar seguros");
         return { success: false, error: segurosResult.error };
       }
-      setSubmitSuccess(true);
+
+      // Primero reseteamos los seguros
+      resetSeguros();
+      
+      // Luego reseteamos el formulario
       resetForm();
+      
+      // Finalmente marcamos como exitoso
+      setSubmitSuccess(true);
       return { success: true };
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Error desconocido";
