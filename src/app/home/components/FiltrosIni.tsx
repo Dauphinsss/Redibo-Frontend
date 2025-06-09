@@ -97,25 +97,25 @@ const FormSchema = z.object({
 const parseDateInput = (input: string): Date | null => {
   // Limpiar el input
   const cleanInput = input.replace(/[^\d\/]/g, '');
-  
+
   // Verificar formato exacto dd/mm/aaaa
   const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
   const match = cleanInput.match(dateRegex);
-  
+
   if (!match) return null;
-  
+
   const [, day, month, year] = match;
   const dayNum = parseInt(day);
   const monthNum = parseInt(month);
   const yearNum = parseInt(year);
-  
+
   // Validar rangos básicos
   if (dayNum < 1 || dayNum > 31) return null;
   if (monthNum < 1 || monthNum > 12) return null;
-  
+
   try {
     const parsedDate = new Date(yearNum, monthNum - 1, dayNum);
-    
+
     // Validar que la fecha sea válida (por ejemplo, no 31/04)
     if (
       parsedDate.getFullYear() !== yearNum ||
@@ -124,15 +124,15 @@ const parseDateInput = (input: string): Date | null => {
     ) {
       return null;
     }
-    
+
     // Validar que la fecha no sea anterior a hoy
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Resetear horas para comparar solo fechas
-    
+
     if (isBefore(parsedDate, today)) {
       return null;
     }
-    
+
     return parsedDate;
   } catch {
     return null;
@@ -143,17 +143,17 @@ const parseDateInput = (input: string): Date | null => {
 const formatDateInput = (input: string): string => {
   // Remover caracteres no numéricos excepto /
   let cleaned = input.replace(/[^\d]/g, '');
-  
+
   // Limitar a 8 dígitos (ddmmyyyy)
   cleaned = cleaned.substring(0, 8);
-  
+
   // Agregar barras automáticamente
   if (cleaned.length > 4) {
     cleaned = cleaned.substring(0, 2) + '/' + cleaned.substring(2, 4) + '/' + cleaned.substring(4);
   } else if (cleaned.length > 2) {
     cleaned = cleaned.substring(0, 2) + '/' + cleaned.substring(2);
   }
-  
+
   return cleaned;
 };
 
@@ -304,14 +304,14 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
           setEndDateError("No puede ser anterior a la fecha de inicio");
           return;
         }
-        
+
         // Validar que no sea mayor a 90 días después de la fecha de inicio
         const maxEndDate = addDays(startDate, 90);
         if (!isBefore(parsedDate, maxEndDate) && parsedDate.getTime() !== maxEndDate.getTime()) {
           setEndDateError("No puede ser mayor a 90 días después de la fecha de inicio");
           return;
         }
-        
+
         form.setValue("endDate", parsedDate);
       } else {
         setEndDateError("Fecha inválida");
@@ -365,6 +365,8 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
 
     try {
       // Crear objeto con los datos de búsqueda para pasar a la página de búsqueda
+      localStorage.removeItem("mapCenter");
+      localStorage.removeItem("mapZoom");
       const searchParams = new URLSearchParams({
         ciudad: data.location,
         fechaInicio: data.startDate.toISOString(),
@@ -406,7 +408,7 @@ export default function FiltrosIni({ router, onFilterSubmit, onResetFilters }: F
                       }}
                     >
                       <FormControl>
-                        <SelectTrigger 
+                        <SelectTrigger
                           className={`${!field.value ? 'text-muted-foreground' : ''} h-10 flex-1`}
                           onKeyDown={handleKeyDown} // Agregar manejador de teclas
                         >

@@ -9,14 +9,12 @@ export default async function Page({ searchParams }: PageProps) {
   const mostrarpagina = true;
   const resolvedSearchParams = await searchParams;
   const ciudad = typeof resolvedSearchParams.ciudad === 'string' ? resolvedSearchParams.ciudad : undefined;
+  const fechaInicioParam = typeof resolvedSearchParams.fechaInicio === 'string' ? resolvedSearchParams.fechaInicio : undefined;
+  const fechaFinParam = typeof resolvedSearchParams.fechaFin === 'string' ? resolvedSearchParams.fechaFin : undefined;
 
   if (!mostrarpagina) {
     return notFound();
   }
 
-  // Calcular las fechas
-  const fechaInicio = new Date().toISOString(); // Fecha actual
-  const fechaFin = new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(); // Fecha 30 días después
-
-  return <Home ciudad={ciudad} fechaInicio={fechaInicio} fechaFin={fechaFin} />;
+  return <Home ciudad={ciudad} fechaInicio={fechaInicioParam} fechaFin={fechaFinParam} />;
 }
