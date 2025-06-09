@@ -92,16 +92,19 @@ export default function CrearComentario({
           >
             Calificación (0-5)
           </label>
-          <input
-            type="number"
+          <select
             id="calificacion"
-            min="0"
-            max="5"
-            step="0.1"
             value={calificacion}
             onChange={(e) => setCalificacion(Number(e.target.value))}
             className="w-full p-2 border rounded"
-          />
+            required
+          >
+            <option value={0} disabled>Selecciona una calificación</option>
+            {[1, 2, 3, 4, 5].map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
+
         </div>
         <button
           type="submit"

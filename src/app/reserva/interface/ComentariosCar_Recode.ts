@@ -4,6 +4,7 @@ export interface ComentariosCar {
     comentario: string;
     fecha_creacion: string;
     comentado_en: string;
+    calificacion: number;
     Calificacion: {
         calf_carro: number;
     } | null; 

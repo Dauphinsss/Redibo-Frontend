@@ -194,7 +194,7 @@ export default function Home({ id }: HomeProps) {
                     }
                     fechaComentario={formatearFecha(comentario.fecha_creacion)}
                     comentario={comentario.comentario}
-                    calificacionUsr={comentario.Calificacion?.calf_carro ?? 0}
+                    calificacionUsr={comentario.calificacion ?? 0}
                     cantDontlikes={comentario.dont_likes ?? 0}
                     cantLikes={comentario.likes ?? 0}
                     respuestas={comentario.respuestas.map((r) => ({

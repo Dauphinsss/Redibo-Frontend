@@ -36,13 +36,12 @@ export function useComentariosAuto(
     return [...comentarios]
       .filter((comentario) =>
         filtroCalificacion !== null
-          ? comentario.Calificacion &&
-            comentario.Calificacion.calf_carro === filtroCalificacion
+          ? comentario.calificacion === filtroCalificacion
           : true
       )
       .sort((a, b) => {
-        const calA = a.Calificacion?.calf_carro ?? 0;
-        const calB = b.Calificacion?.calf_carro ?? 0;
+        const calA = a.calificacion ?? 0;
+        const calB = b.calificacion ?? 0;
 
         const likesA = a.likes ?? 0;
         const likesB = b.likes ?? 0;
@@ -82,6 +81,6 @@ export function useComentariosAuto(
     cargando,
     error,
     formatearFecha,
-    refetchComentarios: fetchComentarios, 
+    refetchComentarios: fetchComentarios,
   };
 }
