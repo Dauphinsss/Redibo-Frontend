@@ -111,7 +111,7 @@ function PopUpComentarios({
                   //.filter((comentario) => comentario.Calificacion !== null)         para filtrar comentarios sin calificacion
                   .map((comentario) => (
                   <div key={comentario.id} className="p-2 ">
-                    <VerComentario
+                    {/* <VerComentario
                       nombreCompleto={comentario.Usuario.nombre}
                       fotoUser={""}
                       fechaComentario={formatearFecha(comentario.comentado_en)}
@@ -119,7 +119,7 @@ function PopUpComentarios({
                       calificacionUsr={comentario.Calificacion?.calf_carro ?? 0}
                       cantDontlikes={comentario.dont_likes ?? 0}
                       cantLikes={comentario.likes ?? 0}
-                    />
+                    /> */}
                   </div>
                 ))}
 
