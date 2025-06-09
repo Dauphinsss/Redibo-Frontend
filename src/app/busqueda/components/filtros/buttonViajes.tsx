@@ -18,18 +18,30 @@ interface ButtonViajesProps {
 export function ButtonViajes({ onFilterChange, disabled }: ButtonViajesProps) {
   const [minViajes, setMinViajes] = useState<string>("");
   const [open, setOpen] = useState(false);
+  const [filtroActivo, setFiltroActivo] = useState(false); // Estado para el filtro
 
   const handleApply = () => {
     // Si minViajes es vacío, pasa 0 (sin filtro)
-    onFilterChange(minViajes ? parseInt(minViajes) : 0);
+    const viajes = minViajes ? parseInt(minViajes) : 0;
+    onFilterChange(viajes);
+    setFiltroActivo(true);
+    setOpen(false);
   };
+
+  const handleClear = () => {
+    setMinViajes(""); // Clear selected value
+    onFilterChange(0); // Reset the filter (pass 0)
+    setFiltroActivo(false); // Deactivate the filter
+    setOpen(false); // Close the popover
+  };
+
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant={open ? "secondary" : "outline"}
-          className={`w-[200px] justify-between ${open ? "bg-gray-100 hover:bg-gray-200 ring-2 ring-gray-300" : ""}`}
+          variant={filtroActivo ? "secondary" : "outline"}
+          className={`w-[200px] justify-between ${open ? "bg-gray-100 hover:bg-gray-200 ring-2 ring-gray-300" : ""} ${filtroActivo ? "ring-1 ring-blue-400 bg-blue-50 hover:bg-blue-100" : ""}`}
           disabled={disabled}
         >
           Filtro por Viajes
@@ -72,9 +84,16 @@ export function ButtonViajes({ onFilterChange, disabled }: ButtonViajesProps) {
                 <Label htmlFor="v5">5+ viajes</Label>
               </div>
             </RadioGroup>
-            <Button onClick={handleApply} className="mt-2" disabled={disabled}>
-              Aplicar Filtro
-            </Button>
+            <div className="flex justify-between">
+              <Button onClick={handleApply} className="mt-2" disabled={disabled}>
+                Aplicar Filtro
+              </Button>
+              {filtroActivo && (
+                <Button variant="destructive" size="sm" onClick={handleClear}>
+                  Limpiar
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </PopoverContent>
