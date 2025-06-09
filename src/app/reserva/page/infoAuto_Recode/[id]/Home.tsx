@@ -132,7 +132,7 @@ export default function Home({ id }: HomeProps) {
 
             <DescripcionAuto descripcion={auto.descripcion} />
 
-            <div className="mt-4 mb-4 flex justify-end">
+            {/* <div className="mt-4 mb-4 flex justify-end">
               <PopUpComentarios
                 idCar={id}
                 nombreCompleto={auto.nombreHost}
@@ -146,7 +146,7 @@ export default function Home({ id }: HomeProps) {
                 nombreUser=""
                 fotoUser=""
               />
-            </div>
+            </div> */}
 
             <DescriHost
               idHost={auto.idHost}
