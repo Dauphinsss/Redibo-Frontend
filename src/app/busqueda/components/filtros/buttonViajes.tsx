@@ -41,7 +41,7 @@ export function ButtonViajes({ onFilterChange, disabled }: ButtonViajesProps) {
       <PopoverTrigger asChild>
         <Button
           variant={filtroActivo ? "secondary" : "outline"}
-          className={`w-[200px] justify-between ${open ? "bg-gray-100 hover:bg-gray-200 ring-2 ring-gray-300" : ""} ${filtroActivo ? "ring-1 ring-blue-400 bg-blue-50 hover:bg-blue-100" : ""}`}
+          className={`w-[200px] justify-between ${open ? "bg-gray-100 hover:bg-gray-200 ring-2 ring-gray-300" : ""} ${filtroActivo ? "bg-zinc-900 text-white hover:bg-zinc-700" : ""}`}
           disabled={disabled}
         >
           Filtro por Viajes

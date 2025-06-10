@@ -18,20 +18,20 @@ interface ButtonCalifProps {
 export function ButtonCalif({ onFilterChange, disabled }: ButtonCalifProps) {
   const [calificacion, setCalificacion] = useState<string>("");
   const [open, setOpen] = useState(false);
-  const [filtroActivo, setFiltroActivo] = useState(false); //renombre filterApplied to filtroActivo
+  const [filtroActivo, setFiltroActivo] = useState(false);
 
   const handleApply = () => {
-    if (calificacion) {  // Only apply the filter if a rating is selected
+    if (calificacion) {
       onFilterChange(parseFloat(calificacion));
-      setFiltroActivo(true); //set filtroActivo true
+      setFiltroActivo(true);
       setOpen(false);
     }
   };
 
   const handleClear = () => {
     setCalificacion("");
-    onFilterChange(0);  // O null, o undefined según tu lógica
-    setFiltroActivo(false); //set filtroActivo false
+    onFilterChange(0);
+    setFiltroActivo(false);
     setOpen(false);
   };
 
@@ -39,8 +39,8 @@ export function ButtonCalif({ onFilterChange, disabled }: ButtonCalifProps) {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant={filtroActivo ? "secondary" : "outline"} //use filtroActivo state
-          className={`w-[200px] justify-between ${open ? "bg-gray-100 hover:bg-gray-200 ring-2 ring-gray-300" : ""} ${filtroActivo ? "ring-1 ring-blue-400 bg-blue-50 hover:bg-blue-100" : ""}`}
+          variant={filtroActivo ? "secondary" : "outline"}
+          className={`w-[200px] justify-between ${open ? "bg-gray-100 hover:bg-gray-200 ring-2 ring-gray-300" : ""} ${filtroActivo ? "bg-zinc-900 text-white hover:bg-zinc-700" : ""}`}
           disabled={disabled}
         >
           Filtro por Calificación
