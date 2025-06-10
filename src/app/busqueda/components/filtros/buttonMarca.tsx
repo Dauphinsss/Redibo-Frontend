@@ -424,10 +424,7 @@ export function ButtonMarca({
           <div className="p-3 border-b">
             <div className="relative">
               {/* Lupa estática - posición absoluta y z-index alto */}
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-30 pointer-events-none">
-                <Search className="w-4 h-4 text-muted-foreground" />
-              </div>
-              
+              <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground z-30 pointer-events-none" style={{ position: 'absolute', left: '12px', top: '12px' }} />
               {/* Input fantasma para mostrar la sugerencia */}
               {autocompleteSuggestion && tempSearchTerm && (
                 <Input
