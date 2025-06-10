@@ -346,7 +346,6 @@ export function ButtonMarca({
                   variant="secondary"
                   className="mr-2 px-1 py-0 text-xs cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
                   onClick={clearSelection}
-                  title="Limpiar"
                 >
                   <X className="w-3 h-3" />
                 </Badge>
@@ -378,11 +377,11 @@ export function ButtonMarca({
                 onChange={(e) => {
                   const value = e.target.value.slice(0, 50);
                   //const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]/g, '');
-                  const onlyValid = value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑ]/g, '');//NO PERMITE NUMEROS
+                  const onlyValid = value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑ]/g, '');//NO PERMITE NUMEROS, PREGUNTAR PARA LO DEL GUION Y NUEMROS
                   setTempSearchTerm(onlyValid.trim());
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder="Buscar marca de vehículo..."
+                placeholder="Escriba el nombre de la marca"
                 className="pl-10 border border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-500 bg-transparent relative z-10"
                 style={{ backgroundColor: 'transparent' }}
                 role="combobox"

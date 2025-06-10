@@ -157,6 +157,26 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
     localStorage.removeItem("historialBusqueda");
   };
 
+  // NUEVO: Activar boton lupa
+  const ejecutarBusqueda = () => {
+  if (busqueda.trim() !== "") {
+    agregarAHistorial(busqueda);
+    inputRef.current?.blur();
+    onFiltrar(busqueda.trim()); // Asegúrate de que el filtro se aplique
+  }
+};
+
+//NUEVO: Representa el click en la lupa
+const ejecutarBusquedaManual = () => {
+  const valor = busqueda.trim();
+  if (valor === "") return;
+
+  agregarAHistorial(valor);
+  setMostrarHistorial(false);
+  inputRef.current?.blur();
+  onFiltrar(valor);
+};
+
   return (
 
     //Añadir flex items-center para modificar el contenedor
@@ -237,9 +257,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
               setSugerencia("");
             }
           } else if (e.key === "Enter") { //En este else se agrego para que se aniadan con un enter al historial
-            agregarAHistorial(busqueda);
-            setMostrarHistorial(false);
-            inputRef.current?.blur();
+            ejecutarBusquedaManual(); // ✅ hace lo mismo que dar clic a la lupa
           }
         }}
         className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[14px] md:text-base lg:text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
@@ -256,13 +274,15 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
         aria-label="Buscar autos"
         title="Buscar" // ✅ tooltip nativa
         className="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black text-white rounded-md flex items-center justify-center hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        onClick={() => {
-          // Ejecutar búsqueda manual si se desea
-          if (busqueda.trim() !== "") {
-            agregarAHistorial(busqueda);
-            inputRef.current?.blur();
-          }
-        }}
+        // onClick={() => {
+        //   // Ejecutar búsqueda manual si se desea
+        //   if (busqueda.trim() !== "") {
+        //     agregarAHistorial(busqueda);
+        //     inputRef.current?.blur();
+        //   }
+        // }}
+        //Simplificado en esto
+        onClick={ejecutarBusquedaManual}
         //NUEVO:Desactiva el boton
         disabled={busqueda.trim() === ""} // 👉 aquí deshabilitas la lupa si está vacío
       >
