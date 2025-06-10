@@ -151,6 +151,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
       return [nuevo, ...sinDuplicados].slice(0, 8); // máximo 10 entradas
     });
   };
+  //NUEVO: Borrar todo el historial
+  const handleBorrarTodoHistorial = () => {
+    setHistorial([]);
+    localStorage.removeItem("historialBusqueda");
+  };
 
   return (
 
@@ -237,7 +242,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
             inputRef.current?.blur();
           }
         }}
-        className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[14px] md:text-base lg:text-lg"
+        className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[14px] md:text-base lg:text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
       />
 
       {/* Mostrar error si hay */}
@@ -249,6 +254,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
       <button
         type="button"
         aria-label="Buscar autos"
+        title="Buscar" // ✅ tooltip nativa
         className="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black text-white rounded-md flex items-center justify-center hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={() => {
           // Ejecutar búsqueda manual si se desea
@@ -325,6 +331,17 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
           )}
         </ul>
       )}
+      {/* NUEVO: Mostrar boton de borrar historial */}
+      {/* {historial.length > 0 && (
+        <div className="border-t p-2 flex justify-center">
+          <button
+            className="text-red-500 text-sm hover:underline"
+            onClick={handleBorrarTodoHistorial}
+          >
+            🗑️ Borrar historial
+          </button>
+        </div>
+      )} */}
     </div>
   );
 };
