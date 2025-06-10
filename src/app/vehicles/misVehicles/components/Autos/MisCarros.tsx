@@ -93,8 +93,37 @@ interface InactiveCarListItem {
     marca: string;
     modelo: string;
     placa?: string; 
-    año?:number;
+    año?: number;
+    Reserva?: { fecha_fin: string }[];
 }
+
+function tiempoInactivo(fechaISO?: string) {
+    if (!fechaISO) return "Nunca ha tenido reservas";
+    const fecha = new Date(fechaISO);
+    const ahora = new Date();
+    const diffMs = ahora.getTime() - fecha.getTime();
+    const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDias === 0) return "Inactivo desde hoy";
+    if (diffDias === 1) return "Inactivo desde ayer";
+    return `Inactivo desde hace ${diffDias} días`;
+}
+
+// Modal simple para mostrar detalles
+function Modal({ open, onClose, title, children }: { open: boolean, onClose: () => void, title: string, children: React.ReactNode }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px] max-w-[90vw] max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-bold">{title}</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+        </div>
+        <div>{children}</div>
+      </div>
+    </div>
+  );
+}
+
 const CarDashboard = ({ hostId }: CarDashboardProps) => {
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
@@ -226,11 +255,11 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
                   },
                   combustiblesporCarro: car.combustibles ? 
                     car.combustibles.map(c => ({
-                      combustible: { tipoDeCombustible: c.tipoDeCombustible }
+                      combustible: { tipoDeCombustible: typeof c === 'string' ? c : c.tipoDeCombustible }
                     })) : [],
                   caracteristicasAdicionalesCarro: car.caracteristicas ? 
                     car.caracteristicas.map(c => ({
-                      carasteristicasAdicionales: { nombre: c.nombre }
+                      carasteristicasAdicionales: { nombre: typeof c === 'string' ? c : c.nombre }
                     })) : [],
                   imagenes: car.imagenes ? 
                     car.imagenes.map(img => ({
@@ -347,7 +376,12 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
 
   const selectedCar = cars.find(car => car.id === selectedCarId);
 
- 
+  // Estado para el modal
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState<'inactivos' | 'mantenimientos' | null>(null);
+
+  const [mostrarCartilla, setMostrarCartilla] = useState<null | 'inactivos' | 'mantenimientos'>(null);
+
   if (loading && cars.length === 0 && !error) {
     return <div className="p-6 text-center">Cargando autos y alertas...</div>;
   }
@@ -390,31 +424,41 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
         alertas={alertas} 
         initialAlertsOrder={initialAlertsOrder} 
         refreshAlerts={refreshAlerts}
+        inactiveCarsList={inactiveCarsList}
+        pendingMaintenanceCarsList={pendingMaintenanceCarsList}
+        mostrarCartilla={mostrarCartilla}
+        setMostrarCartilla={setMostrarCartilla}
       />
 
-      {/* Cartilla de Vehículos Inactivos */}
-       {inactiveCarsList.length > 0 && (
-          <div id="inactive-vehicles-list" className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm">
-               <h2 className="text-lg font-semibold text-yellow-800 mb-3">Vehículos Inactivos ({inactiveCarsList.length})</h2>
-               <ul className="list-disc list-inside text-yellow-700">
-                   {inactiveCarsList.map(car => (
-                       <li key={car.id} className="text-sm sm:text-base">{car.marca} {car.modelo} ({car.placa || 'Sin placa'})</li>
-                   ))}
-               </ul>
-           </div>
-       )}
-
-      {/* NUEVO: Cartilla de Vehículos con Mantenimientos Pendientes */}
-       {pendingMaintenanceCarsList.length > 0 && (
-          <div id="pending-maintenance-list" className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm">
-               <h2 className="text-lg font-semibold text-yellow-800 mb-3">Vehículos con Mantenimientos Pendientes ({pendingMaintenanceCarsList.length})</h2>
-               <ul className="list-disc list-inside text-yellow-700">
-                   {pendingMaintenanceCarsList.map(car => (
-                       <li key={car.id} className="text-sm sm:text-base">{car.marca} {car.modelo} ({car.placa || 'Sin placa'}) - {car.num_mantenimientos} {car.num_mantenimientos === 1 ? 'revisión pendiente' : 'revisiones pendientes'}</li>
-                   ))}
-               </ul>
-           </div>
-       )}
+      {/* Cartilla amarilla solo si corresponde */}
+      {mostrarCartilla === 'inactivos' && inactiveCarsList.length > 0 && (
+        <div id="inactive-vehicles-list" className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm">
+          <h2 className="text-lg font-semibold text-yellow-800 mb-3">Vehículos Inactivos ({inactiveCarsList.length})</h2>
+          <ul className="list-disc list-inside text-yellow-700">
+            {inactiveCarsList.map(car => (
+              <li key={car.id} className="text-sm sm:text-base">
+                {car.marca} {car.modelo} ({car.placa || 'Sin placa'})
+                <br />
+                <span className="text-yellow-800 text-xs">
+                  {tiempoInactivo((car as any).Reserva?.[0]?.fecha_fin)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {mostrarCartilla === 'mantenimientos' && pendingMaintenanceCarsList.length > 0 && (
+        <div id="pending-maintenance-list" className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm">
+          <h2 className="text-lg font-semibold text-yellow-800 mb-3">Vehículos con Mantenimientos Pendientes ({pendingMaintenanceCarsList.length})</h2>
+          <ul className="list-disc list-inside text-yellow-700">
+            {pendingMaintenanceCarsList.map(car => (
+              <li key={car.id} className="text-sm sm:text-base">
+                {car.marca} {car.modelo} ({car.placa || 'Sin placa'}) - {car.num_mantenimientos} {car.num_mantenimientos === 1 ? 'revisión pendiente' : 'revisiones pendientes'}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Tablero de Estado de Automóviles */}
       <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Tablero de Estado de Automóviles</h1>

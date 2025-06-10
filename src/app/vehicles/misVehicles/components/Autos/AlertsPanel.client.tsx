@@ -27,6 +27,10 @@ interface AlertsPanelProps {
     };
     initialAlertsOrder: AlertCard[];
     refreshAlerts: () => void;
+    inactiveCarsList: any[];
+    pendingMaintenanceCarsList: any[];
+    mostrarCartilla: null | 'inactivos' | 'mantenimientos';
+    setMostrarCartilla: (tipo: null | 'inactivos' | 'mantenimientos') => void;
 }
 
 interface SortableAlertCardProps {
@@ -68,17 +72,18 @@ const SortableAlertCard = ({ alert, getAlertValue, calificacionVista, marcarCali
             {...dndListeners} 
             className={`${cardBg} p-4 rounded-lg shadow-sm flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow`}
             onClick={() => {
+                if (alert.id === 'proximasReservas') {
+                    router.push('/calificaciones/calificacionesAlRenter/ActividadVehicles');
+                    return;
+                }
                 if (alert.type === 'calificaciones') {
-                    
                     console.log(`Clic en Calificaciones Pendientes. Pendientes: ${alertas.calificacionesPendientes}, Href: ${alert.href}`);
                     if (alertas.calificacionesPendientes > 0) {
-                        
                         marcarCalificacionVista(); 
                         if (alert.href) {
                              router.push(alert.href); 
                         }
                     } else if (calificacionVista) {
-                       
                         console.log("No hay calificaciones pendientes nuevas.");
                     } else {
                          
@@ -117,7 +122,43 @@ const SortableAlertCard = ({ alert, getAlertValue, calificacionVista, marcarCali
     );
 };
 
-const AlertsPanelClient = ({ alertas, initialAlertsOrder, refreshAlerts }: AlertsPanelProps) => {
+// SidePanel moderno y agradable
+function SidePanel({ open, onClose, title, children }: { open: boolean, onClose: () => void, title: string, children: React.ReactNode }) {
+  return (
+    <div>
+      {/* Fondo semitransparente */}
+      <div
+        className={`fixed inset-0 bg-black bg-opacity-30 z-40 transition-opacity ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        onClick={onClose}
+      />
+      {/* Panel lateral */}
+      <div
+        className={`fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white shadow-lg z-50 transform transition-transform duration-300 ${
+          open ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="flex justify-between items-center p-4 border-b">
+          <h2 className="text-lg font-bold">{title}</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+        </div>
+        <div className="p-4 overflow-y-auto h-[calc(100%-64px)]">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function tiempoInactivo(fechaISO?: string) {
+    if (!fechaISO) return "Nunca ha tenido reservas";
+    const fecha = new Date(fechaISO);
+    const ahora = new Date();
+    const diffMs = ahora.getTime() - fecha.getTime();
+    const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDias === 0) return "Inactivo desde hoy";
+    if (diffDias === 1) return "Inactivo desde ayer";
+    return `Inactivo desde hace ${diffDias} días`;
+}
+
+const AlertsPanelClient = ({ alertas, initialAlertsOrder, refreshAlerts, inactiveCarsList, pendingMaintenanceCarsList, mostrarCartilla, setMostrarCartilla }: AlertsPanelProps) => {
     const initialAlertsOrderWithUpdatedHref: AlertCard[] = initialAlertsOrder.map(alert => {
         if (alert.id === 'calificacionesPendientes') {
             return {
@@ -307,23 +348,71 @@ const AlertsPanelClient = ({ alertas, initialAlertsOrder, refreshAlerts }: Alert
     const items = alertsOrder.map(alert => alert.id);
 
     return (
+        <>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={items} strategy={horizontalListSortingStrategy}>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    {alertsOrder.map((alert) => (
-                        <SortableAlertCard
-                            key={alert.id}
-                            alert={alert}
-                            getAlertValue={getAlertValue}
-                            calificacionVista={calificacionVista}
-                            marcarCalificacionVista={marcarCalificacionVista}
-                            alertas={alertas}
-                            router={router}
-                        />
-                    ))}
+                    {alertsOrder.map((alert) => {
+                        if (alert.id === 'proximasReservas') {
+                            return (
+                                <div
+                                    key={alert.id}
+                                    className="bg-blue-100 p-4 rounded-lg shadow-sm flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow"
+                                    onClick={() => router.push('/calificaciones/calificacionesAlRenter/ActividadVehicles')}
+                                >
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-blue-900">{alert.title}</h3>
+                                        <p className="text-2xl font-bold text-blue-900">{getAlertValue(alert.type)}</p>
+                                    </div>
+                                    {alert.icon}
+                                </div>
+                            );
+                        } else if (alert.id === 'vehiculosInactivos') {
+                            return (
+                                <div
+                                    key={alert.id}
+                                    className="bg-red-100 p-4 rounded-lg shadow-sm flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow"
+                                    onClick={() => setMostrarCartilla(mostrarCartilla === 'inactivos' ? null : 'inactivos')}
+                                >
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-red-900">{alert.title}</h3>
+                                        <p className="text-2xl font-bold text-red-900">{getAlertValue(alert.type)}</p>
+                                    </div>
+                                    {alert.icon}
+                                </div>
+                            );
+                        } else if (alert.id === 'mantenimientos') {
+                            return (
+                                <div
+                                    key={alert.id}
+                                    className="bg-yellow-100 p-4 rounded-lg shadow-sm flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow"
+                                    onClick={() => setMostrarCartilla(mostrarCartilla === 'mantenimientos' ? null : 'mantenimientos')}
+                                >
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-yellow-800">{alert.title}</h3>
+                                        <p className="text-2xl font-bold text-yellow-800">{getAlertValue(alert.type)}</p>
+                                    </div>
+                                    {alert.icon}
+                                </div>
+                            );
+                        } else {
+                            return (
+                                <SortableAlertCard
+                                    key={alert.id}
+                                    alert={alert}
+                                    getAlertValue={getAlertValue}
+                                    calificacionVista={calificacionVista}
+                                    marcarCalificacionVista={marcarCalificacionVista}
+                                    alertas={alertas}
+                                    router={router}
+                                />
+                            );
+                        }
+                    })}
                 </div>
             </SortableContext>
         </DndContext>
+        </>
     );
 };
 
