@@ -6,6 +6,33 @@ import { transformAuto } from '@/app/busqueda/utils/transformAuto_Recode';
 import { autosCercanosOrdenados } from "@/app/busqueda/components/map/filtroGPS"
 import * as filtrosAPI from '@/app/busqueda/service/filtrosService_Recode';
 
+// Interfaces para el sistema de historial de filtros
+interface EstadoFiltros {
+  precio: { min: number, max: number } | null;
+  viajes: number | null;
+  calificacion: number | null;
+  autos: Auto[];
+  timestamp: number;
+}
+
+interface HistorialFiltros {
+  estados: EstadoFiltros[];
+  indiceActual: number;
+  maxHistorial: number;
+}
+
+// ======== SISTEMA DE NOTIFICACIÓN ENTRE FILTROS ========
+interface FiltroEvento {
+  tipo: 'precio' | 'viajes' | 'calificacion' | 'limpiar';
+  valor?: any;
+  timestamp: number;
+}
+
+interface FiltroSuscripcion {
+  id: string;
+  callback: (evento: FiltroEvento) => void;
+}
+
 export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: number, alt: number }, fechaInicio?: string, fechaFin?: string, ciudad?: string) {
   // ======== ESTADOS PRINCIPALES ========
   const [autos, setAutos] = useState<Auto[]>([]);
@@ -14,7 +41,14 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
   const [cargando, setCargando] = useState(true);
   const [ordenSeleccionado, setOrdenSeleccionado] = useState('Recomendación');
 
-  // ======== ESTADOS DE FILTROS EN MEMORIA (mantener igual) ========
+  // ======== SISTEMA DE HISTORIAL DE FILTROS ========
+  const [historialFiltros, setHistorialFiltros] = useState<HistorialFiltros>({
+    estados: [],
+    indiceActual: -1,
+    maxHistorial: 10 // Máximo número de estados a mantener en el historial
+  });
+
+  // ======== ESTADOS DE FILTROS EN MEMORIA ========
   const [textoBusqueda, setTextoBusqueda] = useState('');
   const [fechaFiltroInicio, setFechaFiltroInicio] = useState("");
   const [fechaFiltroFin, setFechaFiltroFin] = useState("");
@@ -25,7 +59,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
   const [filtrosCaracteristicasAdicionales, setFiltrosCaracteristicasAdicionales] = useState<string[]>([]);
   const [filtroHost, setFiltroHost] = useState<string>('');
 
-  // ======== ESTADOS PARA FILTROS DE BACKEND (mejorados) ========
+  // ======== ESTADOS PARA FILTROS DE BACKEND ========
   const [filtroPrecio, setFiltroPrecio] = useState<{ min: number, max: number } | null>(null);
   const [filtroViajes, setFiltroViajes] = useState<number | null>(null);
   const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
@@ -34,6 +68,97 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
   // Estados para manejar la restauración de filtros
   const [autosBaseParaBackend, setAutosBaseParaBackend] = useState<Auto[]>([]);
   const [hayFiltrosBackendActivos, setHayFiltrosBackendActivos] = useState(false);
+
+  // Sistema de notificación entre filtros
+  const [suscripcionesFiltros, setSuscripcionesFiltros] = useState<FiltroSuscripcion[]>([]);
+  const [ultimoEvento, setUltimoEvento] = useState<FiltroEvento | null>(null);
+
+  // Función para notificar cambios en filtros
+  const notificarCambioFiltro = useCallback((evento: FiltroEvento) => {
+    setUltimoEvento(evento);
+    suscripcionesFiltros.forEach(sub => {
+      try {
+        sub.callback(evento);
+      } catch (error) {
+        console.error(`Error en suscripción ${sub.id}:`, error);
+      }
+    });
+  }, [suscripcionesFiltros]);
+
+  // Función para suscribirse a eventos de filtros
+  const suscribirseAFiltros = useCallback((callback: (evento: FiltroEvento) => void) => {
+    const id = Math.random().toString(36).substr(2, 9);
+    setSuscripcionesFiltros(prev => [...prev, { id, callback }]);
+    return id;
+  }, []);
+
+  // Función para desuscribirse de eventos de filtros
+  const desuscribirseDeFiltros = useCallback((id: string) => {
+    setSuscripcionesFiltros(prev => prev.filter(sub => sub.id !== id));
+  }, []);
+
+  // Función para guardar el estado actual en el historial
+  const guardarEstadoEnHistorial = useCallback((nuevosAutos: Auto[]) => {
+    const estadoActual: EstadoFiltros = {
+      precio: filtroPrecio,
+      viajes: filtroViajes,
+      calificacion: filtroCalificacion,
+      autos: nuevosAutos,
+      timestamp: Date.now()
+    };
+
+    setHistorialFiltros(prev => {
+      // Eliminar estados futuros si estamos en medio del historial
+      const estadosAnteriores = prev.estados.slice(0, prev.indiceActual + 1);
+
+      // Añadir nuevo estado
+      const nuevosEstados = [...estadosAnteriores, estadoActual];
+
+      // Mantener solo los últimos maxHistorial estados
+      const estadosLimitados = nuevosEstados.slice(-prev.maxHistorial);
+
+      return {
+        estados: estadosLimitados,
+        indiceActual: estadosLimitados.length - 1,
+        maxHistorial: prev.maxHistorial
+      };
+    });
+  }, [filtroPrecio, filtroViajes, filtroCalificacion]);
+
+  // Función para restaurar un estado anterior
+  const restaurarEstadoAnterior = useCallback(async () => {
+    if (historialFiltros.indiceActual > 0) {
+      const estadoAnterior = historialFiltros.estados[historialFiltros.indiceActual - 1];
+
+      // Restaurar estados de filtros
+      setFiltroPrecio(estadoAnterior.precio);
+      setFiltroViajes(estadoAnterior.viajes);
+      setFiltroCalificacion(estadoAnterior.calificacion);
+      setAutosFiltrados(estadoAnterior.autos);
+
+      // Actualizar índice del historial
+      setHistorialFiltros(prev => ({
+        ...prev,
+        indiceActual: prev.indiceActual - 1
+      }));
+
+      // Actualizar estado de filtros activos
+      setHayFiltrosBackendActivos(
+        Boolean(estadoAnterior.precio) ||
+        Boolean(estadoAnterior.viajes) ||
+        Boolean(estadoAnterior.calificacion)
+      );
+    }
+  }, [historialFiltros]);
+
+  // Función para limpiar el historial
+  const limpiarHistorial = useCallback(() => {
+    setHistorialFiltros({
+      estados: [],
+      indiceActual: -1,
+      maxHistorial: 10
+    });
+  }, []);
 
   // ======== CARGA INICIAL (mantener igual) ========
   const fetchAutos = async () => {
@@ -273,6 +398,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
       const combinaciones = [
         `${auto.marca} ${auto.modelo}`,
         `${auto.modelo} ${auto.marca}`,
+        auto.nombreHost,
       ];
 
       return combinaciones.some((combinado) => {
@@ -289,6 +415,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     const posiblesSugerencias = [
       `${match.marca} ${match.modelo}`,
       `${match.modelo} ${match.marca}`,
+      match.nombreHost,
     ];
 
     const sugerencia = posiblesSugerencias.find((s) => {
@@ -301,125 +428,167 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     return aplicarFormatoOriginal(busqueda, busqueda + diferencia);
   };
 
-  // ======== FILTROS DE BACKEND MEJORADOS ========
-  const aplicarFiltroPrecio = useCallback(async (min: number, max: number) => {
+  // ======== LÓGICA DE FILTRADO EN CONJUNTO ========
+  const aplicarFiltrosEnConjunto = useCallback(async (filtros: {
+    precio?: { min: number, max: number } | null;
+    viajes?: number | null;
+    calificacion?: number | null;
+  }) => {
     try {
       setCargandoFiltros(true);
-      console.log('Aplicando filtro de precio:', { min, max });
-      console.log('Base para filtro:', autosBaseParaBackend.length);
+      console.log('Aplicando filtros en conjunto:', filtros);
 
-      // Si se desactiva el filtro
-      if (min === 0 && max === Infinity) {
-        setAutosFiltrados(autosBaseParaBackend);
-        setFiltroPrecio(null);
-        setHayFiltrosBackendActivos(false);
-        return;
-      }
-
-      // Usar la base filtrada por los filtros en memoria
-      const baseParaFiltro = autosBaseParaBackend.length > 0 ? autosBaseParaBackend : autosFiltrados;
-      const ids = baseParaFiltro.map(a => parseInt(a.idAuto, 10));
-
-      const datos = await filtrosAPI.filtrarPorPrecio({
-        minPrecio: min,
-        maxPrecio: max,
-        idsCarros: ids
+      // Notificar inicio de aplicación de filtros
+      notificarCambioFiltro({
+        tipo: 'precio',
+        valor: filtros.precio,
+        timestamp: Date.now()
       });
 
-      const idsFiltrados = datos.map((d: { id: number }) => d.id);
-      const nuevosFiltrados = baseParaFiltro.filter(a =>
-        idsFiltrados.includes(parseInt(a.idAuto, 10))
-      );
+      // Determinar el orden de aplicación de filtros
+      const ordenFiltros = [
+        { tipo: 'precio', valor: filtros.precio },
+        { tipo: 'viajes', valor: filtros.viajes },
+        { tipo: 'calificacion', valor: filtros.calificacion }
+      ].filter(f => f.valor !== undefined && f.valor !== null);
 
-      nuevosFiltrados.sort((a, b) => a.precioPorDia - b.precioPorDia);
+      // Aplicar filtros en secuencia
+      let resultado = [...autosBaseParaBackend];
+      for (const filtro of ordenFiltros) {
+        switch (filtro.tipo) {
+          case 'precio':
+            if (filtro.valor) {
+              const { min, max } = filtro.valor as { min: number, max: number };
+              const datos = await filtrosAPI.filtrarPorPrecio({
+                minPrecio: min,
+                maxPrecio: max,
+                idsCarros: resultado.map(a => parseInt(a.idAuto, 10))
+              });
+              resultado = resultado.filter(a =>
+                datos.some((d: { id: number }) => d.id === parseInt(a.idAuto, 10))
+              );
+              // Ordenar por precio de menor a mayor
+              resultado.sort((a, b) => a.precioPorDia - b.precioPorDia);
+            }
+            break;
+          case 'viajes':
+            if (filtro.valor) {
+              const minViajes = filtro.valor as number;
+              const datos = await filtrosAPI.filtrarPorViajes({
+                minViajes,
+                idsCarros: resultado.map(a => parseInt(a.idAuto, 10))
+              });
+              resultado = resultado.filter(a =>
+                datos.some((d: { id: number }) => d.id === parseInt(a.idAuto, 10))
+              );
+            }
+            break;
+          case 'calificacion':
+            if (filtro.valor) {
+              const minCalificacion = filtro.valor as number;
+              const datos = await filtrosAPI.filtrarPorCalificacion({
+                minCalificacion,
+                idsCarros: resultado.map(a => parseInt(a.idAuto, 10))
+              });
+              resultado = resultado.filter(a =>
+                datos.some((d: { id: number }) => d.id === parseInt(a.idAuto, 10))
+              );
+            }
+            break;
+        }
+      }
 
-      console.log('Autos después del filtro:', nuevosFiltrados.length);
-      setAutosFiltrados(nuevosFiltrados);
-      setFiltroPrecio({ min, max });
-      setHayFiltrosBackendActivos(true);
-      setOrdenSeleccionado('Precio bajo a alto');
+      // Actualizar estados
+      setAutosFiltrados(resultado);
+      setFiltroPrecio(filtros.precio || null);
+      setFiltroViajes(filtros.viajes || null);
+      setFiltroCalificacion(filtros.calificacion || null);
+      setHayFiltrosBackendActivos(ordenFiltros.length > 0);
 
-      return nuevosFiltrados; // Retornar los autos filtrados
+      // Guardar estado en historial
+      guardarEstadoEnHistorial(resultado);
+
+      // Notificar finalización exitosa
+      notificarCambioFiltro({
+        tipo: 'precio',
+        valor: filtros.precio,
+        timestamp: Date.now()
+      });
+
+      return resultado;
     } catch (error) {
-      console.error('Error al aplicar filtro de precio:', error);
+      // Notificar error
+      notificarCambioFiltro({
+        tipo: 'precio',
+        valor: null,
+        timestamp: Date.now()
+      });
+      throw error;
     } finally {
       setCargandoFiltros(false);
     }
-  }, [autosBaseParaBackend, autosFiltrados]);
+  }, [autosBaseParaBackend, guardarEstadoEnHistorial, notificarCambioFiltro]);
+
+  // Modificar las funciones individuales para usar aplicarFiltrosEnConjunto
+  const aplicarFiltroPrecio = useCallback(async (min: number, max: number) => {
+    try {
+      if (min === 0 && max === Infinity) {
+        return aplicarFiltrosEnConjunto({
+          precio: null,
+          viajes: filtroViajes,
+          calificacion: filtroCalificacion
+        });
+      }
+      return aplicarFiltrosEnConjunto({
+        precio: { min, max },
+        viajes: filtroViajes,
+        calificacion: filtroCalificacion
+      });
+    } catch (error) {
+      console.error('Error al aplicar filtro de precio:', error);
+      throw error;
+    }
+  }, [aplicarFiltrosEnConjunto, filtroViajes, filtroCalificacion]);
 
   const aplicarFiltroViajes = useCallback(async (minViajes: number) => {
     try {
-      setCargandoFiltros(true);
-      console.log('Aplicando filtro de viajes:', { minViajes });
-      console.log('Base para filtro:', autosBaseParaBackend.length);
-
       if (minViajes === 0) {
-        setAutosFiltrados(autosBaseParaBackend);
-        setFiltroViajes(null);
-        setHayFiltrosBackendActivos(false);
-        return;
+        return aplicarFiltrosEnConjunto({
+          precio: filtroPrecio,
+          viajes: null,
+          calificacion: filtroCalificacion
+        });
       }
-
-      const baseParaFiltro = autosBaseParaBackend.length > 0 ? autosBaseParaBackend : autosFiltrados;
-      const ids = baseParaFiltro.map(a => parseInt(a.idAuto, 10));
-
-      const datos = await filtrosAPI.filtrarPorViajes({
-        minViajes,
-        idsCarros: ids
+      return aplicarFiltrosEnConjunto({
+        precio: filtroPrecio,
+        viajes: minViajes,
+        calificacion: filtroCalificacion
       });
-
-      const idsFiltrados = datos.map((d: { id: number }) => d.id);
-      const nuevosFiltrados = baseParaFiltro.filter(a =>
-        idsFiltrados.includes(parseInt(a.idAuto, 10))
-      );
-
-      console.log('Autos después del filtro:', nuevosFiltrados.length);
-      setAutosFiltrados(nuevosFiltrados);
-      setFiltroViajes(minViajes);
-      setHayFiltrosBackendActivos(true);
     } catch (error) {
       console.error('Error al aplicar filtro de viajes:', error);
-    } finally {
-      setCargandoFiltros(false);
+      throw error;
     }
-  }, [autosBaseParaBackend, autosFiltrados]);
+  }, [aplicarFiltrosEnConjunto, filtroPrecio, filtroCalificacion]);
 
   const aplicarFiltroCalificacion = useCallback(async (minCalificacion: number) => {
     try {
-      setCargandoFiltros(true);
-      console.log('Aplicando filtro de calificación:', { minCalificacion });
-      console.log('Base para filtro:', autosBaseParaBackend.length);
-
       if (minCalificacion === 0) {
-        setAutosFiltrados(autosBaseParaBackend);
-        setFiltroCalificacion(null);
-        setHayFiltrosBackendActivos(false);
-        return;
+        return aplicarFiltrosEnConjunto({
+          precio: filtroPrecio,
+          viajes: filtroViajes,
+          calificacion: null
+        });
       }
-
-      const baseParaFiltro = autosBaseParaBackend.length > 0 ? autosBaseParaBackend : autosFiltrados;
-      const ids = baseParaFiltro.map(a => parseInt(a.idAuto, 10));
-
-      const datos = await filtrosAPI.filtrarPorCalificacion({
-        minCalificacion,
-        idsCarros: ids
+      return aplicarFiltrosEnConjunto({
+        precio: filtroPrecio,
+        viajes: filtroViajes,
+        calificacion: minCalificacion
       });
-
-      const idsFiltrados = datos.map((d: { id: number }) => d.id);
-      const nuevosFiltrados = baseParaFiltro.filter(a =>
-        idsFiltrados.includes(parseInt(a.idAuto, 10))
-      );
-
-      console.log('Autos después del filtro:', nuevosFiltrados.length);
-      setAutosFiltrados(nuevosFiltrados);
-      setFiltroCalificacion(minCalificacion);
-      setHayFiltrosBackendActivos(true);
     } catch (error) {
       console.error('Error al aplicar filtro de calificación:', error);
-    } finally {
-      setCargandoFiltros(false);
+      throw error;
     }
-  }, [autosBaseParaBackend, autosFiltrados]);
+  }, [aplicarFiltrosEnConjunto, filtroPrecio, filtroViajes]);
 
   // ======== FUNCIÓN PARA LIMPIAR TODOS LOS FILTROS ========
   const limpiarFiltros = useCallback(() => {
@@ -438,7 +607,20 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     setHayFiltrosBackendActivos(false);
     setAutosFiltrados(autos);
     setOrdenSeleccionado('Recomendación');
-  }, [autos]);
+    limpiarHistorial();
+
+    notificarCambioFiltro({
+      tipo: 'limpiar',
+      timestamp: Date.now()
+    });
+  }, [autos, limpiarHistorial, notificarCambioFiltro]);
+
+  // Efecto para manejar cambios en el último evento
+  useEffect(() => {
+    if (ultimoEvento) {
+      console.log('Evento de filtro:', ultimoEvento);
+    }
+  }, [ultimoEvento]);
 
   return {
     autos,
@@ -475,6 +657,12 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     setFiltrosCaracteristicasAdicionales,
     filtroHost,
     setFiltroHost,
-    limpiarFiltros
+    limpiarFiltros,
+    guardarEstadoEnHistorial,
+    restaurarEstadoAnterior,
+    limpiarHistorial,
+    suscribirseAFiltros,
+    desuscribirseDeFiltros,
+    ultimoEvento
   };
 }

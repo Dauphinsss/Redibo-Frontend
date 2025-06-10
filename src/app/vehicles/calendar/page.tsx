@@ -7,7 +7,7 @@ import { API_URL } from "@/utils/bakend"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
 
-interface Vehicle {
+interface VehicleResponse {
     id: number
     marca: string
     modelo: string
@@ -23,7 +23,7 @@ interface Vehicle {
     imagen: string
 }
 
-interface Reservation {
+interface ReservationResponse {
     id: number
     id_carro: number
     estado: string
@@ -41,8 +41,8 @@ const months = [
 ]
 
 export default function VehicleCalendarView() {
-    const [vehicles, setVehicles] = useState<Vehicle[]>([])
-    const [reservations, setReservations] = useState<Reservation[]>([])
+    const [vehicles, setVehicles] = useState<VehicleResponse[]>([])
+    const [reservations, setReservations] = useState<ReservationResponse[]>([])
     const [selectedMonth, setSelectedMonth] = useState<string>(new Date().getMonth().toString())
     const [selectedVehicle, setSelectedVehicle] = useState<string>("all")
     const [calendarDays, setCalendarDays] = useState<Date[]>([])
@@ -115,13 +115,13 @@ export default function VehicleCalendarView() {
 
                 const data = await response.json()
                 
-                const formattedVehicles = data.vehicles.map((v: any) => ({
+                const formattedVehicles = data.vehicles.map((v: VehicleResponse) => ({
                     ...v,
                     disponible_desde: v.disponible_desde ? new Date(v.disponible_desde) : null,
                     disponible_hasta: v.disponible_hasta ? new Date(v.disponible_hasta) : null
                 }))
 
-                const formattedReservations = data.reservations.map((r: any) => ({
+                const formattedReservations = data.reservations.map((r: ReservationResponse) => ({
                     ...r,
                     fecha_inicio: new Date(r.fecha_inicio),
                     fecha_fin: new Date(r.fecha_fin)
@@ -274,11 +274,13 @@ export default function VehicleCalendarView() {
                                     <tr key={vehicle.id} className="border-t">
                                         <td className="sticky left-0 bg-white z-10 p-3 border-r">
                                             <div className="flex items-center gap-2">
-                                                <div className="flex-shrink-0 w-10 h-10 rounded overflow-hidden bg-gray-100">
+                                                <div className="flex-shrink-0 w-10 h-10 rounded overflow-hidden bg-gray-100 relative">
                                                     <img
                                                         src={vehicle.imagen || "/placeholder-car.jpg"}
                                                         alt={`${vehicle.marca} ${vehicle.modelo}`}
-                                                        className="w-full h-full object-cover"
+                                                        className="object-cover"
+                                                        width={40}
+                                                        height={40}
                                                     />
                                                 </div>
                                                 <div>

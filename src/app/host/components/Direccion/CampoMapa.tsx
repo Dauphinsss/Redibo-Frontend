@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap, Polygon } from "react-leaflet";
 import L, { Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -14,6 +14,12 @@ const carIcon = new L.Icon({
   iconAnchor: [16, 32],
   popupAnchor: [0, -32]
 });
+
+// Función para verificar si un punto está dentro de Bolivia
+const isWithinBolivia = (lat: number, lng: number): boolean => {
+  const [sw, ne] = [BOLIVIA_BOUNDS.southWest, BOLIVIA_BOUNDS.northEast];
+  return lat >= sw[0] && lat <= ne[0] && lng >= sw[1] && lng <= ne[1];
+};
 
 interface LocationMarkerProps {
   position: [number, number] | null;
@@ -76,11 +82,19 @@ function LocationMarker({
   }, [provincia]);
 
   const checkLocationInRegion = (latlng: L.LatLng): { valid: boolean; message: string } => {
+    // Primero verificar si está dentro de Bolivia
+    if (!isWithinBolivia(latlng.lat, latlng.lng)) {
+      return { 
+        valid: false, 
+        message: "La ubicación seleccionada está fuera de Bolivia" 
+      };
+    }
+    
     if (!departamento || !selectedDepartmentName) {
       return { valid: true, message: "" };
     }
     
-    // Primero verificar contra el departamento
+    // Verificar contra el departamento
     if (currentDepartmentPolygon && !isPointInPolygon([latlng.lat, latlng.lng], currentDepartmentPolygon)) {
       return { 
         valid: false, 
@@ -88,7 +102,7 @@ function LocationMarker({
       };
     }
     
-    // Luego verificar contra la provincia si existe
+    // Verificar contra la provincia si existe
     if (provincia && currentProvincePolygon && !isPointInPolygon([latlng.lat, latlng.lng], currentProvincePolygon)) {
       return { 
         valid: false, 
@@ -110,7 +124,6 @@ function LocationMarker({
     const newPosition: [number, number] = [latlng.lat, latlng.lng];
     setPosition(newPosition);
     setError("");
-    map.setView(newPosition, map.getZoom());
   };
 
   const eventHandlers = {
@@ -154,11 +167,12 @@ function LocationMarker({
         </Marker>
       )}
       
-      {position === null && (
-        <MapClickHandler 
-          onMapClick={handlePositionChange}
-        />
-      )}
+      <MapClickHandler 
+        onMapClick={(latlng) => {
+          handlePositionChange(latlng);
+          map.setView(latlng, map.getZoom() + 1);
+        }}
+      />
     </>
   );
 }
@@ -196,8 +210,101 @@ export default function CampoMapa({
   const [isLoading, setIsLoading] = useState(true);
   const [geoError, setGeoError] = useState("");
   const mapRef = useRef<Map>(null);
+  const markerPersistedRef = useRef(false);
 
-  // Modificamos el useEffect para manejar la inicialización del mapa
+  // Inicializar posición y manejar persistencia
+  useEffect(() => {
+    if (!initialPosition && !markerPersistedRef.current) {
+      setIsLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const userPos: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+          setPosition(userPos);
+          setIsLoading(false);
+        },
+        (err) => {
+          console.error("Error al obtener ubicación:", err);
+          setGeoError("Permiso de ubicación denegado. Seleccione manualmente.");
+          setPosition([-16.5000, -68.1500]); // La Paz por defecto
+          setIsLoading(false);
+        },
+        { timeout: 5000 }
+      );
+    } else if (initialPosition && !markerPersistedRef.current) {
+      setPosition(initialPosition);
+      setIsLoading(false);
+      markerPersistedRef.current = true;
+    }
+  }, [initialPosition]);
+
+  // Validar ubicación
+  const checkCurrentLocation = useCallback((): { valid: boolean; message: string } => {
+    if (!position) return { valid: false, message: "Debe seleccionar una ubicación en el mapa" };
+    
+    // Verificar si está dentro de Bolivia
+    if (!isWithinBolivia(position[0], position[1])) {
+      return { 
+        valid: false, 
+        message: "La ubicación seleccionada está fuera de Bolivia" 
+      };
+    }
+    
+    if (!departamento || !selectedDepartmentName) {
+      return { valid: false, message: "Debe seleccionar un departamento primero" };
+    }
+    
+    const departmentData = BOLIVIA_DEPARTMENTS.find(p => 
+      p.name.toLowerCase() === selectedDepartmentName.toLowerCase()
+    );
+    
+    if (!departmentData) {
+      return { valid: false, message: "Departamento no encontrado" };
+    }
+    
+    if (!isPointInPolygon([position[0], position[1]], departmentData.coordinates)) {
+      return { 
+        valid: false, 
+        message: `La ubicación seleccionada no pertenece al departamento de ${selectedDepartmentName}` 
+      };
+    }
+    
+    if (provincia) {
+      const provinceData = BOLIVIA_DEPARTMENTS.find(p => 
+        p.name.toLowerCase() === provincia.toLowerCase()
+      );
+      
+      if (provinceData && !isPointInPolygon([position[0], position[1]], provinceData.coordinates)) {
+        return { 
+          valid: false, 
+          message: `La ubicación seleccionada no pertenece a la provincia de ${provincia}` 
+        };
+      }
+    }
+    
+    return { valid: true, message: "" };
+  }, [position, departamento, provincia, selectedDepartmentName]);
+
+  // Validar cuando cambian los datos
+  useEffect(() => {
+    if (position && departamento && selectedDepartmentName) {
+      const { valid, message } = checkCurrentLocation();
+      setError(message);
+      onValidationChange(valid);
+    } else {
+      onValidationChange(false);
+    }
+  }, [position, departamento, provincia, selectedDepartmentName, checkCurrentLocation]);
+
+  // Notificar cambios de ubicación
+  useEffect(() => {
+    if (position) {
+      onLocationSelect(position[0], position[1]);
+    } else {
+      onLocationSelect(null, null);
+    }
+  }, [position, onLocationSelect]);
+
+  // Configurar límites del mapa
   useEffect(() => {
     if (mapRef.current) {
       const map = mapRef.current;
@@ -215,86 +322,6 @@ export default function CampoMapa({
     }
   }, []);
 
-  // Validar cuando cambia la posición o los datos de ubicación
-  useEffect(() => {
-    if (position && departamento && selectedDepartmentName) {
-      const { valid, message } = checkCurrentLocation();
-      setError(message);
-      onValidationChange(valid);
-    } else {
-      onValidationChange(false);
-    }
-  }, [position, departamento, provincia, selectedDepartmentName]);
-
-  const checkCurrentLocation = (): { valid: boolean; message: string } => {
-    if (!position) return { valid: false, message: "Debe seleccionar una ubicación en el mapa" };
-    
-    if (!departamento || !selectedDepartmentName) {
-      return { valid: false, message: "Debe seleccionar un departamento primero" };
-    }
-    
-    const latlng = L.latLng(position[0], position[1]);
-    const departmentData = BOLIVIA_DEPARTMENTS.find(p => 
-      p.name.toLowerCase() === selectedDepartmentName.toLowerCase()
-    );
-    
-    if (!departmentData) {
-      return { valid: false, message: "Departamento no encontrado" };
-    }
-    
-    if (!isPointInPolygon([latlng.lat, latlng.lng], departmentData.coordinates)) {
-      return { 
-        valid: false, 
-        message: `La ubicación seleccionada no pertenece al departamento de ${selectedDepartmentName}` 
-      };
-    }
-    
-    if (provincia) {
-      const provinceData = BOLIVIA_DEPARTMENTS.find(p => 
-        p.name.toLowerCase() === provincia.toLowerCase()
-      );
-      
-      if (provinceData && !isPointInPolygon([latlng.lat, latlng.lng], provinceData.coordinates)) {
-        return { 
-          valid: false, 
-          message: `La ubicación seleccionada no pertenece a la provincia de ${provincia}` 
-        };
-      }
-    }
-    
-    return { valid: true, message: "" };
-  };
-
-  useEffect(() => {
-    if (!initialPosition) {
-      setIsLoading(true);
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const userPos: [number, number] = [pos.coords.latitude, pos.coords.longitude];
-          setPosition(userPos);
-          setIsLoading(false);
-        },
-        (err) => {
-          console.error("Error getting location:", err);
-          setGeoError("Permiso de ubicación denegado. Seleccione manualmente.");
-          setPosition([-16.5000, -68.1500]); // La Paz por defecto
-          setIsLoading(false);
-        },
-        { timeout: 5000 }
-      );
-    } else {
-      setIsLoading(false);
-    }
-  }, [initialPosition]);
-
-  useEffect(() => {
-    if (position) {
-      onLocationSelect(position[0], position[1]);
-    } else {
-      onLocationSelect(null, null);
-    }
-  }, [position, onLocationSelect]);
-
   return (
     <div className={`space-y-4 ${className}`}>
       <h2 className="text-lg font-medium">Seleccione en el mapa:</h2>
@@ -308,9 +335,8 @@ export default function CampoMapa({
         ) : (
           <MapContainer
             center={position || [-16.5000, -68.1500]}
-            zoom={13}
-            style={{ height: "100%", width: "100%" }}
-            doubleClickZoom={false}
+            zoom={position ? 13 : 5}
+            style={{ height: "100%", width: "100%", zIndex: 0 }}
             whenReady={() => {
               setIsLoading(false);
               if (mapRef.current) {
@@ -330,6 +356,7 @@ export default function CampoMapa({
             ref={mapRef}
             touchZoom={true}
             scrollWheelZoom={true}
+            doubleClickZoom={false}
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -366,18 +393,13 @@ export default function CampoMapa({
       {geoError && <p className="text-sm text-yellow-600">{geoError}</p>}
       
       <p className="text-sm text-gray-600">
-        Haga doble clic en el mapa para seleccionar la ubicación. 
+        Haga doble clic en el mapa para seleccionar la ubicación y hacer zoom. 
         Arrastre el marcador para ajustar la posición.
       </p>
       
       {selectedDepartmentName && (
         <p className="text-sm text-blue-600">
           Departamento seleccionado: <strong>{selectedDepartmentName}</strong>
-        </p>
-      )}
-      {provincia && (
-        <p className="text-sm text-green-600">
-          Provincia seleccionada: <strong>{provincia}</strong>
         </p>
       )}
     </div>

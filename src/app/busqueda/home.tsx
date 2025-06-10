@@ -71,7 +71,9 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
     filtrosCaracteristicasAdicionales,
     filtroHost,
     setFiltroHost,
-    limpiarFiltros
+    limpiarFiltros,
+    suscribirseAFiltros,
+    desuscribirseDeFiltros
   } = useAutos(8, radio, punto, fechaInicio, fechaFin, ciudad);
 
   const [busqueda, setBusqueda] = useState("");
@@ -85,31 +87,25 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
   // Handlers para los filtros
   const handlePrecioFilter = (min: number, max: number) => {
     aplicarFiltroPrecio(min, max);
-    console.log('Filtro por precio:', { min, max });
   };
 
   const handleHostFilter = (host: Host | null) => {
-    console.log('Filtro por host:', host);
     setHostSeleccionado(host);
     setMostrarTodos(false);
 
     if (host) {
-      // Filtrar por el nombre del host
       setFiltroHost(host.name);
     } else {
-      // Limpiar filtro de host
       setFiltroHost('');
     }
   };
 
   const handleCalifFilter = (calificacion: number) => {
     aplicarFiltroCalificacion(calificacion);
-    console.log('Filtro por calificación:', calificacion);
   };
 
   const handleViajesFilter = (minViajes: number) => {
     aplicarFiltroViajes(minViajes);
-    console.log('Filtro por viajes:', minViajes);
   };
 
   const handleAirportFilter = () => {
@@ -206,7 +202,6 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
           <InfiniteFilterCarousel
             setAutosFiltrados={setAutosFiltrados}
             autos={autos}
-
             gpsActive={gpsActive}
             onGpsToggle={toggleGPSFilter}
             radio={radio}
@@ -221,6 +216,8 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
             autoScrollDelay={4000}
             autosOriginales={autos}
             punto={punto}
+            suscribirseAFiltros={suscribirseAFiltros}
+            desuscribirseDeFiltros={desuscribirseDeFiltros}
           />
         </div>
       </div>

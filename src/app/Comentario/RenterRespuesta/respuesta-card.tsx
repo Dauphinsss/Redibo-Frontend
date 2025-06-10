@@ -54,12 +54,13 @@ interface RespuestaCardProps {
 }
 
 export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps) {
-   if (!respuesta.comentario || respuesta.comentario.trim() === "") {
-    return null
-  }
   const [nuevaRespuesta, setNuevaRespuesta] = useState("")
   const [enviando, setEnviando] = useState(false)
   const [mostrarFormulario, setMostrarFormulario] = useState(false)
+
+  if (!respuesta.comentario || respuesta.comentario.trim() === "") {
+    return null
+  }
   const maxlevel = obtenerNivelComentario(respuesta.comentariosRespuesta);
   const idNuevo = obtenerIdMasProfundo(respuesta.comentariosRespuesta);
   // Verificar si el comentario tiene respuestas

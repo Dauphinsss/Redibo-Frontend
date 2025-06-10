@@ -42,7 +42,7 @@ export default function RenterReviews({ reviews }: RenterReviewsProps) {
   const [sortOrder, setSortOrder] = useState<SortOrder>("newest")
   const [ratingFilter, setRatingFilter] = useState<RatingFilter>("all")
   const [showFilters, setShowFilters] = useState(false)
-  const [forceUpdate, setForceUpdate] = useState(0)
+  const [, setForceUpdate] = useState(0)
   const initialReviewsCount = 2
   //const [expandedComment, setExpandedComment] = useState<number | null>(null)
 
@@ -70,7 +70,7 @@ export default function RenterReviews({ reviews }: RenterReviewsProps) {
       const dateB = new Date(b.createdAt).getTime()
       return sortOrder === "newest" ? dateB - dateA : dateA - dateB
     })
-  }, [reviews, ratingFilter, sortOrder, forceUpdate])
+  }, [reviews, ratingFilter, sortOrder])
 
   const displayedReviews = expanded ? filteredAndSortedReviews : filteredAndSortedReviews.slice(0, initialReviewsCount)
 

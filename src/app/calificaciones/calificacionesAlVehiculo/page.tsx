@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, MouseEvent } from "react";
+import { useState, useEffect, MouseEvent, useCallback } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 import {
   Select,
@@ -307,11 +306,7 @@ export default function ComentariosPage() {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  useEffect(() => {
-    applyFilters();
-  }, [searchTerm, dateRange, sortBy, sortOrder, comments]);
-
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = [...comments];
 
     if (searchTerm) {
@@ -348,12 +343,8 @@ export default function ComentariosPage() {
           ? a.calificacion - b.calificacion
           : b.calificacion - a.calificacion;
       } else {
-        const nameA = `${a.carro?.marca || ""} ${
-          a.carro?.modelo || ""
-        }`.toLowerCase();
-        const nameB = `${b.carro?.marca || ""} ${
-          b.carro?.modelo || ""
-        }`.toLowerCase();
+        const nameA = `${a.carro?.marca || ""} ${a.carro?.modelo || ""}`.toLowerCase();
+        const nameB = `${b.carro?.marca || ""} ${b.carro?.modelo || ""}`.toLowerCase();
         return sortOrder === "ascendente"
           ? nameA.localeCompare(nameB)
           : nameB.localeCompare(nameA);
@@ -362,7 +353,11 @@ export default function ComentariosPage() {
 
     setFilteredComments(filtered);
     setCurrentPage(1);
-  };
+  }, [comments, searchTerm, dateRange, sortBy, sortOrder]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
 
   const indexOfLastComment = currentPage * commentsPerPage;
   const indexOfFirstComment = indexOfLastComment - commentsPerPage;

@@ -29,7 +29,7 @@ interface BackendCarResponse {
   combustibles?: { tipoDeCombustible: string }[];
   caracteristicas?: { nombre: string }[];
   imagenes?: { url: string, public_id: string }[];
-  [key: string]: any;
+  num_casa?: string;
 }
 
 interface Car {
@@ -93,14 +93,44 @@ interface InactiveCarListItem {
     marca: string;
     modelo: string;
     placa?: string; 
-    año?:number;
+    año?: number;
+    Reserva?: Array<{ fecha_fin: string }>;
 }
+
+function tiempoInactivo(fechaISO?: string) {
+    if (!fechaISO) return "Nunca ha tenido reservas";
+    const fecha = new Date(fechaISO);
+    const ahora = new Date();
+    const diffMs = ahora.getTime() - fecha.getTime();
+    const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDias === 0) return "Inactivo desde hoy";
+    if (diffDias === 1) return "Inactivo desde ayer";
+    return `Inactivo desde hace ${diffDias} días`;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Esta interfaz se usa en el componente AlertsPanelClient
+interface AlertsPanelProps {
+    alertas: {
+        proximasReservas: number;
+        mantenimientos: number;
+        vehiculosInactivos: number;
+        calificacionesPendientes: number;
+    };
+    initialAlertsOrder: AlertCard[];
+    refreshAlerts: () => void;
+    inactiveCarsList: InactiveCarListItem[];
+    pendingMaintenanceCarsList: Car[];
+    mostrarCartilla: null | 'inactivos' | 'mantenimientos';
+    setMostrarCartilla: (tipo: null | 'inactivos' | 'mantenimientos') => void;
+}
+
 const CarDashboard = ({ hostId }: CarDashboardProps) => {
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [debugResponse, setDebugResponse] = useState<any>(null);
+  const [debugResponse, setDebugResponse] = useState<Record<string, unknown> | null>(null);
   const [selectedCarId, setSelectedCarId] = useState<number | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- stats se usa en el componente
   const [stats, setStats] = useState<{total: number, autos_con_placa: number} | null>(null);
 
   
@@ -161,7 +191,7 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
   // const onDragEnd = (result: DropResult) => { ... };
 
   
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     setLoading(true);
     setError(null);
     setDebugResponse(null);
@@ -226,11 +256,11 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
                   },
                   combustiblesporCarro: car.combustibles ? 
                     car.combustibles.map(c => ({
-                      combustible: { tipoDeCombustible: c.tipoDeCombustible }
+                      combustible: { tipoDeCombustible: typeof c === 'string' ? c : c.tipoDeCombustible }
                     })) : [],
                   caracteristicasAdicionalesCarro: car.caracteristicas ? 
                     car.caracteristicas.map(c => ({
-                      carasteristicasAdicionales: { nombre: c.nombre }
+                      carasteristicasAdicionales: { nombre: typeof c === 'string' ? c : c.nombre }
                     })) : [],
                   imagenes: car.imagenes ? 
                     car.imagenes.map(img => ({
@@ -316,12 +346,11 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
     } finally {
       setLoading(false); 
     }
-  };
+  }, [hostId]);
 
-  
   const refreshAlerts = useCallback(() => {
     fetchAllData();
-  }, [hostId]); 
+  }, [fetchAllData]);
 
   useEffect(() => {
     fetchAllData();
@@ -343,11 +372,12 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
       window.removeEventListener('focus', handleFocusOrVisibilityChange);
       document.removeEventListener('visibilitychange', handleFocusOrVisibilityChange);
     };
-  }, [hostId]); 
+  }, [fetchAllData]); 
 
   const selectedCar = cars.find(car => car.id === selectedCarId);
 
- 
+  const [mostrarCartilla, setMostrarCartilla] = useState<null | 'inactivos' | 'mantenimientos'>(null);
+
   if (loading && cars.length === 0 && !error) {
     return <div className="p-6 text-center">Cargando autos y alertas...</div>;
   }
@@ -390,31 +420,41 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
         alertas={alertas} 
         initialAlertsOrder={initialAlertsOrder} 
         refreshAlerts={refreshAlerts}
+        inactiveCarsList={inactiveCarsList}
+        pendingMaintenanceCarsList={pendingMaintenanceCarsList}
+        mostrarCartilla={mostrarCartilla}
+        setMostrarCartilla={setMostrarCartilla}
       />
 
-      {/* Cartilla de Vehículos Inactivos */}
-       {inactiveCarsList.length > 0 && (
-          <div id="inactive-vehicles-list" className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm">
-               <h2 className="text-lg font-semibold text-yellow-800 mb-3">Vehículos Inactivos ({inactiveCarsList.length})</h2>
-               <ul className="list-disc list-inside text-yellow-700">
-                   {inactiveCarsList.map(car => (
-                       <li key={car.id} className="text-sm sm:text-base">{car.marca} {car.modelo} ({car.placa || 'Sin placa'})</li>
-                   ))}
-               </ul>
-           </div>
-       )}
-
-      {/* NUEVO: Cartilla de Vehículos con Mantenimientos Pendientes */}
-       {pendingMaintenanceCarsList.length > 0 && (
-          <div id="pending-maintenance-list" className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm">
-               <h2 className="text-lg font-semibold text-yellow-800 mb-3">Vehículos con Mantenimientos Pendientes ({pendingMaintenanceCarsList.length})</h2>
-               <ul className="list-disc list-inside text-yellow-700">
-                   {pendingMaintenanceCarsList.map(car => (
-                       <li key={car.id} className="text-sm sm:text-base">{car.marca} {car.modelo} ({car.placa || 'Sin placa'}) - {car.num_mantenimientos} {car.num_mantenimientos === 1 ? 'revisión pendiente' : 'revisiones pendientes'}</li>
-                   ))}
-               </ul>
-           </div>
-       )}
+      {/* Cartilla amarilla solo si corresponde */}
+      {mostrarCartilla === 'inactivos' && inactiveCarsList.length > 0 && (
+        <div id="inactive-vehicles-list" className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm">
+          <h2 className="text-lg font-semibold text-yellow-800 mb-3">Vehículos Inactivos ({inactiveCarsList.length})</h2>
+          <ul className="list-disc list-inside text-yellow-700">
+            {inactiveCarsList.map(car => (
+              <li key={car.id} className="text-sm sm:text-base">
+                {car.marca} {car.modelo} ({car.placa || 'Sin placa'})
+                <br />
+                <span className="text-yellow-800 text-xs">
+                  {tiempoInactivo(car.Reserva?.[0]?.fecha_fin)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {mostrarCartilla === 'mantenimientos' && pendingMaintenanceCarsList.length > 0 && (
+        <div id="pending-maintenance-list" className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm">
+          <h2 className="text-lg font-semibold text-yellow-800 mb-3">Vehículos con Mantenimientos Pendientes ({pendingMaintenanceCarsList.length})</h2>
+          <ul className="list-disc list-inside text-yellow-700">
+            {pendingMaintenanceCarsList.map(car => (
+              <li key={car.id} className="text-sm sm:text-base">
+                {car.marca} {car.modelo} ({car.placa || 'Sin placa'}) - {car.num_mantenimientos} {car.num_mantenimientos === 1 ? 'revisión pendiente' : 'revisiones pendientes'}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Tablero de Estado de Automóviles */}
       <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Tablero de Estado de Automóviles</h1>

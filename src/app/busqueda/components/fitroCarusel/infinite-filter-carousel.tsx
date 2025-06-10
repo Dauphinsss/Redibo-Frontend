@@ -60,6 +60,8 @@ interface InfiniteFilterCarouselProps {
   // Nueva prop para pasar todos los autos disponibles para extraer marcas
   autosOriginales?: Auto[]
   punto: Coor
+  suscribirseAFiltros?: (callback: (evento: any) => void) => string
+  desuscribirseDeFiltros?: (id: string) => void
 }
 
 /**
@@ -89,7 +91,9 @@ export function InfiniteFilterCarousel({
   autoScrollDelay = 3000,
   className = "",
   autosOriginales = [],
-  punto
+  punto,
+  suscribirseAFiltros,
+  desuscribirseDeFiltros,
 }: InfiniteFilterCarouselProps) {
 
   const autoplayPlugin = React.useRef(
@@ -123,7 +127,7 @@ export function InfiniteFilterCarousel({
         <ButtonHost
           onFilterChange={onHostFilter}
           disabled={disabledHost}
-          autos={autosOriginales.length > 0 ? autosOriginales : autos}  //nuevo que añadi
+          autos={autosOriginales?.length > 0 ? autosOriginales : autos}
         />
       ),
     },
@@ -133,21 +137,42 @@ export function InfiniteFilterCarousel({
         <ButtonMarca
           onFilterChange={onMarcaFilter}
           disabled={disabledMarca}
-          autos={autosOriginales.length > 0 ? autosOriginales : autos}
+          autos={autosOriginales?.length > 0 ? autosOriginales : autos}
         />
       ),
     },
     {
       id: 'precio',
-      component: <ButtonPrecio onFilterChange={onPrecioFilter} disabled={disabledPrecio} />,
+      component: (
+        <ButtonPrecio 
+          onFilterChange={onPrecioFilter} 
+          disabled={disabledPrecio}
+          suscribirseAFiltros={suscribirseAFiltros}
+          desuscribirseDeFiltros={desuscribirseDeFiltros}
+        />
+      ),
     },
     {
       id: 'calificacion',
-      component: <ButtonCalif onFilterChange={onCalifFilter} disabled={disabledCalif} />,
+      component: (
+        <ButtonCalif 
+          onFilterChange={onCalifFilter} 
+          disabled={disabledCalif}
+          suscribirseAFiltros={suscribirseAFiltros}
+          desuscribirseDeFiltros={desuscribirseDeFiltros}
+        />
+      ),
     },
     {
       id: 'viajes',
-      component: <ButtonViajes onFilterChange={onViajesFilter} disabled={disabledViajes} />,
+      component: (
+        <ButtonViajes 
+          onFilterChange={onViajesFilter} 
+          disabled={disabledViajes}
+          suscribirseAFiltros={suscribirseAFiltros}
+          desuscribirseDeFiltros={desuscribirseDeFiltros}
+        />
+      ),
     },
     {
       id: 'aeropuerto',
