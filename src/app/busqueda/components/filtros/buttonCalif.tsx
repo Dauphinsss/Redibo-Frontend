@@ -18,17 +18,29 @@ interface ButtonCalifProps {
 export function ButtonCalif({ onFilterChange, disabled }: ButtonCalifProps) {
   const [calificacion, setCalificacion] = useState<string>("");
   const [open, setOpen] = useState(false);
+  const [filtroActivo, setFiltroActivo] = useState(false);
 
   const handleApply = () => {
-    onFilterChange(parseFloat(calificacion));
+    if (calificacion) {
+      onFilterChange(parseFloat(calificacion));
+      setFiltroActivo(true);
+      setOpen(false);
+    }
+  };
+
+  const handleClear = () => {
+    setCalificacion("");
+    onFilterChange(0);
+    setFiltroActivo(false);
+    setOpen(false);
   };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant={open ? "secondary" : "outline"}
-          className={`w-[200px] justify-between ${open ? "bg-gray-100 hover:bg-gray-200 ring-2 ring-gray-300" : ""}`}
+          variant={filtroActivo ? "secondary" : "outline"}
+          className={`w-[200px] justify-between ${open ? "bg-gray-100 hover:bg-gray-200 ring-2 ring-gray-300" : ""} ${filtroActivo ? "bg-zinc-900 text-white hover:bg-zinc-700" : ""}`}
           disabled={disabled}
         >
           Filtro por Calificación
@@ -67,9 +79,16 @@ export function ButtonCalif({ onFilterChange, disabled }: ButtonCalifProps) {
                 <Label htmlFor="r3">3.0+ ⭐</Label>
               </div>
             </RadioGroup>
-            <Button onClick={handleApply} className="mt-2" disabled={disabled}>
-              Aplicar Filtro
-            </Button>
+            <div className="flex justify-between">
+              <Button onClick={handleApply} className="mt-2" disabled={disabled}>
+                Aplicar Filtro
+              </Button>
+              {filtroActivo && (
+                <Button variant="destructive" size="sm" onClick={handleClear}>
+                  Limpiar
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </PopoverContent>

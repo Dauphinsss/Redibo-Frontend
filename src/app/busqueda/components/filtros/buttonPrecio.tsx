@@ -20,11 +20,11 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
   const [maxPrecio, setMaxPrecio] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Estados para mostrar los valores aplicados (no los del input)
   const [minAplicado, setMinAplicado] = useState<number | null>(null);
   const [maxAplicado, setMaxAplicado] = useState<number | null>(null);
-  
+
   // Resetear error cuando se cierran los campos
   useEffect(() => {
     if (!open) {
@@ -40,7 +40,7 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setError(null);
     const value = e.target.value.replace(/[^0-9]/g, "");
-    
+
     if (value) {
       let num = parseInt(value);
       if (num < 1) num = 1;
@@ -54,7 +54,7 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
   const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setError(null);
     const value = e.target.value.replace(/[^0-9]/g, "");
-    
+
     if (value) {
       let num = parseInt(value);
       if (num < 1) num = 1;
@@ -68,8 +68,8 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
   const handleApply = async () => {
     // Validar que el rango es correcto
     if (minPrecio && maxPrecio && parseInt(minPrecio) > parseInt(maxPrecio)) {
-        setError("El precio mínimo no puede ser mayor que el máximo");
-        return;
+      setError("El precio mínimo no puede ser mayor que el máximo");
+      return;
     }
 
     // Determinar los valores a aplicar
@@ -92,14 +92,14 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
     // Limpiar inputs
     setMinPrecio("");
     setMaxPrecio("");
-    
+
     // Limpiar valores aplicados
     setMinAplicado(null);
     setMaxAplicado(null);
-    
+
     // Restaurar filtro sin límites
     onFilterChange(0, Infinity);
-    
+
     setOpen(false);
   };
 
@@ -109,10 +109,10 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
   // Determinar el texto del botón según los valores aplicados
   const getButtonText = () => {
     if (!filtroActivo) return "Filtro por Precio";
-    
+
     const minMostrar = minAplicado || 1;
     const maxMostrar = maxAplicado || 5000;
-    
+
     if (minAplicado && maxAplicado) {
       return `${formatPrecio(minMostrar)}BS - ${formatPrecio(maxMostrar)}BS`;
     } else if (minAplicado) {
@@ -120,7 +120,7 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
     } else if (maxAplicado) {
       return `Hasta ${formatPrecio(maxMostrar)}BS`;
     }
-    
+
     return "Filtro por Precio";
   };
 
@@ -129,7 +129,7 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
       <PopoverTrigger asChild>
         <Button
           variant={filtroActivo ? "secondary" : "outline"}
-          className={`w-[200px] justify-between ${open ? "bg-gray-100 hover:bg-gray-200 ring-2 ring-gray-300" : ""} ${filtroActivo ? "ring-1 ring-blue-400 bg-blue-50 hover:bg-blue-100" : ""}`}
+          className={`w-[200px] justify-between ${open ? "bg-gray-100 hover:bg-gray-200 ring-2 ring-gray-300" : ""} ${filtroActivo ? "bg-zinc-900 text-white hover:bg-zinc-700" : ""}`}
           disabled={disabled}
         >
           {getButtonText()}
@@ -144,13 +144,13 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
               Selecciona el rango de precio deseado (1BS - 5000BS)
             </p>
           </div>
-          
+
           {error && (
             <div className="text-sm text-red-500 bg-red-50 p-2 rounded-md">
               {error}
             </div>
           )}
-          
+
           <div className="grid gap-2">
             <div className="grid grid-cols-2 gap-2">
               <div className="grid gap-1.5">
@@ -190,25 +190,25 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
                 </div>
               </div>
             </div>
-            
+
             {minPrecio && maxPrecio && parseInt(minPrecio) > parseInt(maxPrecio) && (
               <div className="text-sm text-red-500 bg-red-50 p-2 rounded-md">
                 El precio mínimo no puede ser mayor que el máximo
               </div>
             )}
-            
+
             <div className="flex gap-2 mt-2">
-              <Button 
-                onClick={handleApply} 
+              <Button
+                onClick={handleApply}
                 className="flex-1"
                 disabled={disabled || Boolean(minPrecio && maxPrecio && parseInt(minPrecio) > parseInt(maxPrecio))}
               >
                 Aplicar
               </Button>
-              
+
               {filtroActivo && (
-                <Button 
-                  onClick={handleReset} 
+                <Button
+                  onClick={handleReset}
                   variant="destructive"
                   disabled={disabled}
                 >
