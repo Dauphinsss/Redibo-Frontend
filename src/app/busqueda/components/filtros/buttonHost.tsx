@@ -38,10 +38,14 @@ export function ButtonHost({
   const [selectedHost, setSelectedHost] = useState<Host | null>(null);
   const [loading, setLoading] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
+  const [autocompleteSuggestion, setAutocompleteSuggestion] = useState("");
+
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Refs para los ítems (hosts) de la lista para control de scroll
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  //autocompletado ignora acentos
+  const normalizeString = (str: string) =>
+  str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
   const extractHostsFromAutos = (autosList: Auto[]): Host[] => {
     const hostsMap = new Map<string, { autosCount: number, reservas: number }>();
@@ -81,27 +85,40 @@ export function ButtonHost({
   }, [autos]);
 
   useEffect(() => {
-    if (searchTerm.trim().length > 0) {
-      setLoading(true);
-      const timer = setTimeout(() => {
-        const term = searchTerm.trim().replace(/\s{2,}/g, ' ');
+  if (searchTerm.trim().length > 0) {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      const term = searchTerm.trim().replace(/\s{2,}/g, ' ');
 
-        const normalizeString = (str: string) =>
-          str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      const normalizeString = (str: string) =>
+        str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
-        const filtered = allHosts.filter(host =>
-          normalizeString(host.name).includes(normalizeString(term))
-        );
-        setHosts(filtered);
-        setHighlightedIndex(0);
-        setLoading(false);
-      }, 300);
-      return () => clearTimeout(timer);
-    } else {
-      setHosts(allHosts.slice(0, 10));
-      setHighlightedIndex(-1);
-    }
-  }, [searchTerm, allHosts]);
+      const filtered = allHosts.filter(host =>
+        normalizeString(host.name).includes(normalizeString(term))
+      );
+      setHosts(filtered);
+      setHighlightedIndex(0);
+
+      const suggestionHost = filtered.find(host =>
+        normalizeString(host.name).startsWith(normalizeString(term))
+      );
+      if (suggestionHost && suggestionHost.name.toLowerCase() !== term.toLowerCase()) {
+        setAutocompleteSuggestion(suggestionHost.name);
+      } else {
+        setAutocompleteSuggestion("");
+      }
+
+      setLoading(false);
+    }, 300);
+    return () => clearTimeout(timer);
+  } else {
+    // Cuando el input está vacío
+    setHosts(allHosts.slice(0, 10));
+    setHighlightedIndex(-1);
+    setAutocompleteSuggestion("");
+    setLoading(false); 
+  }
+}, [searchTerm, allHosts]);
 
   // Scroll automático al ítem resaltado
   useEffect(() => {
@@ -116,6 +133,7 @@ export function ButtonHost({
     setSelectedHost(host);
     onFilterChange(host);
     setSearchTerm(host.name);
+    setAutocompleteSuggestion("");
     setIsOpen(false);
   };
 
@@ -124,6 +142,7 @@ export function ButtonHost({
     setSelectedHost(null);
     onFilterChange(null);
     setSearchTerm('');
+    setAutocompleteSuggestion("");
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -133,6 +152,7 @@ export function ButtonHost({
       if (searchTerm === '') {
         setHosts(allHosts.slice(0, 10));
         setHighlightedIndex(-1);
+        setAutocompleteSuggestion("");
       }
     }
   };
@@ -169,23 +189,23 @@ export function ButtonHost({
 
       <PopoverContent className="w-80 p-0" align="start">
         <div className="p-3 border-b">
-          <div className="relative">
+          <div className="relative flex items-center">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               ref={inputRef}
               value={searchTerm}
               onChange={(e) => {
-                const value = e.target.value.slice(0, 50);
-                const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]/g, '');
-                const trimmedValue = onlyValid.trim();
+                let value = e.target.value.slice(0, 100); 
+                const onlyValid = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+                const trimmedValue = onlyValid.trimStart();
                 setSearchTerm(trimmedValue);
 
                 if (trimmedValue === '') {
-                // Si se borra todo el texto limpiar y mostrar todos los cars
-                      setSelectedHost(null);
-                      onFilterChange(null);
-                      setHosts(allHosts.slice(0, 10));
-                     setHighlightedIndex(-1);
+                  setSelectedHost(null);
+                  onFilterChange(null);
+                  setHosts(allHosts.slice(0, 10));
+                  setHighlightedIndex(-1);
+                  setAutocompleteSuggestion("");
                 }
               }}
               onKeyDown={(e) => {
@@ -200,13 +220,35 @@ export function ButtonHost({
                 } else if (e.key === 'Enter' && highlightedIndex >= 0) {
                   e.preventDefault();
                   handleHostSelect(hosts[highlightedIndex]);
+                } else if ((e.key === 'Tab' || e.key === 'ArrowRight') && autocompleteSuggestion) {
+                  e.preventDefault();
+                  setSearchTerm(autocompleteSuggestion);
+                  setAutocompleteSuggestion("");
                 }
               }}
               placeholder="Escriba el nombre del host..."
               className="pl-10"
+              autoComplete="off"
             />
+
+            {autocompleteSuggestion && searchTerm.length > 0 && (
+              <div
+              className="absolute left-10 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none select-none whitespace-nowrap overflow-hidden"
+                  style={{
+                    fontSize: '1rem',
+                    fontFamily: 'inherit',
+                    lineHeight: '1.5rem',
+                    opacity: 0.5,
+                  }}
+                  >
+                    {autocompleteSuggestion && normalizeString(autocompleteSuggestion).startsWith(normalizeString(searchTerm))
+                     ? autocompleteSuggestion
+                     : ''}
+                    </div>
+                  )}
+
             <div className="text-xs text-right text-muted-foreground mt-1">
-              {searchTerm.length}/50 caracteres
+              {searchTerm.length}/100 caracteres
             </div>
           </div>
         </div>
@@ -220,15 +262,15 @@ export function ButtonHost({
           ) : hosts.length > 0 ? (
             <div className="py-1">
               {hosts.map((host, index) => (
-               <button
-                 key={host.id}
-                 ref={el => { itemRefs.current[index] = el; }}
-                 onClick={() => handleHostSelect(host)}
-                 className={`w-full px-4 py-3 text-left transition-colors ${
-                 index === highlightedIndex
-                 ? 'bg-primary text-primary-foreground'
-                 : 'hover:bg-accent hover:text-accent-foreground'
-                 }`}
+                <button
+                  key={host.id}
+                  ref={el => { itemRefs.current[index] = el; }}
+                  onClick={() => handleHostSelect(host)}
+                  className={`w-full px-4 py-3 text-left transition-colors ${
+                    index === highlightedIndex
+                      ? 'bg-gray-100 border border-gray-300'
+                      : 'hover:bg-accent hover:text-accent-foreground'
+                  }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
