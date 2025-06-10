@@ -168,8 +168,11 @@ export function ButtonHost({
       trips: data.reservas,
       rating: 4.5 + Math.random() * 0.4,
       autosCount: data.autosCount
-    })).sort((a, b) => b.autosCount - a.autosCount);
-  };
+    })).sort((a, b) =>
+      normalizeString(a.name).localeCompare(normalizeString(b.name))
+    );
+  }
+
 
   useEffect(() => {
     if (autos.length > 0) {
@@ -263,10 +266,13 @@ export function ButtonHost({
 
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <Button
+        <Button              
           variant="outline"
           disabled={disabled}
-          className={`w-full justify-between ${className} ${isClient && !isOnline ? 'border-red-300 bg-red-50' : ''}`}
+          className={`w-full justify-between ${className} 
+          ${isClient && !isOnline ? 'border-red-300 bg-red-50' : ''} 
+          ${selectedHost ? 'border-gray-400 bg-gray-100' : ''} 
+          ${isOpen ? 'border-gray-500 shadow-sm' : ''}`}
         >
           <div className="flex items-center space-x-2">
             <User className="w-4 h-4" />
