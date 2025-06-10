@@ -304,20 +304,12 @@ export function ButtonMarca({
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (open) {
-      // Cuando se abre, mostrar la marca seleccionada en el campo de búsqueda
-      if (selectedMarca) {
-        setTempSearchTerm(selectedMarca.name);
-      } else {
-        setTempSearchTerm('');
-      }
+      // Cuando se abre, limpiar el campo de búsqueda siempre
+      setTempSearchTerm('');
       setAutocompleteSuggestion('');
       setSelectedIndex(-1);
       setTimeout(() => {
         inputRef.current?.focus();
-        // Seleccionar todo el texto si hay una marca seleccionada
-        if (selectedMarca && inputRef.current) {
-          inputRef.current.select();
-        }
       }, 100);
       setMarcas(allMarcas.slice(0, 10));
     } else {
@@ -399,7 +391,10 @@ export function ButtonMarca({
           <Button
             variant="outline"
             disabled={disabled}
-            className={`w-full justify-between ${className} ${isClient && !isOnline ? 'border-red-300 bg-red-50' : ''} ${selectedMarca ? 'border-gray-400 bg-gray-100' : ''}`}
+            className={`w-full justify-between ${className} 
+              ${isClient && !isOnline ? 'border-red-300 bg-red-50' : ''} 
+              ${selectedMarca ? 'border-gray-400 bg-gray-100' : ''} 
+              ${isOpen ? 'border-gray-500 shadow-sm' : ''}`}
           >
             <div className="flex items-center space-x-2">
               <Car className={`w-4 h-4 ${selectedMarca ? 'text-gray-600' : ''}`} />
@@ -428,8 +423,10 @@ export function ButtonMarca({
         <PopoverContent className="w-80 p-0" align="start">
           <div className="p-3 border-b">
             <div className="relative">
-              {/* Lupa completamente estática - con posición fija */}
-              <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground z-30 pointer-events-none" style={{ position: 'absolute', left: '12px', top: '12px' }} />
+              {/* Lupa estática - posición absoluta y z-index alto */}
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-30 pointer-events-none">
+                <Search className="w-4 h-4 text-muted-foreground" />
+              </div>
               
               {/* Input fantasma para mostrar la sugerencia */}
               {autocompleteSuggestion && tempSearchTerm && (
@@ -454,7 +451,7 @@ export function ButtonMarca({
                 onKeyDown={handleKeyDown}
                 placeholder="Escriba el nombre de la marca..."
                 className="pl-10 pr-4 border border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-500 bg-transparent relative z-10"
-                style={{ backgroundColor: 'transparent', paddingLeft: '40px' }}
+                style={{ backgroundColor: 'transparent' }}
                 role="combobox"
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
