@@ -43,7 +43,7 @@ export default function CustomSearchWrapper({
                 key={i}
                 className="px-3 py-1 border border-gray-300 rounded-full hover:bg-gray-100 text-sm text-gray-700"
                 onClick={() => {
-                  onFiltrar?.(sugerencia.toLowerCase());
+                  ///onFiltrar?.(sugerencia.toLowerCase());
                 }}
               >
                 {sugerencia}
