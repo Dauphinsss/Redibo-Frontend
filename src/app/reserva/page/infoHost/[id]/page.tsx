@@ -8,9 +8,6 @@ import { useParams } from "next/navigation";
 //import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
 import { DetalleHost_Recode as DetalleHost } from "@/app/reserva/interface/DetalleHost_Recode";
 import Header from "@/components/ui/Header";
-import ListaReseñas from "@/app/reserva/components/componentes_InfoHost_Recode/componentes_ComentariosHost_Recode/ListaReseñas";
-import RatingSummary_Recode from "@/app/reserva/components/componentes_InfoHost_Recode/componentes_CalificacionesHost_Recode/RatingSummary_Recode";
-import ContenedorCalificacionesHost from "@/app/reserva/components/componentes_InfoHost_Recode/componentes_CalificacionesHost_Recode/ContenedorCalificacionesHost";
 
 export default function Page() {
   const params = useParams();
@@ -29,20 +26,21 @@ export default function Page() {
 
   function formatearFecha(fechaISO: string): string {
     const fecha = new Date(fechaISO);
-    const dia = String(fecha.getDate() + 1).padStart(2, "0");
+    const dia = String(fecha.getDate()+1).padStart(2, "0");
     const mes = String(fecha.getMonth() + 1).padStart(2, "0");
     const año = fecha.getFullYear();
-    return `${dia}/${mes}/${año}`;
+  return `${dia}/${mes}/${año}`;
   }
 
+
   return (
-    <div>
+    <div className="p-6 max-w-6xl mx-auto">
       <div className="sticky top-0 z-50 bg-white shadow overflow-visible">
-        <div>
-          <Header />
-        </div>
-      </div>
-      <div className="flex flex-col md:flex-row gap-6 items-start p-6 max-w-6xl mx-auto">
+              <div className="border-b px-4 sm:px-6 lg:px-8 py-7">
+                <Header />
+              </div>
+            </div>
+      <div className="flex flex-col md:flex-row gap-6 items-start">
         <PerfilHost
           nombreHost={host.nombre}
           fotoPerfil={host.foto}
@@ -54,7 +52,7 @@ export default function Page() {
         />
       </div>
 
-      <div className="mt-20 relative flex flex-col max-w-6xl mx-auto">
+      <div className="mt-10 relative">
         <h2 className="text-lg font-semibold mb-4">Mis Autos:</h2>
 
         {host.autos.length === 0 ? (
@@ -64,7 +62,7 @@ export default function Page() {
             {host.autos.map((auto, index) => (
               <div key={index} className="min-w-[250px] flex-shrink-0">
                 <TarjetaCar
-                  fotoAuto={auto.imagen}
+                  fotoAuto={auto.imagen} 
                   modeloAuto={auto.modelo}
                   marcaAuto={auto.marca}
                 />
@@ -72,20 +70,7 @@ export default function Page() {
             ))}
           </div>
         )}
-
-        <div className="mt-10 flex flex-col md:flex-row gap-8 items-start">
-          {/* Izquierda: Calificación del host */}
-          <div className="w-full md:w-1/3">
-            <ContenedorCalificacionesHost id_host={id}/>
-          </div>
-
-          {/* Derecha: Comentarios */}
-          <div className="w-full md:w-2/3">
-            <ListaReseñas id_host={id} id_renter={id} />
-          </div>
-        </div>
       </div>
-      
     </div>
   );
 }
