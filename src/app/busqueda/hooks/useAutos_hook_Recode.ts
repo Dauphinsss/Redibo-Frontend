@@ -398,6 +398,7 @@ useEffect(() => {
       const combinaciones = [
         `${auto.marca} ${auto.modelo}`,
         `${auto.modelo} ${auto.marca}`,
+        auto.nombreHost,
       ];
 
       return combinaciones.some((combinado) => {
@@ -414,6 +415,7 @@ useEffect(() => {
     const posiblesSugerencias = [
       `${match.marca} ${match.modelo}`,
       `${match.modelo} ${match.marca}`,
+      match.nombreHost,
     ];
 
     const sugerencia = posiblesSugerencias.find((s) => {
