@@ -42,10 +42,16 @@ export default function TablaCondicionesVisual_Recode({ id_carro }: TablaCondici
       try {
         setLoading(true);
         const data = await getCondicionesUsoVisual_Recode(id_carro);
-        if (!data) throw new Error("No se encontraron condiciones registradas.");
         setCondiciones(data);
-        setError(null);
+
+        if (!data) {
+          console.log("Este auto no tiene condiciones de uso definidas.");
+        } else {
+          setError(null);
+        }
+
       } catch (err) {
+        // Este bloque ahora solo se activará para errores de red reales.
         console.error("Error al cargar condiciones:", err);
         setError("No se pudieron cargar las condiciones de uso.");
       } finally {

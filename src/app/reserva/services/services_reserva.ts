@@ -55,6 +55,15 @@ export const getDetalleHost_Recode = async (id_host: number) => {
 export async function getCondicionesUsoVisual_Recode(id_carro: number): Promise<CondicionesUsoResponse | null> {
     try {
         const response = await apiCarById.get<RawCondicionesUsoResponse>(`/useConditon/${id_carro}`);
+
+        // --- INICIO DE LA CORRECCIÓN ---
+        // Validamos que la respuesta y el objeto principal existan antes de transformar
+        if (!response.data || !response.data.condiciones_uso) {
+            console.warn(`No se encontraron condiciones de uso para el auto con ID: ${id_carro}`);
+            return null; // Devolvemos null si no hay datos
+        }
+        // --- FIN DE LA CORRECCIÓN ---
+
         return transformCondiciones_Recode(response.data);
     } catch (error) {
         console.error("Error al obtener condiciones visuales:", error);
