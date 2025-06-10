@@ -381,7 +381,7 @@ export function ButtonMarca({
                   setTempSearchTerm(onlyValid.trim());
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder="Escriba el nombre de la mar"
+                placeholder="Escriba el nombre de la marca"
                 className="pl-10 border border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-500 bg-transparent relative z-10"
                 style={{ backgroundColor: 'transparent' }}
                 role="combobox"
