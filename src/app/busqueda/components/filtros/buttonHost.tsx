@@ -177,7 +177,16 @@ export function ButtonHost({
               onChange={(e) => {
                 const value = e.target.value.slice(0, 50);
                 const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]/g, '');
-                setSearchTerm(onlyValid.trim());
+                const trimmedValue = onlyValid.trim();
+                setSearchTerm(trimmedValue);
+
+                if (trimmedValue === '') {
+                // Si se borra todo el texto limpiar y mostrar todos los cars
+                      setSelectedHost(null);
+                      onFilterChange(null);
+                      setHosts(allHosts.slice(0, 10));
+                     setHighlightedIndex(-1);
+                }
               }}
               onKeyDown={(e) => {
                 if (hosts.length === 0) return;
