@@ -80,31 +80,32 @@ export function ButtonHost({
 
   // Filtrar hosts según el término de búsqueda
   useEffect(() => {
-  if (searchTerm.trim().length > 0) {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      const term = searchTerm.trim().replace(/\s{2,}/g, ' ');
+   if (searchTerm.trim().length > 0) {
+     setLoading(true);
+     const timer = setTimeout(() => {
+       const term = searchTerm.trim().replace(/\s{2,}/g, ' ');
+ 
+       const normalizeString = (str: string) =>
+         str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+ 
+       const filtered = allHosts.filter(host =>
+         normalizeString(host.name).includes(normalizeString(term))
+       );
+       setHosts(filtered);
+       setLoading(false);
+     }, 300);
+     return () => clearTimeout(timer);
+   } else {
+     setHosts(allHosts.slice(0, 10));
+   }
+  }, [searchTerm, allHosts]);
 
-      const normalizeString = (str: string) =>
-        str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-
-      const filtered = allHosts.filter(host =>
-        normalizeString(host.name).includes(normalizeString(term))
-      );
-      setHosts(filtered);
-      setLoading(false);
-    }, 300);
-    return () => clearTimeout(timer);
-  } else {
-    setHosts(allHosts.slice(0, 10));
-  }
-}, [searchTerm, allHosts]);
 
 
   const handleHostSelect = (host: Host) => {
     setSelectedHost(host);
     onFilterChange(host);
-    setSearchTerm('');
+    setSearchTerm(host.name);
     setIsOpen(false);
   };
 
@@ -164,13 +165,11 @@ export function ButtonHost({
               ref={inputRef}
               value={searchTerm}
               onChange={(e) => {
-              const value = e.target.value;
-              // Solo eliminar caracteres inválidos, dejar espacios
-              const cleaned = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
-              setSearchTerm(cleaned.slice(0, 50));
-            }}
-
-              placeholder="Buscar host por nombre..."
+              const value = e.target.value.slice(0, 50);
+                const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]/g, '');
+                setSearchTerm(onlyValid.trim());
+              }}
+              placeholder="Escriba el nombre del host..."
               className="pl-10"
             />
             <div className="text-xs text-right text-muted-foreground mt-1">
