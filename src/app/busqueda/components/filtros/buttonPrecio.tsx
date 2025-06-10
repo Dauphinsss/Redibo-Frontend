@@ -8,22 +8,60 @@ import {
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface ButtonPrecioProps {
   onFilterChange: (min: number, max: number) => void;
   disabled?: boolean;
+  suscribirseAFiltros?: (callback: (evento: any) => void) => string;
+  desuscribirseDeFiltros?: (id: string) => void;
 }
 
-export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
+export function ButtonPrecio({ 
+  onFilterChange, 
+  disabled,
+  suscribirseAFiltros,
+  desuscribirseDeFiltros 
+}: ButtonPrecioProps) {
   const [minPrecio, setMinPrecio] = useState<string>("");
   const [maxPrecio, setMaxPrecio] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isApplying, setIsApplying] = useState(false);
+  const isFirstRender = useRef(true);
+  const suscripcionId = useRef<string | null>(null);
 
-  // Estados para mostrar los valores aplicados (no los del input)
+  // Estados para mostrar los valores aplicados
   const [minAplicado, setMinAplicado] = useState<number | null>(null);
   const [maxAplicado, setMaxAplicado] = useState<number | null>(null);
+
+  // Suscribirse a eventos de filtros
+  useEffect(() => {
+    if (suscribirseAFiltros && desuscribirseDeFiltros) {
+      suscripcionId.current = suscribirseAFiltros((evento) => {
+        if (evento.tipo === 'precio') {
+          if (evento.valor === null) {
+            // Si el valor es null, significa que se limpió el filtro
+            setMinAplicado(null);
+            setMaxAplicado(null);
+            setMinPrecio("");
+            setMaxPrecio("");
+          } else {
+            // Actualizar con los nuevos valores
+            const { min, max } = evento.valor;
+            setMinAplicado(min);
+            setMaxAplicado(max);
+          }
+        }
+      });
+
+      return () => {
+        if (suscripcionId.current) {
+          desuscribirseDeFiltros(suscripcionId.current);
+        }
+      };
+    }
+  }, [suscribirseAFiltros, desuscribirseDeFiltros]);
 
   // Resetear error cuando se cierran los campos
   useEffect(() => {
@@ -66,41 +104,48 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
   };
 
   const handleApply = async () => {
-    // Validar que el rango es correcto
-    if (minPrecio && maxPrecio && parseInt(minPrecio) > parseInt(maxPrecio)) {
-      setError("El precio mínimo no puede ser mayor que el máximo");
-      return;
+    if (isApplying) return;
+    setIsApplying(true);
+    
+    try {
+      // Validar que el rango es correcto
+      if (minPrecio && maxPrecio && parseInt(minPrecio) > parseInt(maxPrecio)) {
+        setError("El precio mínimo no puede ser mayor que el máximo");
+        return;
+      }
+
+      // Determinar los valores a aplicar
+      const minValue = minPrecio ? parseInt(minPrecio) : 1;
+      const maxValue = maxPrecio ? parseInt(maxPrecio) : 5000;
+
+      // Aplicar el filtro
+      await onFilterChange(minValue, maxValue);
+
+      // Los estados se actualizarán a través del sistema de notificación
+      setError(null);
+      setOpen(false);
+    } catch (error) {
+      console.error('Error al aplicar filtro:', error);
+      setError('Error al aplicar el filtro. Por favor, intente nuevamente.');
+    } finally {
+      setIsApplying(false);
     }
-
-    // Determinar los valores a aplicar
-    const minValue = minPrecio ? parseInt(minPrecio) : 1;
-    const maxValue = maxPrecio ? parseInt(maxPrecio) : 5000;
-
-    // Aplicar el filtro y esperar su resolución
-    await onFilterChange(minValue, maxValue);
-
-    // Guardar los valores aplicados
-    setMinAplicado(minValue);
-    setMaxAplicado(maxValue);
-
-    // Limpiar errores y cerrar el popover
-    setError(null);
-    setOpen(false);
   };
 
-  const handleReset = () => {
-    // Limpiar inputs
-    setMinPrecio("");
-    setMaxPrecio("");
+  const handleReset = async () => {
+    if (isApplying) return;
+    setIsApplying(true);
 
-    // Limpiar valores aplicados
-    setMinAplicado(null);
-    setMaxAplicado(null);
-
-    // Restaurar filtro sin límites
-    onFilterChange(0, Infinity);
-
-    setOpen(false);
+    try {
+      // Restaurar filtro sin límites
+      await onFilterChange(0, Infinity);
+      setOpen(false);
+    } catch (error) {
+      console.error('Error al resetear filtro:', error);
+      setError('Error al resetear el filtro. Por favor, intente nuevamente.');
+    } finally {
+      setIsApplying(false);
+    }
   };
 
   // Determinar si hay filtro activo
@@ -162,7 +207,7 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
                     placeholder="1"
                     value={minPrecio}
                     onChange={handleMinChange}
-                    disabled={disabled}
+                    disabled={disabled || isApplying}
                   />
                   {minPrecio && (
                     <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
@@ -180,7 +225,7 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
                     placeholder="5000"
                     value={maxPrecio}
                     onChange={handleMaxChange}
-                    disabled={disabled}
+                    disabled={disabled || isApplying}
                   />
                   {maxPrecio && (
                     <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
@@ -201,16 +246,16 @@ export function ButtonPrecio({ onFilterChange, disabled }: ButtonPrecioProps) {
               <Button
                 onClick={handleApply}
                 className="flex-1"
-                disabled={disabled || Boolean(minPrecio && maxPrecio && parseInt(minPrecio) > parseInt(maxPrecio))}
+                disabled={disabled || Boolean(minPrecio && maxPrecio && parseInt(minPrecio) > parseInt(maxPrecio)) || isApplying}
               >
-                Aplicar
+                {isApplying ? "Aplicando..." : "Aplicar"}
               </Button>
 
               {filtroActivo && (
                 <Button
                   onClick={handleReset}
                   variant="destructive"
-                  disabled={disabled}
+                  disabled={disabled || isApplying}
                 >
                   Borrar
                 </Button>
