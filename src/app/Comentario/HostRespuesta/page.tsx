@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RespuestaCard } from "../respuesta-card"
 import { Loader2 } from "lucide-react"
@@ -46,6 +46,36 @@ export default function ResponderRespuestasPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const fetchRespuestas = useCallback(async () => {
+    if (!hostId) return;
+    
+    try {
+      setLoading(true)
+      const token = localStorage.getItem("auth_token")
+
+      if (!token) {
+        throw new Error("No se encontró el token de autenticación")
+      }
+
+      const response = await fetch(`${API_URL}/api/comentarioRespuestas/comentarioCadena?idusuario=${hostId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error("Error al cargar respuestas de arrendatarios")
+      }
+
+      const data = await response.json()
+      setRespuestasRenter(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error desconocido")
+    } finally {
+      setLoading(false)
+    }
+  }, [hostId])
+
   useEffect(() => {
     const token = localStorage.getItem("auth_token")
     if (token) {
@@ -75,35 +105,7 @@ export default function ResponderRespuestasPage() {
     if (hostId) {
       fetchRespuestas()
     }
-  }, [hostId])
-
-  const fetchRespuestas = async () => {
-    try {
-      setLoading(true)
-      const token = localStorage.getItem("auth_token")
-
-      if (!token) {
-        throw new Error("No se encontró el token de autenticación")
-      }
-
-      const response = await fetch(`${API_URL}/api/comentarioRespuestas/comentarioCadena?idusuario=${hostId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error("Error al cargar respuestas de arrendatarios")
-      }
-
-      const data = await response.json()
-      setRespuestasRenter(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error desconocido")
-    } finally {
-      setLoading(false)
-    }
-  }
+  }, [hostId, fetchRespuestas])
 
   // Función para obtener el nivel/profundidad de los comentarios (misma lógica que en RespuestaCard)
   function obtenerNivelComentario(comentarios?: RespuestaHost[]): number {

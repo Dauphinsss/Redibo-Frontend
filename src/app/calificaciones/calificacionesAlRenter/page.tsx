@@ -1,6 +1,6 @@
 "use client"
 import Toast from "./Toast"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { Trash2 } from "lucide-react"
 import Header from "@/components/ui/Header"
 import { Footer } from "@/components/ui/footer"
@@ -52,6 +52,46 @@ interface Calificacion {
   hostName?: string
 }
 
+interface CalificacionResponse {
+  id: string;
+  reserva: {
+    id: string;
+    usuario: {
+      id: string;
+      nombre: string;
+      foto?: string;
+    };
+    carro: {
+      usuario: {
+        foto?: string;
+        nombre: string;
+      };
+    };
+  };
+  comportamiento: number;
+  cuidado_vehiculo: number;
+  puntualidad: number;
+  comentario: string;
+  fecha_creacion: string;
+}
+
+interface RentalResponse {
+  id: string;
+  Usuario: {
+    id: string;
+    nombre: string;
+    correo: string;
+    telefono?: string;
+    foto?: string;
+  };
+  Carro: {
+    marca?: string;
+    modelo?: string;
+    Imagen?: { data: string }[];
+  };
+  fecha_fin: string;
+}
+
 export default function CalificacionesAlRenterPage() {
   const [hostId, setHostId] = useState<string | null>(null)
   const [renters, setRenters] = useState<Renter[]>([])
@@ -72,10 +112,38 @@ export default function CalificacionesAlRenterPage() {
   const [showRatingPanel, setShowRatingPanel] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [comentarioOfensivo, setComentarioOfensivo] = useState(false)
-  const [usuariosBloqueados, setUsuariosBloqueados] = useState<{ [key: string]: boolean }>({})
   const [showToast, setShowToast] = useState(false)
   const [showToastEliminacion, setShowToastEliminacion] = useState(false)
   const [autoSelectReservaId, setAutoSelectReservaId] = useState<string | null>(null)
+
+  const handleSeleccionar = useCallback((renter: Renter) => {
+    if (renter.bloqueado) {
+      toast.error("No se puede calificar a este usuario porque ha sido reportado y verificado")
+      return
+    }
+
+    if (renter.rated || estaDentroDePeriodoCalificacion(renter.fechaFin?.toString() || "")) {
+      const calificacion = calificaciones.find((c) => c.reservaId === renter.idReserva)
+      if (calificacion) {
+        setRating({
+          comportamiento: calificacion.comportamiento,
+          cuidado_vehiculo: calificacion.cuidado_vehiculo,
+          puntualidad: calificacion.puntualidad,
+          comentario: calificacion.comentario,
+        })
+      } else {
+        setRating({
+          comportamiento: 0,
+          cuidado_vehiculo: 0,
+          puntualidad: 0,
+          comentario: "",
+        })
+      }
+
+      setSelected(renter)
+      setShowRatingPanel(true)
+    }
+  }, [calificaciones])
 
   useEffect(() => {
     try {
@@ -178,8 +246,6 @@ export default function CalificacionesAlRenterPage() {
     const token = localStorage.getItem("auth_token")
     if (!token) return
 
-    const bloqueados: { [key: string]: boolean } = {}
-
     for (const usuario of usuarios) {
       try {
         const response = await fetch(`${API_URL}/api/reportes/usuario-bloqueado/${usuario.id}`, {
@@ -190,7 +256,6 @@ export default function CalificacionesAlRenterPage() {
 
         if (response.ok) {
           const data = await response.json()
-          bloqueados[usuario.id] = data.bloqueado
           if (data.bloqueado) {
             usuario.bloqueado = true
             usuario.motivoBloqueo = data.motivo
@@ -200,8 +265,6 @@ export default function CalificacionesAlRenterPage() {
         console.error("Error al verificar estado del usuario:", error)
       }
     }
-
-    setUsuariosBloqueados(bloqueados)
   }
 
   useEffect(() => {
@@ -237,7 +300,7 @@ export default function CalificacionesAlRenterPage() {
           throw new Error("Error al cargar calificaciones")
         }
         const ratingsData = await ratingsResponse.json()
-        const calificacionesMapeadas = (ratingsData as any[]).map((c: any) => ({
+        const calificacionesMapeadas = (ratingsData as CalificacionResponse[]).map((c) => ({
           id: c.id,
           renterId: c.reserva?.usuario?.id,
           reservaId: c.reserva?.id,
@@ -245,7 +308,7 @@ export default function CalificacionesAlRenterPage() {
           cuidado_vehiculo: c.cuidado_vehiculo,
           puntualidad: c.puntualidad,
           comentario: c.comentario,
-          fecha: c.fecha_creacion,
+          fecha: new Date(c.fecha_creacion),
           renter: {
             id: c.reserva?.usuario?.id || "",
             nombre: c.reserva?.usuario?.nombre || "Usuario",
@@ -256,7 +319,7 @@ export default function CalificacionesAlRenterPage() {
         }))
         setCalificaciones(calificacionesMapeadas)
 
-        const uniqueRenters = rentalsData.reduce((acc: Renter[], rental: any) => {
+        const uniqueRenters = rentalsData.reduce((acc: Renter[], rental: RentalResponse) => {
           const existingCalificacion = calificacionesMapeadas.find((c) => c.reservaId === rental.id)
           const carImage = rental.Carro?.Imagen?.[0]?.data || "/placeholder_car.svg"
           if (!acc.find((r) => r.id === rental.Usuario.id && r.idReserva === rental.id)) {
@@ -268,7 +331,7 @@ export default function CalificacionesAlRenterPage() {
               phone: rental.Usuario.telefono || "",
               profilePicture: rental.Usuario.foto || "/placeholder.svg",
               idReserva: rental.id,
-              fechaFin: rental.fecha_fin,
+              fechaFin: new Date(rental.fecha_fin),
               rated: !!existingCalificacion,
               carImage,
               bloqueado: false,
@@ -329,7 +392,7 @@ export default function CalificacionesAlRenterPage() {
         setError(`No se encontró la reserva con ID ${autoSelectReservaId} o no está disponible para calificar.`)
       }
     }
-  }, [autoSelectReservaId, renters, isLoading])
+  }, [autoSelectReservaId, renters, isLoading, handleSeleccionar])
 
   function estaDentroDePeriodoCalificacion(fechaFin: string): boolean {
     const fechaFinRenta = new Date(fechaFin)
@@ -342,35 +405,6 @@ export default function CalificacionesAlRenterPage() {
     const diferenciaDias = Math.floor(diferenciaTiempo / (1000 * 3600 * 24))
 
     return diferenciaDias <= 2
-  }
-
-  function handleSeleccionar(renter: Renter) {
-    if (renter.bloqueado) {
-      toast.error("No se puede calificar a este usuario porque ha sido reportado y verificado")
-      return
-    }
-
-    if (renter.rated || estaDentroDePeriodoCalificacion(renter.fechaFin?.toString() || "")) {
-      const calificacion = calificaciones.find((c) => c.reservaId === renter.idReserva)
-      if (calificacion) {
-        setRating({
-          comportamiento: calificacion.comportamiento,
-          cuidado_vehiculo: calificacion.cuidado_vehiculo,
-          puntualidad: calificacion.puntualidad,
-          comentario: calificacion.comentario,
-        })
-      } else {
-        setRating({
-          comportamiento: 0,
-          cuidado_vehiculo: 0,
-          puntualidad: 0,
-          comentario: "",
-        })
-      }
-
-      setSelected(renter)
-      setShowRatingPanel(true)
-    }
   }
 
   async function handleGuardar() {
@@ -516,10 +550,10 @@ export default function CalificacionesAlRenterPage() {
 
       setShowToastEliminacion(true) // Mostrar toast de éxito
       setTimeout(() => setShowToastEliminacion(false), 3000)
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error al eliminar calificación:", error)
 
-      toast.error(error.message || "Error al eliminar calificación.")
+      toast.error(error instanceof Error ? error.message : "Error al eliminar calificación.")
     }
   }
 

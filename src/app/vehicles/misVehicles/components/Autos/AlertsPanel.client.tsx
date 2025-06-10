@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
-import { SortableContext, useSortable, arrayMove, horizontalListSortingStrategy } from '@dnd-kit/sortable';
+import { SortableContext, useSortable, arrayMove, horizontalListSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { API_URL } from "@/utils/bakend";
 import { useRouter } from 'next/navigation';
@@ -27,10 +26,27 @@ interface AlertsPanelProps {
     };
     initialAlertsOrder: AlertCard[];
     refreshAlerts: () => void;
-    inactiveCarsList: any[];
-    pendingMaintenanceCarsList: any[];
+    inactiveCarsList: InactiveCarListItem[];
+    pendingMaintenanceCarsList: Car[];
     mostrarCartilla: null | 'inactivos' | 'mantenimientos';
     setMostrarCartilla: (tipo: null | 'inactivos' | 'mantenimientos') => void;
+}
+
+interface InactiveCarListItem {
+    id: number;
+    marca: string;
+    modelo: string;
+    placa?: string;
+    año?: number;
+    Reserva?: Array<{ fecha_fin: string }>;
+}
+
+interface Car {
+    id: number;
+    marca: string;
+    modelo: string;
+    placa: string;
+    num_mantenimientos: number;
 }
 
 interface SortableAlertCardProps {
@@ -43,110 +59,120 @@ interface SortableAlertCardProps {
         calificacionesPendientes: number;
     };
     router: ReturnType<typeof useRouter>;
+    mostrarCartilla: null | 'inactivos' | 'mantenimientos';
+    setMostrarCartilla: (tipo: null | 'inactivos' | 'mantenimientos') => void;
 }
 
-const SortableAlertCard = ({ alert, getAlertValue, calificacionVista, marcarCalificacionVista, alertas, router }: SortableAlertCardProps & { calificacionVista: boolean, marcarCalificacionVista: () => void }) => {
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: alert.id });
+const SortableAlertCard = ({ 
+    alert, 
+    getAlertValue, 
+    calificacionVista, 
+    marcarCalificacionVista, 
+    alertas, 
+    router,
+    mostrarCartilla,
+    setMostrarCartilla 
+}: SortableAlertCardProps & { 
+    calificacionVista: boolean, 
+    marcarCalificacionVista: () => void 
+}) => {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
+        id: alert.id,
+        disabled: false 
+    });
 
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
         zIndex: isDragging ? 10 : 0,
         opacity: isDragging ? 0.7 : 1,
+        touchAction: 'none',
+        cursor: isDragging ? 'grabbing' : 'grab' 
     };
 
-    
-    const dndListeners = alert.type === 'calificaciones' ? {} : listeners;
+    // Separar los listeners de drag and drop de los eventos de clic
+    const dragListeners = {
+        ...listeners,
+        onClick: (e: React.MouseEvent) => {
+            // Solo manejar el clic si no estamos arrastrando
+            if (!isDragging) {
+                handleClick(e);
+            }
+        }
+    };
 
-    
-    const cardBg = (alert.type === 'calificaciones' && calificacionVista && alertas.calificacionesPendientes === 0) ? 'bg-gray-200' : alert.bgColor;
-    const cardText = (alert.type === 'calificaciones' && calificacionVista && alertas.calificacionesPendientes === 0) ? 'text-gray-600' : alert.textColor;
+    const handleClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevenir la propagación del evento
+        console.log('Click en tarjeta:', alert.id, 'isDragging:', isDragging);
+        
+        if (alert.id === 'proximasReservas') {
+            router.push('/calificaciones/calificacionesAlRenter/ActividadVehicles');
+        } else if (alert.id === 'vehiculosInactivos') {
+            setMostrarCartilla(mostrarCartilla === 'inactivos' ? null : 'inactivos');
+        } else if (alert.id === 'mantenimientos') {
+            setMostrarCartilla(mostrarCartilla === 'mantenimientos' ? null : 'mantenimientos');
+        } else if (alert.type === 'calificaciones') {
+            if (alertas.calificacionesPendientes > 0) {
+                marcarCalificacionVista();
+                if (alert.href) {
+                    router.push(alert.href);
+                }
+            } else if (calificacionVista) {
+                console.log("No hay calificaciones pendientes nuevas.");
+            } else {
+                marcarCalificacionVista();
+            }
+        } else if (alert.href) {
+            router.push(alert.href);
+        }
+    };
 
-    console.log(`Card: ${alert.title}, Type: ${alert.type}, Vista: ${calificacionVista}, cardBg: ${cardBg}, cardText: ${cardText}`);
+    const getCardStyles = () => {
+        switch (alert.id) {
+            case 'proximasReservas':
+                return 'bg-blue-100 text-blue-900';
+            case 'vehiculosInactivos':
+                return 'bg-red-100 text-red-900';
+            case 'mantenimientos':
+                return 'bg-yellow-100 text-yellow-800';
+            default:
+                return alert.type === 'calificaciones' && calificacionVista && alertas.calificacionesPendientes === 0 
+                    ? 'bg-gray-200 text-gray-600' 
+                    : `${alert.bgColor} ${alert.textColor}`;
+        }
+    };
 
     return (
         <div
             ref={setNodeRef}
             style={style}
             {...attributes}
-            {...dndListeners} 
-            className={`${cardBg} p-4 rounded-lg shadow-sm flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow`}
-            onClick={() => {
-                if (alert.id === 'proximasReservas') {
-                    router.push('/calificaciones/calificacionesAlRenter/ActividadVehicles');
-                    return;
-                }
-                if (alert.type === 'calificaciones') {
-                    console.log(`Clic en Calificaciones Pendientes. Pendientes: ${alertas.calificacionesPendientes}, Href: ${alert.href}`);
-                    if (alertas.calificacionesPendientes > 0) {
-                        marcarCalificacionVista(); 
-                        if (alert.href) {
-                             router.push(alert.href); 
-                        }
-                    } else if (calificacionVista) {
-                        console.log("No hay calificaciones pendientes nuevas.");
-                    } else {
-                         
-                         marcarCalificacionVista();
-                    }
-                } else {
-                    
-                    if (alert.href) {
-                         router.push(alert.href); 
-                    }
-                }
-            }}
+            {...dragListeners}
+            className={`${getCardStyles()} p-4 rounded-lg shadow-sm flex items-center justify-between hover:shadow-md transition-shadow select-none`}
         >
             <div className="flex items-center justify-between w-full">
                 <div>
-                    <h3 className={`text-lg font-semibold ${cardText}`}>{alert.title}</h3>
-                    <p className={`text-2xl font-bold ${cardText}`}>{getAlertValue(alert.type)}</p>
+                    <h3 className={`text-lg font-semibold`}>{alert.title}</h3>
+                    <p className={`text-2xl font-bold`}>{getAlertValue(alert.type)}</p>
                     {alert.type === 'calificaciones' && getAlertValue(alert.type) === 0 && (
-                        <p className={`text-sm ${cardText}`}>No hay reseñas nuevas</p>
+                        <p className={`text-sm`}>No hay reseñas nuevas</p>
                     )}
                 </div>
-                {alert.type === 'calificaciones' && calificacionVista
-                    ? (    // Icono de estrella gris 
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.329 1.176l1.519 4.674c.3.921-.755 1.688-1.539 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.539-1.118l1.519-4.674a1 1 0 00-.329-1.176l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z" />
-                        </svg>
-                    )
-                    : (    // Icono original si no es calificación 
-                        <Link href={alert.href} passHref legacyBehavior={false} onClick={(e) => e.stopPropagation()}> {/* Enlaza el icono y detiene la propagación del clic */} 
-                            {alert.icon}
-                        </Link>
-                    )
-                }
+                {alert.type === 'calificaciones' && calificacionVista ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.329 1.176l1.519 4.674c.3.921-.755 1.688-1.539 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.539-1.118l1.519-4.674a1 1 0 00-.329-1.176l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z" />
+                    </svg>
+                ) : (
+                    <div onClick={(e) => e.stopPropagation()}>
+                        {alert.icon}
+                    </div>
+                )}
             </div>
         </div>
     );
 };
 
-// SidePanel moderno y agradable
-function SidePanel({ open, onClose, title, children }: { open: boolean, onClose: () => void, title: string, children: React.ReactNode }) {
-  return (
-    <div>
-      {/* Fondo semitransparente */}
-      <div
-        className={`fixed inset-0 bg-black bg-opacity-30 z-40 transition-opacity ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-        onClick={onClose}
-      />
-      {/* Panel lateral */}
-      <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white shadow-lg z-50 transform transition-transform duration-300 ${
-          open ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-lg font-bold">{title}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
-        </div>
-        <div className="p-4 overflow-y-auto h-[calc(100%-64px)]">{children}</div>
-      </div>
-    </div>
-  );
-}
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Esta función se usa en el componente padre
 function tiempoInactivo(fechaISO?: string) {
     if (!fechaISO) return "Nunca ha tenido reservas";
     const fecha = new Date(fechaISO);
@@ -158,7 +184,7 @@ function tiempoInactivo(fechaISO?: string) {
     return `Inactivo desde hace ${diffDias} días`;
 }
 
-const AlertsPanelClient = ({ alertas, initialAlertsOrder, refreshAlerts, inactiveCarsList, pendingMaintenanceCarsList, mostrarCartilla, setMostrarCartilla }: AlertsPanelProps) => {
+const AlertsPanelClient = ({ alertas, initialAlertsOrder, mostrarCartilla, setMostrarCartilla }: AlertsPanelProps) => {
     const initialAlertsOrderWithUpdatedHref: AlertCard[] = initialAlertsOrder.map(alert => {
         if (alert.id === 'calificacionesPendientes') {
             return {
@@ -188,25 +214,31 @@ const AlertsPanelClient = ({ alertas, initialAlertsOrder, refreshAlerts, inactiv
 
     const [alertsOrder, setAlertsOrder] = useState<AlertCard[]>(initialAlertsOrderWithUpdatedHref);
 
-   
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Esta variable se usa para el estado de notificaciones
     const [notificado, setNotificado] = useState(false);
 
     const [calificacionVista, setCalificacionVista] = useState(false);
 
     const sensors = useSensors(
-        useSensor(PointerSensor),
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 5, // Distancia mínima para iniciar el arrastre
+            },
+        }),
         useSensor(KeyboardSensor, {
-            coordinateGetter: () => undefined,
+            coordinateGetter: sortableKeyboardCoordinates,
         })
     );
 
     function handleDragEnd(event: DragEndEvent) {
         const { active, over } = event;
+        console.log('Drag end:', { activeId: active.id, overId: over?.id });
 
         if (over && active.id !== over.id) {
             setAlertsOrder((items) => {
                 const oldIndex = items.findIndex((item) => item.id === active.id);
                 const newIndex = items.findIndex((item) => item.id === over.id);
+                console.log('Reordenando:', { oldIndex, newIndex });
 
                 const newOrder = arrayMove(items, oldIndex, newIndex);
 
@@ -243,7 +275,7 @@ const AlertsPanelClient = ({ alertas, initialAlertsOrder, refreshAlerts, inactiv
         } else {
             setAlertsOrder(initialAlertsOrderWithUpdatedHref);
         }
-    }, [initialAlertsOrder]);
+    }, [initialAlertsOrder, alertsOrder, initialAlertsOrderWithUpdatedHref]);
 
     useEffect(() => {
         const yaNotificado = localStorage.getItem('mantenimientoNotificado');
@@ -352,63 +384,19 @@ const AlertsPanelClient = ({ alertas, initialAlertsOrder, refreshAlerts, inactiv
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={items} strategy={horizontalListSortingStrategy}>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    {alertsOrder.map((alert) => {
-                        if (alert.id === 'proximasReservas') {
-                            return (
-                                <div
-                                    key={alert.id}
-                                    className="bg-blue-100 p-4 rounded-lg shadow-sm flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow"
-                                    onClick={() => router.push('/calificaciones/calificacionesAlRenter/ActividadVehicles')}
-                                >
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-blue-900">{alert.title}</h3>
-                                        <p className="text-2xl font-bold text-blue-900">{getAlertValue(alert.type)}</p>
-                                    </div>
-                                    {alert.icon}
-                                </div>
-                            );
-                        } else if (alert.id === 'vehiculosInactivos') {
-                            return (
-                                <div
-                                    key={alert.id}
-                                    className="bg-red-100 p-4 rounded-lg shadow-sm flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow"
-                                    onClick={() => setMostrarCartilla(mostrarCartilla === 'inactivos' ? null : 'inactivos')}
-                                >
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-red-900">{alert.title}</h3>
-                                        <p className="text-2xl font-bold text-red-900">{getAlertValue(alert.type)}</p>
-                                    </div>
-                                    {alert.icon}
-                                </div>
-                            );
-                        } else if (alert.id === 'mantenimientos') {
-                            return (
-                                <div
-                                    key={alert.id}
-                                    className="bg-yellow-100 p-4 rounded-lg shadow-sm flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow"
-                                    onClick={() => setMostrarCartilla(mostrarCartilla === 'mantenimientos' ? null : 'mantenimientos')}
-                                >
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-yellow-800">{alert.title}</h3>
-                                        <p className="text-2xl font-bold text-yellow-800">{getAlertValue(alert.type)}</p>
-                                    </div>
-                                    {alert.icon}
-                                </div>
-                            );
-                        } else {
-                            return (
-                                <SortableAlertCard
-                                    key={alert.id}
-                                    alert={alert}
-                                    getAlertValue={getAlertValue}
-                                    calificacionVista={calificacionVista}
-                                    marcarCalificacionVista={marcarCalificacionVista}
-                                    alertas={alertas}
-                                    router={router}
-                                />
-                            );
-                        }
-                    })}
+                    {alertsOrder.map((alert) => (
+                        <SortableAlertCard
+                            key={alert.id}
+                            alert={alert}
+                            getAlertValue={getAlertValue}
+                            calificacionVista={calificacionVista}
+                            marcarCalificacionVista={marcarCalificacionVista}
+                            alertas={alertas}
+                            router={router}
+                            mostrarCartilla={mostrarCartilla}
+                            setMostrarCartilla={setMostrarCartilla}
+                        />
+                    ))}
                 </div>
             </SortableContext>
         </DndContext>

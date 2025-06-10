@@ -29,7 +29,7 @@ interface BackendCarResponse {
   combustibles?: { tipoDeCombustible: string }[];
   caracteristicas?: { nombre: string }[];
   imagenes?: { url: string, public_id: string }[];
-  [key: string]: any;
+  num_casa?: string;
 }
 
 interface Car {
@@ -94,7 +94,7 @@ interface InactiveCarListItem {
     modelo: string;
     placa?: string; 
     año?: number;
-    Reserva?: { fecha_fin: string }[];
+    Reserva?: Array<{ fecha_fin: string }>;
 }
 
 function tiempoInactivo(fechaISO?: string) {
@@ -108,28 +108,29 @@ function tiempoInactivo(fechaISO?: string) {
     return `Inactivo desde hace ${diffDias} días`;
 }
 
-// Modal simple para mostrar detalles
-function Modal({ open, onClose, title, children }: { open: boolean, onClose: () => void, title: string, children: React.ReactNode }) {
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px] max-w-[90vw] max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-bold">{title}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
-        </div>
-        <div>{children}</div>
-      </div>
-    </div>
-  );
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Esta interfaz se usa en el componente AlertsPanelClient
+interface AlertsPanelProps {
+    alertas: {
+        proximasReservas: number;
+        mantenimientos: number;
+        vehiculosInactivos: number;
+        calificacionesPendientes: number;
+    };
+    initialAlertsOrder: AlertCard[];
+    refreshAlerts: () => void;
+    inactiveCarsList: InactiveCarListItem[];
+    pendingMaintenanceCarsList: Car[];
+    mostrarCartilla: null | 'inactivos' | 'mantenimientos';
+    setMostrarCartilla: (tipo: null | 'inactivos' | 'mantenimientos') => void;
 }
 
 const CarDashboard = ({ hostId }: CarDashboardProps) => {
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [debugResponse, setDebugResponse] = useState<any>(null);
+  const [debugResponse, setDebugResponse] = useState<Record<string, unknown> | null>(null);
   const [selectedCarId, setSelectedCarId] = useState<number | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- stats se usa en el componente
   const [stats, setStats] = useState<{total: number, autos_con_placa: number} | null>(null);
 
   
@@ -190,7 +191,7 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
   // const onDragEnd = (result: DropResult) => { ... };
 
   
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     setLoading(true);
     setError(null);
     setDebugResponse(null);
@@ -345,12 +346,11 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
     } finally {
       setLoading(false); 
     }
-  };
+  }, [hostId]);
 
-  
   const refreshAlerts = useCallback(() => {
     fetchAllData();
-  }, [hostId]); 
+  }, [fetchAllData]);
 
   useEffect(() => {
     fetchAllData();
@@ -372,13 +372,9 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
       window.removeEventListener('focus', handleFocusOrVisibilityChange);
       document.removeEventListener('visibilitychange', handleFocusOrVisibilityChange);
     };
-  }, [hostId]); 
+  }, [fetchAllData]); 
 
   const selectedCar = cars.find(car => car.id === selectedCarId);
-
-  // Estado para el modal
-  const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<'inactivos' | 'mantenimientos' | null>(null);
 
   const [mostrarCartilla, setMostrarCartilla] = useState<null | 'inactivos' | 'mantenimientos'>(null);
 
@@ -440,7 +436,7 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
                 {car.marca} {car.modelo} ({car.placa || 'Sin placa'})
                 <br />
                 <span className="text-yellow-800 text-xs">
-                  {tiempoInactivo((car as any).Reserva?.[0]?.fecha_fin)}
+                  {tiempoInactivo(car.Reserva?.[0]?.fecha_fin)}
                 </span>
               </li>
             ))}

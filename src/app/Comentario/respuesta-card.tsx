@@ -48,9 +48,6 @@ interface RespuestaCardProps {
 }
 
 export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps) {
-   if (!respuesta.comentario || respuesta.comentario.trim() === "") {
-    return null
-  }
   const [nuevaRespuesta, setNuevaRespuesta] = useState("")
   const [enviando, setEnviando] = useState(false)
   const [mostrarFormulario, setMostrarFormulario] = useState(false)
@@ -206,6 +203,10 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
       }
       console.log("Nivel máximo de comentarios:", maxlevel)
       console.log("ID más profundo:", idNuevo)
+
+  if (!respuesta.comentario || respuesta.comentario.trim() === "") {
+    return null
+  }
 
   return (
     <Card className="w-full">

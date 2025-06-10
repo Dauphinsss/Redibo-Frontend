@@ -49,7 +49,7 @@ export default function VehiclesRentadosPage() {
   const [error, setError] = useState<string | null>(null)
   const [totalReservaciones, setTotalReservaciones] = useState(0)
   const [userId, setUserId] = useState<string | null>(null)
-  const [filtroEstado, setFiltroEstado] = useState<string>("")
+  const [filtroEstado] = useState<string>("")
   const [sortConfig, setSortConfig] = useState<{
     key: SortableField
     direction: SortDirection
@@ -129,67 +129,13 @@ export default function VehiclesRentadosPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [userId, registrosPorPagina, sortConfig, filtroEstado, paginaActual])
+  }, [userId, registrosPorPagina, filtroEstado, paginaActual])
 
   useEffect(() => {
     if (userId) {
       cargarReservaciones()
     }
   }, [userId, cargarReservaciones])
-
-  const getVarianteBadge = (estado: string) => {
-    switch (estado) {
-      case "COMPLETADA":
-        return "default"
-      case "CONFIRMADA":
-        return "secondary"
-      case "EN_CURSO":
-        return "secondary"
-      case "CANCELADA":
-        return "destructive"
-      default:
-        return "outline"
-    }
-  }
-
-  const sortReservations = (reservations: Reserva[], key: SortableField, direction: SortDirection): Reserva[] => {
-    return [...reservations].sort((a, b) => {
-      const valueA = getSortableValue(a, key)
-      const valueB = getSortableValue(b, key)
-
-      if (typeof valueA === "string" && typeof valueB === "string") {
-        return direction === "asc" ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA)
-      } else if (valueA instanceof Date && valueB instanceof Date) {
-        return direction === "asc" ? valueA.getTime() - valueB.getTime() : valueB.getTime() - valueA.getTime()
-      } else if (typeof valueA === "number" && typeof valueB === "number") {
-        return direction === "asc" ? valueA - valueB : valueB - valueA
-      }
-      return 0
-    })
-  }
-
-  const getSortableValue = (reserva: Reserva, key: SortableField): string | Date | number => {
-    switch (key) {
-      case "marca":
-        return reserva.Carro.marca.toLowerCase()
-      case "modelo":
-        return reserva.Carro.modelo.toLowerCase()
-      case "nombre":
-        return reserva.Usuario.nombre.toLowerCase()
-      case "correo":
-        return reserva.Usuario.correo.toLowerCase()
-      case "telefono":
-        return reserva.Usuario.telefono
-      case "fecha_inicio":
-        return new Date(reserva.fecha_inicio)
-      case "fecha_fin":
-        return new Date(reserva.fecha_fin)
-      case "estado":
-        return reserva.estado
-      default:
-        return ""
-    }
-  }
 
   const handleSort = (key: SortableField) => {
     let direction: SortDirection = "asc"

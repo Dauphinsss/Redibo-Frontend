@@ -23,12 +23,11 @@ interface ReportProfileDialogProps {
   children: React.ReactNode
   renterId: string
   renterName: string
-  renterRole: string
   viewerRoles: string[]
   targetUserRoles: { rol: string }[];
 }
 
-export default function ReportProfileDialog({ children, renterId, renterName, renterRole, viewerRoles, targetUserRoles }: ReportProfileDialogProps) {
+export default function ReportProfileDialog({ children, renterId, renterName, viewerRoles, targetUserRoles }: ReportProfileDialogProps) {
   const [reason, setReason] = useState("")
   const [additionalInfo, setAdditionalInfo] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -40,10 +39,6 @@ export default function ReportProfileDialog({ children, renterId, renterName, re
   const isViewerHost = viewerRoles.includes("HOST");
   const isTargetUserRenter = targetUserRoles.some(roleObj => roleObj.rol === "RENTER");
   const isViewingOwnProfile = false; 
-
-  if (!isViewerHost || !isTargetUserRenter || isViewingOwnProfile) {
-    return null;
-  }
 
   useEffect(() => {
     const checkPreviousReports = async () => {
@@ -59,7 +54,7 @@ export default function ReportProfileDialog({ children, renterId, renterName, re
 
         if (response.ok) {
           const reports = await response.json()
-          const hasReported = reports.some((report: any) => report.estado !== "RECHAZADO")
+          const hasReported = reports.some((report: { estado: string }) => report.estado !== "RECHAZADO")
           setHasReportedBefore(hasReported)
         }
       } catch (error) {
@@ -79,6 +74,10 @@ export default function ReportProfileDialog({ children, renterId, renterName, re
       setAdditionalInfo("");
     }
   }, [isOpen]);
+
+  if (!isViewerHost || !isTargetUserRenter || isViewingOwnProfile) {
+    return null;
+  }
 
   const handleAdditionalInfoChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value
