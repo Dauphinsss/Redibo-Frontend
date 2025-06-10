@@ -151,6 +151,31 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
       return [nuevo, ...sinDuplicados].slice(0, 8); // máximo 10 entradas
     });
   };
+  //NUEVO: Borrar todo el historial
+  const handleBorrarTodoHistorial = () => {
+    setHistorial([]);
+    localStorage.removeItem("historialBusqueda");
+  };
+
+  // NUEVO: Activar boton lupa
+  const ejecutarBusqueda = () => {
+  if (busqueda.trim() !== "") {
+    agregarAHistorial(busqueda);
+    inputRef.current?.blur();
+    onFiltrar(busqueda.trim()); // Asegúrate de que el filtro se aplique
+  }
+};
+
+//NUEVO: Representa el click en la lupa
+const ejecutarBusquedaManual = () => {
+  const valor = busqueda.trim();
+  if (valor === "") return;
+
+  agregarAHistorial(valor);
+  setMostrarHistorial(false);
+  inputRef.current?.blur();
+  onFiltrar(valor);
+};
 
   return (
 
@@ -232,12 +257,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
               setSugerencia("");
             }
           } else if (e.key === "Enter") { //En este else se agrego para que se aniadan con un enter al historial
-            agregarAHistorial(busqueda);
-            setMostrarHistorial(false);
-            inputRef.current?.blur();
+            ejecutarBusquedaManual(); // ✅ hace lo mismo que dar clic a la lupa
           }
         }}
-        className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[14px] md:text-base lg:text-lg"
+        className="p-2 border border-gray-300 rounded-md w-full h-12 text-left pr-12 text-[14px] md:text-base lg:text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
       />
 
       {/* Mostrar error si hay */}
@@ -249,14 +272,17 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
       <button
         type="button"
         aria-label="Buscar autos"
+        title="Buscar" // ✅ tooltip nativa
         className="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black text-white rounded-md flex items-center justify-center hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        onClick={() => {
-          // Ejecutar búsqueda manual si se desea
-          if (busqueda.trim() !== "") {
-            agregarAHistorial(busqueda);
-            inputRef.current?.blur();
-          }
-        }}
+        // onClick={() => {
+        //   // Ejecutar búsqueda manual si se desea
+        //   if (busqueda.trim() !== "") {
+        //     agregarAHistorial(busqueda);
+        //     inputRef.current?.blur();
+        //   }
+        // }}
+        //Simplificado en esto
+        onClick={ejecutarBusquedaManual}
         //NUEVO:Desactiva el boton
         disabled={busqueda.trim() === ""} // 👉 aquí deshabilitas la lupa si está vacío
       >
@@ -325,6 +351,17 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onFiltrar, obtenerSu
           )}
         </ul>
       )}
+      {/* NUEVO: Mostrar boton de borrar historial */}
+      {/* {historial.length > 0 && (
+        <div className="border-t p-2 flex justify-center">
+          <button
+            className="text-red-500 text-sm hover:underline"
+            onClick={handleBorrarTodoHistorial}
+          >
+            🗑️ Borrar historial
+          </button>
+        </div>
+      )} */}
     </div>
   );
 };

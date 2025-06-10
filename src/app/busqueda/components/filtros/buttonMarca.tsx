@@ -176,11 +176,25 @@ export function ButtonMarca({
     }
   }, [autos]);
 
+  // Función para verificar si el texto contiene números
+  const containsNumbers = (text: string): boolean => {
+    return /\d/.test(text);
+  };
+
   // Filtrar marcas según el término de búsqueda
   useEffect(() => {
     if (tempSearchTerm.length > 0) {
       setLoading(true);
       const timer = setTimeout(() => {
+        // Si contiene números, no mostrar resultados
+        if (containsNumbers(tempSearchTerm)) {
+          setMarcas([]);
+          setSelectedIndex(-1);
+          setAutocompleteSuggestion('');
+          setLoading(false);
+          return;
+        }
+
         const filtered = allMarcas.filter(marca =>
           marca.name.toLowerCase().includes(tempSearchTerm.toLowerCase())
         );
@@ -216,6 +230,46 @@ export function ButtonMarca({
     }
   }, [selectedIndex]);
 
+  // Nueva función para buscar marca por nombre exacto
+  const findMarcaByName = (name: string): Marca | null => {
+    return allMarcas.find(marca => 
+      marca.name.toLowerCase() === name.toLowerCase()
+    ) || null;
+  };
+
+  // Nueva función para aplicar filtro por nombre
+  const applyFilterByName = async (searchName: string) => {
+    const hasConnection = await checkNetworkConnection();
+    if (!hasConnection) {
+      return;
+    }
+
+    // Buscar marca exacta
+    const exactMatch = findMarcaByName(searchName);
+    if (exactMatch) {
+      setSelectedMarca(exactMatch);
+      onFilterChange(exactMatch);
+      setIsOpen(false);
+      return;
+    }
+
+    // Si no hay coincidencia exacta, buscar la primera coincidencia parcial
+    const partialMatch = allMarcas.find(marca =>
+      marca.name.toLowerCase().includes(searchName.toLowerCase()) ||
+      searchName.toLowerCase().includes(marca.name.toLowerCase())
+    );
+
+    if (partialMatch) {
+      setSelectedMarca(partialMatch);
+      onFilterChange(partialMatch);
+      setIsOpen(false);
+    } else {
+      // Si no hay coincidencias, mostrar mensaje de error temporal
+      setShowConnectionError(false);
+      // Aquí podrías mostrar un mensaje de "No se encontró la marca"
+    }
+  };
+
   const handleMarcaSelect = async (marca: Marca) => {
     const hasConnection = await checkNetworkConnection();
     if (!hasConnection) {
@@ -250,10 +304,21 @@ export function ButtonMarca({
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (open) {
-      setTempSearchTerm('');
+      // Cuando se abre, mostrar la marca seleccionada en el campo de búsqueda
+      if (selectedMarca) {
+        setTempSearchTerm(selectedMarca.name);
+      } else {
+        setTempSearchTerm('');
+      }
       setAutocompleteSuggestion('');
       setSelectedIndex(-1);
-      setTimeout(() => inputRef.current?.focus(), 100);
+      setTimeout(() => {
+        inputRef.current?.focus();
+        // Seleccionar todo el texto si hay una marca seleccionada
+        if (selectedMarca && inputRef.current) {
+          inputRef.current.select();
+        }
+      }, 100);
       setMarcas(allMarcas.slice(0, 10));
     } else {
       setTempSearchTerm('');
@@ -283,8 +348,13 @@ export function ButtonMarca({
         break;
       case 'Enter':
         e.preventDefault();
+        // Si hay un elemento seleccionado en la lista, usarlo
         if (selectedIndex >= 0 && selectedIndex < marcas.length && marcas[selectedIndex]) {
           handleMarcaSelect(marcas[selectedIndex]);
+        }
+        // Si no hay elemento seleccionado pero hay texto, buscar por nombre (pero no si contiene números)
+        else if (tempSearchTerm.trim().length > 0 && !containsNumbers(tempSearchTerm.trim())) {
+          applyFilterByName(tempSearchTerm.trim());
         }
         break;
       case 'Escape':
@@ -329,12 +399,12 @@ export function ButtonMarca({
           <Button
             variant="outline"
             disabled={disabled}
-            className={`w-full justify-between ${className} ${isClient && !isOnline ? 'border-red-300 bg-red-50' : ''}`}
+            className={`w-full justify-between ${className} ${isClient && !isOnline ? 'border-red-300 bg-red-50' : ''} ${selectedMarca ? 'border-gray-400 bg-gray-100' : ''}`}
           >
             <div className="flex items-center space-x-2">
-              <Car className="w-4 h-4" />
-              <span className="truncate">
-                {selectedMarca ? selectedMarca.name : "Filtrar por Marca"}
+              <Car className={`w-4 h-4 ${selectedMarca ? 'text-gray-600' : ''}`} />
+              <span className={`truncate ${selectedMarca ? 'font-medium text-gray-800' : ''}`}>
+                {selectedMarca ? `${selectedMarca.name} (${selectedMarca.count})` : "Filtrar por Marca"}
               </span>
             </div>
             <div className="flex items-center space-x-1">
@@ -344,9 +414,8 @@ export function ButtonMarca({
               {selectedMarca && (
                 <Badge
                   variant="secondary"
-                  className="mr-2 px-1 py-0 text-xs cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
+                  className="mr-2 px-1 py-0 text-xs cursor-pointer hover:bg-destructive hover:text-destructive-foreground bg-gray-200 text-gray-700 hover:bg-red-500 hover:text-white"
                   onClick={clearSelection}
-                  title="Limpiar"
                 >
                   <X className="w-3 h-3" />
                 </Badge>
@@ -359,14 +428,15 @@ export function ButtonMarca({
         <PopoverContent className="w-80 p-0" align="start">
           <div className="p-3 border-b">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
+              {/* Lupa completamente estática - con posición fija */}
+              <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground z-30 pointer-events-none" style={{ position: 'absolute', left: '12px', top: '12px' }} />
               
               {/* Input fantasma para mostrar la sugerencia */}
               {autocompleteSuggestion && tempSearchTerm && (
                 <Input
                   value={autocompleteSuggestion}
                   readOnly
-                  className="pl-10 border border-gray-300 absolute inset-0 text-gray-400 pointer-events-none bg-transparent"
+                  className="pl-10 pr-4 border border-gray-300 absolute inset-0 text-gray-400 pointer-events-none bg-transparent"
                   style={{ zIndex: 1 }}
                 />
               )}
@@ -377,14 +447,14 @@ export function ButtonMarca({
                 value={tempSearchTerm}
                 onChange={(e) => {
                   const value = e.target.value.slice(0, 50);
-                  //const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]/g, '');
-                  const onlyValid = value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑ]/g, '');//NO PERMITE NUMEROS
+                  // Permitir números pero no filtrar por ellos
+                  const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]/g, '');
                   setTempSearchTerm(onlyValid.trim());
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder="Buscar marca de vehículo..."
-                className="pl-10 border border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-500 bg-transparent relative z-10"
-                style={{ backgroundColor: 'transparent' }}
+                placeholder="Escriba el nombre de la marca..."
+                className="pl-10 pr-4 border border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-500 bg-transparent relative z-10"
+                style={{ backgroundColor: 'transparent', paddingLeft: '40px' }}
                 role="combobox"
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
@@ -397,16 +467,24 @@ export function ButtonMarca({
                 </div>
               )}
               
-              {/* Indicador visual de autocompletado */}
-              {autocompleteSuggestion && tempSearchTerm && (
-                <div className="text-xs text-muted-foreground mt-1 flex items-center space-x-1">
-                  <span>Presiona</span>
-                  <kbd className="px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded">Tab</kbd>
-                  <span>o</span>
-                  <kbd className="px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded">→</kbd>
-                  <span>para completar</span>
-                </div>
-              )}
+              {/* Indicador visual de autocompletado y Enter */}
+              <div className="text-xs text-muted-foreground mt-1 flex items-center justify-between">
+                {autocompleteSuggestion && tempSearchTerm && (
+                  <div className="flex items-center space-x-1">
+                    <span>Presiona</span>
+                    <kbd className="px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded">Tab</kbd>
+                    <span>o</span>
+                    <kbd className="px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded">→</kbd>
+                    <span>para completar</span>
+                  </div>
+                )}
+                {tempSearchTerm.length > 0 && (
+                  <div className="flex items-center space-x-1">
+                    <kbd className="px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded text-gray-700">Enter</kbd>
+                    <span className="text-gray-600">para filtrar</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -436,11 +514,18 @@ export function ButtonMarca({
                     aria-selected={selectedIndex === index}
                     className={`w-full px-4 py-3 text-left hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none transition-colors ${
                       selectedIndex === index ? 'bg-accent text-accent-foreground' : ''
-                    }`}
+                    } ${selectedMarca && selectedMarca.id === marca.id ? 'bg-gray-100 border-l-4 border-gray-400' : ''}`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="font-medium text-sm">{marca.name}</div>
+                        <div className={`font-medium text-sm ${selectedMarca && selectedMarca.id === marca.id ? 'text-gray-800' : ''}`}>
+                          {marca.name}
+                          {selectedMarca && selectedMarca.id === marca.id && (
+                            <span className="ml-2 text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded">
+                              Seleccionado
+                            </span>
+                          )}
+                        </div>
                         <div className="text-xs text-muted-foreground">
                           {marca.models} modelos • {marca.count} vehículos
                         </div>
@@ -453,8 +538,16 @@ export function ButtonMarca({
             ) : tempSearchTerm.length > 0 ? (
               <div className="p-4 text-center">
                 <p className="text-sm text-muted-foreground">
-                  No se encontraron marcas con &quot;{tempSearchTerm}&quot;
+                  {containsNumbers(tempSearchTerm) 
+                    ? "No se encontró esa marca"
+                    : `No se encontraron marcas con "${tempSearchTerm}"`
+                  }
                 </p>
+                {!containsNumbers(tempSearchTerm) && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Presiona <kbd className="px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded">Enter</kbd> para buscar de todas formas
+                  </p>
+                )}
               </div>
             ) : allMarcas.length === 0 ? (
               <div className="p-4 text-center">

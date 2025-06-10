@@ -12,6 +12,7 @@ interface Props {
   mostrarMasAutos: () => void;
   busqueda: string;
   cargando: boolean;
+  onFiltrar?: (query: string) => void; // 👈 necesario para sugerencias
 }
 
 export default function CustomSearchWrapper({
@@ -26,12 +27,40 @@ export default function CustomSearchWrapper({
   console.log("Autos Buscados", autosBuscados);
 
   return (
-    <ResultadosAutos
-      cargando={cargando}
-      autosActuales={autosActuales}
-      autosFiltrados={autosBuscados}
-      autosVisibles={autosVisibles}
-      mostrarMasAutos={mostrarMasAutos}
-    />
+    <>
+    {autosBuscados.length === 0 && busqueda.trim() !== "" ? (
+      <>
+        <p className="text-center text-gray-500 mt-4 text-base">
+          No se encontraron resultados para <span className="font-semibold">"{busqueda}"</span>.
+        </p>
+
+        {/* 🔽 NUEVO BLOQUE DE SUGERENCIAS */}
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600 mb-2">Tal vez quieras intentar con:</p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {["Toyota", "Honda", "Eléctrico", "Sedán", "SUV"].map((sugerencia, i) => (
+              <button
+                key={i}
+                className="px-3 py-1 border border-gray-300 rounded-full hover:bg-gray-100 text-sm text-gray-700"
+                onClick={() => {
+                  ///onFiltrar?.(sugerencia.toLowerCase());
+                }}
+              >
+                {sugerencia}
+              </button>
+            ))}
+          </div>
+        </div>
+      </>
+    ) : (
+      <ResultadosAutos
+        cargando={cargando}
+        autosActuales={autosActuales}
+        autosFiltrados={autosBuscados}
+        autosVisibles={autosVisibles}
+        mostrarMasAutos={mostrarMasAutos}
+      />
+    )}
+  </>
   );
 }
