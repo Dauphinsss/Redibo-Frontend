@@ -402,11 +402,6 @@ export default function CampoMapa({
           Departamento seleccionado: <strong>{selectedDepartmentName}</strong>
         </p>
       )}
-      {provincia && (
-        <p className="text-sm text-green-600">
-          Provincia seleccionada: <strong>{provincia}</strong>
-        </p>
-      )}
     </div>
   );
 }
