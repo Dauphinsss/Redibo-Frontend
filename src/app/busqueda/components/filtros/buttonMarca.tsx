@@ -391,7 +391,10 @@ export function ButtonMarca({
           <Button
             variant="outline"
             disabled={disabled}
-            className={`w-full justify-between ${className} ${isClient && !isOnline ? 'border-red-300 bg-red-50' : ''} ${selectedMarca ? 'border-gray-400 bg-gray-100' : ''}`}
+            className={`w-full justify-between ${className} 
+              ${isClient && !isOnline ? 'border-red-300 bg-red-50' : ''} 
+              ${selectedMarca ? 'border-gray-400 bg-gray-100' : ''} 
+              ${isOpen ? 'border-gray-500 shadow-sm' : ''}`}
           >
             <div className="flex items-center space-x-2">
               <Car className={`w-4 h-4 ${selectedMarca ? 'text-gray-600' : ''}`} />
