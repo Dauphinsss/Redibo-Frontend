@@ -15,14 +15,14 @@ interface Host {
   name: string;
   trips: number;
   rating?: number;
-  autosCount: number; // Cantidad de autos del host
+  autosCount: number;
 }
 
 interface ButtonHostProps {
   onFilterChange: (host: Host | null) => void;
   disabled?: boolean;
   className?: string;
-  autos?: Auto[]; // Nueva prop para recibir los autos disponibles
+  autos?: Auto[];
 }
 
 export function ButtonHost({
@@ -37,24 +37,27 @@ export function ButtonHost({
   const [allHosts, setAllHosts] = useState<Host[]>([]);
   const [selectedHost, setSelectedHost] = useState<Host | null>(null);
   const [loading, setLoading] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Función para extraer hosts únicos de los autos
+  // Refs para los ítems (hosts) de la lista para control de scroll
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
   const extractHostsFromAutos = (autosList: Auto[]): Host[] => {
     const hostsMap = new Map<string, { autosCount: number, reservas: number }>();
-    
+
     autosList.forEach(auto => {
       const hostName = auto.nombreHost;
       if (hostName && hostName !== "Sin nombre") {
         if (!hostsMap.has(hostName)) {
           hostsMap.set(hostName, { autosCount: 0, reservas: 0 });
         }
-        
+
         const hostData = hostsMap.get(hostName)!;
         hostData.autosCount++;
-        // Contar reservas del auto (trips)
+
         if (auto.reservas && Array.isArray(auto.reservas)) {
-          hostData.reservas += auto.reservas.filter(r => 
+          hostData.reservas += auto.reservas.filter(r =>
             ['confirmado', 'completado'].includes(r.estado?.toLowerCase() || '')
           ).length;
         }
@@ -65,12 +68,11 @@ export function ButtonHost({
       id: index + 1,
       name,
       trips: data.reservas,
-      rating: 4.5 + Math.random() * 0.4, // Rating simulado entre 4.5 y 4.9
+      rating: 4.5 + Math.random() * 0.4,
       autosCount: data.autosCount
-    })).sort((a, b) => b.autosCount - a.autosCount); // Ordenar por cantidad de autos
+    })).sort((a, b) => b.autosCount - a.autosCount);
   };
 
-  // Inicializar hosts cuando se reciben los autos
   useEffect(() => {
     if (autos.length > 0) {
       const extractedHosts = extractHostsFromAutos(autos);
@@ -78,29 +80,37 @@ export function ButtonHost({
     }
   }, [autos]);
 
-  // Filtrar hosts según el término de búsqueda
   useEffect(() => {
-   if (searchTerm.trim().length > 0) {
-     setLoading(true);
-     const timer = setTimeout(() => {
-       const term = searchTerm.trim().replace(/\s{2,}/g, ' ');
- 
-       const normalizeString = (str: string) =>
-         str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
- 
-       const filtered = allHosts.filter(host =>
-         normalizeString(host.name).includes(normalizeString(term))
-       );
-       setHosts(filtered);
-       setLoading(false);
-     }, 300);
-     return () => clearTimeout(timer);
-   } else {
-     setHosts(allHosts.slice(0, 10));
-   }
+    if (searchTerm.trim().length > 0) {
+      setLoading(true);
+      const timer = setTimeout(() => {
+        const term = searchTerm.trim().replace(/\s{2,}/g, ' ');
+
+        const normalizeString = (str: string) =>
+          str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+        const filtered = allHosts.filter(host =>
+          normalizeString(host.name).includes(normalizeString(term))
+        );
+        setHosts(filtered);
+        setHighlightedIndex(0);
+        setLoading(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    } else {
+      setHosts(allHosts.slice(0, 10));
+      setHighlightedIndex(-1);
+    }
   }, [searchTerm, allHosts]);
 
-
+  // Scroll automático al ítem resaltado
+  useEffect(() => {
+    if (highlightedIndex < 0 || highlightedIndex >= itemRefs.current.length) return;
+    const node = itemRefs.current[highlightedIndex];
+    if (node) {
+      node.scrollIntoView({ block: 'nearest' });
+    }
+  }, [highlightedIndex]);
 
   const handleHostSelect = (host: Host) => {
     setSelectedHost(host);
@@ -120,9 +130,9 @@ export function ButtonHost({
     setIsOpen(open);
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 100);
-      // Mostrar algunos hosts por defecto cuando se abre
       if (searchTerm === '') {
         setHosts(allHosts.slice(0, 10));
+        setHighlightedIndex(-1);
       }
     }
   };
@@ -165,9 +175,32 @@ export function ButtonHost({
               ref={inputRef}
               value={searchTerm}
               onChange={(e) => {
-              const value = e.target.value.slice(0, 50);
+                const value = e.target.value.slice(0, 50);
                 const onlyValid = value.replace(/[^a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]/g, '');
-                setSearchTerm(onlyValid.trim());
+                const trimmedValue = onlyValid.trim();
+                setSearchTerm(trimmedValue);
+
+                if (trimmedValue === '') {
+                // Si se borra todo el texto limpiar y mostrar todos los cars
+                      setSelectedHost(null);
+                      onFilterChange(null);
+                      setHosts(allHosts.slice(0, 10));
+                     setHighlightedIndex(-1);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (hosts.length === 0) return;
+
+                if (e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  setHighlightedIndex((prev) => (prev + 1) % hosts.length);
+                } else if (e.key === 'ArrowUp') {
+                  e.preventDefault();
+                  setHighlightedIndex((prev) => (prev - 1 + hosts.length) % hosts.length);
+                } else if (e.key === 'Enter' && highlightedIndex >= 0) {
+                  e.preventDefault();
+                  handleHostSelect(hosts[highlightedIndex]);
+                }
               }}
               placeholder="Escriba el nombre del host..."
               className="pl-10"
@@ -186,11 +219,16 @@ export function ButtonHost({
             </div>
           ) : hosts.length > 0 ? (
             <div className="py-1">
-              {hosts.map((host) => (
-                <button
-                  key={host.id}
-                  onClick={() => handleHostSelect(host)}
-                  className="w-full px-4 py-3 text-left hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none transition-colors"
+              {hosts.map((host, index) => (
+               <button
+                 key={host.id}
+                 ref={el => { itemRefs.current[index] = el; }}
+                 onClick={() => handleHostSelect(host)}
+                 className={`w-full px-4 py-3 text-left transition-colors ${
+                 index === highlightedIndex
+                 ? 'bg-primary text-primary-foreground'
+                 : 'hover:bg-accent hover:text-accent-foreground'
+                 }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
