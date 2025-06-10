@@ -465,6 +465,8 @@ useEffect(() => {
               resultado = resultado.filter(a => 
                 datos.some((d: { id: number }) => d.id === parseInt(a.idAuto, 10))
               );
+              // Ordenar por precio de menor a mayor
+              resultado.sort((a, b) => a.precioPorDia - b.precioPorDia);
             }
             break;
           case 'viajes':
