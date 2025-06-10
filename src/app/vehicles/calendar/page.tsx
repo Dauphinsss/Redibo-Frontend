@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { API_URL } from "@/utils/bakend"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
+import Image from "next/image"
 
 interface VehicleResponse {
     id: number
@@ -275,12 +276,12 @@ export default function VehicleCalendarView() {
                                         <td className="sticky left-0 bg-white z-10 p-3 border-r">
                                             <div className="flex items-center gap-2">
                                                 <div className="flex-shrink-0 w-10 h-10 rounded overflow-hidden bg-gray-100 relative">
-                                                    <img
-                                                        src={vehicle.imagen || "/placeholder-car.jpg"}
+                                                    <Image
+                                                        src={vehicle.imagen || "/images/Auto_default.png"}
                                                         alt={`${vehicle.marca} ${vehicle.modelo}`}
-                                                        className="object-cover"
                                                         width={40}
                                                         height={40}
+                                                        style={{ objectFit: "cover", borderRadius: 8, display: 'block', width: '100%', height: '100%' }}
                                                     />
                                                 </div>
                                                 <div>

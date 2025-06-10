@@ -24,7 +24,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: '"lh3.googleusercontent.com',
+        hostname: 'lh3.googleusercontent.com',
       },
       {
         protocol: 'https',
@@ -38,6 +38,34 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'encrypted-tbn0.gstatic.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'us.123rf.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.glamour.mx',
+      },
+      {
+        protocol: 'https',
+        hostname: 'plus.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.diariolasamericas.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ui-avatars.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'redibo-backend-production.up.railway.app',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      }
     ],
   }
 };

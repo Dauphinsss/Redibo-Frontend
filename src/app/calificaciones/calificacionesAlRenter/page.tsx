@@ -8,6 +8,7 @@ import leoProfanity from "leo-profanity"
 import { API_URL } from "@/utils/bakend"
 import "./styles.css"
 import { toast } from "sonner"
+import Image from "next/image"
 
 // Extender la definicion de tipos para leo-profanity
 declare module "leo-profanity" {
@@ -655,17 +656,21 @@ export default function CalificacionesAlRenterPage() {
                             >
                               <div className="rental-item-left flex gap-3">
                                 <div className="rental-image-placeholder bg-gray-200 w-12 h-12 rounded-full">
-                                  <img
-                                    src={renter.carImage || "/placeholder_car.svg"}
+                                  <Image
+                                    src={renter.carImage || "/images/Auto_default.png"}
                                     alt="Imagen del auto"
-                                    style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 4 }}
+                                    width={64}
+                                    height={64}
+                                    style={{ width: '100%', height: '100%', objectFit: "cover", borderRadius: 4, display: 'block' }}
                                   />
                                 </div>
                                 <div className="rental-user-avatar">
-                                  <img
-                                    src={renter.profilePicture || "/placeholder.svg"}
+                                  <Image
+                                    src={renter.profilePicture || "/images/Auto_default.png"}
                                     alt={`${renter.firstName} ${renter.lastName}`}
-                                    style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover" }}
+                                    width={40}
+                                    height={40}
+                                    style={{ width: '100%', height: '100%', objectFit: "cover", borderRadius: "50%", display: 'block' }}
                                   />
                                 </div>
                                 <div className="rental-user-info">
@@ -792,10 +797,12 @@ export default function CalificacionesAlRenterPage() {
 
                         <div className="rating-car-details">
                           <div className="rental-image-placeholder">
-                            <img
-                              src={selected?.profilePicture || "/placeholder_car.svg"}
+                            <Image
+                              src={selected?.profilePicture || "/images/Auto_default.png"}
                               alt="Imagen del auto"
-                              style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 4 }}
+                              width={64}
+                              height={64}
+                              style={{ width: '100%', height: '100%', objectFit: "cover", borderRadius: 4, display: 'block' }}
                             />
                           </div>
                           <div className="rating-car-info">

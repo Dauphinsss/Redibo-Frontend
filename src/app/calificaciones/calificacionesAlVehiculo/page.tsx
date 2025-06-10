@@ -4,6 +4,7 @@ import { useState, useEffect, MouseEvent, useCallback } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 import {
   Select,
@@ -573,10 +574,10 @@ export default function ComentariosPage() {
                 >
                   <div className="flex gap-4">
                     <div className="flex-shrink-0">
-                      <img
+                      <Image
                         src={
                           comment.carro?.Imagen?.[0]?.data ||
-                          "/placeholder_car.svg"
+                          "/images/Auto_default.png"
                         }
                         alt={
                           comment.carro
@@ -585,11 +586,12 @@ export default function ComentariosPage() {
                               }`.trim()
                             : "Vehículo"
                         }
+                        width={120}
+                        height={80}
                         style={{
-                          width: 120,
-                          height: 80,
                           objectFit: "cover",
                           borderRadius: 8,
+                          display: 'block'
                         }}
                       />
                     </div>
