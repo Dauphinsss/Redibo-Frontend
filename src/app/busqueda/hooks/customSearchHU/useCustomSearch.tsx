@@ -20,7 +20,7 @@ export function useCustomSearch(autosFiltrados: Auto[], busqueda: string) {
     const palabras = textoNormalizado.split(" ");
 
     const filtrados = autosFiltrados.filter(auto => {
-      const textoAuto = `${auto.marca} ${auto.modelo}`;
+      const textoAuto = `${auto.marca} ${auto.modelo} ${auto.nombreHost}`;
       const textoNormal = normalizar(textoAuto).replace(/[^\p{L}\p{N}\s.\-\/]/gu, "").trim();
       return palabras.every(palabra => textoNormal.includes(palabra));
     });
