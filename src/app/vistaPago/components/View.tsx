@@ -71,11 +71,11 @@ export default function View({ id }: { id: number }) {
             </div>
 
             {/* Conductores */}
-            <div className="mt-4">
+            <div className="mt-2 mb-4">
               <h4 className="font-semibold">Conductores seleccionados:</h4>
               {conductores.length > 0 ? (
                 <ul className="ml-4 list-disc text-sm margin-bottom-4">
-                  {conductores.map((nombre: string, i: number) => <li key={i}>{nombre}</li>)}
+                   {conductores.sort().map((nombre: string, i: number) => <li key={i}>{nombre}</li>)}
                 </ul>
               ) : (
                 <p className="text-gray-500">No se seleccionaron conductores para esta reserva.</p>
