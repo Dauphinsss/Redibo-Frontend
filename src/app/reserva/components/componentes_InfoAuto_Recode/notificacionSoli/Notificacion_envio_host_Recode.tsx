@@ -277,7 +277,13 @@ export default function FormularioSolicitud({
   }, []);
 
   const handleRedirect = () => {
-    router.push(`/vistaPago/${id_carro}`);
+    const searchParams = new URLSearchParams({
+      fechaInicio: fechas.inicio,
+      fechaFin: fechas.fin,
+      precio: precioEstimado.toString()
+    });
+
+    router.push(`/vistaPago/${id_carro}?${searchParams.toString()}`);
     () => setShowNotification(false)
   }
 
