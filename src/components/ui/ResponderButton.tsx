@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -9,6 +9,9 @@ interface ResponderButtonProps {
   onSuccess?: (nuevaRespuesta: any) => void;
   onSubmit?: (commentId: number, replyText: string) => Promise<any>;
   disabled?: boolean;
+  onResponderClick?: () => void; // para scroll
+  isActive: boolean; // Nuevo: si el cuadro está abierto
+  onToggle: () => void; // Nuevo: para abrir/cerrar desde el padre
 }
 
 const MAX_LENGTH = 200;
@@ -18,18 +21,28 @@ const ResponderButton = ({
   onSuccess,
   onSubmit,
   disabled = false,
+  onResponderClick,
+  isActive,
+  onToggle,
 }: ResponderButtonProps) => {
-  const [isReplying, setIsReplying] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const toggleReplying = () => {
-    if (loading || disabled) return;
-    setIsReplying((prev) => !prev);
-    if (isReplying) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Cuando isActive cambia a true, llamamos a onResponderClick y enfocamos textarea
+  useEffect(() => {
+    if (isActive) {
+      onResponderClick?.();
+
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 0);
+    } else {
+      // Cuando se cierra el cuadro, limpiamos texto
       setReplyText("");
     }
-  };
+  }, [isActive, onResponderClick]);
 
   const handleSend = async () => {
     const textoLimpiado = replyText.trim();
@@ -57,8 +70,7 @@ const ResponderButton = ({
       if (onSubmit) {
         const nuevaResp = await onSubmit(commentId, textoLimpiado);
         toast.success("Respuesta enviada con éxito");
-        setIsReplying(false);
-        setReplyText("");
+        onToggle(); // cerramos cuadro
         onSuccess?.(nuevaResp);
       }
     } catch (error: any) {
@@ -74,15 +86,16 @@ const ResponderButton = ({
       <Button
         variant="outline"
         size="sm"
-        onClick={toggleReplying}
+        onClick={onToggle}
         disabled={loading || disabled}
       >
-        {disabled ? "Respuesta enviada" : isReplying ? "Cancelar" : "Responder"}
+        {disabled ? "Respuesta enviada" : isActive ? "Cancelar" : "Responder"}
       </Button>
 
-      {isReplying && !disabled && (
+      {isActive && !disabled && (
         <div className="mt-2">
           <textarea
+            ref={textareaRef}
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
             placeholder="Escribe tu respuesta... (máx. 200 caracteres)"

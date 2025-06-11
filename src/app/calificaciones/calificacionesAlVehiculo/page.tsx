@@ -83,6 +83,10 @@ export default function ComentariosPage() {
   const [sortOrder, setSortOrder] = useState<"ascendente" | "descendente">(
     "descendente"
   );
+  const [activeReplyId, setActiveReplyId] = useState<number | null>(null);
+  const toggleReply = (id: number) => {
+    setActiveReplyId((prev) => (prev === id ? null : id));
+  };
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
@@ -344,8 +348,12 @@ export default function ComentariosPage() {
           ? a.calificacion - b.calificacion
           : b.calificacion - a.calificacion;
       } else {
-        const nameA = `${a.carro?.marca || ""} ${a.carro?.modelo || ""}`.toLowerCase();
-        const nameB = `${b.carro?.marca || ""} ${b.carro?.modelo || ""}`.toLowerCase();
+        const nameA = `${a.carro?.marca || ""} ${
+          a.carro?.modelo || ""
+        }`.toLowerCase();
+        const nameB = `${b.carro?.marca || ""} ${
+          b.carro?.modelo || ""
+        }`.toLowerCase();
         return sortOrder === "ascendente"
           ? nameA.localeCompare(nameB)
           : nameB.localeCompare(nameA);
@@ -591,7 +599,7 @@ export default function ComentariosPage() {
                         style={{
                           objectFit: "cover",
                           borderRadius: 8,
-                          display: 'block'
+                          display: "block",
                         }}
                       />
                     </div>
@@ -622,19 +630,22 @@ export default function ComentariosPage() {
 
                       <div className="mt-4">
                         <ResponderButton
+                          key={comment.id}
                           commentId={comment.id}
                           onSubmit={enviarRespuesta}
                           onSuccess={() => {}}
                           disabled={
                             comment.respuestas && comment.respuestas.length > 0
                           }
+                          isActive={activeReplyId == comment.id}
+                          onToggle={() => toggleReply(comment.id)}
                         />
                       </div>
                     </div>
                   </div>
 
                   {comment.respuestas && comment.respuestas.length > 0 && (
-                    <div className="mt-6 pl-3 border-l-2 border-gray-300">
+                    <div className=" break-words hyphens-auto overflow-wrap break-word mt-6 pl-3 border-l-2 border-gray-300">
                       {comment.respuestas.map((respuesta) => (
                         <RespuestaItem
                           key={`${comment.id}-${respuesta.id}`}
