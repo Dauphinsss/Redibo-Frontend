@@ -1,4 +1,4 @@
-import { apiCarById } from "@/api/apis_Recode";
+import { apiCarById, apiRecodeGeneral } from "@/api/apis_Recode";
 import { apiCobertura } from "@/api/apis_Recode";
 import { RawHostDetails_Recode } from "@/app/reserva/interface/RawHostDetails_Recode";
 import { transformDetailsHost_Recode } from "@/app/reserva/utils/transformDetailsHost_Recode";
@@ -7,7 +7,9 @@ import { RawCondicionesUsoResponse } from "../interface/RawCondicionesUsoVisuali
 import { transformCondiciones_Recode } from "@/app/reserva/utils/transformCondicionesVisuali_Recode";
 import { ValidarInterface, SeguroRawRecode } from "@/app/reserva/interface/CoberturaForm_Interface_Recode";
 import { transformSeguroTodo_Recode } from "../utils/transforSeguro_Recode";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { UsuarioTransforms_Recode } from "../utils/UsuarioTransforms_Recode";
+import { UsuarioInterfazRecode } from "../interface/Ususario_Interfaz_Recode";
 
 export const getCarById = async (id: string) => {
     try {
@@ -56,14 +58,10 @@ export async function getCondicionesUsoVisual_Recode(id_carro: number): Promise<
     try {
         const response = await apiCarById.get<RawCondicionesUsoResponse>(`/useConditon/${id_carro}`);
 
-        // --- INICIO DE LA CORRECCIÓN ---
-        // Validamos que la respuesta y el objeto principal existan antes de transformar
         if (!response.data || !response.data.condiciones_uso) {
             console.warn(`No se encontraron condiciones de uso para el auto con ID: ${id_carro}`);
-            return null; // Devolvemos null si no hay datos
+            return null; 
         }
-        // --- FIN DE LA CORRECCIÓN ---
-
         return transformCondiciones_Recode(response.data);
     } catch (error) {
         console.error("Error al obtener condiciones visuales:", error);
@@ -90,5 +88,22 @@ export const getInsuranceByID = async (id_carro: string): Promise<ValidarInterfa
 
         console.error(`Error inesperado al obtener el auto con ID ${id_carro}:`, error);
         throw error;
+    }
+};
+
+export const getUsuarioById = async (id: number): Promise<UsuarioInterfazRecode | null> => {
+    try {
+        const response = await apiRecodeGeneral.get<UsuarioInterfazRecode>(`/userRenter/${id}`);
+        
+        return UsuarioTransforms_Recode(response.data);
+
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response?.status === 404) {
+            console.warn(`Usuario con ID ${id} no encontrado.`);
+        } else {
+            console.error(`Error al obtener el usuario con ID ${id}:`, error);
+        }
+        return null;
     }
 };

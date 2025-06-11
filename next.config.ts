@@ -56,7 +56,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'ui-avatars.com', // <-- Aquí está la corrección
+        hostname: 'ui-avatars.com',
       },
       {
         protocol: 'https',
