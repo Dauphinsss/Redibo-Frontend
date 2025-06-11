@@ -97,8 +97,8 @@ export default function CompleteRegisterForm() {
   useEffect(() => {
     const nuevosErrores: { [key: string]: string } = {};
     if (telefono && telefono.length !== 8) nuevosErrores.telefono = "El teléfono debe tener exactamente 8 números";
-    else if (telefono && !/^[467]/.test(telefono))
-      nuevosErrores.telefono = "El teléfono debe comenzar con 4, 6 o 7";
+    else if (telefono && !/^[67]/.test(telefono))
+      nuevosErrores.telefono = "El teléfono debe comenzar con 6 o 7";
     if (fechaNacimiento && isUnderage(fechaNacimiento)) nuevosErrores.fechaNacimiento = "Debes ser mayor de 18 años.";
     if (ciudadTouched && ciudad === 0) nuevosErrores.ciudad = "Debes seleccionar una ciudad";
     setErrores((prev) => ({ ...prev, ...nuevosErrores }));
@@ -110,11 +110,11 @@ export default function CompleteRegisterForm() {
     setTelefono(value);
     setErrores((prev) => {
       const newErr = { ...prev };
-      if (value.length === 8 && /^[467]/.test(value)) delete newErr.telefono;
+      if (value.length === 8 && /^[67]/.test(value)) delete newErr.telefono;
       else newErr.telefono = value
         ? value.length !== 8
           ? "El teléfono debe tener exactamente 8 números"
-          : "El teléfono debe comenzar con 4, 6 o 7"
+          : "El teléfono debe comenzar con 6 o 7"
         : "El teléfono es obligatorio.";
       return newErr;
     });
@@ -248,7 +248,7 @@ export default function CompleteRegisterForm() {
         router.push("/");
       }
     } catch (error: unknown) {
-      console.error("❌ Error al completar registro con Google:", error);
+      console.error("Error al completar registro con Google:", error);
       const mensajeError = "Error al completar el registro. Por favor, intenta nuevamente.";
       toast.error(mensajeError);
     } finally {

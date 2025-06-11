@@ -241,25 +241,15 @@ export function PersonalInfo() {
       }));
       return;
     }
-    let esUsuarioGoogle = false;
-    try {
-      const checkResp = await axios.get<{
-        hasPassword: boolean;
-        isGoogleUser: boolean;
-      }>(`${API_URL}/api/check-user-password`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      esUsuarioGoogle = checkResp.data.isGoogleUser;
-    } catch (err) {
-      console.error("No se pudo verificar si es usuario Google:", err);
-      esUsuarioGoogle = false;
-    }
+
     const payload: Record<string, string> = {
       nombre: normalizarNombre(valorNombre),
     };
+    
+    const foto = localStorage.getItem("foto");
 
-    if (!esUsuarioGoogle) {
-      const partes = normalizarNombre(valorNombre).split(" ").filter((p) => p !== "");
+    if (foto && foto.includes("ui-avatars.com")) {
+      const partes = valorNombre.split(" ").filter((p) => p !== "");
       const primerNombre = partes[0];
       const primerApellido = partes[1] || "";
       const nuevaFotoUrl = `https://ui-avatars.com/api/?name=${primerNombre}+${primerApellido}`;
@@ -326,10 +316,10 @@ export function PersonalInfo() {
       }));
       return;
     }
-    if (!/^[467]\d{7}/.test(valorTelefono.trim())) {
+    if (!/^[67]\d{7}/.test(valorTelefono.trim())) {
       setErrores((prev) => ({
         ...prev,
-        telefono: "El teléfono debe comenzar con 4, 6 o 7.",
+        telefono: "El teléfono debe comenzar con 6 o 7.",
       }));
       return;
     }

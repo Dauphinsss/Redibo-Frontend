@@ -194,8 +194,8 @@ const normalizarNombre = (name: string): string => {
       return;
     }
 
-    if (!phone || phone.length !== 8 || !/^[467]\d{7}$/.test(phone)) {
-      toast.error("El teléfono debe tener exactamente 8 números y comenzar con 4, 6 o 7.");
+    if (!phone || phone.length !== 8 || !/^[67]\d{7}$/.test(phone)) {
+      toast.error("El teléfono debe tener exactamente 8 números y comenzar con 6 o 7.");
       return;
     }
 
@@ -630,7 +630,7 @@ const normalizarNombre = (name: string): string => {
                     maxLength={8}
                     className={
                       phoneTouched &&
-                        (!/^[467]\d{7}$/.test(phone) || phone.length !== 8)
+                        (!/^[67]\d{7}$/.test(phone) || phone.length !== 8)
                         ? "border-red-500"
                         : ""
                     }
@@ -642,9 +642,9 @@ const normalizarNombre = (name: string): string => {
                           El teléfono debe tener exactamente 8 números
                         </p>
                       )}
-                      {!/^[467]\d{7}$/.test(phone) && phone.length === 8 && (
+                      {!/^[67]\d{7}$/.test(phone) && phone.length === 8 && (
                         <p className="text-sm text-red-500">
-                          El teléfono debe comenzar con 4, 6 o 7
+                          El teléfono debe comenzar con 6 o 7
                         </p>
                       )}
                     </>

@@ -335,7 +335,7 @@ export const SecurityInfo = () => {
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold flex items-center space-x-2">
               <Lock className="h-5 w-5" />
-              <span>Contraseña</span>
+              <span>Contraseña *</span>
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
@@ -411,10 +411,14 @@ export const SecurityInfo = () => {
 
             {/* Confirmar nueva contraseña */}
             <div className="space-y-2 relative">
+              <div className="text-lg font-semibold flex items-center space-x-2">
+                <Lock className="h-5 w-5" />
+                <span>Repetir contraseña *</span>
+              </div>
               <div className="relative">
                 <Input
                   type={showConfirmNewPassword ? "text" : "password"}
-                  placeholder="Confirmar contraseña"
+                  placeholder="Repita su contraseña"
                   value={confirmPassword}
                   maxLength={20}
                   onChange={handleConfirmPasswordChange}
