@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { API_URL } from '@/utils/bakend';
 
 const axiosInstance = axios.create({
   baseURL: "https://backend-is.vercel.app/",
@@ -9,7 +10,7 @@ const axiosInstance = axios.create({
 });
 
 const axiosInstance2 = axios.create({
-  baseURL: "http://localhost:4000/api/",
+  baseURL: `${API_URL}/api/`,
   headers: {
     "Content-Type": "application/json",
   },
