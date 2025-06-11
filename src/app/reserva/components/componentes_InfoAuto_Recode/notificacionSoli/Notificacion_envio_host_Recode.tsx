@@ -203,7 +203,6 @@ export default function FormularioSolicitud({
 
       setShowNotification(true);
       onSolicitudExitosa();
-      router.push(`/vistaPago/${id_carro}`);
     } catch (e) {
       console.error("Error al enviar solicitud:", e);
       setError(e instanceof Error ? e.message : "Error desconocido");
@@ -276,6 +275,11 @@ export default function FormularioSolicitud({
     };
     fetchConductores();
   }, []);
+
+  const handleRedirect = () => {
+    router.push(`/vistaPago/${id_carro}`);
+    () => setShowNotification(false)
+  }
 
   return (
     <div className="flex flex-col gap-6 max-w-4xl mx-auto">
@@ -455,7 +459,7 @@ export default function FormularioSolicitud({
       {/* Notificación de envío exitoso */}
       {showNotification && (
         <NotificacionEnvioExitoso_recode
-          onClose={() => setShowNotification(false)}
+          onClose={handleRedirect}
           hostNombre={hostNombre}
           fechaInicio={fechas.inicio}
           fechaFin={fechas.fin}
