@@ -16,6 +16,9 @@ export default function View({ id }: { id: number }) {
 
   const [mostrarModal, setMostrarModal] = useState(false);
   const [showConfirmationOptions, setShowConfirmationOptions] = useState(false);
+  const conductores = typeof window !== "undefined" 
+  ? JSON.parse(localStorage.getItem('conductores_seleccionados') || "[]")
+  : [];
 
   const { mutate, error, data } = useCreatePaymentOrder();
   const { data: car } = useCardByID(id)
@@ -32,6 +35,7 @@ export default function View({ id }: { id: number }) {
       id_usuario_renter: Number(renter?.id),
       monto_a_pagar: Number(precio ?? 0),
     });
+    localStorage.removeItem('conductores_seleccionados');
   };
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -65,6 +69,19 @@ export default function View({ id }: { id: number }) {
               <p>Modelo: <span className="font-medium">{car?.modelo}</span></p>
               <p>Ubicación: <span className="font-medium">{car?.direccion}</span></p>
             </div>
+
+            {/* Conductores */}
+            <div className="mt-4">
+              <h4 className="font-semibold">Conductores seleccionados:</h4>
+              {conductores.length > 0 ? (
+                <ul className="ml-4 list-disc text-sm margin-bottom-4">
+                  {conductores.map((nombre: string, i: number) => <li key={i}>{nombre}</li>)}
+                </ul>
+              ) : (
+                <p className="text-gray-500">No se seleccionaron conductores para esta reserva.</p>
+              )}
+            </div>
+
 
             {/* Precio */}
             <div className="flex justify-between text-base font-bold">

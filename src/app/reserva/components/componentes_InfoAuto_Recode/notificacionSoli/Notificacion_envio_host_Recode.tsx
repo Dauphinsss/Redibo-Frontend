@@ -93,6 +93,12 @@ export default function FormularioSolicitud({
 
   const handleEnviarSolicitud = async () => {
     setError(null);
+    const conductoresSeleccionadosNombres = conductoresSeleccionados.map (id => {
+      const conductor = conductores.find(conductor => conductor.id === id);
+      return conductor ? conductor.nombre : "";
+    })
+    
+    localStorage.setItem('conductores_seleccionados', JSON.stringify(conductoresSeleccionadosNombres));
 
     if (!renterNombre || !renterEmail) {
       setError("Por favor completa tus datos de contacto");
@@ -282,7 +288,8 @@ export default function FormularioSolicitud({
       fechaFin: fechas.fin,
       precio: precioEstimado.toString()
     });
-
+    
+    
     router.push(`/vistaPago/${id_carro}?${searchParams.toString()}`);
     () => setShowNotification(false)
   }
@@ -391,6 +398,13 @@ export default function FormularioSolicitud({
                 : "Selecciona fechas válidas"}
             </p>
           </div>
+          
+          {/* Mensaje de advertencia si no se seleccionaron conductores */}
+          {conductoresSeleccionados.length === 0 && (
+            <div className="text-yellow-600 text-sm mb-2">
+            ⚠️ No ha seleccionado ningún conductor, ¿desea continuar?
+            </div>
+          )}
 
           {/* Botón de menú de reserva */}
           <div className="relative inline-block" ref={containerRef}>
@@ -404,7 +418,6 @@ export default function FormularioSolicitud({
                 !renterNombre ||
                 !renterEmail ||
                 verifyReservationMutation.isPending
-
               }
               className="bg-black hover:bg-gray-800 text-white px-6 py-2"
             >
