@@ -14,3 +14,10 @@ export interface PaymentOrderPayload {
   id_usuario_renter: number;
   monto_a_pagar: number;
 }
+
+export interface UserInfo {
+  nombre: string;
+  correo: string;
+  telefono: string;
+  ciudad: string;
+}

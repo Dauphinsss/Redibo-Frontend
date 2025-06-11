@@ -1,3 +1,4 @@
+'use client'
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -10,11 +11,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SuccessModal } from "./SuccessNotification";
 import { axiosInstance } from "@/api/axios";
 import axios from "axios";
 import ErrorModal from "./ErrorModal";
+import { useUser } from "@/app/vistaPago/hooks/useInfoUser";
+import { useRouter } from "next/navigation";
 
 interface ReservationDialogProps {
   showDialog: boolean;
@@ -51,11 +54,20 @@ export default function ReservationDialog({
   modelo,
   precio,
 }: ReservationDialogProps) {
+  const router = useRouter()
   const [reservaId, setReservaId] = useState<number | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   //para los mensajes de error una modal
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+
+  const { data: user, isLoading, isError } = useUser();
+
+  useEffect(() => {
+    if (isError) {
+      router.push('/login')
+    }
+  }, [isError, router])
 
   const crearReserva = async (
     userId: number,
@@ -172,13 +184,13 @@ export default function ReservationDialog({
                 <h3 className="font-bold text-base mb-1 text-black">
                   Datos del usuario
                 </h3>
-                <strong>Nombre:</strong> Juan Perez
+                <strong>Nombre:</strong> {user?.nombre}
                 <br />
-                <strong>Ciudad:</strong> Cochabamba
+                <strong>Ciudad:</strong> {user?.ciudad}
                 <br />
-                <strong>Correo:</strong> juan.p@gmail.com
+                <strong>Correo:</strong> {user?.correo}
                 <br />
-                <strong>Teléfono:</strong> 76852535
+                <strong>Teléfono:</strong> {user?.telefono}
               </div>
               <div className="pt-0">
                 <h3 className="font-bold text-base mb-1 text-black">
