@@ -3,11 +3,16 @@ import React, { useState } from 'react'
 import { useCardByID, useCreatePaymentOrder, useHostById, useRenter, useGarantiaByCarId } from '../hooks/useCarByID'
 import Image from 'next/image'
 import Header from '@/components/ui/Header';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 export default function View({ id }: { id: number }) {
-    const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const fechaInicio = searchParams.get('fechaInicio');
+  const fechaFin = searchParams.get('fechaFin');
+  const precio = searchParams.get('precio');
+
   const [mostrarModal, setMostrarModal] = useState(false);
   const { mutate, error, data } = useCreatePaymentOrder();
   const { data: car } = useCardByID(id)
@@ -20,8 +25,8 @@ export default function View({ id }: { id: number }) {
     mutate({
       id_carro: id,
       id_usuario_host: Number(host?.id_host ?? 0),
-      id_usuario_renter:Number(renter.id),
-      monto_a_pagar: car?.precio_por_dia ?? 0,
+      id_usuario_renter: Number(renter?.id),
+      monto_a_pagar: Number(precio ?? 0),
     });
   };
   return (
@@ -60,7 +65,7 @@ export default function View({ id }: { id: number }) {
             {/* Precio */}
             <div className="flex justify-between text-base font-bold">
               <span>Precio:</span>
-              <span>{car?.precio_por_dia ?? "0"} bs</span>
+              <span>Bs {car?.precio_por_dia ?? "0"}</span>
             </div>
           </section>
 
@@ -78,17 +83,17 @@ export default function View({ id }: { id: number }) {
             <div className="space-y-2">
               <div className="flex justify-between items-center border-b border-gray-400 pb-1">
                 <span className="font-semibold">Garantía</span>
-                <span className="font-semibold">{garantia?.precio ?? "000"} bs</span>
+                <span className="font-semibold">Bs {garantia?.precio ?? "000"}</span>
               </div>
               <div className="flex justify-between items-center border-b border-gray-400 pb-1">
                 <span className="font-semibold">Total a pagar</span>
-                <span className="font-semibold">{car?.precio_por_dia} bs</span>
+                <span className="font-semibold">Bs {precio}</span>
               </div>
             </div>
 
             {/* Términos */}
             <div className="flex items-center gap-2 mt-6">
-              <input id="terms" type="checkbox" onChange={()=> setclickCheck(!clickCheck) } className="h-4 w-4 accent-gray-700" />
+              <input id="terms" type="checkbox" onChange={() => setclickCheck(!clickCheck)} className="h-4 w-4 accent-gray-700" />
               <label htmlFor="terms" className="text-sm">Términos y condiciones</label>
             </div>
 
