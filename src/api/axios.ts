@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
 });
 
 const axiosInstance2 = axios.create({
-  baseURL: "https://backend-is.vercel.app/api/",
+  baseURL: "http://localhost:4000/api/",
   headers: {
     "Content-Type": "application/json",
   },

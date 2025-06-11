@@ -1,9 +1,8 @@
 import { axiosInstance2 } from "@/api/axios"
-import { API_URL } from "@/utils/bakend"
 import { useMutation } from "@tanstack/react-query"
 
 interface VerifyReservationData {
-  carId: number;
+  carId: Number;
   starDate: string;
   endDate: string;
 }

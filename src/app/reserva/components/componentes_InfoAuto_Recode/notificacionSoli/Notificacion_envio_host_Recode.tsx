@@ -192,7 +192,7 @@ export default function FormularioSolicitud({
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || `Error HTTP ${response.status}`);
+        //throw new Error(errorData?.message || `Error HTTP ${response.status}`);
       }
 
       // Enviar notificaciones a la campana
