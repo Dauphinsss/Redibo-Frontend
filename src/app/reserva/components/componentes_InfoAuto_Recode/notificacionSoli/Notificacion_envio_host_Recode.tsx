@@ -15,6 +15,10 @@ import SeleccionarConductores from "../../SeleccionarConductores_7-bits";
 import { set } from "date-fns";
 import FormularioPago from "./formulario-pago"
 import FormularioGarantia from "./formulario-garantia"
+import { useRouter } from 'next/navigation'
+import { useVerifyReservation } from "@/app/reserva/hooks/useVififyReservation";
+import VehicleUnavailableModal from "../../VehicleUnavailableModal";
+
 
 interface Props {
   id_carro: number;
@@ -43,6 +47,8 @@ export default function FormularioSolicitud({
   onSolicitudExitosa,
   onNuevaNotificacion
 }: Props) {
+  const router = useRouter();
+  const verifyReservationMutation = useVerifyReservation();
   const [renterNombre, setRenterNombre] = useState("");
   const [renterEmail, setRenterEmail] = useState("");
   const [hostNombre, setHostNombre] = useState("");
@@ -56,6 +62,7 @@ export default function FormularioSolicitud({
   const [showMenu, setShowMenu] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showGarantiaModal, setShowGarantiaModal] = useState(false);
+  const [showUnavailableModal, setShowUnavailableModal] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -86,7 +93,7 @@ export default function FormularioSolicitud({
 
   const handleEnviarSolicitud = async () => {
     setError(null);
-    
+
     if (!renterNombre || !renterEmail) {
       setError("Por favor completa tus datos de contacto");
       return;
@@ -143,9 +150,20 @@ export default function FormularioSolicitud({
       estado: 'pendiente'
     };
 
-    
+
     //Solicitud para insertar
     try {
+      const verficationResul = await verifyReservationMutation.mutateAsync({
+        carId: id_carro,
+        starDate: fechas.inicio,
+        endDate: fechas.fin,
+      })
+
+      if (!verficationResul.available) {
+        setShowUnavailableModal(true);
+        return
+      }
+
       const solicitud: Solicitud = {
         fecha: new Date().toISOString(),
         hostNombre,
@@ -174,7 +192,7 @@ export default function FormularioSolicitud({
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || `Error HTTP ${response.status}`);
+        //throw new Error(errorData?.message || `Error HTTP ${response.status}`);
       }
 
       // Enviar notificaciones a la campana
@@ -188,7 +206,7 @@ export default function FormularioSolicitud({
     } catch (e) {
       console.error("Error al enviar solicitud:", e);
       setError(e instanceof Error ? e.message : "Error desconocido");
-      
+
       if (onNuevaNotificacion) {
         onNuevaNotificacion({
           id: `notif-err-${Date.now()}`,
@@ -216,16 +234,16 @@ export default function FormularioSolicitud({
       try {
         const fechaInicio = new Date(fechas.inicio);
         const fechaFin = new Date(fechas.fin);
-        
+
         if (fechaFin <= fechaInicio) {
           setError("La fecha de fin debe ser posterior a la de inicio");
           return;
         }
 
         const diffTime = Math.abs(fechaFin.getTime() - fechaInicio.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         const total = diffDays * datosAuto.precio_por_dia;
-        
+
         setPrecioEstimado(total);
         setError(null);
       } catch (error) {
@@ -258,6 +276,17 @@ export default function FormularioSolicitud({
     fetchConductores();
   }, []);
 
+  const handleRedirect = () => {
+    const searchParams = new URLSearchParams({
+      fechaInicio: fechas.inicio,
+      fechaFin: fechas.fin,
+      precio: precioEstimado.toString()
+    });
+
+    router.push(`/vistaPago/${id_carro}?${searchParams.toString()}`);
+    () => setShowNotification(false)
+  }
+
   return (
     <div className="flex flex-col gap-6 max-w-4xl mx-auto">
       {/* 1. Sección de Fechas */}
@@ -274,7 +303,7 @@ export default function FormularioSolicitud({
       {/* 3. Precio Desglosado */}
       {fechas.inicio && fechas.fin && (
         <div className="bg-white p-4 rounded-lg shadow">
-          <PrecioDesglosado 
+          <PrecioDesglosado
             id_carro={id_carro}
             fechas={fechas}
             onPrecioCalculado={(precio) => setPrecioEstimado(precio)}
@@ -283,17 +312,17 @@ export default function FormularioSolicitud({
       )}
 
       {/* 4. Tabla de Condiciones */}
-      <TablaCondicionesVisual_Recode 
+      <TablaCondicionesVisual_Recode
         id_carro={id_carro}
       />
 
-       {/* 4.1. Seleccionar Conductor - 7-bits */}
+      {/* 4.1. Seleccionar Conductor - 7-bits */}
       <SeleccionarConductores
         conductores={conductores}
         seleccionados={conductoresSeleccionados}
         onChange={setConductoresSeleccionados}
       />
-      
+
       {/* 5. Formulario de contacto */}
       <div className="bg-white p-4 rounded-lg shadow">
         <h2 className="text-lg font-semibold mb-4">Información de contacto</h2>
@@ -350,15 +379,15 @@ export default function FormularioSolicitud({
       {/* 6. Resumen y botón */}
       <div className="bg-white p-4 rounded-lg shadow">
         {error && <div className="text-black mb-4">{error}</div>}
-        
+
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div>
             <p className="font-semibold">Total estimado: {precioEstimado.toFixed(2)} BOB</p>
             <p className="text-sm text-gray-600">
               {fechas.inicio && fechas.fin
                 ? `${new Date(fechas.inicio).toLocaleDateString()} - ${new Date(
-                    fechas.fin
-                  ).toLocaleDateString()}`
+                  fechas.fin
+                ).toLocaleDateString()}`
                 : "Selecciona fechas válidas"}
             </p>
           </div>
@@ -366,20 +395,22 @@ export default function FormularioSolicitud({
           {/* Botón de menú de reserva */}
           <div className="relative inline-block" ref={containerRef}>
             <Button
-              //onClick={handleEnviarSolicitud}
-              onClick={() => setShowMenu(!showMenu)}
+              onClick={handleEnviarSolicitud}
+              //onClick={() => setShowMenu(!showMenu)}
               disabled={
                 loading ||
                 !fechas.inicio ||
                 !fechas.fin ||
                 !renterNombre ||
-                !renterEmail
+                !renterEmail ||
+                verifyReservationMutation.isPending
+
               }
               className="bg-black hover:bg-gray-800 text-white px-6 py-2"
             >
-              {loading ? "Enviando..." : "Reservar"}
+              {loading || verifyReservationMutation.isPending ? "Enviando..." : "Reservar"}
             </Button>
-            {showMenu && (
+            {/**showMenu && (
               <div
                 ref={menuRef}
                 className="absolute mt-2 z-50 w-48 bg-white rounded-md shadow-lg border border-gray-200"
@@ -403,7 +434,7 @@ export default function FormularioSolicitud({
                   <span className="font-medium">Pago por Garantía</span>
                 </div>
               </div>
-            )}
+            )**/}
             {/* Modales */}
             {showPaymentModal && (
               <FormularioPago
@@ -417,25 +448,29 @@ export default function FormularioSolicitud({
 
             {showGarantiaModal && (
               <FormularioGarantia
-              isOpen={showGarantiaModal}
-              usuario={renterNombre}
-              onClose={() => setShowGarantiaModal(false)}
-              carModel={datosAuto?.modelo ?? ""}
-              garantiaPrice={precioEstimado ?? 0}
+                isOpen={showGarantiaModal}
+                usuario={renterNombre}
+                onClose={() => setShowGarantiaModal(false)}
+                carModel={datosAuto?.modelo ?? ""}
+                garantiaPrice={precioEstimado ?? 0}
               />
             )}
           </div>
         </div>
       </div>
-      {/* Notificación de envío exitoso */}
-    {showNotification && (
-      <NotificacionEnvioExitoso_recode 
-        onClose={() => setShowNotification(false)}
-        hostNombre={hostNombre}
-        fechaInicio={fechas.inicio}
-        fechaFin={fechas.fin}
+      <VehicleUnavailableModal
+        isOpen={showUnavailableModal}
+        onClose={() => setShowUnavailableModal(false)}
       />
-    )}
+      {/* Notificación de envío exitoso */}
+      {showNotification && (
+        <NotificacionEnvioExitoso_recode
+          onClose={handleRedirect}
+          hostNombre={hostNombre}
+          fechaInicio={fechas.inicio}
+          fechaFin={fechas.fin}
+        />
+      )}
     </div>
   );
 }

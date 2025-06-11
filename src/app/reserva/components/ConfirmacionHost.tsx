@@ -24,11 +24,12 @@ const ConfirmacionReservaOpciones: React.FC<Props> = ({
   modelo,
   precio
 }) => {
+
   return (
     <div className="fixed inset-0 bg-[rgba(0,0,0,0.3)] flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-[95%] max-w-lg">
-        <h2 className="text-xl font-bold mb-4">Solicitud Aceptada</h2>
-        <p>El anfitrión ha aceptado tu solicitud de reserva. Elige cómo deseas continuar:</p>
+        <h2 className="text-xl font-bold mb-4">Elige como quieres reservar</h2>
+        <p> Elige cómo deseas continuar:</p>
 
         <div className="mt-6 flex flex-col gap-4">
           <ReservationConfirmedMessage
@@ -41,7 +42,6 @@ const ConfirmacionReservaOpciones: React.FC<Props> = ({
           />
           <button
             onClick={onPagarCompleto}
-            disabled
             className="bg-black/50 text-white px-4 py-2 rounded"
           >
             Pagar 100%

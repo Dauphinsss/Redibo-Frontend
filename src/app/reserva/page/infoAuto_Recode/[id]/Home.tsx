@@ -41,9 +41,9 @@ export default function Home({ id }: HomeProps) {
   const promedioCalificacion =
     calificaciones.length > 0
       ? (
-          calificaciones.reduce((acc, cal) => acc + cal, 0) /
-          calificaciones.length
-        ).toFixed(1)
+        calificaciones.reduce((acc, cal) => acc + cal, 0) /
+        calificaciones.length
+      ).toFixed(1)
       : "0.0";
 
   const [ordenSeleccionado] = useState("Más reciente");
@@ -75,16 +75,6 @@ export default function Home({ id }: HomeProps) {
     })();
   }, [id]);
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
-    router.push(`/vistaPago/${id}`);
-  };
-
   if (!loaded || !auto) return null;
 
   const handleEliminarComentario = async (idComentario: number) => {
@@ -101,7 +91,7 @@ export default function Home({ id }: HomeProps) {
         {
           method: "DELETE",
           headers: {
-        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+            Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
           },
         }
       );
@@ -225,12 +215,6 @@ export default function Home({ id }: HomeProps) {
                 anio={auto.anio}
                 soat={auto.soat}
               />
-              <button
-                onClick={handleSubmit}
-                className="px-4 py-2 rounded-xl bg-black text-white hover:bg-gray-600 transition"
-              >
-                vista pago
-              </button>
               <Reserva id={id} precio={auto.precio} />
             </div>
           </div>

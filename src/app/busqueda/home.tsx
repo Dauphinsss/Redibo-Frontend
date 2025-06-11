@@ -12,10 +12,9 @@ import dynamic from "next/dynamic";
 import MapViwMobile from "@/app/busqueda/components/map/MapViewMobile";
 import { InfiniteFilterCarousel } from "@/app/busqueda/components/fitroCarusel/infinite-filter-carousel";
 import { CIUDADES_BOLIVIA } from "./constants";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import CustomSearchWrapper from "@/app/busqueda/hooks/customSearchHU/CustomSearchWrapper";
 import { Coor } from "./types/apitypes";
-import { useSearchParams } from 'next/navigation';
 
 type Props = {
   ciudad?: string;
@@ -40,10 +39,6 @@ interface Host {
 }
 
 export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
-  const searchParams = useSearchParams();
-  const ciudadParam = ciudad || searchParams.get('ciudad') || '';
-  const fechaInicioParam = fechaInicio || searchParams.get('fechaInicio') || '';
-  const fechaFinParam = fechaFin || searchParams.get('fechaFin') || '';
   const router = useRouter();
   const [radio, setRadio] = useState(1);
   const [punto, setPunto] = useState<Coor>({ lon: 0, alt: 0 });
@@ -79,7 +74,7 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
     limpiarFiltros,
     suscribirseAFiltros,
     desuscribirseDeFiltros
-  } = useAutos(8, radio, punto, fechaInicioParam, fechaFinParam, ciudadParam);
+  } = useAutos(8, radio, punto, fechaInicio, fechaFin, ciudad);
 
   const [busqueda, setBusqueda] = useState("");
   const [gpsActive, setGpsActive] = useState(false);
@@ -99,9 +94,9 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
     setMostrarTodos(false);
 
     if (host) {
-        setFiltroHost(host.name);
+      setFiltroHost(host.name);
     } else {
-        setFiltroHost('');
+      setFiltroHost('');
     }
   };
 
@@ -254,7 +249,7 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
         <div className="w-0 h-0 lg:block lg:w-[40%] lg:h-auto">
           <div className="sticky top-[204px] h-[calc(100vh-204px)] bg-gray-100 rounded shadow-inner">
             <ViewMap
-              posix={(ciudad) ? CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA] : CIUDADES_BOLIVIA['Cochabamba']}
+              posix={CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA]}
               autosFiltrados={autosFiltrados}
               radio={radio}
               punto={punto}
@@ -267,7 +262,7 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
       </div>
       <MapViwMobile>
         <ViewMap
-          posix={(ciudad) ? CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA] : CIUDADES_BOLIVIA['Cochabamba']}
+          posix={CIUDADES_BOLIVIA[ciudad as keyof typeof CIUDADES_BOLIVIA]}
           autosFiltrados={autosFiltrados}
           radio={radio}
           punto={punto}

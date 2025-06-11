@@ -60,11 +60,11 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
   const [filtroHost, setFiltroHost] = useState<string>('');
 
   // ======== ESTADOS PARA FILTROS DE BACKEND ========
-  const [filtroPrecio, setFiltroPrecio] = useState<{min: number, max: number} | null>(null);
+  const [filtroPrecio, setFiltroPrecio] = useState<{ min: number, max: number } | null>(null);
   const [filtroViajes, setFiltroViajes] = useState<number | null>(null);
   const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
   const [cargandoFiltros, setCargandoFiltros] = useState(false);
-  
+
   // Estados para manejar la restauración de filtros
   const [autosBaseParaBackend, setAutosBaseParaBackend] = useState<Auto[]>([]);
   const [hayFiltrosBackendActivos, setHayFiltrosBackendActivos] = useState(false);
@@ -110,10 +110,10 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
     setHistorialFiltros(prev => {
       // Eliminar estados futuros si estamos en medio del historial
       const estadosAnteriores = prev.estados.slice(0, prev.indiceActual + 1);
-      
+
       // Añadir nuevo estado
       const nuevosEstados = [...estadosAnteriores, estadoActual];
-      
+
       // Mantener solo los últimos maxHistorial estados
       const estadosLimitados = nuevosEstados.slice(-prev.maxHistorial);
 
@@ -129,13 +129,13 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
   const restaurarEstadoAnterior = useCallback(async () => {
     if (historialFiltros.indiceActual > 0) {
       const estadoAnterior = historialFiltros.estados[historialFiltros.indiceActual - 1];
-      
+
       // Restaurar estados de filtros
       setFiltroPrecio(estadoAnterior.precio);
       setFiltroViajes(estadoAnterior.viajes);
       setFiltroCalificacion(estadoAnterior.calificacion);
       setAutosFiltrados(estadoAnterior.autos);
-      
+
       // Actualizar índice del historial
       setHistorialFiltros(prev => ({
         ...prev,
@@ -144,8 +144,8 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
 
       // Actualizar estado de filtros activos
       setHayFiltrosBackendActivos(
-        Boolean(estadoAnterior.precio) || 
-        Boolean(estadoAnterior.viajes) || 
+        Boolean(estadoAnterior.precio) ||
+        Boolean(estadoAnterior.viajes) ||
         Boolean(estadoAnterior.calificacion)
       );
     }
@@ -167,6 +167,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
       const rawData: RawAuto[] = await getAllCars();
       const transformed = rawData.map(transformAuto);
       setAutos(transformed);
+      console.log('Autod despues del fetch', transformed);
       setAutosFiltrados(transformed);
     } catch (error) {
       console.error('Error al cargar los autos:', error);
@@ -177,17 +178,17 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
   };
 
   // Efecto para aplicar filtros iniciales desde URL
-useEffect(() => {
-  if (fechaInicio) {
-    setFechaFiltroInicio(fechaInicio);
-  }
-  if (fechaFin) {
-    setFechaFiltroFin(fechaFin);
-  }
-  if (ciudad) {
-    setFiltroCiudad(ciudad);
-  }
-}, [fechaInicio, fechaFin, ciudad]);
+  useEffect(() => {
+    if (fechaInicio) {
+      setFechaFiltroInicio(fechaInicio);
+    }
+    if (fechaFin) {
+      setFechaFiltroFin(fechaFin);
+    }
+    if (ciudad) {
+      setFiltroCiudad(ciudad);
+    }
+  }, [fechaInicio, fechaFin, ciudad]);
   useEffect(() => {
     fetchAutos();
   }, []);
@@ -218,24 +219,23 @@ useEffect(() => {
 
     // FILTRO POR HOST
     if (filtroHost && filtroHost.trim()) {
-        console.log("Aplicando filtro de host:", filtroHost);
-        const hostNormalizado = normalizarTexto(filtroHost.trim());
-        resultado = resultado.filter(auto => {
-            if (!auto.nombreHost || auto.nombreHost === "Sin nombre") {
-                return false;
-            }
-            const nombreHostNormalizado = normalizarTexto(auto.nombreHost);
-            return nombreHostNormalizado.includes(hostNormalizado);
-        });
-        console.log(`Autos filtrados por host "${filtroHost}":`, resultado.length);
+      console.log("Aplicando filtro de host:", filtroHost);
+      const hostNormalizado = normalizarTexto(filtroHost.trim());
+      resultado = resultado.filter(auto => {
+        if (!auto.nombreHost || auto.nombreHost === "Sin nombre") {
+          return false;
+        }
+        const nombreHostNormalizado = normalizarTexto(auto.nombreHost);
+        return nombreHostNormalizado.includes(hostNormalizado);
+      });
+      console.log(`Autos filtrados por host "${filtroHost}":`, resultado.length);
     }
 
+    const filtroInicio = fechaFiltroInicio ? new Date(fechaFiltroInicio) : null;
+    const filtroFin = fechaFiltroFin ? new Date(fechaFiltroFin) : null;
     // Filtro por fechas de disponibilidad
     resultado = resultado.filter(auto => {
       if (!auto.reservas || auto.reservas.length === 0) return true;
-
-      const filtroInicio = fechaFiltroInicio ? new Date(fechaFiltroInicio) : null;
-      const filtroFin = fechaFiltroFin ? new Date(fechaFiltroFin) : null;
 
       return !auto.reservas.some(reserva => {
         if (!['pendiente', 'confirmado'].includes(reserva.estado)) return false;
@@ -263,51 +263,51 @@ useEffect(() => {
 
     // Filtro por tipo de combustible
     if (filtrosCombustible.length > 0) {
-        console.log("Aplicando filtro de combustible:", filtrosCombustible);
-        resultado = resultado.filter(auto => {
-            return auto.combustibles.some(combustible =>
-                filtrosCombustible.includes(combustible)
-            );
-        });
+      console.log("Aplicando filtro de combustible:", filtrosCombustible);
+      resultado = resultado.filter(auto => {
+        return auto.combustibles.some(combustible =>
+          filtrosCombustible.includes(combustible)
+        );
+      });
     }
 
     // Filtro por características del coche (asientos y puertas)
     if (filtrosCaracteristicas.asientos) {
-        console.log("Aplicando filtro de asientos:", filtrosCaracteristicas.asientos);
-        resultado = resultado.filter(auto => auto.asientos === filtrosCaracteristicas.asientos);
+      console.log("Aplicando filtro de asientos:", filtrosCaracteristicas.asientos);
+      resultado = resultado.filter(auto => auto.asientos === filtrosCaracteristicas.asientos);
     }
     if (filtrosCaracteristicas.puertas) {
-        console.log("Aplicando filtro de puertas:", filtrosCaracteristicas.puertas);
-        resultado = resultado.filter(auto => auto.puertas === filtrosCaracteristicas.puertas);
+      console.log("Aplicando filtro de puertas:", filtrosCaracteristicas.puertas);
+      resultado = resultado.filter(auto => auto.puertas === filtrosCaracteristicas.puertas);
     }
 
     // Filtro por transmisión
     if (filtrosTransmision.length > 0) {
-        console.log("Aplicando filtro de transmisión:", filtrosTransmision);
-        resultado = resultado.filter(auto => {
-            return filtrosTransmision.some(transmision =>
-                auto.transmision.toLowerCase().includes(transmision.toLowerCase())
-            );
-        });
+      console.log("Aplicando filtro de transmisión:", filtrosTransmision);
+      resultado = resultado.filter(auto => {
+        return filtrosTransmision.some(transmision =>
+          auto.transmision.toLowerCase().includes(transmision.toLowerCase())
+        );
+      });
     }
 
     // Filtro por características adicionales 
     if (filtrosCaracteristicasAdicionales.length > 0) {
-        resultado = resultado.filter(auto => {
-            return filtrosCaracteristicasAdicionales.every(caracteristica =>
-                (auto.caracteristicasAdicionales || []).some(c => 
-                    normalizarTexto(c).includes(normalizarTexto(caracteristica))
-                )
-            );
-        });
+      resultado = resultado.filter(auto => {
+        return filtrosCaracteristicasAdicionales.every(caracteristica =>
+          (auto.caracteristicasAdicionales || []).some(c =>
+            normalizarTexto(c).includes(normalizarTexto(caracteristica))
+          )
+        );
+      });
     }
 
     // Filtro por ciudad
     if (filtroCiudad && filtroCiudad.trim()) {
-        console.log("Aplicando filtro de ciudad:", filtroCiudad);
-        resultado = resultado.filter(auto =>
-            normalizarTexto(auto.ciudad).includes(normalizarTexto(filtroCiudad))
-        );
+      console.log("Aplicando filtro de ciudad:", filtroCiudad);
+      resultado = resultado.filter(auto =>
+        normalizarTexto(auto.ciudad).includes(normalizarTexto(filtroCiudad))
+      );
     }
 
     // Filtro por GPS (proximidad)
@@ -464,7 +464,7 @@ useEffect(() => {
                 maxPrecio: max,
                 idsCarros: resultado.map(a => parseInt(a.idAuto, 10))
               });
-              resultado = resultado.filter(a => 
+              resultado = resultado.filter(a =>
                 datos.some((d: { id: number }) => d.id === parseInt(a.idAuto, 10))
               );
               // Ordenar por precio de menor a mayor
@@ -478,7 +478,7 @@ useEffect(() => {
                 minViajes,
                 idsCarros: resultado.map(a => parseInt(a.idAuto, 10))
               });
-              resultado = resultado.filter(a => 
+              resultado = resultado.filter(a =>
                 datos.some((d: { id: number }) => d.id === parseInt(a.idAuto, 10))
               );
             }
@@ -490,7 +490,7 @@ useEffect(() => {
                 minCalificacion,
                 idsCarros: resultado.map(a => parseInt(a.idAuto, 10))
               });
-              resultado = resultado.filter(a => 
+              resultado = resultado.filter(a =>
                 datos.some((d: { id: number }) => d.id === parseInt(a.idAuto, 10))
               );
             }
@@ -608,7 +608,7 @@ useEffect(() => {
     setAutosFiltrados(autos);
     setOrdenSeleccionado('Recomendación');
     limpiarHistorial();
-    
+
     notificarCambioFiltro({
       tipo: 'limpiar',
       timestamp: Date.now()
