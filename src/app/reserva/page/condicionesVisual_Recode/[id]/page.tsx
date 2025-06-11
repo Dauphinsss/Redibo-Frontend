@@ -21,8 +21,10 @@ export default function CondicionVisualPage() {
     console.log("Solicitud enviada con éxito");
   };
 
-  const handleNuevaNotificacion = (notificacion: Notificacion) => {
-    setNotificaciones(prev => [...prev, notificacion]);
+  const handleNuevaNotificacion = (notificacion: Notificacion | null) => {
+    if (notificacion) {
+        setNotificaciones(prev => [...prev, notificacion]);
+    }
   };
 
   return (
