@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, MouseEvent, useCallback } from "react";
+import { useState, useEffect, MouseEvent } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import Link from "next/link";
 
 import {
   Select,
@@ -83,10 +83,6 @@ export default function ComentariosPage() {
   const [sortOrder, setSortOrder] = useState<"ascendente" | "descendente">(
     "descendente"
   );
-  const [activeReplyId, setActiveReplyId] = useState<number | null>(null);
-  const toggleReply = (id: number) => {
-    setActiveReplyId((prev) => (prev === id ? null : id));
-  };
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
@@ -311,7 +307,11 @@ export default function ComentariosPage() {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  const applyFilters = useCallback(() => {
+  useEffect(() => {
+    applyFilters();
+  }, [searchTerm, dateRange, sortBy, sortOrder, comments]);
+
+  const applyFilters = () => {
     let filtered = [...comments];
 
     if (searchTerm) {
@@ -362,11 +362,7 @@ export default function ComentariosPage() {
 
     setFilteredComments(filtered);
     setCurrentPage(1);
-  }, [comments, searchTerm, dateRange, sortBy, sortOrder]);
-
-  useEffect(() => {
-    applyFilters();
-  }, [applyFilters]);
+  };
 
   const indexOfLastComment = currentPage * commentsPerPage;
   const indexOfFirstComment = indexOfLastComment - commentsPerPage;
@@ -582,10 +578,10 @@ export default function ComentariosPage() {
                 >
                   <div className="flex gap-4">
                     <div className="flex-shrink-0">
-                      <Image
+                      <img
                         src={
                           comment.carro?.Imagen?.[0]?.data ||
-                          "/images/Auto_default.png"
+                          "/placeholder_car.svg"
                         }
                         alt={
                           comment.carro
@@ -594,12 +590,11 @@ export default function ComentariosPage() {
                               }`.trim()
                             : "Vehículo"
                         }
-                        width={120}
-                        height={80}
                         style={{
+                          width: 120,
+                          height: 80,
                           objectFit: "cover",
                           borderRadius: 8,
-                          display: "block",
                         }}
                       />
                     </div>
@@ -630,22 +625,19 @@ export default function ComentariosPage() {
 
                       <div className="mt-4">
                         <ResponderButton
-                          key={comment.id}
                           commentId={comment.id}
                           onSubmit={enviarRespuesta}
                           onSuccess={() => {}}
                           disabled={
                             comment.respuestas && comment.respuestas.length > 0
                           }
-                          isActive={activeReplyId == comment.id}
-                          onToggle={() => toggleReply(comment.id)}
                         />
                       </div>
                     </div>
                   </div>
 
                   {comment.respuestas && comment.respuestas.length > 0 && (
-                    <div className=" break-words hyphens-auto overflow-wrap break-word mt-6 pl-3 border-l-2 border-gray-300">
+                    <div className="mt-6 pl-3 border-l-2 border-gray-300">
                       {comment.respuestas.map((respuesta) => (
                         <RespuestaItem
                           key={`${comment.id}-${respuesta.id}`}
