@@ -4,7 +4,7 @@ hostNombre: string;
 renterNombre: string;
 modelo: string;
 marca: string;
-precio: number;
+precio: string;
 fechaRecogida: string;
 fechaDevolucion: string;
 lugarRecogida: string;

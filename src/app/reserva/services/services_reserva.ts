@@ -49,10 +49,10 @@ export const getDetalleHost_Recode = async (id_host: number) => {
         const response = await apiCarById.get<RawHostDetails_Recode>(`/detailHost/${id_host}`);
         return transformDetailsHost_Recode(response.data);
     } catch (error) {
-        console.error("Error al obtener condiciones visuales:", error);
+        console.error(`Error al obtener los detalles del host con ID ${id_host}:`, error);
         return null;
     }
-}; 
+};
 
 export async function getCondicionesUsoVisual_Recode(id_carro: number): Promise<CondicionesUsoResponse | null> {
     try {
@@ -103,6 +103,23 @@ export const getUsuarioById = async (id: number): Promise<UsuarioInterfazRecode 
             console.warn(`Usuario con ID ${id} no encontrado.`);
         } else {
             console.error(`Error al obtener el usuario con ID ${id}:`, error);
+        }
+        return null;
+    }
+};
+
+export const getHostByCarId = async (id_carro: number): Promise<UsuarioInterfazRecode | null> => {
+    try {
+        const response = await apiRecodeGeneral.get<UsuarioInterfazRecode>(`/hostUser/${id_carro}`);
+        
+        return UsuarioTransforms_Recode(response.data);
+
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response?.status === 404) {
+            console.warn(`No se encontró un Host para el carro con ID ${id_carro}.`);
+        } else {
+            console.error(`Error al obtener el host para el carro con ID ${id_carro}:`, error);
         }
         return null;
     }
