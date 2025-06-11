@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Header from '@/components/ui/Header';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import ConfirmacionReservaOpciones from '@/app/reserva/components/ConfirmacionHost';
 
 export default function View({ id }: { id: number }) {
   const searchParams = useSearchParams();
@@ -14,14 +15,17 @@ export default function View({ id }: { id: number }) {
   const precio = searchParams.get('precio');
 
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [showConfirmationOptions, setShowConfirmationOptions] = useState(false);
+
   const { mutate, error, data } = useCreatePaymentOrder();
   const { data: car } = useCardByID(id)
   const { data: host } = useHostById(id)
   const { data: renter } = useRenter()
   const { data: garantia } = useGarantiaByCarId(id);
   const [clickCheck, setclickCheck] = useState(false)
-  const handleSubmit = () => {
-    setMostrarModal(true)
+  const pagarCompleto = () => {
+    setShowConfirmationOptions(false);
+    setMostrarModal(true);
     mutate({
       id_carro: id,
       id_usuario_host: Number(host?.id_host ?? 0),
@@ -100,12 +104,28 @@ export default function View({ id }: { id: number }) {
             {/* Botón Pagar */}
             <button
               type="button"
-              onClick={handleSubmit}
+              onClick={() => setShowConfirmationOptions(true)}
               disabled={!clickCheck}
               className={`mt-10 ml-auto block bg-gray-300 hover:bg-gray-400 px-10 py-2 rounded font-semibold ${clickCheck ? 'opacity-100' : 'opacity-50'}`}
             >
               Pagar
             </button>
+            {showConfirmationOptions && (
+              <ConfirmacionReservaOpciones
+                //user={user}
+                pickupDate={fechaInicio ? new Date(fechaInicio) : undefined}
+                returnDate={fechaFin ? new Date(fechaFin) : undefined}
+                id={id.toString()}
+                marca={car?.marca ?? ""}
+                modelo={car?.modelo ?? ""}
+                precio={Number(precio) || 0}
+                onReservarSinPagar={() => {
+                  setShowConfirmationOptions(false);
+                }}
+                onPagarCompleto={pagarCompleto}
+                onCancelar={() => setShowConfirmationOptions(false)}
+              />
+            )}
             {mostrarModal && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-sm">
                 <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md relative">
@@ -117,7 +137,7 @@ export default function View({ id }: { id: number }) {
                   </button>
                   <h2 className="text-xl font-bold mb-4">Mensaje</h2>
                   <p className="mb-4">¡Gracias! Tu pago está siendo verificado. Te notificaremos en breve.</p>
-                  <Link href="/busqueda" onClick={() => setMostrarModal(false)} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition">
+                  <Link href="/" onClick={() => setMostrarModal(false)} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition">
                     Seguir alquilando
                   </Link>
                 </div>

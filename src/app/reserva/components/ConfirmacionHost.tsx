@@ -24,6 +24,7 @@ const ConfirmacionReservaOpciones: React.FC<Props> = ({
   modelo,
   precio
 }) => {
+
   return (
     <div className="fixed inset-0 bg-[rgba(0,0,0,0.3)] flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-[95%] max-w-lg">
@@ -41,7 +42,6 @@ const ConfirmacionReservaOpciones: React.FC<Props> = ({
           />
           <button
             onClick={onPagarCompleto}
-            disabled
             className="bg-black/50 text-white px-4 py-2 rounded"
           >
             Pagar 100%
