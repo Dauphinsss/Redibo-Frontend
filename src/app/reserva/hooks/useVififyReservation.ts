@@ -15,7 +15,7 @@ interface VerifyReservationResponse {
 const verifyReservation = async (data: VerifyReservationData): Promise<VerifyReservationResponse> => {
 
   const response = await axiosInstance2.post(
-    'reservations/verify',
+    '/reservations/verify',
     data
   );
 
