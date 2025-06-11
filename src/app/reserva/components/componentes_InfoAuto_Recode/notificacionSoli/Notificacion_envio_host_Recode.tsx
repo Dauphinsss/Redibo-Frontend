@@ -16,6 +16,8 @@ import { set } from "date-fns";
 import FormularioPago from "./formulario-pago"
 import FormularioGarantia from "./formulario-garantia"
 import { useRouter } from 'next/navigation'
+import { useVerifyReservation } from "@/app/reserva/hooks/useVififyReservation";
+import VehicleUnavailableModal from "../../VehicleUnavailableModal";
 
 
 interface Props {
@@ -46,6 +48,7 @@ export default function FormularioSolicitud({
   onNuevaNotificacion
 }: Props) {
   const router = useRouter();
+  const verifyReservationMutation = useVerifyReservation();
   const [renterNombre, setRenterNombre] = useState("");
   const [renterEmail, setRenterEmail] = useState("");
   const [hostNombre, setHostNombre] = useState("");
@@ -59,6 +62,7 @@ export default function FormularioSolicitud({
   const [showMenu, setShowMenu] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showGarantiaModal, setShowGarantiaModal] = useState(false);
+  const [showUnavailableModal, setShowUnavailableModal] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -149,6 +153,17 @@ export default function FormularioSolicitud({
 
     //Solicitud para insertar
     try {
+      const verficationResul = await verifyReservationMutation.mutateAsync({
+        carId: id_carro,
+        starDate: fechas.inicio,
+        endDate: fechas.fin,
+      })
+
+      if (!verficationResul.available) {
+        setShowUnavailableModal(true);
+        return
+      }
+
       const solicitud: Solicitud = {
         fecha: new Date().toISOString(),
         hostNombre,
@@ -188,6 +203,7 @@ export default function FormularioSolicitud({
 
       setShowNotification(true);
       onSolicitudExitosa();
+      router.push(`/vistaPago/${id_carro}`);
     } catch (e) {
       console.error("Error al enviar solicitud:", e);
       setError(e instanceof Error ? e.message : "Error desconocido");
@@ -211,7 +227,6 @@ export default function FormularioSolicitud({
       }
     } finally {
       setLoading(false);
-      router.push(`/vistaPago/${id_carro}`);
     }
   };
 
@@ -377,11 +392,13 @@ export default function FormularioSolicitud({
                 !fechas.inicio ||
                 !fechas.fin ||
                 !renterNombre ||
-                !renterEmail
+                !renterEmail ||
+                verifyReservationMutation.isPending
+
               }
               className="bg-black hover:bg-gray-800 text-white px-6 py-2"
             >
-              {loading ? "Enviando..." : "Reservar"}
+              {loading || verifyReservationMutation.isPending ? "Enviando..." : "Reservar"}
             </Button>
             {/**showMenu && (
               <div
@@ -431,6 +448,10 @@ export default function FormularioSolicitud({
           </div>
         </div>
       </div>
+      <VehicleUnavailableModal
+        isOpen={showUnavailableModal}
+        onClose={() => setShowUnavailableModal(false)}
+      />
       {/* Notificación de envío exitoso */}
       {showNotification && (
         <NotificacionEnvioExitoso_recode
