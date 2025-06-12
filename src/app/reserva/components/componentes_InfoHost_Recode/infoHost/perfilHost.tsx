@@ -1,12 +1,6 @@
 import FotoPerfilUsrRecode from "@/app/reserva/components/componentes_InfoAuto_Recode/realizarComentario/fotoPerfilUsrRecode"; //../../comentarioUsuario/realizarComentario/fotoPerfilUsrRecode
-import { FaWhatsapp } from "react-icons/fa";
-import { FaTreeCity } from "react-icons/fa6";
-import { MdOutlineAlternateEmail } from "react-icons/md";
-import { FaBirthdayCake } from "react-icons/fa";
-import { IoPersonOutline } from "react-icons/io5";
-import { PiGenderIntersexBold } from "react-icons/pi";
-
-import Link from "next/link";
+import { FaWhatsapp } from 'react-icons/fa';
+import Link from 'next/link';
 
 interface Props {
   nombreHost: string;
@@ -31,7 +25,8 @@ function PerfilHost({
 
   return (
     <div className="flex items-start gap-6">
-      <div className="mt-10 flex flex-col items-center gap-5">
+      <div className="flex flex-col items-center gap-4">
+
         <FotoPerfilUsrRecode imagenUrl={fotoPerfil} ancho={140} alto={140} />
         <Link
           href={`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`}
@@ -49,54 +44,13 @@ function PerfilHost({
       </div>
 
       <div>
-        <div className="bg-black text-white p-2 flex items-center w-283">
-          <IoPersonOutline className="text-3xl mr-4" />
-          <h2 className="text-xl font-bold mb-2 ">Acerca de : {nombreHost}</h2>
-        </div>
-        <div className=" flex flex-col md:flex-row ">
-          <ul className="space-y-4 flex flex-col w-1/2 items-start ml-20">
-            <li className="mt-12">
-              <div className="flex items-center">
-                <FaTreeCity className="text-lg" />
-                <span>{ciudadHost}</span>
-              </div>
-              <hr className="w-full border-gray-400" />
-              <span className="text-gray-500 ml-5">Ciudad:</span>
-            </li>
-
-            <li className="mt-12">
-              <div className="flex items-center">
-                <PiGenderIntersexBold className="text-lg" />
-                <span>
-                  {generoHost.charAt(0).toUpperCase() +
-                    generoHost.slice(1).toLowerCase()}
-                </span>
-              </div>
-              <hr className="w-full border-gray-400" />
-              <span className="text-gray-500 ml-5">Género:</span>
-            </li>
-          </ul>
-
-          <ul className="space-y-4 flex flex-col w-1/2 items-start  ">
-            <li className="mt-12  ">
-              <div className="flex items-center ml-8">
-                <FaBirthdayCake className="text-lg" />
-                <span className="">{fechaNacimiento}</span>
-              </div>
-              <hr className="w-full border-gray-400" />
-              <span className="text-gray-500 ml-5 ">Fecha de Nacimiento:</span>
-            </li>
-
-            <li className="mt-12   ">
-              <div className="flex items-center">
-                <MdOutlineAlternateEmail className="text-lg" />
-                <span>{correoHost}</span>
-              </div>
-              <hr className="w-full border-gray-400" />
-              <span className="text-gray-500 ml-8">Correo:</span>
-            </li>
-          </ul>
-        </div>
+        <h2 className="text-xl font-bold mb-2">Acerca de : {nombreHost}</h2>
+        <ul className="space-y-1 text-sm text-gray-700">
+          <li><strong>Fecha de Nacimiento:</strong> {fechaNacimiento}</li>
+          <li><strong>Género:</strong> {generoHost}</li>
+          <li><strong>Ciudad:</strong> {ciudadHost}</li>
+          <li><strong>Correo:</strong> {correoHost}</li>
+        </ul>
       </div>
     </div>
   );

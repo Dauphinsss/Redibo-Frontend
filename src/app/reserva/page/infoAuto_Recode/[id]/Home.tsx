@@ -1,25 +1,25 @@
-'use client';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+"use client";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   getCarById,
   getCarRatingsFromAuto,
-  getCarRatingsFromComments
-} from '@/app/reserva/services/services_reserva';
-import { transformAutoDetails_Recode } from '@/app/reserva/utils/transformAutoDetails_Recode';
-import { AutoDetails_interface_Recode } from '@/app/reserva/interface/AutoDetails_interface_Recode';
-import Header from '@/components/ui/Header';
+  getCarRatingsFromComments,
+} from "@/app/reserva/services/services_reserva";
+import { transformAutoDetails_Recode } from "@/app/reserva/utils/transformAutoDetails_Recode";
+import { AutoDetails_interface_Recode } from "@/app/reserva/interface/AutoDetails_interface_Recode";
+import Header from "@/components/ui/Header";
 
-import Autoimag from '@/app/reserva/components/componentes_InfoAuto_Recode/detailsCar/RecodeAutoimag'; //@/components/recodeComponentes/detailsCar/RecodeAutoimag
-import InfoPrincipal from '@/app/reserva/components/componentes_InfoAuto_Recode/detailsCar/RecodeInfoPrincipal';
-import InfoDestacable from '@/app/reserva/components/componentes_InfoAuto_Recode/detailsCar/RecodeInfoDestacable';
-import DescriHost from '@/app/reserva/components/componentes_InfoAuto_Recode/detailsCar/RecodeDescriHost';
-import DescripcionAuto from '@/app/reserva/components/componentes_InfoAuto_Recode/detailsCar/RecodeDescripcionAuto';
-import Reserva from '@/app/reserva/components/componentes_InfoAuto_Recode/detailsCar/RecodeReserva';
-import CalificaionRecode from '@/app/reserva/components/componentes_InfoAuto_Recode/calificacionAuto/calificacionRecode';
-import PopUpComentarios from '@/app/reserva/components/componentes_InfoAuto_Recode/PopUp/popUpComentarios'; //@/app/busqueda/homeBuscador_Recode/components/PopUp/popUpComentarios
-import { useComentariosAuto } from '@/app/reserva/hooks/useComentario_hook_Recode';
-import VerComentario from '@/app/reserva/components/componentes_InfoAuto_Recode/verComentario/verComentarioRecode';
+import Autoimag from "@/app/reserva/components/componentes_InfoAuto_Recode/detailsCar/RecodeAutoimag"; //@/components/recodeComponentes/detailsCar/RecodeAutoimag
+import InfoPrincipal from "@/app/reserva/components/componentes_InfoAuto_Recode/detailsCar/RecodeInfoPrincipal";
+import InfoDestacable from "@/app/reserva/components/componentes_InfoAuto_Recode/detailsCar/RecodeInfoDestacable";
+import DescriHost from "@/app/reserva/components/componentes_InfoAuto_Recode/detailsCar/RecodeDescriHost";
+import DescripcionAuto from "@/app/reserva/components/componentes_InfoAuto_Recode/detailsCar/RecodeDescripcionAuto";
+import Reserva from "@/app/reserva/components/componentes_InfoAuto_Recode/detailsCar/RecodeReserva";
+import CalificaionRecode from "@/app/reserva/components/componentes_InfoAuto_Recode/calificacionAuto/calificacionRecode";
+import PopUpComentarios from "@/app/reserva/components/componentes_InfoAuto_Recode/PopUp/popUpComentarios"; //@/app/busqueda/homeBuscador_Recode/components/PopUp/popUpComentarios
+import { useComentariosAuto } from "@/app/reserva/hooks/useComentario_hook_Recode";
+import VerComentario from "@/app/reserva/components/componentes_InfoAuto_Recode/verComentario/verComentarioRecode";
 import CrearComentario from "@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/Comentarios_Autos"; //@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/CrearComentario_Recode
 
 interface HomeProps {
@@ -32,20 +32,34 @@ export default function Home({ id }: HomeProps) {
   const [loaded, setLoaded] = useState(false);
   const [calificaciones, setCalificaciones] = useState<number[]>([]);
   const [numComentarios, setNumComentarios] = useState(0);
-  const [comentariosConCalificacion, setComentariosConCalificacion] = useState<number[]>([]);
-  const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
-  const promedioCalificacion = calificaciones.length > 0
-    ? (calificaciones.reduce((acc, cal) => acc + cal, 0) / calificaciones.length).toFixed(1)
-    : "0.0";
+  const [comentariosConCalificacion, setComentariosConCalificacion] = useState<
+    number[]
+  >([]);
+  const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(
+    null
+  );
+  const promedioCalificacion =
+    calificaciones.length > 0
+      ? (
+          calificaciones.reduce((acc, cal) => acc + cal, 0) /
+          calificaciones.length
+        ).toFixed(1)
+      : "0.0";
 
   const [ordenSeleccionado] = useState("Más reciente");
 
-  const {
-    comentariosFiltrados,
-    formatearFecha
-  } = useComentariosAuto(Number(id), filtroCalificacion, ordenSeleccionado);
+  function getUserIdFromStorage(): number {
+    const id = localStorage.getItem("user_id");
+    return id ? Number(id) : 0;
+  }
+
+  const [userId, setUserId] = useState<number>(0);
+
+  const { comentariosFiltrados, formatearFecha, refetchComentarios } =
+    useComentariosAuto(Number(id), filtroCalificacion, ordenSeleccionado);
 
   useEffect(() => {
+    setUserId(getUserIdFromStorage());
     (async () => {
       const data = await getCarById(id);
       const autoTransformado = transformAutoDetails_Recode(data);
@@ -60,6 +74,7 @@ export default function Home({ id }: HomeProps) {
       setLoaded(true);
     })();
   }, [id]);
+
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const token = localStorage.getItem("auth_token");
@@ -68,9 +83,62 @@ export default function Home({ id }: HomeProps) {
       return;
     }
     router.push(`/vistaPago/${id}`);
-  }
+  };
 
-  if (!loaded || !auto) return null
+  if (!loaded || !auto) return null;
+
+  const handleEliminarComentario = async (idComentario: number) => {
+    const confirmacion = confirm(
+      "¿Seguro que deseas eliminar este comentario?"
+    );
+    if (!confirmacion) return;
+
+    try {
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+      const res = await fetch(
+        `${API_URL}/api/comentarios-carro/${idComentario}`,
+        {
+          method: "DELETE",
+          headers: {
+        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+          },
+        }
+      );
+
+      if (!res.ok) throw new Error("No se pudo eliminar el comentario");
+
+      await refetchComentarios();
+    } catch (err) {
+      console.error("Error al eliminar comentario:", err);
+      alert("Error al eliminar comentario.");
+    }
+  };
+
+  const handleResponderComentario = async (
+    comentarioId: number,
+    respuesta: string
+  ) => {
+    try {
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+      const res = await fetch(`${API_URL}/api/comentarios-carro/respuestas`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
+        body: JSON.stringify({ id_comentario: comentarioId, respuesta }),
+      });
+
+      if (!res.ok) throw new Error("No se pudo enviar la respuesta");
+
+      await refetchComentarios(); // o actualizás el estado si lo estás manejando
+    } catch (err) {
+      console.error("Error al responder comentario:", err);
+      alert("Hubo un problema al enviar tu respuesta.");
+    }
+  };
 
   return (
     <>
@@ -84,29 +152,13 @@ export default function Home({ id }: HomeProps) {
               asientos={5}
               puertas={4}
               transmision={auto.transmision}
-              combustible={auto.combustibles.join(', ')}
+              combustible={auto.combustibles.join(", ")}
               calificacion={promedioCalificacion}
               numComentario={numComentarios}
               direccion={`${auto.ciudad}, ${auto.calle}`}
             />
 
             <DescripcionAuto descripcion={auto.descripcion} />
-
-            <div className="mt-4 mb-4 flex justify-end">
-              <PopUpComentarios
-                idCar={id}
-                nombreCompleto={auto.nombreHost}
-                fotoHost=""
-                modeloAuto={auto.modelo}
-                marcaAuto={auto.marca}
-                calificaciones={calificaciones}
-                numComentarios={numComentarios}
-                comentariosConCalificacion={comentariosConCalificacion}
-                imagenes={auto.imagenes}
-                nombreUser=""
-                fotoUser=""
-              />
-            </div>
 
             <DescriHost
               idHost={auto.idHost}
@@ -129,24 +181,42 @@ export default function Home({ id }: HomeProps) {
               {comentariosFiltrados.map((comentario) => (
                 <div key={comentario.id} className="p-3">
                   <VerComentario
-                    nombreCompleto={comentario.Usuario.nombre}
-                    fotoUser=""
-                    fechaComentario={formatearFecha(comentario.comentado_en)}
-                    comentario={comentario.contenido}
-                    calificacionUsr={comentario.Calificacion?.calf_carro ?? 0}
+                    idComentario={comentario.id}
+                    idUsuarioComentario={comentario.usuario.id}
+                    userId={userId}
+                    onEliminar={handleEliminarComentario}
+                    onResponder={handleResponderComentario}
+                    nombreCompleto={comentario.usuario.nombre}
+                    fotoUser={
+                      "foto" in comentario.usuario
+                        ? String(comentario.usuario.foto)
+                        : ""
+                    }
+                    fechaComentario={formatearFecha(comentario.fecha_creacion)}
+                    comentario={comentario.comentario}
+                    calificacionUsr={comentario.calificacion ?? 0}
                     cantDontlikes={comentario.dont_likes ?? 0}
                     cantLikes={comentario.likes ?? 0}
+                    respuestas={comentario.respuestas.map((r) => ({
+                      id: r.id,
+                      comentado_en: r.comentado_en,
+                      respuesta: r.respuesta,
+                      host: r.host,
+                    }))}
                   />
                 </div>
               ))}
             </div>
-            
+
             <div className="mt-8">
               <h2 className="text-xl font-bold mb-4">Escribe tu comentario</h2>
-              <CrearComentario id_carro={Number(id)} />
+              <CrearComentario
+                id_carro={Number(id)}
+                onComentarioCreado={refetchComentarios}
+              />
             </div>
-
           </div>
+
           <div className="lg:w-1/3">
             <div className="sticky top-4 flex flex-col gap-4">
               <InfoDestacable

@@ -1,4 +1,4 @@
-import { apiCarById, apiRecodeComentario, apiRecodePuntos } from "@/api/apis_Recode";
+import { apiCarById, apiRecodeGeneral } from "@/api/apis_Recode";
 import { apiCobertura } from "@/api/apis_Recode";
 import { RawHostDetails_Recode } from "@/app/reserva/interface/RawHostDetails_Recode";
 import { transformDetailsHost_Recode } from "@/app/reserva/utils/transformDetailsHost_Recode";
@@ -7,7 +7,9 @@ import { RawCondicionesUsoResponse } from "../interface/RawCondicionesUsoVisuali
 import { transformCondiciones_Recode } from "@/app/reserva/utils/transformCondicionesVisuali_Recode";
 import { ValidarInterface, SeguroRawRecode } from "@/app/reserva/interface/CoberturaForm_Interface_Recode";
 import { transformSeguroTodo_Recode } from "../utils/transforSeguro_Recode";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { UsuarioTransforms_Recode } from "../utils/UsuarioTransforms_Recode";
+import { UsuarioInterfazRecode } from "../interface/Ususario_Interfaz_Recode";
 
 export const getCarById = async (id: string) => {
     try {
@@ -47,14 +49,19 @@ export const getDetalleHost_Recode = async (id_host: number) => {
         const response = await apiCarById.get<RawHostDetails_Recode>(`/detailHost/${id_host}`);
         return transformDetailsHost_Recode(response.data);
     } catch (error) {
-        console.error("Error al obtener condiciones visuales:", error);
+        console.error(`Error al obtener los detalles del host con ID ${id_host}:`, error);
         return null;
     }
-}; 
+};
 
 export async function getCondicionesUsoVisual_Recode(id_carro: number): Promise<CondicionesUsoResponse | null> {
     try {
         const response = await apiCarById.get<RawCondicionesUsoResponse>(`/useConditon/${id_carro}`);
+
+        if (!response.data || !response.data.condiciones_uso) {
+            console.warn(`No se encontraron condiciones de uso para el auto con ID: ${id_carro}`);
+            return null; 
+        }
         return transformCondiciones_Recode(response.data);
     } catch (error) {
         console.error("Error al obtener condiciones visuales:", error);
@@ -84,52 +91,36 @@ export const getInsuranceByID = async (id_carro: string): Promise<ValidarInterfa
     }
 };
 
-//enpoint de la hu 14 15  y 19
+export const getUsuarioById = async (id: number): Promise<UsuarioInterfazRecode | null> => {
+    try {
+        const response = await apiRecodeGeneral.get<UsuarioInterfazRecode>(`/userRenter/${id}`);
+        
+        return UsuarioTransforms_Recode(response.data);
 
-export const getCalificacionesHost = async (id_host: number) => {
-  try {
-    const response = await apiRecodePuntos.get(`/userhost/calificacionesGet/${id_host}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error al obtener calificaciones del host:", error);
-    return null;
-  }
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response?.status === 404) {
+            console.warn(`Usuario con ID ${id} no encontrado.`);
+        } else {
+            console.error(`Error al obtener el usuario con ID ${id}:`, error);
+        }
+        return null;
+    }
 };
 
-export const getComentariosHost = async (id_host: number) => {
-  try {
-    const response = await apiRecodeComentario.get(`/userhost/comentarioGet/${id_host}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error al obtener comentarios del host:", error);
-    return null;
-  }
-};
+export const getHostByCarId = async (id_carro: number): Promise<UsuarioInterfazRecode | null> => {
+    try {
+        const response = await apiRecodeGeneral.get<UsuarioInterfazRecode>(`/hostUser/${id_carro}`);
+        
+        return UsuarioTransforms_Recode(response.data);
 
-export const postComentarioHost = async (id_host: number, id_renter: number, comentario: string) => {
-  try {
-    const response = await apiRecodeComentario.post("/userhost/comentarioHostPost", {
-      id_host,
-      id_renter,
-      comentario,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error al comentar al host:", error);
-    return null;
-  }
-};
-
-export const postCalificacionHost = async (id_host: number, id_renter: number, calificacion: number) => {
-  try {
-    const response = await apiRecodePuntos.post("/userhost/calificacionesPost", {
-      id_host,
-      id_renter,
-      calificacion,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error al calificar al host:", error);
-    return null;
-  }
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response?.status === 404) {
+            console.warn(`No se encontró un Host para el carro con ID ${id_carro}.`);
+        } else {
+            console.error(`Error al obtener el host para el carro con ID ${id_carro}:`, error);
+        }
+        return null;
+    }
 };

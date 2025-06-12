@@ -5,9 +5,13 @@ import { useRouter } from "next/navigation";
 
 interface CrearComentarioProps {
   id_carro: number;
+  onComentarioCreado?: () => void;
 }
 
-export default function CrearComentario({ id_carro }: CrearComentarioProps) {
+export default function CrearComentario({
+  id_carro,
+  onComentarioCreado,
+}: CrearComentarioProps) {
   const [comentario, setComentario] = useState<string>("");
   const [calificacion, setCalificacion] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +24,8 @@ export default function CrearComentario({ id_carro }: CrearComentarioProps) {
     setSuccess(false);
 
     try {
-      const res = await fetch("http://localhost:4000/api/comentarios-carro", { // esta ruta denemos que actualizarla al de railway
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+      const res = await fetch(`${API_URL}/api/comentarios-carro`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,19 +48,27 @@ export default function CrearComentario({ id_carro }: CrearComentarioProps) {
       setSuccess(true);
       setComentario("");
       setCalificacion(0);
-      router.refresh();
+      if (onComentarioCreado) {
+        onComentarioCreado();
+      }
+
     } catch (err: any) {
       setError(err.message || "Hubo un problema al crear el comentario.");
     }
   };
 
   return (
-    <div className="w-full border border-gray-200 rounded-lg p-4">      
+    <div className="w-full border border-gray-200 rounded-lg p-4">
       {error && <p className="text-red-500">{error}</p>}
-      {success && <p className="text-green-500">¡Comentario enviado con éxito!</p>}
+      {success && (
+        <p className="text-green-500">¡Comentario enviado con éxito!</p>
+      )}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1" htmlFor="comentario">
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="comentario"
+          >
             Comentario
           </label>
           <textarea
@@ -73,19 +86,25 @@ export default function CrearComentario({ id_carro }: CrearComentarioProps) {
           </div>
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1" htmlFor="calificacion">
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="calificacion"
+          >
             Calificación (0-5)
           </label>
-          <input
-            type="number"
+          <select
             id="calificacion"
-            min="0"
-            max="5"
-            step="0.1"
             value={calificacion}
             onChange={(e) => setCalificacion(Number(e.target.value))}
             className="w-full p-2 border rounded"
-          />
+            required
+          >
+            <option value={0} disabled>Selecciona una calificación</option>
+            {[1, 2, 3, 4, 5].map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
+
         </div>
         <button
           type="submit"
