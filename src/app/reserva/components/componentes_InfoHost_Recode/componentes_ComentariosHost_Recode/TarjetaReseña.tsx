@@ -25,25 +25,25 @@ type Props = {
 const TarjetaReseña = ({
     nombre,
     fecha,
-    calificacion,
+    // calificacion,
     comentario,
     respuestas = [],
     onResponder,
     className = "",
-    id_host,
-    id_renter,
+    // id_host,
+    // id_renter,
 }: Props) => {
-    const [calificacionActual, setCalificacionActual] = useState(calificacion);
+    // const [calificacionActual, setCalificacionActual] = useState(calificacion);
 
-    const handleCalificacion = async (nuevaCalificacion: number) => {
-        const resultado = await postCalificacionHost(id_host, id_renter, nuevaCalificacion);
-            if (resultado) {
-                setCalificacionActual(nuevaCalificacion);
-                console.log("✅ Calificación enviada:", resultado);
-            } else {
-                console.error("❌ Error al enviar calificación");
-        }
-    };
+    // const handleCalificacion = async (nuevaCalificacion: number) => {
+    //     const resultado = await postCalificacionHost(id_host, id_renter, nuevaCalificacion);
+    //         if (resultado) {
+    //             setCalificacionActual(nuevaCalificacion);
+    //             console.log("✅ Calificación enviada:", resultado);
+    //         } else {
+    //             console.error("❌ Error al enviar calificación");
+    //     }
+    // };
 
     return (
         <div className={`mb-6 ${className}`}>
@@ -55,10 +55,7 @@ const TarjetaReseña = ({
                         <p className="text-xs text-gray-500">{fecha}</p>
                     </div>
 
-                    <EstrellasInteractiva
-                    valorInicial={calificacionActual}
-                    onCalificar={handleCalificacion}
-                    />
+                    
                     <p className="text-sm mt-2">{comentario}</p>
 
                     {onResponder && (

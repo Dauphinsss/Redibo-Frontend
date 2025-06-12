@@ -3,7 +3,8 @@
 import { useEffect,useState } from "react";
 import TarjetaReseña from "./TarjetaReseña";
 import CajaComentario from "./CajaComentario";
-import { getComentariosHost, postComentarioHost } from "@/app/reserva/services/services_reserva";
+import { getComentariosHost, postCalificacionHost, postComentarioHost } from "@/app/reserva/services/services_reserva";
+import EstrellasInteractiva from "./EstrellasInteractiva";
 
 
 type Comentario = {
@@ -17,13 +18,24 @@ type Comentario = {
 type Props = {
     id_host: number;
     id_renter: number;
+    calificacion: number;
 }
 
 
-const ListaReseñas = ({id_host, id_renter}: Props) => {
+const ListaReseñas = ({calificacion, id_host, id_renter}: Props) => {
     const [comentarios, setComentarios] = useState<Comentario[]>([]);
     const [comentario, setComentario] = useState("")
+    const [calificacionActual, setCalificacionActual] = useState(calificacion);
 
+    const handleCalificacion = async (nuevaCalificacion: number) => {
+        const resultado = await postCalificacionHost(id_host, id_renter, nuevaCalificacion);
+            if (resultado) {
+                setCalificacionActual(nuevaCalificacion);
+                console.log("✅ Calificación enviada:", resultado);
+            } else {
+                console.error("❌ Error al enviar calificación");
+        }
+    };
     
     const cargarComentarios = async () => {
     const data = await getComentariosHost(id_host);
@@ -56,9 +68,14 @@ const ListaReseñas = ({id_host, id_renter}: Props) => {
 
     return (
         <div className="p-4 max-w-3xl mx-auto">
-            <h2 className="text-xl font-bold text-center mb-6">
+            <h2 className="flex flex-col text-xl items-center font-bold text-center mb-6">
                 Tiene {comentarios.length} reseñas
+                <EstrellasInteractiva
+                valorInicial={calificacionActual}
+                onCalificar={handleCalificacion}
+                />
             </h2>
+            
 
             <CajaComentario
                 valor={comentario}
