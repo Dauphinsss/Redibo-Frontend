@@ -10,6 +10,7 @@ import { transformSeguroTodo_Recode } from "../utils/transforSeguro_Recode";
 import axios, { AxiosError } from "axios";
 import { UsuarioTransforms_Recode } from "../utils/UsuarioTransforms_Recode";
 import { UsuarioInterfazRecode } from "../interface/Ususario_Interfaz_Recode";
+import { apiRecodeComentario, apiRecodePuntos } from "@/api/apis_Recode";
 
 export const getCarById = async (id: string) => {
     try {
@@ -123,4 +124,55 @@ export const getHostByCarId = async (id_carro: number): Promise<UsuarioInterfazR
         }
         return null;
     }
+    
+};
+
+//enpoint de la hu 14 15  y 19Add commentMore actions
+
+export const getCalificacionesHost = async (id_host: number) => {
+  try {
+    const response = await apiRecodePuntos.get(`/userhost/calificacionesGet/${id_host}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener calificaciones del host:", error);
+    return null;
+  }
+};
+
+export const getComentariosHost = async (id_host: number) => {
+  try {
+    const response = await apiRecodeComentario.get(`/userhost/comentarioGet/${id_host}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener comentarios del host:", error);
+    return null;
+  }
+};
+
+export const postComentarioHost = async (id_host: number, id_renter: number, comentario: string) => {
+  try {
+    const response = await apiRecodeComentario.post("/userhost/comentarioHostPost", {
+      id_host,
+      id_renter,
+      comentario,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al comentar al host:", error);
+    return null;
+  }
+};
+
+export const postCalificacionHost = async (id_host: number, id_renter: number, calificacion: number) => {
+  try {
+    const response = await apiRecodePuntos.post("/userhost/calificacionesPost", {
+      id_host,
+      id_renter,
+      calificacion,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al calificar al host:", error);
+    return null;
+  }
 };
