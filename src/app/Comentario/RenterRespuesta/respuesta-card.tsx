@@ -78,9 +78,7 @@ export function RespuestaCard({ respuesta, onUpdateAction,onComentarioGuardado }
   console.log("Tiene respuestas:", tieneRespuestas)
   // Validar si el botón debe estar habilitado
   const botonHabilitado =  nuevaRespuesta.trim().length > 10 &&
-  !enviando &&
-  Array.isArray(respuesta.comentariosRespuesta) &&
-respuesta.comentariosRespuesta.length > 0 && !leoProfanity.check(nuevaRespuesta);
+  !enviando  && !leoProfanity.check(nuevaRespuesta);
       
         useEffect(() => {
           try {
