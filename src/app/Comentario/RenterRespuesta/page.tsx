@@ -5,6 +5,7 @@ import { RespuestaCard } from "./respuesta-card"
 import { Loader2 } from "lucide-react"
 import Header from "@/components/ui/Header"
 import { API_URL } from "@/utils/bakend"
+import Toast from "../../calificaciones/calificacionesAlRenter/Toast"
 
 interface RespuestaRenter {
   id: number
@@ -51,37 +52,7 @@ export default function ResponderRespuestasPage() {
   const [respuestasRenter, setRespuestasRenter] = useState<RespuestaRenter[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  const fetchRespuestas = useCallback(async () => {
-    if (!hostId) return;
-    
-    try {
-      setLoading(true)
-      const token = localStorage.getItem("auth_token")
-
-      if (!token) {
-        throw new Error("No se encontró el token de autenticación")
-      }
-
-      const response = await fetch(`${API_URL}/api/comentarioRespuestas/comentarioCadenaRenter?idusuario=${hostId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error("Error al cargar respuestas de arrendatarios")
-      }
-
-      const data = await response.json()
-      setRespuestasRenter(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error desconocido")
-    } finally {
-      setLoading(false)
-    }
-  }, [hostId])
-
+  const [showToast, setShowToast] = useState(false)
   useEffect(() => {
     const token = localStorage.getItem("auth_token")
     if (token) {
@@ -107,12 +78,61 @@ export default function ResponderRespuestasPage() {
     }
   }, [])
 
-  useEffect(() => {
-    if (hostId) {
-      fetchRespuestas()
-    }
-  }, [hostId, fetchRespuestas])
+  const fetchRespuestas = useCallback(async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem("auth_token")
 
+      if (!token) {
+        throw new Error("No se encontró el token de autenticación")
+      }
+
+      const response = await fetch(`${API_URL}/api/comentarioRespuestas/comentarioCadenaRenter?idusuario=${hostId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error("Error al cargar respuestas de arrendatarios")
+      }
+
+      const data = await response.json()
+      setRespuestasRenter(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error desconocido")
+    } finally {
+      setLoading(false)
+    }
+  },[hostId]);
+    useEffect(() => {
+      const fetchRespuestas = async () => {
+        try {
+          setLoading(true)
+          const token = localStorage.getItem("auth_token")
+          if (!token) {
+            throw new Error("No se encontró el token de autenticación")
+          }
+          const response = await fetch(`${API_URL}/api/comentarioRespuestas/comentarioCadenaRenter?idusuario=${hostId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          if (!response.ok) {
+            throw new Error("Error al cargar respuestas de arrendatarios")
+          }
+          const data = await response.json()
+          setRespuestasRenter(data)
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Error desconocido")
+        } finally {
+          setLoading(false)
+        }
+      }
+      if (hostId) {
+        fetchRespuestas()
+      }
+    }, [hostId])
   // Función para obtener el nivel/profundidad de los comentarios (misma lógica que en RespuestaCard)
   function obtenerNivelComentario(comentarios?: RespuestaHost[]): number {
     if (!comentarios || comentarios.length === 0) {
@@ -205,31 +225,46 @@ const contadores = {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-1 container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-2">Comentarios de los Hosts</h1>
-        <p className="text-gray-600 mb-8">
-          Gestiona y responde a los comentarios que han realizado los host para ti.
-        </p>
+      {showToast && <Toast message="¡Guardado exitosamente!" onCloseAction={() => setShowToast(false)} />}
+      <main className="flex-1 container mx-auto py-8 max-w-3xl">
+        <div className="ml-6">
+          <h1 className="font-bold text-3xl font-bold mb-2">Respuestas de arrendatarios</h1>
+          <p className="text-black mb-8">
+            Gestiona y responde a los comentarios y calificaciones que han dejado tus arrendatarios.
+          </p>
+        </div>
 
         <Tabs defaultValue="todos" className="w-full" onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="todos" className="text-base py-3">
-              Todos ({contadores.todos})
-            </TabsTrigger>
-            <TabsTrigger value="pendientes" className="text-base py-3">
-              Pendientes ({contadores.pendientes})
-            </TabsTrigger>
-            <TabsTrigger value="respondidos" className="text-base py-3">
-              Respondidos ({contadores.respondidos})
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center w-full">
+                      <TabsList className="flex gap-2 mb-8 w-full max-w-lg">
+                        <TabsTrigger
+                          value="todos"
+                          className="flex-1 text-black bg-white border border-black shadow hover:bg-black hover:text-white data-[state=active]:bg-black data-[state=active]:text-white text-base py-3 rounded-md transition-colors"
+                        >
+                          Todos ({contadores.todos})
+                        </TabsTrigger>
+                        <TabsTrigger
+                          value="pendientes"
+                          className="flex-1 text-black bg-white border border-black shadow hover:bg-black hover:text-white data-[state=active]:bg-black data-[state=active]:text-white text-base py-3 rounded-md transition-colors"
+                        >
+                          Pendientes ({contadores.pendientes})
+                        </TabsTrigger>
+                        <TabsTrigger
+                          value="respondidos"
+                          className="flex-1 text-black bg-white border border-black shadow hover:bg-black hover:text-white data-[state=active]:bg-black data-[state=active]:text-white text-base py-3 rounded-md transition-colors"
+                        >
+                          Respondidos ({contadores.respondidos})
+                        </TabsTrigger>
+                      </TabsList>
+                    </div>
 
           <TabsContent value="todos" className="space-y-6">
             {respuestasFiltradas.length === 0 ? (
               <p className="text-center text-gray-500 py-8">No hay respuestas disponibles</p>
             ) : (
               respuestasFiltradas.map((respuesta) => (
-                <RespuestaCard key={respuesta.id} respuesta={respuesta} onUpdateAction={fetchRespuestas} />
+                <RespuestaCard key={respuesta.id} respuesta={respuesta} onUpdateAction={fetchRespuestas} 
+                onComentarioGuardado={() => setShowToast(true)} />
               ))
             )}
           </TabsContent>
@@ -239,7 +274,8 @@ const contadores = {
               <p className="text-center text-gray-500 py-8">No hay respuestas pendientes de contestar</p>
             ) : (
               respuestasFiltradas.map((respuesta) => (
-                <RespuestaCard key={respuesta.id} respuesta={respuesta} onUpdateAction={fetchRespuestas} />
+                <RespuestaCard key={respuesta.id} respuesta={respuesta} onUpdateAction={fetchRespuestas} 
+                onComentarioGuardado={() => setShowToast(true)} />
               ))
             )}
           </TabsContent>
@@ -249,7 +285,8 @@ const contadores = {
               <p className="text-center text-gray-500 py-8">No hay respuestas contestadas</p>
             ) : (
               respuestasFiltradas.map((respuesta) => (
-                <RespuestaCard key={respuesta.id} respuesta={respuesta} onUpdateAction={fetchRespuestas} />
+                <RespuestaCard key={respuesta.id} respuesta={respuesta} onUpdateAction={fetchRespuestas} 
+                onComentarioGuardado={() => setShowToast(true)} />
               ))
             )}
           </TabsContent>

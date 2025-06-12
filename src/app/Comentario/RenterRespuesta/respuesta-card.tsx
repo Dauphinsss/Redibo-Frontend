@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge"
 import { Star, Send, MessageCircle, Car, Calendar, User } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
+import leoProfanity from "leo-profanity"
+
 // Simulando la URL de la API
 import { API_URL } from "@/utils/bakend"
 interface RespuestaHost {
@@ -51,16 +53,23 @@ interface UsuarioHost{
 interface RespuestaCardProps {
   respuesta: RespuestaRenter
   onUpdateAction: () => void
+  onComentarioGuardado?: () => void;
 }
 
-export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps) {
+declare module "leo-profanity" {
+  export function getDictionary(lang: string): string[]
+  export function add(words: string[]): void
+  export function clean(text: string): string
+  export function check(text: string): boolean
+}
+
+export function RespuestaCard({ respuesta, onUpdateAction,onComentarioGuardado }: RespuestaCardProps) {
+   if (!respuesta.comentario || respuesta.comentario.trim() === "") {
+    return null
+  }
   const [nuevaRespuesta, setNuevaRespuesta] = useState("")
   const [enviando, setEnviando] = useState(false)
   const [mostrarFormulario, setMostrarFormulario] = useState(false)
-
-  if (!respuesta.comentario || respuesta.comentario.trim() === "") {
-    return null
-  }
   const maxlevel = obtenerNivelComentario(respuesta.comentariosRespuesta);
   const idNuevo = obtenerIdMasProfundo(respuesta.comentariosRespuesta);
   // Verificar si el comentario tiene respuestas
@@ -71,7 +80,32 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
   const botonHabilitado =  nuevaRespuesta.trim().length > 10 &&
   !enviando &&
   Array.isArray(respuesta.comentariosRespuesta) &&
-  (respuesta.comentariosRespuesta.length >= 0);
+respuesta.comentariosRespuesta.length > 0 && !leoProfanity.check(nuevaRespuesta);
+      
+        useEffect(() => {
+          try {
+            
+            leoProfanity.add(leoProfanity.getDictionary("es"))
+      
+            // Agregar palabras adicionales al diccionario
+            leoProfanity.add([
+              "puta",        "mierda",        "cabrón",        "joder",        "coño",
+              "gilipollas",        "capullo",        "idiota",        "imbécil",        "pendejo",
+              "marica",        "maricón",        "cojones",        "hostia",        "hijo de puta",
+              "hijoputa",        "malparido",        "cabron",        "pendeja",        "pendejas",
+              "pendejos",        "pendejadas",        "Huevón",        "boludo",        "pelotudo",
+              "Empobrecedo",        "Zorra",        "pelagato",        "Analfabeto",        "ignorante",
+              "palurdo",        "berzotas",        "gaznápiro",        "papanatas",        "papanatas",
+              "papanatas",        "papanatas",        "Idiota",        "imbécil",        "lerdo",
+              "mameluco",        "mentecato",        " estupido",        "atontao",        "orate",
+              "loco",        "subnormal",        "deficiente",        "majadero",        "zoquete",
+              "Puto",        "puta",        "perra",        "cabron",        "HDP",        "pt",
+              "puto",        "puta",
+            ])
+          } catch (error) {
+            console.error("Error al cargar el diccionario:", error)
+          }
+        }, [])
 
  const enviarRespuesta = async (nivel: number,comentario: string, idNuevo: number |  null, respuestaPadreId: number | null,   ) => {
   if (!botonHabilitado) return
@@ -122,7 +156,7 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
       },
       body: JSON.stringify(body),
     })
-
+        onComentarioGuardado?.();
     if (!response.ok) {
       throw new Error("Error al enviar la respuesta")
     }
@@ -156,7 +190,7 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
 
   const RespuestaHostItem = ({ respuestaHost, nivel = 0 }: { respuestaHost: RespuestaHost; nivel?: number }) => (
     <div className={`${nivel > 0 ? "ml-8 border-l-2 border-gray-200 pl-4" : ""} mt-4`}>
-      <div className="bg-blue-50 rounded-lg p-4">
+      <div className="bg-gray-50 rounded-lg p-4">
         <div className="flex items-center gap-2 mb-2">
           <Avatar className="w-6 h-6">
              <AvatarFallback className="text-xs bg-black text-white">{nivel % 2 === 0 ? 'H' : 'R'}</AvatarFallback>
@@ -272,18 +306,17 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
 
         {/* Mostrar respuestas existentes */}
         {tieneRespuestas && (
-          <div className="space-y-2">
-            <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <MessageCircle className="w-4 h-4" />
-              Respuesta del Arrendatario
-            </h4>
-
+          <div className="bg-gray-50 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+            <MessageCircle className="w-4 h-4 text-gray-600" />
+            <h4 className="text-sm font-medium text-black">Respuesta del Arrendatario</h4>
+            </div>
             {respuesta.comentariosRespuesta!.map((respuestaHost) => (
               <div key={respuestaHost.id}>
                 {/* Mostrar comentario directamente */}
-                <div className="bg-blue-50 p-3 rounded shadow-sm ml-2">
-                  <p className="text-sm text-black">{respuestaHost.comentario}</p>
-                  <p className="text-xs text-gray-500">{respuestaHost.fecha_creacion}</p>
+                <div className="rounded ">
+                  <p className=" text-black">{respuestaHost.comentario}</p>
+                  <p className="text-xs text-gray-600">{respuestaHost.fecha_creacion}</p>
                 </div>
 
                 {/* Mostrar recursivamente respuestas hijas si existen */}
@@ -324,6 +357,14 @@ export function RespuestaCard({ respuesta, onUpdateAction }: RespuestaCardProps)
         {mostrarFormulario && (
           <div className="space-y-3 border-t pt-4">
             <label className="text-sm font-medium text-gray-700">Tu respuesta</label>
+             <div className="mt-2 text-sm text-gray-500">
+                                          {/* Filtro de lenguaje inapropiado */}
+                                          {leoProfanity.check(nuevaRespuesta) && (
+                                            <div className="text-red-600 mt-1 font-medium">
+                                              Tu comentario contiene palabras ofensivas o no permitidas y no puede ser guardado.
+                                            </div>
+                                          )}
+                </div>
             <Textarea
               value={nuevaRespuesta}
               onChange={(e) => setNuevaRespuesta(e.target.value)}
