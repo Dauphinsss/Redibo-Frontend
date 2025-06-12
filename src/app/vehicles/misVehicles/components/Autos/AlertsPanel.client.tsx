@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable, arrayMove, horizontalListSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -90,11 +90,11 @@ const SortableAlertCard = ({
         cursor: isDragging ? 'grabbing' : 'grab' 
     };
 
-    // Separar los listeners de drag and drop de los eventos de clic
+   
     const dragListeners = {
         ...listeners,
         onClick: (e: React.MouseEvent) => {
-            // Solo manejar el clic si no estamos arrastrando
+            
             if (!isDragging) {
                 handleClick(e);
             }
@@ -102,7 +102,7 @@ const SortableAlertCard = ({
     };
 
     const handleClick = (e: React.MouseEvent) => {
-        e.stopPropagation(); // Prevenir la propagación del evento
+        e.stopPropagation(); 
         console.log('Click en tarjeta:', alert.id, 'isDragging:', isDragging);
         
         if (alert.id === 'proximasReservas') {
@@ -185,30 +185,32 @@ function tiempoInactivo(fechaISO?: string) {
 }
 
 const AlertsPanelClient = ({ alertas, initialAlertsOrder, mostrarCartilla, setMostrarCartilla }: AlertsPanelProps) => {
-    const initialAlertsOrderWithUpdatedHref: AlertCard[] = initialAlertsOrder.map(alert => {
-        if (alert.id === 'calificacionesPendientes') {
-            return {
-                ...alert,
-                href: '/calificaciones/calificacionesAlRenter',
-            };
-        } else if (alert.id === 'proximasReservas') {
-            return {
-                ...alert,
-                href: '/calificaciones/calificacionesAlRenter/ActividadVehicles',
-            };
-        } else if (alert.id === 'vehiculosInactivos') {
-            return {
-                ...alert,
-                href: '#inactive-vehicles-list',
-            };
-        } else if (alert.id === 'mantenimientos') {
-            return {
-                ...alert,
-                href: '#pending-maintenance-list',
-            };
-        }
-        return alert;
-    });
+    const initialAlertsOrderWithUpdatedHref = useMemo(() => {
+        return initialAlertsOrder.map(alert => {
+            if (alert.id === 'calificacionesPendientes') {
+                return {
+                    ...alert,
+                    href: '/calificaciones/calificacionesAlRenter',
+                };
+            } else if (alert.id === 'proximasReservas') {
+                return {
+                    ...alert,
+                    href: '/calificaciones/calificacionesAlRenter/ActividadVehicles',
+                };
+            } else if (alert.id === 'vehiculosInactivos') {
+                return {
+                    ...alert,
+                    href: '#inactive-vehicles-list',
+                };
+            } else if (alert.id === 'mantenimientos') {
+                return {
+                    ...alert,
+                    href: '#pending-maintenance-list',
+                };
+            }
+            return alert;
+        });
+    }, [initialAlertsOrder]);
 
     const router = useRouter();
 
@@ -275,7 +277,7 @@ const AlertsPanelClient = ({ alertas, initialAlertsOrder, mostrarCartilla, setMo
         } else {
             setAlertsOrder(initialAlertsOrderWithUpdatedHref);
         }
-    }, [initialAlertsOrder, alertsOrder, initialAlertsOrderWithUpdatedHref]);
+    }, [initialAlertsOrder, initialAlertsOrderWithUpdatedHref]);
 
     useEffect(() => {
         const yaNotificado = localStorage.getItem('mantenimientoNotificado');
