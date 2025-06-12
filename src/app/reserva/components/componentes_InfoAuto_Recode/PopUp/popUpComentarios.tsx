@@ -111,15 +111,28 @@ function PopUpComentarios({
                   //.filter((comentario) => comentario.Calificacion !== null)         para filtrar comentarios sin calificacion
                   .map((comentario) => (
                   <div key={comentario.id} className="p-2 ">
-                    {/* <VerComentario
-                      nombreCompleto={comentario.Usuario.nombre}
-                      fotoUser={""}
-                      fechaComentario={formatearFecha(comentario.comentado_en)}
-                      comentario={comentario.contenido}
-                      calificacionUsr={comentario.Calificacion?.calf_carro ?? 0}
-                      cantDontlikes={comentario.dont_likes ?? 0}
-                      cantLikes={comentario.likes ?? 0}
-                    /> */}
+                  <VerComentario
+                    idComentario={comentario.id}
+                    idUsuarioComentario={comentario.usuario.id}
+                    userId={comentario.usuario.id}
+                    nombreCompleto={comentario.usuario.nombre}
+                    fotoUser={
+                      "foto" in comentario.usuario
+                        ? String(comentario.usuario.foto)
+                        : ""
+                    }
+                    fechaComentario={formatearFecha(comentario.fecha_creacion)}
+                    comentario={comentario.comentario}
+                    calificacionUsr={comentario.calificacion ?? 0}
+                    cantDontlikes={comentario.dont_likes ?? 0}
+                    cantLikes={comentario.likes ?? 0}
+                    respuestas={comentario.respuestas.map((r) => ({
+                      id: r.id,
+                      comentado_en: r.comentado_en,
+                      respuesta: r.respuesta,
+                      host: r.host,
+                    }))}
+                  />
                   </div>
                 ))}
 
