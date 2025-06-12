@@ -33,11 +33,9 @@ export default function FormularioSolicitud({
   onNuevaNotificacion,
 }: Props) {
   const router = useRouter();
-
-  // --- CAMBIO: Toda la lógica de carga de datos ahora viene de nuestro hook personalizado ---
-  const { datosRenter, datosHost, datosAuto, conductores, isLoading, error: dataError } = useReservationData(id_carro);
   
-  // Estados que pertenecen únicamente a la UI y lógica de este componente
+  const { datosRenter, datosHost, datosAuto, conductores, isLoading: isLoadingData, error: dataError } = useReservationData(id_carro);
+  
   const [fechas, setFechas] = useState({ inicio: "", fin: "" });
   const [precioEstimado, setPrecioEstimado] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
@@ -67,7 +65,22 @@ export default function FormularioSolicitud({
 
   const formatFecha = (fecha: string) => new Intl.DateTimeFormat("es-BO", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }).format(new Date(fecha));
 
+  const handleAuthenticatedAction = (action: () => void) => {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      router.push("/login");
+    } else {
+      action();
+    }
+  };
+
   const handleReserveWithoutPayment = async () => {
+    // --- CAMBIO: Se añade la validación del conductor aquí también ---
+    if (conductores.length > 0 && conductoresSeleccionados.length === 0) {
+        setFormError("Por favor, selecciona un conductor antes de continuar.");
+        return;
+    }
+    
     setShowMenu(false);
     if (!datosRenter || !datosHost || !datosAuto || !fechas.inicio || !fechas.fin) {
       setFormError("Faltan datos para la reserva. Asegúrate de haber iniciado sesión y seleccionado fechas.");
@@ -113,7 +126,10 @@ export default function FormularioSolicitud({
     }
   };
 
-  if (isLoading) {
+  // --- CAMBIO: Creamos una variable para la lógica de validación ---
+  const isDriverSelectionInvalid = conductores.length > 0 && conductoresSeleccionados.length === 0;
+
+  if (isLoadingData) {
     return <div className="flex justify-center items-center h-64"><Loader2 className="h-8 w-8 animate-spin" /><p className="ml-4">Cargando...</p></div>;
   }
   
@@ -131,7 +147,11 @@ export default function FormularioSolicitud({
       <section className="bg-white p-4 rounded-lg shadow"><TablaCoberturas id_carro={id_carro} /></section>
       {fechas.inicio && fechas.fin && (<section className="bg-white p-4 rounded-lg shadow"><PrecioDesglosado id_carro={id_carro} fechas={fechas} onPrecioCalculado={setPrecioEstimado} /></section>)}
       <TablaCondicionesVisual_Recode id_carro={id_carro} />
-      <SeleccionarConductores conductores={conductores} seleccionados={conductoresSeleccionados} onChange={setConductoresSeleccionados} />
+      
+      {/* Solo mostramos la sección de conductores si la lista no está vacía */}
+      {conductores.length > 0 && (
+          <SeleccionarConductores conductores={conductores} seleccionados={conductoresSeleccionados} onChange={setConductoresSeleccionados} />
+      )}
       
       <section className="bg-white p-4 rounded-lg shadow">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -143,7 +163,8 @@ export default function FormularioSolicitud({
           <div className="relative inline-block">
             <Button
               onClick={handleToggleMenu}
-              disabled={isSubmitting || !fechas.inicio || !fechas.fin}
+              // --- CAMBIO: Añadimos la nueva validación al estado 'disabled' ---
+              disabled={isSubmitting || !fechas.inicio || !fechas.fin || isDriverSelectionInvalid}
               className="bg-black hover:bg-gray-800 text-white px-6 py-2"
             >
               {isSubmitting ? "Procesando..." : "Reservar"}
@@ -155,17 +176,25 @@ export default function FormularioSolicitud({
                   <span className="font-medium">Reservar sin Pago</span>
                 </div>
                 <Separator />
-                <div className="p-3 hover:bg-gray-100 cursor-pointer" onClick={() => { setShowMenu(false); setShowPaymentModal(true); }}>
+                <div className="p-3 hover:bg-gray-100 cursor-pointer" onClick={() => handleAuthenticatedAction(() => setShowPaymentModal(true))}>
                   <span className="font-medium">Pago de Reserva</span>
                 </div>
                 <Separator />
-                <div className="p-3 hover:bg-gray-100 cursor-pointer" onClick={() => { setShowMenu(false); setShowGarantiaModal(true); }}>
+                <div className="p-3 hover:bg-gray-100 cursor-pointer" onClick={() => handleAuthenticatedAction(() => setShowGarantiaModal(true))}>
                   <span className="font-medium">Pago por Garantía</span>
                 </div>
               </div>
             )}
           </div>
         </div>
+        
+        {/* --- CAMBIO: Mensaje de ayuda que aparece si la validación falla --- */}
+        {isDriverSelectionInvalid && (
+            <p className="text-red-500 text-xs text-right mt-2">
+                Por favor, selecciona un conductor para continuar.
+            </p>
+        )}
+
       </section>
 
       {showPaymentModal && datosRenter && datosAuto && (
