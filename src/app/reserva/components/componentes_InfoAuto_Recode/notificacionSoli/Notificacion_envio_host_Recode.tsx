@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useEnviarSolicitudRecode } from "@/app/reserva/hooks/useEnviarNotif_Recode";
 import { useObtenerNotif } from "@/app/reserva/hooks/useObtenerNotif_Recode";
-// --- CAMBIO: Se importa el nuevo hook ---
 import { useReservationData } from "@/app/reserva/hooks/useReservationData";
 
 import { Button } from "@/components/ui/button";
@@ -35,10 +34,10 @@ export default function FormularioSolicitud({
 }: Props) {
   const router = useRouter();
 
-  // --- CAMBIO: Toda la carga de datos ahora viene de nuestro hook personalizado ---
-  const { datosRenter, datosHost, datosAuto, conductores, isLoading: isLoadingData, error: dataError } = useReservationData(id_carro);
+  // --- CAMBIO: Toda la lógica de carga de datos ahora viene de nuestro hook personalizado ---
+  const { datosRenter, datosHost, datosAuto, conductores, isLoading, error: dataError } = useReservationData(id_carro);
   
-  // Estados que pertenecen únicamente a la UI de este componente
+  // Estados que pertenecen únicamente a la UI y lógica de este componente
   const [fechas, setFechas] = useState({ inicio: "", fin: "" });
   const [precioEstimado, setPrecioEstimado] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
@@ -114,14 +113,15 @@ export default function FormularioSolicitud({
     }
   };
 
-  if (isLoadingData) {
+  if (isLoading) {
     return <div className="flex justify-center items-center h-64"><Loader2 className="h-8 w-8 animate-spin" /><p className="ml-4">Cargando...</p></div>;
   }
   
-  if (dataError || submissionError || formError) {
+  const totalError = dataError || submissionError || formError;
+  if (totalError) {
       return <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow-md">
                 <h4 className="font-bold">Ha ocurrido un error</h4>
-                <p>{dataError || submissionError || formError}</p>
+                <p>{totalError}</p>
             </div>
   }
 
