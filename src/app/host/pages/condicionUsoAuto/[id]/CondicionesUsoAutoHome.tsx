@@ -1,5 +1,6 @@
 "use client";
 
+import ModalRecode from "@/app/host/components/condicionesDeUsoAutoFormu/ModalRecode";
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Header from "@/components/ui/Header";
@@ -9,6 +10,8 @@ export default function CondicionesUsoAutoHome() {
   const tablaRef = useRef<{ enviarFormulario: () => void }>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const [modalOpen, setModalOpen] = useState(false);
 
   const params = useParams();
   const router = useRouter();
@@ -28,12 +31,13 @@ export default function CondicionesUsoAutoHome() {
 
     const fetchCar = async () => {
       try {
-        const data = await getCarById("" + id_carro);
-        if (!data) {
-          router.replace("/not-found");
-        } else {
+        const data = await getCarById(id_carro.toString());
+        if (data?.condiciones_uso !== null) {
+          setModalOpen(true);
           setLoading(false);
+           return;
         }
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching car data:", error);
         router.replace("/not-found");
@@ -43,6 +47,10 @@ export default function CondicionesUsoAutoHome() {
     fetchCar();
   }, [id_carro, router]);
 
+  const handleModalClose = () => {
+    setModalOpen(false);
+    router.replace("/host/pages");
+  };
   if (id_carro === null) {
     return null;
   }
@@ -60,9 +68,21 @@ export default function CondicionesUsoAutoHome() {
   };
 
   return (
+    <>
+    {modalOpen && (
+      <ModalRecode
+        isOpen={modalOpen}
+        onClose={handleModalClose}
+        title="Condiciones de uso ya registradas"
+        description="Este auto ya tiene condiciones de uso registradas. Serás redirigido a Mis Carros."
+        variant="warning"
+        autoCloseAfter={4000}
+      />
+    )}
+
     <div className="flex flex-col justify-between gap-2">
     
-      <div className="sticky top-0 z-50 bg-white shadow overflow-visible">
+      <div className="sticky top-0 z-40 bg-white shadow overflow-visible">
           <div className="border-b px-4 sm:px-6 lg:px-8 py-7">
             <Header />
           </div>
@@ -117,5 +137,6 @@ export default function CondicionesUsoAutoHome() {
         </div>
       </main>
     </div>
+    </>
   );
 }
