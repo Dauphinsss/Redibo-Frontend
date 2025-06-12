@@ -62,7 +62,7 @@ function VerComentario({
           </div>
         </div>
 
-        <div className="text-sm text-right md:text-left">
+        {/* <div className="text-sm text-right md:text-left">
           <p>{fechaComentario}</p>
           {userId === idUsuarioComentario && (
             <button
@@ -77,7 +77,7 @@ function VerComentario({
               Eliminar
             </button>
           )}
-        </div>
+        </div> */}
       </div>
 
       <p className="mt-4 mb-4">{comentario}</p>
