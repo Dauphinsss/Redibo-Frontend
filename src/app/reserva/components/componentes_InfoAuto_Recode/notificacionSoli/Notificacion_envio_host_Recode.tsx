@@ -37,19 +37,16 @@ export default function FormularioSolicitud({
 }: Props) {
   const router = useRouter();
 
-  // Estados para los datos automáticos
   const [datosRenter, setDatosRenter] = useState<UsuarioInterfazRecode | null>(null);
   const [datosHost, setDatosHost] = useState<UsuarioInterfazRecode | null>(null);
   const [datosAuto, setDatosAuto] = useState<{ modelo: string; marca: string; precio: number } | null>(null);
   
-  // Estados para el formulario y la UI
   const [fechas, setFechas] = useState({ inicio: "", fin: "" });
   const [precioEstimado, setPrecioEstimado] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [isLoadingData, setIsLoadingData] = useState(true);
   
-  // Estados para la UI que te gusta
   const [showMenu, setShowMenu] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showGarantiaModal, setShowGarantiaModal] = useState(false);
@@ -57,11 +54,9 @@ export default function FormularioSolicitud({
   const [conductoresSeleccionados, setConductoresSeleccionados] = useState<number[]>([]);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Mantenemos tus hooks que ya funcionaban para enviar la solicitud
   const { enviarSolicitud, cargando: isSubmitting, error: submissionError } = useEnviarSolicitudRecode();
   const { fetchNotif } = useObtenerNotif();
 
-  // Carga de datos automáticos (lógica que ya funciona)
   useEffect(() => {
     const cargarDatosIniciales = async () => {
       setIsLoadingData(true);
@@ -95,7 +90,6 @@ export default function FormularioSolicitud({
     cargarDatosIniciales();
   }, [id_carro]);
 
-  // Cálculo del precio estimado (sin cambios)
   useEffect(() => {
     if (fechas.inicio && fechas.fin && datosAuto?.precio) {
       const start = new Date(fechas.inicio);
@@ -110,7 +104,6 @@ export default function FormularioSolicitud({
     }
   }, [fechas, datosAuto]);
   
-  // Carga de conductores (sin cambios)
   useEffect(() => {
     const fetchConductores = async () => {
         const token = localStorage.getItem("auth_token");
@@ -130,9 +123,8 @@ export default function FormularioSolicitud({
 
   const formatFecha = (fecha: string) => new Intl.DateTimeFormat("es-BO", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }).format(new Date(fecha));
 
-  // Función para manejar la acción "Reservar sin Pago"
   const handleReserveWithoutPayment = async () => {
-    setShowMenu(false); // Cierra el menú
+    setShowMenu(false);
     if (!datosRenter || !datosHost || !datosAuto || !fechas.inicio || !fechas.fin) {
       setFormError("Faltan datos para la reserva. Asegúrate de haber iniciado sesión y seleccionado fechas.");
       return;
@@ -156,7 +148,7 @@ export default function FormularioSolicitud({
     };
 
     await enviarSolicitud(solicitud);
-    if (datosHost.id) {
+    if (!submissionError && datosHost.id) {
         const nuevasNotif = await fetchNotif(datosHost.id);
         console.log("Notificaciones del host:", nuevasNotif);
         setShowNotification(true);
@@ -164,7 +156,6 @@ export default function FormularioSolicitud({
     }
   };
 
-  // Función para manejar el clic en el botón principal "Reservar"
   const handleToggleMenu = () => {
     const token = localStorage.getItem("auth_token");
     if (!token) {
@@ -184,14 +175,23 @@ export default function FormularioSolicitud({
 
   return (
     <div className="flex flex-col gap-6 max-w-4xl mx-auto">
-      {/* ... (Otras secciones del formulario se mantienen igual) ... */}
+      {/* --- INICIO DEL BLOQUE DE DEPURACIÓN --- */}
+      {/*<div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md shadow-md my-4">
+        <h4 className="font-bold">Información de Depuración</h4>
+        <p>ID Renter: <span className="font-mono bg-yellow-200 px-2 py-1 rounded">{datosRenter?.id ?? 'No cargado'}</span></p>
+        <p>Correo Renter: <span className="font-mono bg-yellow-200 px-2 py-1 rounded">{datosRenter?.correo ?? 'No cargado'}</span></p>
+        <hr className="my-2 border-yellow-400"/>
+        <p>ID Host: <span className="font-mono bg-yellow-200 px-2 py-1 rounded">{datosHost?.id ?? 'No cargado'}</span></p>
+        <p>Correo Host: <span className="font-mono bg-yellow-200 px-2 py-1 rounded">{datosHost?.correo ?? 'No cargado'}</span></p>
+      </div>*/}
+      {/* --- FIN DEL BLOQUE DE DEPURACIÓN --- */}
+
       <section className="bg-white p-4 rounded-lg shadow"><h2 className="text-lg font-semibold mb-4">Selecciona tus fechas</h2><FechasAlquiler onFechasSeleccionadas={setFechas} /></section>
       <section className="bg-white p-4 rounded-lg shadow"><TablaCoberturas id_carro={id_carro} /></section>
       {fechas.inicio && fechas.fin && (<section className="bg-white p-4 rounded-lg shadow"><PrecioDesglosado id_carro={id_carro} fechas={fechas} onPrecioCalculado={setPrecioEstimado} /></section>)}
       <TablaCondicionesVisual_Recode id_carro={id_carro} />
       <SeleccionarConductores conductores={conductores} seleccionados={conductoresSeleccionados} onChange={setConductoresSeleccionados} />
       
-      {/* --- CAMBIO: Se restaura la sección del botón con menú desplegable --- */}
       <section className="bg-white p-4 rounded-lg shadow">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div>
@@ -227,7 +227,6 @@ export default function FormularioSolicitud({
         </div>
       </section>
 
-      {/* Se mantienen los modales de pago */}
       {showPaymentModal && datosRenter && datosAuto && (
         <FormularioPago isOpen={showPaymentModal} onClose={() => setShowPaymentModal(false)} carModel={datosAuto.modelo} carPrice={precioEstimado} nombreUsuario={datosRenter.nombre} />
       )}
