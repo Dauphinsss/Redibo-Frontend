@@ -64,7 +64,8 @@ export default function Page() {
             {host.autos.map((auto, index) => (
               <div key={index} className="min-w-[250px] flex-shrink-0">
                 <TarjetaCar
-                  fotoAuto={auto.imagen} 
+                  idAuto={auto.id}
+                  fotoAuto={auto.imagen}
                   modeloAuto={auto.modelo}
                   marcaAuto={auto.marca}
                 />
@@ -79,10 +80,11 @@ export default function Page() {
             <ContenedorCalificacionesHost id_host={id}/>
           </div>
 
-          {/* Derecha: Comentarios */}
+          {/* Derecha: Comentarios 
           <div className="w-full md:w-2/3">
             <ListaReseñas id_host={id} id_renter={id} />
           </div>
+          */}
         </div>
       </div>
     </div>
