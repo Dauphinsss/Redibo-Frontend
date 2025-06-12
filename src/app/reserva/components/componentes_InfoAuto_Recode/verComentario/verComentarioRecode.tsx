@@ -64,7 +64,7 @@ function VerComentario({
 
         <div className="text-sm text-right md:text-left">
           <p>{fechaComentario}</p>
-          {userId === idUsuarioComentario && (
+          {/* {userId === idUsuarioComentario && (
             <button
               onClick={() => {
                 const confirmacion = confirm(
@@ -76,7 +76,7 @@ function VerComentario({
             >
               Eliminar
             </button>
-          )}
+          )} */}
         </div>
       </div>
 
