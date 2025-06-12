@@ -47,7 +47,7 @@ const SeleccionarConductores: React.FC<SeleccionarConductoresProps> = ({
         if (conductores.length === 0) {
             return (
                 <div className="text-center text-sm text-gray-500 border rounded-lg p-4 bg-gray-50">
-                    Usted no tiene conductores asociados a su cuenta. Para continuar, por favor agregue uno en su perfil.
+                    Usted no tiene conductores asociados a su cuenta.
                 </div>
             );
         }
