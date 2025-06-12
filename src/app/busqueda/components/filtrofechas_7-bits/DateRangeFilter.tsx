@@ -29,7 +29,7 @@ const DateRangeFilter: React.FC<Props> = ({
       const filtroFin = fechaFin ? new Date(fechaFin) : null;
 
       return !auto.reservas.some(reserva => {
-        if (!['pendiente', 'confirmado'].includes(reserva.estado)) return false;
+        if (!['PENDIENTE', 'CONFIRMADA', 'COMPLETADA'].includes(reserva.estado)) return false;
 
         const inicioReserva = new Date(reserva.fecha_inicio);
         const finReserva = new Date(reserva.fecha_fin);

@@ -238,7 +238,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
       if (!auto.reservas || auto.reservas.length === 0) return true;
 
       return !auto.reservas.some(reserva => {
-        if (!['pendiente', 'confirmado'].includes(reserva.estado)) return false;
+        if (!['PENDIENTE', 'CONFIRMADA', 'COMPLETADA'].includes(reserva.estado)) return false;
 
         const inicioReserva = new Date(reserva.fecha_inicio);
         const finReserva = new Date(reserva.fecha_fin);

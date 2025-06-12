@@ -275,7 +275,7 @@ export default function ReservationDialog({
                       Number(id),
                       pickupDate,
                       returnDate,
-                      "pendiente"
+                      "PENDIENTE"
                     );
                     if (success) {
                       setShowSuccessModal(true);
