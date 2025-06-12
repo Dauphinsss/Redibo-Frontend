@@ -7,7 +7,8 @@ import { API_URL } from "@/utils/bakend";
 import { UsuarioInterfazRecode } from "@/app/reserva/interface/Ususario_Interfaz_Recode";
 import { Conductor } from "@/app/reserva/components/SeleccionarConductores_7-bits";
 
-// Este hook encapsula toda la lógica para obtener los datos necesarios para una reserva.
+// Este hook encapsula toda la lógica para obtener 
+// los datos necesarios para una reserva.
 export function useReservationData(id_carro: number) {
     const [datosRenter, setDatosRenter] = useState<UsuarioInterfazRecode | null>(null);
     const [datosHost, setDatosHost] = useState<UsuarioInterfazRecode | null>(null);
