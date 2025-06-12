@@ -4,7 +4,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useEnviarSolicitudRecode } from "@/app/reserva/hooks/useEnviarNotif_Recode";
 import { useObtenerNotif } from "@/app/reserva/hooks/useObtenerNotif_Recode";
-import { getCarById, getUsuarioById, getHostByCarId } from "@/app/reserva/services/services_reserva";
+// --- CAMBIO: Se importa el nuevo hook ---
+import { useReservationData } from "@/app/reserva/hooks/useReservationData";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -17,11 +18,8 @@ import SeleccionarConductores from "../../SeleccionarConductores_7-bits";
 import FormularioPago from "./formulario-pago";
 import FormularioGarantia from "./formulario-garantia";
 
-import { API_URL } from "@/utils/bakend";
-import { UsuarioInterfazRecode } from "@/app/reserva/interface/Ususario_Interfaz_Recode";
 import { SolicitudRecodePost } from "@/app/reserva/interface/EnviarGuardarNotif_Recode";
 import { Notificacion } from "@/app/reserva/interface/NotificacionSolicitud_Recode";
-import { Conductor } from "../../SeleccionarConductores_7-bits";
 import { Loader2 } from "lucide-react";
 
 interface Props {
@@ -37,58 +35,22 @@ export default function FormularioSolicitud({
 }: Props) {
   const router = useRouter();
 
-  const [datosRenter, setDatosRenter] = useState<UsuarioInterfazRecode | null>(null);
-  const [datosHost, setDatosHost] = useState<UsuarioInterfazRecode | null>(null);
-  const [datosAuto, setDatosAuto] = useState<{ modelo: string; marca: string; precio: number } | null>(null);
+  // --- CAMBIO: Toda la carga de datos ahora viene de nuestro hook personalizado ---
+  const { datosRenter, datosHost, datosAuto, conductores, isLoading: isLoadingData, error: dataError } = useReservationData(id_carro);
   
+  // Estados que pertenecen únicamente a la UI de este componente
   const [fechas, setFechas] = useState({ inicio: "", fin: "" });
   const [precioEstimado, setPrecioEstimado] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [isLoadingData, setIsLoadingData] = useState(true);
-  
   const [showMenu, setShowMenu] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showGarantiaModal, setShowGarantiaModal] = useState(false);
-  const [conductores, setConductores] = useState<Conductor[]>([]);
   const [conductoresSeleccionados, setConductoresSeleccionados] = useState<number[]>([]);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const { enviarSolicitud, cargando: isSubmitting, error: submissionError } = useEnviarSolicitudRecode();
   const { fetchNotif } = useObtenerNotif();
-
-  useEffect(() => {
-    const cargarDatosIniciales = async () => {
-      setIsLoadingData(true);
-      setFormError(null);
-      const token = localStorage.getItem("auth_token");
-      if (!token) {
-        setIsLoadingData(false);
-        return;
-      }
-      try {
-        const perfilResponse = await fetch(`${API_URL}/api/perfil`, { headers: { Authorization: `Bearer ${token}` } });
-        if (!perfilResponse.ok) throw new Error("No se pudo verificar la sesión");
-        const perfilData = await perfilResponse.json();
-        const renterDetails = await getUsuarioById(perfilData.id);
-        if (!renterDetails) throw new Error("No se pudo cargar tu perfil");
-        setDatosRenter(renterDetails);
-
-        const autoData = await getCarById(id_carro.toString());
-        if (!autoData) throw new Error("No se encontró el vehículo.");
-        setDatosAuto({ modelo: autoData.modelo, marca: autoData.marca, precio: autoData.precio });
-        
-        const hostData = await getHostByCarId(id_carro);
-        if (!hostData) throw new Error("No se pudo obtener la información del propietario.");
-        setDatosHost(hostData);
-      } catch (err) {
-        setFormError(err instanceof Error ? err.message : "Error al cargar datos de la reserva");
-      } finally {
-        setIsLoadingData(false);
-      }
-    };
-    cargarDatosIniciales();
-  }, [id_carro]);
 
   useEffect(() => {
     if (fechas.inicio && fechas.fin && datosAuto?.precio) {
@@ -103,23 +65,6 @@ export default function FormularioSolicitud({
       setFormError(null);
     }
   }, [fechas, datosAuto]);
-  
-  useEffect(() => {
-    const fetchConductores = async () => {
-        const token = localStorage.getItem("auth_token");
-        if (!token) return;
-        try {
-            const res = await fetch(`${API_URL}/api/conductores-asociados`, {
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-            });
-            const data = await res.json();
-            setConductores(data.conductores || []);
-        } catch (error) {
-            setFormError("Error al cargar la lista de conductores");
-        }
-    };
-    fetchConductores();
-  }, []);
 
   const formatFecha = (fecha: string) => new Intl.DateTimeFormat("es-BO", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }).format(new Date(fecha));
 
@@ -147,12 +92,16 @@ export default function FormularioSolicitud({
       id_host: datosHost.id,
     };
 
-    await enviarSolicitud(solicitud);
-    if (!submissionError && datosHost.id) {
+    try {
+      await enviarSolicitud(solicitud);
+      if (datosHost.id) {
         const nuevasNotif = await fetchNotif(datosHost.id);
         console.log("Notificaciones del host:", nuevasNotif);
-        setShowNotification(true);
-        onSolicitudExitosa();
+      }
+      setShowNotification(true);
+      onSolicitudExitosa();
+    } catch (error) {
+      console.error("Fallo al enviar la solicitud:", error);
     }
   };
 
@@ -169,23 +118,15 @@ export default function FormularioSolicitud({
     return <div className="flex justify-center items-center h-64"><Loader2 className="h-8 w-8 animate-spin" /><p className="ml-4">Cargando...</p></div>;
   }
   
-  if (formError || submissionError) {
-      return <div className="text-red-600 p-4 bg-red-100 rounded-md">Error: {formError || submissionError}</div>
+  if (dataError || submissionError || formError) {
+      return <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow-md">
+                <h4 className="font-bold">Ha ocurrido un error</h4>
+                <p>{dataError || submissionError || formError}</p>
+            </div>
   }
 
   return (
     <div className="flex flex-col gap-6 max-w-4xl mx-auto">
-      {/* --- INICIO DEL BLOQUE DE DEPURACIÓN --- */}
-      {/*<div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md shadow-md my-4">
-        <h4 className="font-bold">Información de Depuración</h4>
-        <p>ID Renter: <span className="font-mono bg-yellow-200 px-2 py-1 rounded">{datosRenter?.id ?? 'No cargado'}</span></p>
-        <p>Correo Renter: <span className="font-mono bg-yellow-200 px-2 py-1 rounded">{datosRenter?.correo ?? 'No cargado'}</span></p>
-        <hr className="my-2 border-yellow-400"/>
-        <p>ID Host: <span className="font-mono bg-yellow-200 px-2 py-1 rounded">{datosHost?.id ?? 'No cargado'}</span></p>
-        <p>Correo Host: <span className="font-mono bg-yellow-200 px-2 py-1 rounded">{datosHost?.correo ?? 'No cargado'}</span></p>
-      </div>*/}
-      {/* --- FIN DEL BLOQUE DE DEPURACIÓN --- */}
-
       <section className="bg-white p-4 rounded-lg shadow"><h2 className="text-lg font-semibold mb-4">Selecciona tus fechas</h2><FechasAlquiler onFechasSeleccionadas={setFechas} /></section>
       <section className="bg-white p-4 rounded-lg shadow"><TablaCoberturas id_carro={id_carro} /></section>
       {fechas.inicio && fechas.fin && (<section className="bg-white p-4 rounded-lg shadow"><PrecioDesglosado id_carro={id_carro} fechas={fechas} onPrecioCalculado={setPrecioEstimado} /></section>)}
