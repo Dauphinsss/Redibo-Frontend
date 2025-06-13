@@ -65,7 +65,7 @@ export default function TablaCondicionesVisual_Recode({ id_carro }: TablaCondici
   const renderContent = () => {
     if (loading) return <p className="text-center text-gray-600 py-4">Cargando condiciones...</p>;
     if (error) return <p className="text-center text-red-600 py-4">{error}</p>;
-    if (!condiciones) return <p className="text-center text-gray-500 py-4">No hay condiciones disponibles.</p>;
+    if (!condiciones) return <p className="text-center text-gray-500 py-4">No hay condiciones de uso disponibles.</p>;
 
     switch (activeTab) {
       case "generales":
