@@ -3,7 +3,7 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { AutoCard_Interfaces_Recode as Auto } from '@/app/busqueda/interface/AutoCard_Interface_Recode'
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 interface Props {
   autosActuales: Auto[]
@@ -20,8 +20,11 @@ const DateRangeFilter: React.FC<Props> = ({
   const todayLocal = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
     .toISOString().split("T")[0]
 
-  useEffect(() => {
-    const resultado = autosActuales.filter(auto => {
+  const aplicarFiltro = useCallback(() => {
+    if (!fechaInicio && !fechaFin) {
+      return autosActuales;
+    }
+    return autosActuales.filter(auto => {
 
       if (!auto.reservas || auto.reservas.length === 0) return true;
 
@@ -51,8 +54,18 @@ const DateRangeFilter: React.FC<Props> = ({
         return false;
       });
     });
-    setAutosFiltrados(resultado)
-  }, [fechaInicio, fechaFin]);
+  }, [fechaInicio, fechaFin, autosActuales]);
+
+  const handleFiltrar = () => {
+    const resultado = aplicarFiltro();
+    setAutosFiltrados(resultado);
+  };
+
+  const handleLimpiar = () => {
+    setFechaInicio("");
+    setFechaFin("");
+    setAutosFiltrados(autosActuales);
+  };
 
   return (
     <Popover>
@@ -62,7 +75,10 @@ const DateRangeFilter: React.FC<Props> = ({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[220px] p-4 space-y-3">
+      <PopoverContent
+        className="w-[220px] p-4 space-y-3"
+        onInteractOutside={handleFiltrar}
+      >
         <h2 className="text-sm font-semibold">Disponibilidad del Vehículo</h2>
 
         <div className="flex flex-col gap-1">
@@ -91,6 +107,24 @@ const DateRangeFilter: React.FC<Props> = ({
             onChange={(e) => setFechaFin(e.target.value)}
             className="border px-2 py-1 rounded text-sm"
           />
+        </div>
+        <div className="flex gap-2 pt-2">
+          <Button
+            size="sm"
+            onClick={handleFiltrar}
+            className="flex-1 cursor-pointer"
+          >
+            Aplicar
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleLimpiar}
+            disabled={!fechaInicio && !fechaFin}
+            className="cursor-pointer"
+          >
+            Limpiar
+          </Button>
         </div>
       </PopoverContent>
     </Popover>

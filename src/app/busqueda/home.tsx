@@ -200,6 +200,7 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
         {/* Carrusel de filtros */}
         <div className="px-4 sm:px-6 lg:px-8 py-3 border-t bg-gray-50">
           <InfiniteFilterCarousel
+            autosFiltrados={autosFiltrados}
             setAutosFiltrados={setAutosFiltrados}
             autos={autos}
             gpsActive={gpsActive}
@@ -245,7 +246,7 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
                 cargando={cargando}
               />*/}
 
-            <CustomSearchWrapper
+              <CustomSearchWrapper
                 autosTotales={autos}                         // 🔧 Nuevo (todos los autos)
                 autosFiltrados={autosFiltrados}             // Autos filtrados previamente
                 autosVisibles={autosVisibles}               // Cuántos se deben mostrar

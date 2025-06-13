@@ -35,6 +35,7 @@ interface Marca {
 
 // Props extendidas para incluir los nuevos filtros
 interface InfiniteFilterCarouselProps {
+  autosFiltrados: Auto[]
   autos: Auto[]
   setAutosFiltrados: (autos: Auto[]) => void
 
@@ -69,6 +70,7 @@ interface InfiniteFilterCarouselProps {
  * Ahora incluye filtros por Host, Marca y botón "Todos" para limpiar filtros.
  */
 export function InfiniteFilterCarousel({
+  autosFiltrados,
   autos,
   setAutosFiltrados,
   gpsActive,
@@ -116,7 +118,7 @@ export function InfiniteFilterCarousel({
       id: 'dateRange',
       component: (
         <DateRangeFilter
-          autosActuales={autos}
+          autosActuales={autosFiltrados}
           setAutosFiltrados={setAutosFiltrados}
         />
       )
@@ -144,8 +146,8 @@ export function InfiniteFilterCarousel({
     {
       id: 'precio',
       component: (
-        <ButtonPrecio 
-          onFilterChange={onPrecioFilter} 
+        <ButtonPrecio
+          onFilterChange={onPrecioFilter}
           disabled={disabledPrecio}
           suscribirseAFiltros={suscribirseAFiltros}
           desuscribirseDeFiltros={desuscribirseDeFiltros}
@@ -155,8 +157,8 @@ export function InfiniteFilterCarousel({
     {
       id: 'calificacion',
       component: (
-        <ButtonCalif 
-          onFilterChange={onCalifFilter} 
+        <ButtonCalif
+          onFilterChange={onCalifFilter}
           disabled={disabledCalif}
           suscribirseAFiltros={suscribirseAFiltros}
           desuscribirseDeFiltros={desuscribirseDeFiltros}
@@ -166,8 +168,8 @@ export function InfiniteFilterCarousel({
     {
       id: 'viajes',
       component: (
-        <ButtonViajes 
-          onFilterChange={onViajesFilter} 
+        <ButtonViajes
+          onFilterChange={onViajesFilter}
           disabled={disabledViajes}
           suscribirseAFiltros={suscribirseAFiltros}
           desuscribirseDeFiltros={desuscribirseDeFiltros}
@@ -178,7 +180,7 @@ export function InfiniteFilterCarousel({
       id: 'aeropuerto',
       component: (
         <AirportsFilter
-          autos={autos}
+          autos={autosFiltrados}
           setAutosFiltrados={setAutosFiltrados}
         />
       ),
