@@ -166,6 +166,7 @@ export default function View({ id }: { id: number }) {
                   router.push('/');
                 }}
                 usuario={renter?.nombre}
+                ubicacion={car?.direccion ?? ''}
               />
             )}
           </section>
