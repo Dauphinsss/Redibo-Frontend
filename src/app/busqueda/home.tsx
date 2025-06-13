@@ -227,7 +227,8 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
         <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-full pt-6 gap-8">
             <div className="w-full max-w-4xl mx-auto">
-              <HeaderBusquedaRecode
+
+              {/*<HeaderBusquedaRecode
                 autosTotales={autos}
                 autosFiltrados={autosFiltrados}
                 autosMostrados={autosFiltrados}
@@ -242,7 +243,20 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
                 mostrarMasAutos={mostrarMasAutos}
                 busqueda={busqueda}
                 cargando={cargando}
+              />*/}
+
+            <CustomSearchWrapper
+                autosTotales={autos}                         // 🔧 Nuevo (todos los autos)
+                autosFiltrados={autosFiltrados}             // Autos filtrados previamente
+                autosVisibles={autosVisibles}               // Cuántos se deben mostrar
+                mostrarMasAutos={mostrarMasAutos}           // Función para paginación
+                busqueda={busqueda}                         // Texto de búsqueda
+                cargando={cargando}                         // Estado de carga
+                ordenSeleccionado={ordenSeleccionado}       // Orden actual
+                setOrdenSeleccionado={setOrdenSeleccionado} // Cambiar orden
+                setAutosFiltrados={setAutosFiltrados}       // Para actualizar desde sugerencias
               />
+
             </div>
           </div>
         </main>
