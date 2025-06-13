@@ -13,10 +13,17 @@ interface VerifyReservationResponse {
 }
 
 const verifyReservation = async (data: VerifyReservationData): Promise<VerifyReservationResponse> => {
+  const token = localStorage.getItem('auth_token')
+  if (!token) throw new Error('Token no encontrado')
 
   const response = await axiosInstance2.post(
     '/reservations/verify',
-    data
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
   );
 
   return response.data;
