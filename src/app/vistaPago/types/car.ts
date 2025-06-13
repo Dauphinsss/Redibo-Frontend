@@ -13,6 +13,7 @@ export interface PaymentOrderPayload {
   id_usuario_host: number;
   id_usuario_renter: number;
   monto_a_pagar: number;
+  monto_garantia: number;
 }
 
 export interface UserInfo {

@@ -31,6 +31,8 @@ import {
 interface PaymentOrder {
   codigo: string;
   monto_a_pagar: number;
+  monto_garantia: number | null; 
+  estado_garantia: string;
   estado: string;
   nombre: string;
   placa: string;
@@ -163,6 +165,8 @@ export function ReservationsList() {
                   <TableHead>Código</TableHead>
                   <TableHead>Nombre Propietario</TableHead>
                   <TableHead>Placa Vehículo</TableHead>
+                  <TableHead>Monto de Garantia</TableHead>
+                  <TableHead>Estado de Garantia </TableHead>
                   <TableHead>Monto de Reserva</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead>Acciones</TableHead>
@@ -179,6 +183,21 @@ export function ReservationsList() {
                       <TableCell className="font-medium text-black-600">{order.codigo}</TableCell>
                       <TableCell>{order.nombre}</TableCell>
                       <TableCell>{order.placa}</TableCell>
+                      <TableCell> 
+                        {order.monto_garantia !== null ? formatCurrency(order.monto_garantia) : "Sin garantía"}
+                      </TableCell>
+                      <TableCell>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        order.estado_garantia === "PENDIENTE" ? "text-black bg-gray-300" :
+                        order.estado_garantia === "ACTIVA" ? "text-black bg-gray-300" :
+                        order.estado_garantia === "RETENIDA" ? "text-black bg-gray-300" :
+                        order.estado_garantia === "LIBERADA" ? "text-black bg-gray-300" :
+                        order.estado_garantia === "REEMBOLSADA" ? "text-black bg-gray-300" :
+                        "bg-gray-300 text-black"
+                        }`}>
+                        {order.estado_garantia}
+                        </span>
+                      </TableCell>
                       <TableCell>{formatCurrency(order.monto_a_pagar)}</TableCell>
                       <TableCell>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -211,7 +230,7 @@ export function ReservationsList() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-400">
+                    <TableCell colSpan={8} className="text-center py-8 text-gray-400">
                       No hay órdenes de pago disponibles
                     </TableCell>
                   </TableRow>

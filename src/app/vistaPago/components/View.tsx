@@ -34,6 +34,7 @@ export default function View({ id }: { id: number }) {
       id_usuario_host: Number(host?.id_host ?? 0),
       id_usuario_renter: Number(renter?.id),
       monto_a_pagar: Number(precio ?? 0),
+      monto_garantia: Number(garantia.precio ?? 0),
     });
     localStorage.removeItem('conductores_seleccionados');
   };
@@ -93,12 +94,6 @@ export default function View({ id }: { id: number }) {
           {/* Panel derecho */}
           <section className="flex-1 w-full px-10">
             <h2 className="text-xl font-semibold mb-8">¿Cómo quieres pagar?</h2>
-
-            {/* Mock de métodos de pago */}
-            <div className="flex gap-4 mb-10">
-              <div className="flex-1 h-40 bg-gray-300 rounded" />
-              <div className="w-24 h-40 bg-gray-300 rounded" />
-            </div>
 
             {/* Garantía / Total */}
             <div className="space-y-2">
