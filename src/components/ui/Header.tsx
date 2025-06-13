@@ -174,7 +174,7 @@ export default function Header() {
           <Link href="/acerca" className="text-sm font-medium">
             Acerca de
           </Link>
-          <Link href="/contacto" className="text-sm font-mediuSm">
+          <Link href="/contacto" className="text-sm font-medium">
             Contacto
           </Link>
         </nav>
