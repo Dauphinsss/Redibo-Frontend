@@ -34,6 +34,7 @@ export default function View({ id }: { id: number }) {
       id_usuario_host: Number(host?.id_host ?? 0),
       id_usuario_renter: Number(renter?.id),
       monto_a_pagar: Number(precio ?? 0),
+      monto_garantia: Number(garantia.precio ?? 0),
     });
     localStorage.removeItem('conductores_seleccionados');
   };
