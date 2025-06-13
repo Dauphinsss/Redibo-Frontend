@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { notFound } from "next/navigation";
 import FormularioSolicitud from "@/app/reserva/components/componentes_InfoAuto_Recode/notificacionSoli/Notificacion_envio_host_Recode";
-import { NotificacionesCampana } from "@/app/reserva/components/componentes_InfoAuto_Recode/notificacionSoli/campana";
+import { NotificacionesCampana } from "@/components/ui/CampanaNotificaciones";
 import Header from "@/components/ui/Header";
 import { Notificacion } from "@/app/reserva/interface/NotificacionSolicitud_Recode";
 import { useParams } from 'next/navigation';
