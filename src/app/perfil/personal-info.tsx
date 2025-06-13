@@ -167,10 +167,10 @@ export function PersonalInfo() {
   const handleNombreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nuevoValor = e.target.value;
     const regexSoloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]*$/;
-    if (nuevoValor.length > 60) {
+    if (nuevoValor.length > 50) {
       setErrores((prev) => ({
         ...prev,
-        nombre: "El nombre no puede exceder los 60 caracteres.",
+        nombre: "El nombre no puede exceder los 50 caracteres.",
       }));
       return;
     }
@@ -218,10 +218,10 @@ export function PersonalInfo() {
       }));
       return;
     }
-    if (cleaned.length > 60) {
+    if (cleaned.length > 50) {
       setErrores((prev) => ({
         ...prev,
-        nombre: "El nombre no puede exceder los 60 caracteres.",
+        nombre: "El nombre no puede exceder los 50 caracteres.",
       }));
       return;
     }
