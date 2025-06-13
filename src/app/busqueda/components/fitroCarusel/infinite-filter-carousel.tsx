@@ -180,11 +180,10 @@ export function InfiniteFilterCarousel({
       id: 'aeropuerto',
       component: (
         <AirportsFilter
-          autos={autosFiltrados}
+          autos={autosOriginales}
           setAutosFiltrados={setAutosFiltrados}
         />
-      ),
-      expandable: true,
+      )
     },
     {
       id: 'gps',
