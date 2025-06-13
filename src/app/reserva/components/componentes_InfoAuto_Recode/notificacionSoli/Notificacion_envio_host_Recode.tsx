@@ -20,6 +20,7 @@ import FormularioGarantia from "./formulario-garantia";
 import { SolicitudRecodePost } from "@/app/reserva/interface/EnviarGuardarNotif_Recode";
 import { Notificacion } from "@/app/reserva/interface/NotificacionSolicitud_Recode";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface Props {
   id_carro: number;
@@ -33,13 +34,12 @@ export default function FormularioSolicitud({
   onNuevaNotificacion,
 }: Props) {
   const router = useRouter();
-  
+
   const { datosRenter, datosHost, datosAuto, conductores, isLoading: isLoadingData, error: dataError } = useReservationData(id_carro);
   
   const [fechas, setFechas] = useState({ inicio: "", fin: "" });
   const [precioEstimado, setPrecioEstimado] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showGarantiaModal, setShowGarantiaModal] = useState(false);
@@ -54,20 +54,18 @@ export default function FormularioSolicitud({
       const start = new Date(fechas.inicio);
       const end = new Date(fechas.fin);
       if (end <= start) {
-        setFormError("La fecha de fin debe ser posterior a la de inicio");
+        toast.error("La fecha de fin debe ser posterior a la de inicio");
         return;
       }
       const dias = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
       setPrecioEstimado(dias * datosAuto.precio);
-      setFormError(null);
     }
   }, [fechas, datosAuto]);
 
   const formatFecha = (fecha: string) => new Intl.DateTimeFormat("es-BO", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }).format(new Date(fecha));
 
   const handleAuthenticatedAction = (action: () => void) => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
+    if (!datosRenter) {
       router.push("/login");
     } else {
       action();
@@ -75,65 +73,81 @@ export default function FormularioSolicitud({
   };
 
   const handleReserveWithoutPayment = async () => {
-    // --- CAMBIO: Se añade la validación del conductor aquí también ---
-    if (conductores.length > 0 && conductoresSeleccionados.length === 0) {
-        setFormError("Por favor, selecciona un conductor antes de continuar.");
+    handleAuthenticatedAction(async () => {
+      // La validación principal ya se hizo en handleReserveClick, pero mantenemos esta por seguridad
+      if (!datosRenter || !datosHost || !datosAuto || !fechas.inicio || !fechas.fin || (conductores.length > 0 && conductoresSeleccionados.length === 0)) {
+        toast.error("Faltan datos o selecciones para completar la reserva.");
         return;
+      }
+
+      setShowMenu(false);
+      const solicitud: SolicitudRecodePost = {
+          fecha: new Date().toLocaleDateString('es-ES'),
+          hostNombre: datosHost.nombre,
+          renterNombre: datosRenter.nombre,
+          modelo: datosAuto.modelo,
+          marca: datosAuto.marca,
+          precio: precioEstimado.toString(),
+          fechaRecogida: formatFecha(fechas.inicio),
+          fechaDevolucion: formatFecha(fechas.fin),
+          lugarRecogida: "Cochabamba",
+          lugarDevolucion: "Cochabamba",
+          renterEmail: datosRenter.correo,
+          hostEmail: datosHost.correo,
+          id_renter: datosRenter.id,
+          id_host: datosHost.id,
+      };
+
+      try {
+        await enviarSolicitud(solicitud);
+        if (datosHost.id) {
+          const nuevasNotif = await fetchNotif(datosHost.id);
+          console.log("Notificaciones del host:", nuevasNotif);
+        }
+        setShowNotification(true);
+        onSolicitudExitosa();
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "No se pudo enviar la solicitud");
+      }
+    });
+  };
+
+  // --- LÓGICA DE VALIDACIÓN CENTRALIZADA ---
+  const handleReserveClick = () => {
+    // 1. Validar si el usuario ha iniciado sesión
+    if (!datosRenter) {
+      toast.error("Debes iniciar sesión para poder reservar.");
+      router.push("/login");
+      return;
     }
     
-    setShowMenu(false);
-    if (!datosRenter || !datosHost || !datosAuto || !fechas.inicio || !fechas.fin) {
-      setFormError("Faltan datos para la reserva. Asegúrate de haber iniciado sesión y seleccionado fechas.");
+    // 2. Validar si se han seleccionado fechas
+    if (!fechas.inicio || !fechas.fin) {
+      toast.error("Por favor, selecciona las fechas de tu reserva.");
+      return;
+    }
+    
+    // 3. Validar si el usuario TIENE conductores registrados.
+    if (conductores.length === 0) {
+      toast.error("No tienes conductores asociados para realizar una reserva. Por favor, agrega uno en tu perfil.");
       return;
     }
 
-    const solicitud: SolicitudRecodePost = {
-      fecha: new Date().toLocaleDateString('es-ES'),
-      hostNombre: datosHost.nombre,
-      renterNombre: datosRenter.nombre,
-      modelo: datosAuto.modelo,
-      marca: datosAuto.marca,
-      precio: precioEstimado.toString(),
-      fechaRecogida: formatFecha(fechas.inicio),
-      fechaDevolucion: formatFecha(fechas.fin),
-      lugarRecogida: "Cochabamba",
-      lugarDevolucion: "Cochabamba",
-      renterEmail: datosRenter.correo,
-      hostEmail: datosHost.correo,
-      id_renter: datosRenter.id,
-      id_host: datosHost.id,
-    };
-
-    try {
-      await enviarSolicitud(solicitud);
-      if (datosHost.id) {
-        const nuevasNotif = await fetchNotif(datosHost.id);
-        console.log("Notificaciones del host:", nuevasNotif);
-      }
-      setShowNotification(true);
-      onSolicitudExitosa();
-    } catch (error) {
-      console.error("Fallo al enviar la solicitud:", error);
+    // 4. Validar si se ha seleccionado un conductor
+    if (conductoresSeleccionados.length === 0) {
+      toast.error("Por favor, selecciona un conductor para continuar.");
+      return;
     }
-  };
 
-  const handleToggleMenu = () => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      router.push("/login");
-    } else {
-      setShowMenu(prev => !prev);
-    }
+    // 5. Si todo está bien, abre el menú
+    setShowMenu(true);
   };
-
-  // --- CAMBIO: Creamos una variable para la lógica de validación ---
-  const isDriverSelectionInvalid = conductores.length > 0 && conductoresSeleccionados.length === 0;
 
   if (isLoadingData) {
     return <div className="flex justify-center items-center h-64"><Loader2 className="h-8 w-8 animate-spin" /><p className="ml-4">Cargando...</p></div>;
   }
   
-  const totalError = dataError || submissionError || formError;
+  const totalError = dataError || submissionError;
   if (totalError) {
       return <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow-md">
                 <h4 className="font-bold">Ha ocurrido un error</h4>
@@ -148,10 +162,12 @@ export default function FormularioSolicitud({
       {fechas.inicio && fechas.fin && (<section className="bg-white p-4 rounded-lg shadow"><PrecioDesglosado id_carro={id_carro} fechas={fechas} onPrecioCalculado={setPrecioEstimado} /></section>)}
       <TablaCondicionesVisual_Recode id_carro={id_carro} />
       
-      {/* Solo mostramos la sección de conductores si la lista no está vacía */}
-      {conductores.length > 0 && (
-          <SeleccionarConductores conductores={conductores} seleccionados={conductoresSeleccionados} onChange={setConductoresSeleccionados} />
-      )}
+      <SeleccionarConductores 
+        isLoggedIn={!!datosRenter} 
+        conductores={conductores} 
+        seleccionados={conductoresSeleccionados} 
+        onChange={setConductoresSeleccionados} 
+      />
       
       <section className="bg-white p-4 rounded-lg shadow">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -162,9 +178,8 @@ export default function FormularioSolicitud({
           
           <div className="relative inline-block">
             <Button
-              onClick={handleToggleMenu}
-              // --- CAMBIO: Añadimos la nueva validación al estado 'disabled' ---
-              disabled={isSubmitting || !fechas.inicio || !fechas.fin || isDriverSelectionInvalid}
+              onClick={handleReserveClick}
+              disabled={isSubmitting}
               className="bg-black hover:bg-gray-800 text-white px-6 py-2"
             >
               {isSubmitting ? "Procesando..." : "Reservar"}
@@ -176,25 +191,17 @@ export default function FormularioSolicitud({
                   <span className="font-medium">Reservar sin Pago</span>
                 </div>
                 <Separator />
-                <div className="p-3 hover:bg-gray-100 cursor-pointer" onClick={() => handleAuthenticatedAction(() => setShowPaymentModal(true))}>
+                <div className="p-3 hover:bg-gray-100 cursor-pointer" onClick={() => { setShowMenu(false); handleAuthenticatedAction(() => setShowPaymentModal(true)); }}>
                   <span className="font-medium">Pago de Reserva</span>
                 </div>
                 <Separator />
-                <div className="p-3 hover:bg-gray-100 cursor-pointer" onClick={() => handleAuthenticatedAction(() => setShowGarantiaModal(true))}>
+                <div className="p-3 hover:bg-gray-100 cursor-pointer" onClick={() => { setShowMenu(false); handleAuthenticatedAction(() => setShowGarantiaModal(true)); }}>
                   <span className="font-medium">Pago por Garantía</span>
                 </div>
               </div>
             )}
           </div>
         </div>
-        
-        {/* --- CAMBIO: Mensaje de ayuda que aparece si la validación falla --- */}
-        {isDriverSelectionInvalid && (
-            <p className="text-red-500 text-xs text-right mt-2">
-                Por favor, selecciona un conductor para continuar.
-            </p>
-        )}
-
       </section>
 
       {showPaymentModal && datosRenter && datosAuto && (
