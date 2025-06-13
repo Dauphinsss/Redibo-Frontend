@@ -7,12 +7,12 @@ interface NotificacionPago100Props {
   monto: string
   onClose: () => void
   usuario?: string
+  ubicacion?: string
 }
 
-export default function NotificacionPago100({ monto, onClose,usuario }: NotificacionPago100Props) {
+export default function NotificacionPago100({ monto, onClose,usuario, ubicacion }: NotificacionPago100Props) {
   const [fecha, setFecha] = useState("")
   const [hora, setHora] = useState("")
-  const [ubicacion] = useState("Av. Principal 123")
 
   useEffect(() => {
     // Bloquear interacciones con elementos subyacentes
