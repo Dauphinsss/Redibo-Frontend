@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAutos } from '@/app/busqueda/hooks/useAutos_hook_Recode';
 import SearchBar from '@/app/busqueda/components/seccionOrdenarMasResultados/RecodeSearchBar';
 import HeaderBusquedaRecode from '@/app/busqueda/components/seccionOrdenarMasResultados/HeaderBusquedaRecode';
@@ -44,6 +44,25 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
   const ciudadParam = ciudad || searchParams.get('ciudad') || '';
   const fechaInicioParam = fechaInicio || searchParams.get('fechaInicio') || '';
   const fechaFinParam = fechaFin || searchParams.get('fechaFin') || '';
+
+  // --- INICIO DEL CÓDIGO AÑADIDO ---
+  useEffect(() => {
+    // Verificamos que los props no sean undefined antes de guardarlos
+    if (ciudad) {
+      localStorage.setItem('search_ciudad', ciudad);
+      console.log(`Ciudad guardada en localStorage: ${ciudad}`);
+    }
+    if (fechaInicio) {
+      localStorage.setItem('search_fechaInicio', fechaInicio);
+      console.log(`Fecha de inicio guardada en localStorage: ${fechaInicio}`);
+    }
+    if (fechaFin) {
+      localStorage.setItem('search_fechaFin', fechaFin);
+      console.log(`Fecha de fin guardada en localStorage: ${fechaFin}`);
+    }
+  }, [ciudad, fechaInicio, fechaFin]);
+  // --- FIN DEL CÓDIGO AÑADIDO ---
+
   const router = useRouter();
   const [radio, setRadio] = useState(1);
   const [punto, setPunto] = useState<Coor>({ lon: 0, alt: 0 });
