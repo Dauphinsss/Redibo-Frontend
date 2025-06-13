@@ -94,8 +94,8 @@ export default function Header() {
                 <Link href="/" className="text-sm font-medium">
                   Inicio
                 </Link>
-                <Link href="/busqueda" className="text-sm font-medium">
-                  Buscar
+                <Link href="/producto" className="text-sm font-medium">
+                  Producto
                 </Link>
                 <Link href="/acerca" className="text-sm font-medium">
                   Acerca de
@@ -168,13 +168,13 @@ export default function Header() {
           <Link href="/" className="text-sm font-medium">
             Inicio
           </Link>
-          <Link href="/busqueda" className="text-sm font-medium">
-            Buscar
+          <Link href="/producto" className="text-sm font-medium">
+            Producto
           </Link>
           <Link href="/acerca" className="text-sm font-medium">
             Acerca de
           </Link>
-          <Link href="/contacto" className="text-sm font-medium">
+          <Link href="/contacto" className="text-sm font-mediuSm">
             Contacto
           </Link>
         </nav>
