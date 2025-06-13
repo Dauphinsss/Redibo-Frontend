@@ -6,9 +6,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const opcionesFechas = [
-  { inicio: '2025-05-19', fin: '2025-05-24', ciudad: 'Cochabamba' },
-  { inicio: '2025-05-20', fin: '2025-05-22', ciudad: 'Cochabamba' },
-  { inicio: '2025-05-24', fin: '2025-05-27', ciudad: 'Cochabamba' },
+  { inicio: '2025-06-19', fin: '2025-06-24', ciudad: 'Cochabamba' },
+  { inicio: '2025-06-20', fin: '2025-06-22', ciudad: 'Cochabamba' },
+  { inicio: '2025-06-24', fin: '2025-06-27', ciudad: 'Cochabamba' },
 ];
 
 export default function FechasAlquiler({
@@ -84,7 +84,7 @@ export default function FechasAlquiler({
 
   return (
     <div className="w-full max-w-[760px] mx-auto bg-white border border-gray-300 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
-      {/* Resumen */}
+
       <div className="flex flex-col sm:flex-row sm:items-center gap-6 w-full">
         <div className="flex items-center gap-2">
           <CalendarDaysIcon className="h-5 w-5 text-gray-600" />
