@@ -94,12 +94,6 @@ export default function View({ id }: { id: number }) {
           <section className="flex-1 w-full px-10">
             <h2 className="text-xl font-semibold mb-8">¿Cómo quieres pagar?</h2>
 
-            {/* Mock de métodos de pago */}
-            <div className="flex gap-4 mb-10">
-              <div className="flex-1 h-40 bg-gray-300 rounded" />
-              <div className="w-24 h-40 bg-gray-300 rounded" />
-            </div>
-
             {/* Garantía / Total */}
             <div className="space-y-2">
               <div className="flex justify-between items-center border-b border-gray-400 pb-1">
