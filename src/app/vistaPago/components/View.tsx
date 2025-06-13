@@ -3,12 +3,14 @@ import React, { useState } from 'react'
 import { useCardByID, useCreatePaymentOrder, useHostById, useRenter, useGarantiaByCarId } from '../hooks/useCarByID'
 import Image from 'next/image'
 import Header from '@/components/ui/Header';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import ConfirmacionReservaOpciones from '@/app/reserva/components/ConfirmacionHost';
+import NotificacionPago100 from "@/app/reserva/components/componentes_InfoAuto_Recode/notificacionSoli/notificacion-pago-100";
 
 export default function View({ id }: { id: number }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const fechaInicio = searchParams.get('fechaInicio');
   const fechaFin = searchParams.get('fechaFin');
@@ -154,6 +156,17 @@ export default function View({ id }: { id: number }) {
                   </Link>
                 </div>
               </div>
+            )}
+
+            {mostrarModal && (
+              <NotificacionPago100
+                monto={precio ?? "0"}
+                onClose={() => {
+                  setMostrarModal(false);
+                  router.push('/');
+                }}
+                usuario={renter?.nombre}
+              />
             )}
           </section>
         </div>
