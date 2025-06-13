@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { notFound } from "next/navigation";
 import FormularioSolicitud from "@/app/reserva/components/componentes_InfoAuto_Recode/notificacionSoli/Notificacion_envio_host_Recode";
-import { NotificacionesCampana } from "@/components/ui/CampanaNotificaciones";
 import Header from "@/components/ui/Header";
 import { Notificacion } from "@/app/reserva/interface/NotificacionSolicitud_Recode";
 import { useParams } from 'next/navigation';
@@ -43,13 +42,7 @@ export default function CondicionVisualPage() {
           />
         </div>
         
-        <div className="lg:w-96">
-          <NotificacionesCampana 
-            notificaciones={notificaciones}
-            onAceptar={(id) => console.log('Aceptar:', id)}
-            onRechazar={(id) => console.log('Rechazar:', id)}
-          />
-        </div>
+        
       </div>
     </main>
   );
