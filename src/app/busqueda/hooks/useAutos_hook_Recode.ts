@@ -167,7 +167,6 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
       const rawData: RawAuto[] = await getAllCars();
       const transformed = rawData.map(transformAuto);
       setAutos(transformed);
-      console.log('Autod despues del fetch', transformed);
       setAutosFiltrados(transformed);
     } catch (error) {
       console.error('Error al cargar los autos:', error);
@@ -231,11 +230,12 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
       console.log(`Autos filtrados por host "${filtroHost}":`, resultado.length);
     }
 
-    const filtroInicio = fechaFiltroInicio ? new Date(fechaFiltroInicio) : null;
-    const filtroFin = fechaFiltroFin ? new Date(fechaFiltroFin) : null;
     // Filtro por fechas de disponibilidad
     resultado = resultado.filter(auto => {
       if (!auto.reservas || auto.reservas.length === 0) return true;
+
+      const filtroInicio = fechaFiltroInicio ? new Date(fechaFiltroInicio) : null;
+      const filtroFin = fechaFiltroFin ? new Date(fechaFiltroFin) : null;
 
       return !auto.reservas.some(reserva => {
         if (!['PENDIENTE', 'CONFIRMADA', 'COMPLETADA'].includes(reserva.estado)) return false;
