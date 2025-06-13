@@ -21,6 +21,8 @@ import { SolicitudRecodePost } from "@/app/reserva/interface/EnviarGuardarNotif_
 import { Notificacion } from "@/app/reserva/interface/NotificacionSolicitud_Recode";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { SeguroEstructurado, TipoCobertura } from "@/app/reserva/interface/CoberturaForm_Interface_Recode";
+import { getInsuranceByID } from "@/app/reserva/services/services_reserva";
 
 interface Props {
   id_carro: number;
@@ -48,6 +50,17 @@ export default function FormularioSolicitud({
 
   const { enviarSolicitud, cargando: isSubmitting, error: submissionError } = useEnviarSolicitudRecode();
   const { fetchNotif } = useObtenerNotif();
+
+  const [segurosArray, setSegurosArray] = useState<SeguroEstructurado[]>([]);
+  useEffect(() => {
+    const cargar = async () => {
+      const seguros = await getInsuranceByID(id_carro.toString());
+      if (seguros && seguros.length > 0) {
+        setSegurosArray(seguros); 
+      }
+    };
+    cargar();
+  }, [id_carro]);
 
   useEffect(() => {
     if (fechas.inicio && fechas.fin && datosAuto?.precio) {
@@ -158,7 +171,17 @@ export default function FormularioSolicitud({
   return (
     <div className="flex flex-col gap-6 max-w-4xl mx-auto">
       <section className="bg-white p-4 rounded-lg shadow"><h2 className="text-lg font-semibold mb-4">Selecciona tus fechas</h2><FechasAlquiler onFechasSeleccionadas={setFechas} /></section>
-      <section className="bg-white p-4 rounded-lg shadow"><TablaCoberturas id_carro={id_carro} /></section>
+
+      <section className="bg-white p-4 rounded-lg shadow">
+        {segurosArray.length > 0 && segurosArray.map((seguro) => (
+          <TablaCoberturas
+            key={seguro.id}
+            tiposeguro={seguro.tiposeguro}
+            nombreSeguro={seguro.Seguro.empresa}
+          />
+        ))}
+      </section>
+
       {fechas.inicio && fechas.fin && (<section className="bg-white p-4 rounded-lg shadow"><PrecioDesglosado id_carro={id_carro} fechas={fechas} onPrecioCalculado={setPrecioEstimado} /></section>)}
       <TablaCondicionesVisual_Recode id_carro={id_carro} />
       

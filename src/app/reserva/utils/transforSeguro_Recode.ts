@@ -1,4 +1,5 @@
-import { CoberturaInterface, SeguroRawRecode, ValidarInterface } from "@/app/reserva/interface/CoberturaForm_Interface_Recode";
+ {/**
+ import { SeguroBase, TipoCobertura, SeguroEstructurado } from "@/app/reserva/interface/CoberturaForm_Interface_Recode";
 
 export function transformSeguro_Recode(data: CoberturaInterface): CoberturaInterface {
     return {
@@ -33,4 +34,4 @@ export function transformSeguroTodo_Recode(data: SeguroRawRecode[]): ValidarInte
             valides: item.valides ?? "Sin validez",
         })) || [],
     };
-}
+}*/}
