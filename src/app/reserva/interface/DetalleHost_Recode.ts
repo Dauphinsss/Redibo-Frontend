@@ -8,6 +8,7 @@ export interface DetalleHost_Recode {
     telefono: string;
     foto: string | "Sin imagen";
     autos: {
+        id: number;
         modelo: string;
         marca: string;
         imagen: string | "Sin imagen"; 

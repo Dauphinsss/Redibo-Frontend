@@ -1,13 +1,20 @@
 import Image from "next/image";
 import { memo } from "react";
 
+import Estrellas from "@/app/reserva/components/componentes_InfoAuto_Recode/calificacionAuto/EstrellasRecode";
+import { useCalificaciones } from "@/app/busqueda/hooks/useCalifPromedio";
+
 interface Props {
+  idAuto: number;
   fotoAuto: string | null;
   modeloAuto: string;
   marcaAuto: string;
 }
 
-function TarjetaCar({ fotoAuto, modeloAuto, marcaAuto }: Props) {
+function TarjetaCar({idAuto, fotoAuto, modeloAuto, marcaAuto }: Props) {
+  const { promedioCalificacion } = useCalificaciones(idAuto.toString());
+  const calificacion = parseFloat(promedioCalificacion);
+
   const esImagenValida = fotoAuto && (fotoAuto.startsWith("http") || fotoAuto.startsWith("/"));
 
   return (
@@ -35,6 +42,10 @@ function TarjetaCar({ fotoAuto, modeloAuto, marcaAuto }: Props) {
           <h2 className="font-semibold">Marca:</h2>
           <p>{marcaAuto}</p>
         </div>
+      </div>
+      <div className="flex items-center  text-black gap-x-2">
+        <span className="mt-1">{calificacion}</span>
+        <Estrellas promedio={calificacion} />
       </div>
     </div>
   );

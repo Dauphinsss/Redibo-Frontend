@@ -10,6 +10,7 @@ export interface RawHostDetails_Recode {
     telefono: string;
     foto: string | "Sin imagen";
     Carro: {
+        id:number;
         modelo: string;
         marca: string;
         Imagen: {

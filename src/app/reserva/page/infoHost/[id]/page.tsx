@@ -62,6 +62,7 @@ export default function Page() {
             {host.autos.map((auto, index) => (
               <div key={index} className="min-w-[250px] flex-shrink-0">
                 <TarjetaCar
+                  idAuto={auto.id}
                   fotoAuto={auto.imagen} 
                   modeloAuto={auto.modelo}
                   marcaAuto={auto.marca}

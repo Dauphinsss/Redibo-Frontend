@@ -12,6 +12,7 @@ export function transformDetailsHost_Recode(data: RawHostDetails_Recode): Detall
         telefono: data.telefono,
         foto: data.foto,
         autos: data.Carro.map((auto) => ({
+            id: auto.id,
             modelo: auto.modelo,
             marca: auto.marca,
             imagen: auto.Imagen?.[0]?.data || "Sin imagen"
