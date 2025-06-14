@@ -21,6 +21,7 @@ import PopUpComentarios from "@/app/reserva/components/componentes_InfoAuto_Reco
 import { useComentariosAuto } from "@/app/reserva/hooks/useComentario_hook_Recode";
 import VerComentario from "@/app/reserva/components/componentes_InfoAuto_Recode/verComentario/verComentarioRecode";
 import CrearComentario from "@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/Comentarios_Autos"; //@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/CrearComentario_Recode
+import CrearCalificacion from "@/app/busqueda/components/componentes_Comentarios_Calificaciones_Bughunters/CrearCalificacion";
 
 interface HomeProps {
   id: string;
@@ -214,13 +215,22 @@ export default function Home({ id }: HomeProps) {
               ))}
             </div>
 
-            <div className="mt-8">
-              <h2 className="text-xl font-bold mb-4">Escribe tu comentario</h2>
+            {/* <h2 className="text-xl font-bold mb-4">Escribe tu comentario</h2>Add commentMore actions
               <CrearComentario
                 id_carro={Number(id)}
                 onComentarioCreado={refetchComentarios}
               />
-            </div>
+              /> */}
+              <div className="mt-8 space-y-6">
+                <CrearComentario
+                  id_carro={Number(id)}
+                  onComentarioCreado={refetchComentarios}
+                />
+                <CrearCalificacion
+                  id_carro={Number(id)}
+                  onCalificacionActualizada={refetchComentarios}
+                />
+              </div>
           </div>
 
           <div className="lg:w-1/3">
