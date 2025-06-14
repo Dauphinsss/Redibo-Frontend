@@ -65,11 +65,14 @@ export default function GarantiaPage() {
     fetchGarantia();
   }, [id_carro]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value, type } = e.target;
+
     setGarantia({
       ...garantia,
-      [name]: type === "number" ? Number(value) : value,
+      [name]: type === "number" ? (value === "" ? "" : Number(value)) : value,
     });
   };
 
@@ -82,7 +85,6 @@ export default function GarantiaPage() {
     console.log("ID de la garantía que se enviará:", garantia.id); //
     try {
       if (garantia.id) {
-        
         await axiosInstance.patch(`/api/garantias/${garantia.id}`, {
           precio: garantia.precio,
           descripcion: garantia.descripcion,
@@ -90,13 +92,12 @@ export default function GarantiaPage() {
           fecha_limite: garantia.fecha_limite,
         });
       } else {
-        
         await axiosInstance.post(`/api/garantias`, {
           precio: garantia.precio,
           descripcion: garantia.descripcion,
           pagado: garantia.pagado,
           fecha_limite: garantia.fecha_limite,
-          id_carro: Number(id_carro),  // importante que sea number
+          id_carro: Number(id_carro), // importante que sea number
         });
       }
       router.push("/host/pages");
@@ -110,19 +111,20 @@ export default function GarantiaPage() {
 
   return (
     <div className="max-w-xl mx-auto mt-10 space-y-6">
-      <h1 className="text-2xl font-bold">{garantia.id ? "Editar Garantía" : "Crear Garantía"}</h1>
+      <h1 className="text-2xl font-bold">
+        {garantia.id ? "Editar Garantía" : "Crear Garantía"}
+      </h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label>Precio (BS)</Label>
-          <Input
-            type="number"
-            name="precio"
-            value={garantia.precio}
-            onChange={handleChange}
-            min={0}
-            required
-          />
-        </div>
+        <Label>Precio (BS)</Label>
+        <Input
+          type="number"
+          name="precio"
+          value={garantia.precio === 0 ? "" : garantia.precio}
+          onChange={handleChange}
+          min={0}
+          required
+          placeholder="0"
+        />
 
         <div>
           <Label>Fecha límite</Label>
@@ -141,15 +143,21 @@ export default function GarantiaPage() {
             name="descripcion"
             value={garantia.descripcion}
             onChange={handleChange}
+            placeholder="Ej: Deposito de 5.000 para cubrir posibles daños ..."
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <Checkbox checked={garantia.pagado} onCheckedChange={handleCheckboxChange} />
+          <Checkbox
+            checked={garantia.pagado}
+            onCheckedChange={handleCheckboxChange}
+          />
           <Label>¿Incluye pago por daños?</Label>
         </div>
 
-        <Button type="submit">{garantia.id ? "Guardar Cambios" : "Crear Garantía"}</Button>
+        <Button type="submit">
+          {garantia.id ? "Guardar Cambios" : "Crear Garantía"}
+        </Button>
       </form>
     </div>
   );
