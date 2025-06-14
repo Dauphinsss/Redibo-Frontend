@@ -16,6 +16,9 @@ export default function Page() {
   const id = Number(params?.id);
   const [host, setHost] = useState<DetalleHost | null>(null);
 
+  
+
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await getDetalleHost_Recode(id);
@@ -79,11 +82,11 @@ export default function Page() {
             <ContenedorCalificacionesHost id_host={id} />
           </div>
 
-          {/* Derecha: Comentarios 
+          
           <div className="w-full md:w-2/3">
             <ListaReseñas id_host={id} id_renter={id} />
           </div>
-          */}
+         
         </div>
       </div>
     </div>

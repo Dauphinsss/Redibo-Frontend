@@ -18,7 +18,7 @@ type Comentario = {
 type Props = {
     id_host: number;
     id_renter: number;
-    calificacion: number;
+    calificacion?: number;
 }
 
 
