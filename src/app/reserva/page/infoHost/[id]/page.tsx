@@ -8,6 +8,8 @@ import { useParams } from "next/navigation";
 //import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
 import { DetalleHost_Recode as DetalleHost } from "@/app/reserva/interface/DetalleHost_Recode";
 import Header from "@/components/ui/Header";
+import ContenedorCalificacionesHost from "@/app/reserva/components/componentes_InfoHost_Recode/componentes_CalificacionesHost_Recode/ContenedorCalificacionesHost";
+import ListaReseñas from "@/app/reserva/components/componentes_InfoHost_Recode/componentes_ComentariosHost_Recode/ListaReseñas";
 
 export default function Page() {
   const params = useParams();
@@ -70,6 +72,18 @@ export default function Page() {
             ))}
           </div>
         )}
+        <div className="mt-10 flex flex-col md:flex-row gap-8 items-start">
+          {/* Izquierda: Calificación del host */}
+          <div className="w-full md:w-1/3">
+            <ContenedorCalificacionesHost id_host={id} />
+          </div>
+
+
+          <div className="w-full md:w-2/3">
+            <ListaReseñas id_host={id} id_renter={id} />
+          </div>
+
+        </div>
       </div>
     </div>
   );

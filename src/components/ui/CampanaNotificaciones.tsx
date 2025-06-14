@@ -12,7 +12,7 @@ interface NotificacionesCampanaProps {
 }
 
 export const NotificacionesCampana: React.FC<NotificacionesCampanaProps> = ({
-  notificaciones,
+  notificaciones = [],
   onAceptar,
   onRechazar,
 }) => {
