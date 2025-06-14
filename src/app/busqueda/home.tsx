@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import CustomSearchWrapper from "@/app/busqueda/hooks/customSearchHU/CustomSearchWrapper";
 import { Coor } from "./types/apitypes";
 import { useSearchParams } from 'next/navigation';
+import { useSearchStore } from "./store/searchStore";
 
 type Props = {
   ciudad?: string;
@@ -45,23 +46,30 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
   const fechaInicioParam = fechaInicio || searchParams.get('fechaInicio') || '';
   const fechaFinParam = fechaFin || searchParams.get('fechaFin') || '';
 
-  // --- INICIO DEL CÓDIGO AÑADIDO ---
+  // --- INICIO DEL CÓDIGO CORREGIDO ---
+  
+  const { setCiudad, setFechas } = useSearchStore();
+
   useEffect(() => {
-    // Verificamos que los props no sean undefined antes de guardarlos
+    // Este efecto se ejecutará cuando las props cambien
+    // y actualizará el estado global en Zustand.
+    
+    console.log("Actualizando Zustand desde props...");
+
     if (ciudad) {
-      localStorage.setItem('search_ciudad', ciudad);
-      console.log(`Ciudad guardada en localStorage: ${ciudad}`);
+      console.log(`Guardando ciudad en Zustand: ${ciudad}`);
+      setCiudad(ciudad);
     }
+    
     if (fechaInicio) {
-      localStorage.setItem('search_fechaInicio', fechaInicio);
-      console.log(`Fecha de inicio guardada en localStorage: ${fechaInicio}`);
+      console.log(`Guardando fechas en Zustand:`, { inicio: fechaInicio, fin: fechaFin });
+      // Guardamos las fechas como strings directamente
+      setFechas(fechaInicio, fechaFin || null);
     }
-    if (fechaFin) {
-      localStorage.setItem('search_fechaFin', fechaFin);
-      console.log(`Fecha de fin guardada en localStorage: ${fechaFin}`);
-    }
-  }, [ciudad, fechaInicio, fechaFin]);
-  // --- FIN DEL CÓDIGO AÑADIDO ---
+
+  }, [ciudad, fechaInicio, fechaFin, setCiudad, setFechas]);
+
+  // --- FIN DEL CÓDIGO CORREGIDO ---
 
   const router = useRouter();
   const [radio, setRadio] = useState(1);

@@ -21,6 +21,7 @@ import PopUpComentarios from "@/app/reserva/components/componentes_InfoAuto_Reco
 import { useComentariosAuto } from "@/app/reserva/hooks/useComentario_hook_Recode";
 import VerComentario from "@/app/reserva/components/componentes_InfoAuto_Recode/verComentario/verComentarioRecode";
 import CrearComentario from "@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/Comentarios_Autos"; //@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/CrearComentario_Recode
+import { useSearchStore } from "@/app/busqueda/store/searchStore";
 
 interface HomeProps {
   id: string;
@@ -32,6 +33,7 @@ export default function Home({ id }: HomeProps) {
   const [loaded, setLoaded] = useState(false);
   const [calificaciones, setCalificaciones] = useState<number[]>([]);
   const [numComentarios, setNumComentarios] = useState(0);
+  const { ciudad, fechaInicio, fechaFin } = useSearchStore();
   const [comentariosConCalificacion, setComentariosConCalificacion] = useState<
     number[]
   >([]);
@@ -147,6 +149,15 @@ export default function Home({ id }: HomeProps) {
         <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8 py-6">
           <div className="flex-1">
             <Autoimag imagenes={auto.imagenes} nombre={auto.modelo} />
+            {/* 3. Muestra los datos obtenidos del store */}
+            <div className="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-md mb-6 shadow-sm">
+              <h3 className="font-bold text-lg">Resumen de tu Búsqueda</h3>
+              <ul className="mt-2 space-y-1 text-sm">
+                <li><strong>Ciudad:</strong> {ciudad || 'No especificada'}</li>
+                <li><strong>Fecha de Recogida:</strong> {fechaInicio}</li>
+                <li><strong>Fecha de Devolución:</strong> {fechaFin}</li>
+              </ul>
+            </div>
 
             <InfoPrincipal
               asientos={5}
