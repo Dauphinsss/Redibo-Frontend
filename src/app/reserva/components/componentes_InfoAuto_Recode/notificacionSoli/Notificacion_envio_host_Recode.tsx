@@ -42,7 +42,7 @@ export default function FormularioSolicitud({
   const { enviarSolicitud, cargando: isSubmitting, error: submissionError } = useEnviarSolicitudRecode();
   const { fetchNotif } = useObtenerNotif();
   
-  // 1. Leemos el estado global de la búsqueda desde Zustand
+  // Leemos el estado global de la búsqueda desde Zustand
   const { ciudad, fechaInicio, fechaFin, setFechas } = useSearchStore();
 
   // --- ESTADOS LOCALES ---
@@ -82,7 +82,6 @@ export default function FormularioSolicitud({
       setPrecioEstimado(dias * datosAuto.precio);
     }
   }, [fechaInicio, fechaFin, datosAuto]);
-
 
   // --- MANEJADORES DE EVENTOS ---
   
@@ -161,44 +160,39 @@ export default function FormularioSolicitud({
   return (
     <div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto px-4">
       
+      {/* Columna Izquierda: Contenido principal y botón */}
       <div className="flex-grow flex flex-col gap-6">
         <div className="space-y-6">
           <section className="bg-white p-4 rounded-lg shadow">
             <h2 className="text-lg font-semibold mb-4">Fechas de tu Reserva</h2>
-            {/* 2. Pasamos las props correctas a FechasAlquiler */}
+            {/* Pasamos las props correctas a FechasAlquiler */}
             <FechasAlquiler
               onFechasSeleccionadas={handleFechasChange}
-              initialStartDate={fechaInicio}
-              initialEndDate={fechaFin}
-              ciudad={ciudad}
+              initialStartDate={fechaInicio || null}
+              initialEndDate={fechaFin || null}
+              ciudad={ciudad || null}
             />
           </section>
-
-          <section className="bg-white p-4 rounded-lg shadow">
-            {segurosArray.length > 0 && segurosArray.map((seguro) => (
-              <TablaCoberturas
-                key={seguro.id}
-                tiposeguro={seguro.tiposeguro}
-                nombreSeguro={seguro.Seguro.empresa}
-              />
-            ))}
-          </section>
-
-          <TablaCondicionesVisual_Recode id_carro={id_carro} />
           
-          <SeleccionarConductores 
-            isLoggedIn={!!datosRenter} 
-            conductores={conductores} 
-            seleccionados={conductoresSeleccionados} 
-            onChange={setConductoresSeleccionados} 
-          />
+          <section className="bg-white p-4 rounded-lg shadow">
+            <TablaCondicionesVisual_Recode id_carro={id_carro} />
+          </section>
+          
+          <section className="bg-white p-4 rounded-lg shadow">
+            <SeleccionarConductores 
+              isLoggedIn={!!datosRenter} 
+              conductores={conductores} 
+              seleccionados={conductoresSeleccionados} 
+              onChange={setConductoresSeleccionados} 
+            />
+          </section>
         </div>
 
         <section className="bg-white p-4 rounded-lg shadow mt-auto">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div>
               <p className="font-semibold">Total estimado: {precioEstimado.toFixed(2)} BOB</p>
-              <p className="text-sm text-gray-600">{fechaInicio && fechaFin ? `${new Date(fechaInicio).toLocaleDateString()} - ${new Date(fechaFin).toLocaleDateString()}` : "Selecciona fechas válidas"}</p>
+              <p className="text-sm text-gray-600">{fechaInicio && fechaFin ? `${new Date(fechaInicio).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })} - ${new Date(fechaFin).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}` : "Selecciona fechas válidas"}</p>
             </div>
             
             <div className="relative inline-block">
@@ -220,6 +214,7 @@ export default function FormularioSolicitud({
         </section>
       </div>
 
+      {/* Columna Derecha: Resúmenes fijos */}
       <div className="w-full lg:w-80 flex-shrink-0">
         <div className="sticky top-8 space-y-6">
           {fechaInicio && fechaFin && (
@@ -231,10 +226,19 @@ export default function FormularioSolicitud({
               />
             </section>
           )}
-          {/* ... más secciones si las necesitas en la columna derecha ... */}
+          <section className="bg-white p-4 rounded-lg shadow">
+            {segurosArray.length > 0 && segurosArray.map((seguro) => (
+              <TablaCoberturas
+                key={seguro.id}
+                tiposeguro={seguro.tiposeguro}
+                nombreSeguro={seguro.Seguro.empresa}
+              />
+            ))}
+          </section>
         </div>
       </div>
       
+      {/* Modales */}
       {showPaymentModal && datosRenter && datosAuto && (
         <FormularioPago isOpen={showPaymentModal} onClose={() => setShowPaymentModal(false)} carModel={datosAuto.modelo} carPrice={precioEstimado} nombreUsuario={datosRenter.nombre} />
       )}
