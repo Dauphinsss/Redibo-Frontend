@@ -25,15 +25,18 @@ import { SolicitudRecodePost } from "@/app/reserva/interface/EnviarGuardarNotif_
 import { toast } from "sonner";
 import { getInsuranceByID } from "@/app/reserva/services/services_reserva";
 import { SeguroEstructurado } from "@/app/reserva/interface/CoberturaForm_Interface_Recode";
+import { Notificacion } from "@/app/reserva/interface/NotificacionSolicitud_Recode";
 
 interface Props {
   id_carro: number;
   onSolicitudExitosa: () => void;
+  onNuevaNotificacion: (notificacion: Notificacion | null) => void;
 }
 
 export default function FormularioSolicitud({
   id_carro,
   onSolicitudExitosa,
+  
 }: Props) {
   const router = useRouter();
 

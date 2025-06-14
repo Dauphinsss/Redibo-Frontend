@@ -40,9 +40,7 @@ export default function CondicionVisualPage() {
             onSolicitudExitosa={handleSolicitudExitosa}
             onNuevaNotificacion={handleNuevaNotificacion}
           />
-        </div>
-        
-        
+        </div>        
       </div>
     </main>
   );
