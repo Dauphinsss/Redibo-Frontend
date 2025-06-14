@@ -202,6 +202,7 @@ export default function Home({ ciudad, fechaInicio, fechaFin }: Props) {
           <InfiniteFilterCarousel
             autosFiltrados={autosFiltrados}
             setAutosFiltrados={setAutosFiltrados}
+            autosVisibles={autosVisibles}
             autos={autos}
             gpsActive={gpsActive}
             onGpsToggle={toggleGPSFilter}

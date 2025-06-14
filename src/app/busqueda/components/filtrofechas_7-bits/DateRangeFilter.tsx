@@ -8,11 +8,15 @@ import { useCallback, useEffect, useState } from "react"
 interface Props {
   autosActuales: Auto[]
   setAutosFiltrados: (autos: Auto[]) => void
+  autosVisibles: number
+  autosFiltrados: Auto[]
 }
 
 const DateRangeFilter: React.FC<Props> = ({
   autosActuales,
   setAutosFiltrados,
+  autosVisibles,
+  autosFiltrados
 }) => {
 
   const [fechaInicio, setFechaInicio] = useState("");
@@ -108,6 +112,11 @@ const DateRangeFilter: React.FC<Props> = ({
             className="border px-2 py-1 rounded text-sm"
           />
         </div>
+
+         <p className="text-xs text-gray-600">
+          Mostrando <span className="font-semibold">{autosVisibles}</span> de <span className="font-semibold">{autosFiltrados.length}</span> resultados
+        </p> 
+
         <div className="flex gap-2 pt-2">
           <Button
             size="sm"

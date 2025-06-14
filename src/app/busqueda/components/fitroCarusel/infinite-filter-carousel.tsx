@@ -37,6 +37,7 @@ interface Marca {
 interface InfiniteFilterCarouselProps {
   autosFiltrados: Auto[]
   autos: Auto[]
+  autosVisibles: number
   setAutosFiltrados: (autos: Auto[]) => void
 
   gpsActive: boolean
@@ -72,6 +73,7 @@ interface InfiniteFilterCarouselProps {
 export function InfiniteFilterCarousel({
   autosFiltrados,
   autos,
+  autosVisibles,
   setAutosFiltrados,
   gpsActive,
   onGpsToggle,
@@ -120,6 +122,8 @@ export function InfiniteFilterCarousel({
         <DateRangeFilter
           autosActuales={autosFiltrados}
           setAutosFiltrados={setAutosFiltrados}
+          autosVisibles={autosVisibles}
+          autosFiltrados={autosFiltrados}
         />
       )
     },
