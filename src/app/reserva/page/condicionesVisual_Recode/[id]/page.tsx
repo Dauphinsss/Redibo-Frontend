@@ -38,7 +38,6 @@ export default function CondicionVisualPage() {
           <FormularioSolicitud
             id_carro={id_carro}
             onSolicitudExitosa={handleSolicitudExitosa}
-            onNuevaNotificacion={handleNuevaNotificacion}
           />
         </div>        
       </div>
