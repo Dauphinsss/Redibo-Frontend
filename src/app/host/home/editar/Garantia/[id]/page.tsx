@@ -8,11 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
+import { axiosInstance } from "@/api/axios";
 
 export default function GarantiaPage() {
   const router = useRouter();
   const { id: id_carro } = useParams(); // id del carro
-  const BASE_URL = "http://localhost:4000/api";
+  //const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
   const [loading, setLoading] = useState(true);
   const [garantia, setGarantia] = useState({
@@ -27,7 +28,7 @@ export default function GarantiaPage() {
   useEffect(() => {
     async function fetchGarantia() {
       try {
-        const res = await axios.get(`${BASE_URL}/garantias/carro/${id_carro}`);
+        const res = await axiosInstance.get(`/api/garantias/carro/${id_carro}`);
         // Si no hay garantía, api responde { garantia: null }
         if (res.data && res.data.garantia) {
           const g = res.data.garantia;
@@ -81,16 +82,16 @@ export default function GarantiaPage() {
     console.log("ID de la garantía que se enviará:", garantia.id); //
     try {
       if (garantia.id) {
-        // Actualizar garantía existente
-        await axios.patch(`${BASE_URL}/garantias/${garantia.id}`, {
+        
+        await axiosInstance.patch(`/api/garantias/${garantia.id}`, {
           precio: garantia.precio,
           descripcion: garantia.descripcion,
           pagado: garantia.pagado,
           fecha_limite: garantia.fecha_limite,
         });
       } else {
-        // Crear nueva garantía asociada a id_carro
-        await axios.post(`${BASE_URL}/garantias`, {
+        
+        await axiosInstance.post(`/api/garantias`, {
           precio: garantia.precio,
           descripcion: garantia.descripcion,
           pagado: garantia.pagado,
