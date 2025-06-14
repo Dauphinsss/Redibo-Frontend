@@ -23,6 +23,7 @@ import {
 
 // ⬇️ Importa la campana
 import { NotificacionesCampana } from "@/components/ui/CampanaNotificaciones";
+import { Notificacion } from "@/app/reserva/interface/NotificacionSolicitud_Recode";
 
 export default function Header() {
   const [user, setUser] = useState<{ nombre: string; foto: string } | null>(
@@ -30,6 +31,7 @@ export default function Header() {
   );
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
+  const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
 
   useEffect(() => {
     const nombre = localStorage.getItem("nombre");
