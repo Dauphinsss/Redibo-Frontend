@@ -174,39 +174,79 @@ export default function FormularioSolicitud({
   return (
     <div className="flex flex-col gap-6 max-w-6xl mx-auto px-4">
       
-      {/* --- INICIO DE LA SECCIÓN MODIFICADA --- */}
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-8">
         
-        {/* Columna Izquierda (Contenido Principal) */}
-        <div className="flex-grow space-y-6">
-          <section className="bg-white p-4 rounded-lg shadow">
-            <h2 className="text-lg font-semibold mb-4">Selecciona tus fechas</h2>
-            <FechasAlquiler onFechasSeleccionadas={setFechas} />
-          </section>
+        {/* --- COLUMNA IZQUIERDA: Contenido principal y botón de reserva --- */}
+        <div className="flex-grow flex flex-col gap-6">
+          {/* Contenido principal */}
+          <div className="space-y-6">
+            <section className="bg-white p-4 rounded-lg shadow">
+              <h2 className="text-lg font-semibold mb-4">Selecciona tus fechas</h2>
+              <FechasAlquiler onFechasSeleccionadas={setFechas} />
+            </section>
 
-          <section className="bg-white p-4 rounded-lg shadow">
-            {segurosArray.length > 0 && segurosArray.map((seguro) => (
-              <TablaCoberturas
-                key={seguro.id}
-                tiposeguro={seguro.tiposeguro}
-                nombreSeguro={seguro.Seguro.empresa}
-              />
-            ))}
-          </section>
+            <section className="bg-white p-4 rounded-lg shadow">
+              {segurosArray.length > 0 && segurosArray.map((seguro) => (
+                <TablaCoberturas
+                  key={seguro.id}
+                  tiposeguro={seguro.tiposeguro}
+                  nombreSeguro={seguro.Seguro.empresa}
+                />
+              ))}
+            </section>
 
-          <TablaCondicionesVisual_Recode id_carro={id_carro} />
-          
-          <SeleccionarConductores 
-            isLoggedIn={!!datosRenter} 
-            conductores={conductores} 
-            seleccionados={conductoresSeleccionados} 
-            onChange={setConductoresSeleccionados} 
-          />
+            <TablaCondicionesVisual_Recode id_carro={id_carro} />
+            
+            <SeleccionarConductores 
+              isLoggedIn={!!datosRenter} 
+              conductores={conductores} 
+              seleccionados={conductoresSeleccionados} 
+              onChange={setConductoresSeleccionados} 
+            />
+          </div>
+
+          {/* Botón de reserva (al final de la columna izquierda) */}
+          <section className="bg-white p-4 rounded-lg shadow mt-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+              <div>
+                <p className="font-semibold">Total estimado: {precioEstimado.toFixed(2)} BOB</p>
+                <p className="text-sm text-gray-600">
+                  {fechas.inicio && fechas.fin ? `${new Date(fechas.inicio).toLocaleDateString()} - ${new Date(fechas.fin).toLocaleDateString()}` : "Selecciona fechas válidas"}
+                </p>
+              </div>
+              
+              <div className="relative inline-block">
+                <Button
+                  onClick={handleReserveClick}
+                  disabled={isSubmitting}
+                  className="bg-black hover:bg-gray-800 text-white px-6 py-2"
+                >
+                  {isSubmitting ? "Procesando..." : "Reservar"}
+                </Button>
+                
+                {showMenu && (
+                  <div ref={menuRef} className="absolute right-0 bottom-full mb-2 z-50 w-56 bg-white rounded-md shadow-lg border border-gray-200">
+                    <div className="p-3 hover:bg-gray-100 cursor-pointer" onClick={handleReserveWithoutPayment}>
+                      <span className="font-medium">Reservar sin Pago</span>
+                    </div>
+                    <Separator />
+                    <div className="p-3 hover:bg-gray-100 cursor-pointer" onClick={() => { setShowMenu(false); handleAuthenticatedAction(() => setShowPaymentModal(true)); }}>
+                      <span className="font-medium">Pago de Reserva</span>
+                    </div>
+                    <Separator />
+                    <div className="p-3 hover:bg-gray-100 cursor-pointer" onClick={() => { setShowMenu(false); handleAuthenticatedAction(() => setShowGarantiaModal(true)); }}>
+                      <span className="font-medium">Pago por Garantía</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
         </div>
 
-        {/* Columna Derecha (Precio Desglosado) */}
+        {/* --- COLUMNA DERECHA: Solo el precio desglosado --- */}
         <div className="w-full lg:w-80 flex-shrink-0">
-          <div className="sticky top-8"> {/* 'sticky' hace que se quede fijo al hacer scroll */}
+          <div className="sticky top-8">
             {fechas.inicio && fechas.fin && (
               <section className="bg-white p-4 rounded-lg shadow">
                 <PrecioDesglosado 
@@ -219,45 +259,6 @@ export default function FormularioSolicitud({
           </div>
         </div>
       </div>
-      {/* --- FIN DE LA SECCIÓN MODIFICADA --- */}
-
-      {/* Sección de Reserva y Botón (se mantiene abajo) */}
-      <section className="bg-white p-4 rounded-lg shadow">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div>
-            <p className="font-semibold">Total estimado: {precioEstimado.toFixed(2)} BOB</p>
-            <p className="text-sm text-gray-600">
-              {fechas.inicio && fechas.fin ? `${new Date(fechas.inicio).toLocaleDateString()} - ${new Date(fechas.fin).toLocaleDateString()}` : "Selecciona fechas válidas"}
-            </p>
-          </div>
-          
-          <div className="relative inline-block">
-            <Button
-              onClick={handleReserveClick}
-              disabled={isSubmitting}
-              className="bg-black hover:bg-gray-800 text-white px-6 py-2"
-            >
-              {isSubmitting ? "Procesando..." : "Reservar"}
-            </Button>
-            
-            {showMenu && (
-              <div ref={menuRef} className="absolute right-0 bottom-full mb-2 z-50 w-56 bg-white rounded-md shadow-lg border border-gray-200">
-                <div className="p-3 hover:bg-gray-100 cursor-pointer" onClick={handleReserveWithoutPayment}>
-                  <span className="font-medium">Reservar sin Pago</span>
-                </div>
-                <Separator />
-                <div className="p-3 hover:bg-gray-100 cursor-pointer" onClick={() => { setShowMenu(false); handleAuthenticatedAction(() => setShowPaymentModal(true)); }}>
-                  <span className="font-medium">Pago de Reserva</span>
-                </div>
-                <Separator />
-                <div className="p-3 hover:bg-gray-100 cursor-pointer" onClick={() => { setShowMenu(false); handleAuthenticatedAction(() => setShowGarantiaModal(true)); }}>
-                  <span className="font-medium">Pago por Garantía</span>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
 
       {/* Modales (se mantienen fuera del layout principal) */}
       {showPaymentModal && datosRenter && datosAuto && (
