@@ -449,7 +449,8 @@ export function PersonalInfo() {
             Nombre Completo
           </Label>
           <div className="relative min-h-[6.5rem]">
-            <div className={`border rounded bg-gray-50 px-3 py-2 h-[2.75rem] flex items-center ${
+            <div
+              className={`border rounded bg-gray-50 px-3 py-2 h-[2.75rem] flex items-center ${
                 errores.nombre ? "border-red-500" : ""
               }`}
             >
@@ -463,9 +464,11 @@ export function PersonalInfo() {
                   autoFocus
                 />
               ) : (
-                <span className="block w-full text-gray-800">
-                  {userData.nombre || "—"}
-                </span>
+                <div className="w-full text-gray-800 truncate">
+                  <div className="truncate w-full">
+                    {userData.nombre || "—"}
+                  </div>
+                </div>
               )}
 
               {editandoNombre ? (
@@ -586,7 +589,7 @@ export function PersonalInfo() {
                 <input
                   type="text"
                   id="telefono"
-                  className="w-full bg-transparent outline-none text-gray-800" 
+                  className="w-full bg-transparent outline-none text-gray-800"
                   value={valorTelefono}
                   maxLength={8}
                   onChange={(e) =>
@@ -825,7 +828,9 @@ export function PersonalInfo() {
                   onChange={(e) => setValorGenero(e.target.value)}
                   autoFocus
                 >
-                  <option value="" disabled>Seleccione un género</option>
+                  <option value="" disabled>
+                    Seleccione un género
+                  </option>
                   <option value="MASCULINO">Masculino</option>
                   <option value="FEMENINO">Femenino</option>
                   <option value="OTRO">Otro</option>
@@ -946,7 +951,9 @@ export function PersonalInfo() {
                   onChange={(e) => setValorCiudad(e.target.value)}
                   autoFocus
                 >
-                  <option value="" disabled>Seleccione una ciudad</option>
+                  <option value="" disabled>
+                    Seleccione una ciudad
+                  </option>
                   {listaCiudades.map((ciud) => (
                     <option key={ciud.id} value={ciud.nombre}>
                       {ciud.nombre}
