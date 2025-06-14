@@ -286,7 +286,7 @@ export function useAutos(cantidadPorLote = 8, radio: number, punto: { lon: numbe
       console.log("Aplicando filtro de transmisión:", filtrosTransmision);
       resultado = resultado.filter(auto => {
         return filtrosTransmision.some(transmision =>
-          auto.transmision.toLowerCase().includes(transmision.toLowerCase())
+          normalizarTexto(auto.transmision).includes(normalizarTexto(transmision))
         );
       });
     }
