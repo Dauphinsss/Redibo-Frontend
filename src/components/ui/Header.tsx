@@ -184,7 +184,11 @@ export default function Header() {
           {user ? (
             <>
               {/* 🔔 Campana al lado del avatar */}
-              <NotificacionesCampana />
+              <NotificacionesCampana 
+                notificaciones={notificaciones}
+                onAceptar={(id) => console.log('Aceptar:', id)}
+                onRechazar={(id) => console.log('Rechazar:', id)}
+              />
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
