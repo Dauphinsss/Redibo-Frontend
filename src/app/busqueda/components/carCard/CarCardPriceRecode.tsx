@@ -30,9 +30,6 @@ function CarCardPrice({ precioOficial, precioDescuento, precioPorDia, id }: Prop
                 <p className="text-xl font-bold">BOB. {precioOficial.toFixed(2)}</p>
                 <p className="text-gray-400 line-through">BOB. {precioDescuento.toFixed(2)}</p>
                 <p className="text-sm text-gray-600">Por día: BOB. {precioPorDia.toFixed(2)}</p>
-                <p className="text-sm text-gray-600">{fechaInicio}</p>
-                <p className="text-sm text-gray-600">{fechaFin}</p>
-                <p className="text-sm text-gray-600">{ciudad}</p>
             </div>
             {/* 4. Usamos la URL construida en el componente Link */}
             <Link href={href} target="_blank">
