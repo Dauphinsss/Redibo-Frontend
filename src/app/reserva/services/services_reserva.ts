@@ -7,6 +7,8 @@ import { RawCondicionesUsoResponse } from "../interface/RawCondicionesUsoVisuali
 import { transformCondiciones_Recode } from "@/app/reserva/utils/transformCondicionesVisuali_Recode";
 import { ValidarInterface, SeguroRawRecode } from "@/app/reserva/interface/CoberturaForm_Interface_Recode";
 import { transformSeguroTodo_Recode } from "../utils/transforSeguro_Recode";
+import { apiRecodePuntos } from "@/api/apis_Recode";
+import { apiRecodeComentario } from "@/api/apis_Recode";
 import axios from "axios";
 
 export const getCarById = async (id: string) => {
@@ -82,4 +84,53 @@ export const getInsuranceByID = async (id_carro: string): Promise<ValidarInterfa
         console.error(`Error inesperado al obtener el auto con ID ${id_carro}:`, error);
         throw error;
     }
+};
+//enpoint de la hu 14 15  y 19Add commentMore actions
+
+export const getCalificacionesHost = async (id_host: number) => {
+  try {
+    const response = await apiRecodePuntos.get(`/userhost/calificacionesGet/${id_host}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener calificaciones del host:", error);
+    return null;
+  }
+};
+
+export const getComentariosHost = async (id_host: number) => {
+  try {
+    const response = await apiRecodeComentario.get(`/userhost/comentarioGet/${id_host}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener comentarios del host:", error);
+    return null;
+  }
+};
+
+export const postComentarioHost = async (id_host: number, id_renter: number, comentario: string) => {
+  try {
+    const response = await apiRecodeComentario.post("/userhost/comentarioHostPost", {
+      id_host,
+      id_renter,
+      comentario,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al comentar al host:", error);
+    return null;
+  }
+};
+
+export const postCalificacionHost = async (id_host: number, id_renter: number, calificacion: number) => {
+  try {
+    const response = await apiRecodePuntos.post("/userhost/calificacionesPost", {
+      id_host,
+      id_renter,
+      calificacion,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al calificar al host:", error);
+    return null;
+  }
 };
