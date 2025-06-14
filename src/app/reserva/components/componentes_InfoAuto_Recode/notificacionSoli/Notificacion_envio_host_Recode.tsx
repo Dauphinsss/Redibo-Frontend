@@ -23,6 +23,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { SeguroEstructurado, TipoCobertura } from "@/app/reserva/interface/CoberturaForm_Interface_Recode";
 import { getInsuranceByID } from "@/app/reserva/services/services_reserva";
+import { useSearchStore } from "@/app/busqueda/store/searchStore";
 
 interface Props {
   id_carro: number;
@@ -50,6 +51,8 @@ export default function FormularioSolicitud({
 
   const { enviarSolicitud, cargando: isSubmitting, error: submissionError } = useEnviarSolicitudRecode();
   const { fetchNotif } = useObtenerNotif();
+
+  
 
   const [segurosArray, setSegurosArray] = useState<SeguroEstructurado[]>([]);
   useEffect(() => {
@@ -169,34 +172,63 @@ export default function FormularioSolicitud({
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-4xl mx-auto px-4">
-      <section className="bg-white p-4 rounded-lg shadow"><h2 className="text-lg font-semibold mb-4">Selecciona tus fechas</h2><FechasAlquiler onFechasSeleccionadas={setFechas} /></section>
+    <div className="flex flex-col gap-6 max-w-6xl mx-auto px-4">
+      
+      {/* --- INICIO DE LA SECCIÓN MODIFICADA --- */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        
+        {/* Columna Izquierda (Contenido Principal) */}
+        <div className="flex-grow space-y-6">
+          <section className="bg-white p-4 rounded-lg shadow">
+            <h2 className="text-lg font-semibold mb-4">Selecciona tus fechas</h2>
+            <FechasAlquiler onFechasSeleccionadas={setFechas} />
+          </section>
 
-      <section className="bg-white p-4 rounded-lg shadow">
-        {segurosArray.length > 0 && segurosArray.map((seguro) => (
-          <TablaCoberturas
-            key={seguro.id}
-            tiposeguro={seguro.tiposeguro}
-            nombreSeguro={seguro.Seguro.empresa}
+          <section className="bg-white p-4 rounded-lg shadow">
+            {segurosArray.length > 0 && segurosArray.map((seguro) => (
+              <TablaCoberturas
+                key={seguro.id}
+                tiposeguro={seguro.tiposeguro}
+                nombreSeguro={seguro.Seguro.empresa}
+              />
+            ))}
+          </section>
+
+          <TablaCondicionesVisual_Recode id_carro={id_carro} />
+          
+          <SeleccionarConductores 
+            isLoggedIn={!!datosRenter} 
+            conductores={conductores} 
+            seleccionados={conductoresSeleccionados} 
+            onChange={setConductoresSeleccionados} 
           />
-        ))}
-      </section>
+        </div>
 
-      {fechas.inicio && fechas.fin && (<section className="bg-white p-4 rounded-lg shadow"><PrecioDesglosado id_carro={id_carro} fechas={fechas} onPrecioCalculado={setPrecioEstimado} /></section>)}
-      <TablaCondicionesVisual_Recode id_carro={id_carro} />
-      
-      <SeleccionarConductores 
-        isLoggedIn={!!datosRenter} 
-        conductores={conductores} 
-        seleccionados={conductoresSeleccionados} 
-        onChange={setConductoresSeleccionados} 
-      />
-      
+        {/* Columna Derecha (Precio Desglosado) */}
+        <div className="w-full lg:w-80 flex-shrink-0">
+          <div className="sticky top-8"> {/* 'sticky' hace que se quede fijo al hacer scroll */}
+            {fechas.inicio && fechas.fin && (
+              <section className="bg-white p-4 rounded-lg shadow">
+                <PrecioDesglosado 
+                  id_carro={id_carro} 
+                  fechas={fechas} 
+                  onPrecioCalculado={setPrecioEstimado} 
+                />
+              </section>
+            )}
+          </div>
+        </div>
+      </div>
+      {/* --- FIN DE LA SECCIÓN MODIFICADA --- */}
+
+      {/* Sección de Reserva y Botón (se mantiene abajo) */}
       <section className="bg-white p-4 rounded-lg shadow">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div>
             <p className="font-semibold">Total estimado: {precioEstimado.toFixed(2)} BOB</p>
-            <p className="text-sm text-gray-600">{fechas.inicio && fechas.fin ? `${new Date(fechas.inicio).toLocaleDateString()} - ${new Date(fechas.fin).toLocaleDateString()}` : "Selecciona fechas válidas"}</p>
+            <p className="text-sm text-gray-600">
+              {fechas.inicio && fechas.fin ? `${new Date(fechas.inicio).toLocaleDateString()} - ${new Date(fechas.fin).toLocaleDateString()}` : "Selecciona fechas válidas"}
+            </p>
           </div>
           
           <div className="relative inline-block">
@@ -227,6 +259,7 @@ export default function FormularioSolicitud({
         </div>
       </section>
 
+      {/* Modales (se mantienen fuera del layout principal) */}
       {showPaymentModal && datosRenter && datosAuto && (
         <FormularioPago isOpen={showPaymentModal} onClose={() => setShowPaymentModal(false)} carModel={datosAuto.modelo} carPrice={precioEstimado} nombreUsuario={datosRenter.nombre} />
       )}
