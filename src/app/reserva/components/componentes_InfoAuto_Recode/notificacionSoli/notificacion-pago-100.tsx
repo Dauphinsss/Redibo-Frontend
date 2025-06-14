@@ -7,12 +7,12 @@ interface NotificacionPago100Props {
   monto: string
   onClose: () => void
   usuario?: string
+  ubicacion?: string
 }
 
-export default function NotificacionPago100({ monto, onClose,usuario }: NotificacionPago100Props) {
+export default function NotificacionPago100({ monto, onClose,usuario, ubicacion }: NotificacionPago100Props) {
   const [fecha, setFecha] = useState("")
   const [hora, setHora] = useState("")
-  const [ubicacion] = useState("Av. Principal 123")
 
   useEffect(() => {
     // Bloquear interacciones con elementos subyacentes
@@ -66,7 +66,7 @@ export default function NotificacionPago100({ monto, onClose,usuario }: Notifica
         </div>
 
         {/* Título y mensaje */}
-        <h2 className="text-lg font-semibold text-center mb-1">¡Depósito Registrado!</h2>
+        <h2 className="text-lg font-semibold text-center mb-1">¡Reserva registrada!</h2>
         <p className="text-sm text-center text-gray-600 mb-3">Realizaste una reserva del 100% (Bs. {monto}).</p>
 
         {/* Detalles */}

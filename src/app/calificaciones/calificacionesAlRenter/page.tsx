@@ -760,7 +760,10 @@ export default function CalificacionesAlRenterPage() {
                                       {estaDentroDePeriodoCalificacion(renter.fechaFin?.toString() || "") && (
                                         <button
                                           onClick={() => {
-                                            if (calificacion) handleBorrar(calificacion.id)
+                                            const calificacion = calificaciones.find((c) => c.reservaId === renter.idReserva);
+                                            if (calificacion) {
+                                                handleBorrar(calificacion.id);
+                                            }
                                           }}
                                           className="delete-button"
                                           aria-label="Eliminar calificación"
@@ -1034,7 +1037,12 @@ export default function CalificacionesAlRenterPage() {
                           )}
 
                           {selected.rated && estaDentroDePeriodoCalificacion(selected.fechaFin?.toString() || "") && (
-                            <button onClick={() => handleBorrar(selected.id)} className="delete-rating-button">
+                            <button onClick={() => {
+                                const calificacion = calificaciones.find((c) => c.reservaId === selected.idReserva);
+                                if (calificacion) {
+                                    handleBorrar(calificacion.id);
+                                }
+                            }} className="delete-rating-button">
                               <Trash2 size={16} />
                               Borrar calificación
                             </button>

@@ -253,7 +253,16 @@ const TablaComponentes_Recode = forwardRef<{ enviarFormulario: () => void }, Tab
           title="Información incompleta"
           description="Debes seleccionar el estado del combustible antes de continuar."
           variant="warning"
-        />
+        >
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setMostrarAdvertencia(false)}
+                className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300 transition"
+              >
+                Cerrar
+              </button>
+            </div>
+        </ModalRecode>
 
         <div className="w-full max-w-[760px] mx-auto border border-black rounded-[10px] overflow-hidden">
           <div className="sticky top-0 z-10 bg-white">

@@ -76,7 +76,6 @@ interface CarDashboardProps {
   hostId: string;
 }
 
-
 interface AlertCard {
     id: string; 
     type: 'reservas' | 'mantenimientos' | 'inactivos' | 'calificaciones'; 
@@ -86,7 +85,6 @@ interface AlertCard {
     icon: JSX.Element; 
     href: string;
 }
-
 
 interface InactiveCarListItem {
     id: number;
@@ -108,7 +106,6 @@ function tiempoInactivo(fechaISO?: string) {
     return `Inactivo desde hace ${diffDias} días`;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Esta interfaz se usa en el componente AlertsPanelClient
 interface AlertsPanelProps {
     alertas: {
         proximasReservas: number;
@@ -129,16 +126,18 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [debugResponse, setDebugResponse] = useState<Record<string, unknown> | null>(null);
-  const [selectedCarId, setSelectedCarId] = useState<number | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- stats se usa en el componente
+  const [selectedCarId, setSelectedCarId] = useState<number | null>(() => {
+    // Recuperar el ID del auto seleccionado del localStorage al inicializar
+    if (typeof window !== 'undefined') {
+      const savedCarId = localStorage.getItem('selectedCarId');
+      return savedCarId ? parseInt(savedCarId, 10) : null;
+    }
+    return null;
+  });
   const [stats, setStats] = useState<{total: number, autos_con_placa: number} | null>(null);
-
   
   const [inactiveCarsList, setInactiveCarsList] = useState<InactiveCarListItem[]>([]);
-
-  
   const [pendingMaintenanceCarsList, setPendingMaintenanceCarsList] = useState<Car[]>([]);
-
   
   const [alertas, setAlertas] = useState({
     proximasReservas: 0,
@@ -147,7 +146,6 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
     calificacionesPendientes: 0,
   });
 
-  
   const initialAlertsOrder: AlertCard[] = [
     {
         id: 'proximasReservas',
@@ -187,10 +185,6 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
     },
   ];
 
-  
-  // const onDragEnd = (result: DropResult) => { ... };
-
-  
   const fetchAllData = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -275,10 +269,15 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
             total: carsData.total || 0,
             autos_con_placa: carsData.autos_con_placa || 0
           });
+
+          // Verificar si el auto seleccionado todavía existe en la lista
+          if (selectedCarId && !formattedCars.some(car => car.id === selectedCarId)) {
+            setSelectedCarId(null);
+            localStorage.removeItem('selectedCarId');
+          }
         }
       }
 
-      // Procesar mantenimientos vencidos
       if (mantenimientosResponse.ok) {
         const mantenimientosData = await mantenimientosResponse.json();
         if (Array.isArray(mantenimientosData)) {
@@ -346,11 +345,23 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
     } finally {
       setLoading(false); 
     }
-  }, [hostId]);
+  }, [hostId, selectedCarId]);
 
   const refreshAlerts = useCallback(() => {
     fetchAllData();
   }, [fetchAllData]);
+
+  const handleSelectCar = useCallback((carId: number) => {
+    setSelectedCarId(carId);
+    // Guardar el ID del auto seleccionado en el localStorage
+    localStorage.setItem('selectedCarId', carId.toString());
+  }, []);
+
+  const handleCloseCarDetails = useCallback(() => {
+    setSelectedCarId(null);
+    // Eliminar el ID del auto seleccionado del localStorage
+    localStorage.removeItem('selectedCarId');
+  }, []);
 
   useEffect(() => {
     fetchAllData();
@@ -398,7 +409,6 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
      );
   }
 
-  
    if (!loading && cars.length === 0 && alertas.proximasReservas === 0 && alertas.mantenimientos === 0 && alertas.vehiculosInactivos === 0 && alertas.calificacionesPendientes === 0) {
      return (
        <div className="p-6 text-center">
@@ -413,9 +423,7 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
 
   return (
     <div className="p-2 sm:p-6 max-w-6xl mx-auto">
-      {/* Panel de Alertas - Importado dinámicamente */}
       <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Panel de Alertas</h1>
-      {/* Renderizar el componente cliente pasándole los datos necesarios */}
       <AlertsPanelClient 
         alertas={alertas} 
         initialAlertsOrder={initialAlertsOrder} 
@@ -426,7 +434,6 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
         setMostrarCartilla={setMostrarCartilla}
       />
 
-      {/* Cartilla amarilla solo si corresponde */}
       {mostrarCartilla === 'inactivos' && inactiveCarsList.length > 0 && (
         <div id="inactive-vehicles-list" className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm">
           <h2 className="text-lg font-semibold text-yellow-800 mb-3">Vehículos Inactivos ({inactiveCarsList.length})</h2>
@@ -456,65 +463,62 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
         </div>
       )}
 
-      {/* Tablero de Estado de Automóviles */}
       <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Tablero de Estado de Automóviles</h1>
       
-      {/* Listado de vehículos en tarjetas */}
-       {loading && cars.length === 0 && !error ? (
-         <div className="p-6 text-center">Cargando autos...</div>
-       ) : error && cars.length === 0 ? (
-         <div className="p-6 text-center text-red-500">Error al cargar autos: {error}</div>
-       ) : cars.length === 0 ? (
-         <div className="bg-gray-50 p-8 rounded-lg shadow-sm max-w-2xl mx-auto text-center">
-           <p className="text-gray-600 text-lg mb-4">No tienes autos registrados</p>
-           <p className="text-gray-500">Parece que aún no has agregado ningún vehículo a tu flota.</p>
-           <p className="text-gray-500 mt-2">Puedes agregar un nuevo vehículo utilizando el botón correspondiente.</p>
-         </div>
-       ) : (
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-           {cars.map((car) => (
-             <div 
-               key={car.id}
-               className={`border rounded-lg p-3 cursor-pointer transition-all overflow-hidden ${
-                 selectedCarId === car.id 
-                   ? 'border-blue-500 ring-2 ring-blue-200 bg-blue-50' 
-                   : 'hover:border-gray-300 hover:bg-gray-50'
-               }`}
-               onClick={() => setSelectedCarId(car.id)}
-             >
-               <div className="flex justify-between items-start">
-                 <div className="truncate mr-2">
-                   <h3 className="font-bold text-base sm:text-lg truncate">{car.marca} {car.modelo}</h3>
-                   <p className="text-gray-600 text-sm truncate">{car.anio} • {car.placa}</p>
-                 </div>
-                 <span className={`px-2 py-1 text-xs rounded-full flex-shrink-0 ${
-                   car.estado === 'DISPONIBLE' 
-                     ? 'bg-green-100 text-green-800' 
-                     : car.estado === 'RESERVADO'
-                       ? 'bg-yellow-100 text-yellow-800'
-                       : 'bg-red-100 text-red-800'
-                 }`}>
-                   {car.estado}
-                 </span>
-               </div>
-               <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2 text-sm">
-                 <div className="truncate"><span className="text-gray-500">Transmisión:</span> {car.transmision}</div>
-                 <div className="truncate"><span className="text-gray-500">Precio/día:</span> ${car.precio_por_dia}</div>
-                 <div className="truncate">
-                   <span className="text-gray-500">Combustible:</span> 
-                   {car.combustiblesporCarro && car.combustiblesporCarro[0]?.combustible?.tipoDeCombustible || 'No especificado'}
-                 </div>
-                 <div className="truncate">
-                   <span className="text-gray-500">Ciudad:</span> 
-                   {car.direccion?.provincia?.ciudad?.nombre || 'Ciudad no especificada'}
-                 </div>
-               </div>
-             </div>
-           ))}
-         </div>
-       )}
+      {loading && cars.length === 0 && !error ? (
+        <div className="p-6 text-center">Cargando autos...</div>
+      ) : error && cars.length === 0 ? (
+        <div className="p-6 text-center text-red-500">Error al cargar autos: {error}</div>
+      ) : cars.length === 0 ? (
+        <div className="bg-gray-50 p-8 rounded-lg shadow-sm max-w-2xl mx-auto text-center">
+          <p className="text-gray-600 text-lg mb-4">No tienes autos registrados</p>
+          <p className="text-gray-500">Parece que aún no has agregado ningún vehículo a tu flota.</p>
+          <p className="text-gray-500 mt-2">Puedes agregar un nuevo vehículo utilizando el botón correspondiente.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+          {cars.map((car) => (
+            <div 
+              key={car.id}
+              className={`border rounded-lg p-3 cursor-pointer transition-all overflow-hidden ${
+                selectedCarId === car.id 
+                  ? 'border-blue-500 ring-2 ring-blue-200 bg-blue-50' 
+                  : 'hover:border-gray-300 hover:bg-gray-50'
+              }`}
+              onClick={() => handleSelectCar(car.id)}
+            >
+              <div className="flex justify-between items-start">
+                <div className="truncate mr-2">
+                  <h3 className="font-bold text-base sm:text-lg truncate">{car.marca} {car.modelo}</h3>
+                  <p className="text-gray-600 text-sm truncate">{car.anio} • {car.placa}</p>
+                </div>
+                <span className={`px-2 py-1 text-xs rounded-full flex-shrink-0 ${
+                  car.estado === 'DISPONIBLE' 
+                    ? 'bg-green-100 text-green-800' 
+                    : car.estado === 'RESERVADO'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : 'bg-red-100 text-red-800'
+                }`}>
+                  {car.estado}
+                </span>
+              </div>
+              <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2 text-sm">
+                <div className="break-words min-w-0"><span className="text-gray-500">Transmisión:</span> {car.transmision}</div>
+                <div className="break-words min-w-0"><span className="text-gray-500">Precio/día:</span> ${car.precio_por_dia}</div>
+                <div className="break-words min-w-0">
+                  <span className="text-gray-500">Combustible:</span> 
+                  {car.combustiblesporCarro && car.combustiblesporCarro[0]?.combustible?.tipoDeCombustible || 'No especificado'}
+                </div>
+                <div className="break-words min-w-0">
+                  <span className="text-gray-500">Ciudad:</span> 
+                  {car.direccion?.provincia?.ciudad?.nombre || 'Ciudad no especificada'}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
-      {/* Detalle del vehículo seleccionado */}
       {selectedCar ? (
         <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md overflow-x-hidden">
           <div className="flex justify-between items-start mb-4">
@@ -522,7 +526,7 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
               {selectedCar.marca} {selectedCar.modelo} ({selectedCar.anio})
             </h2>
             <button 
-              onClick={() => setSelectedCarId(null)}
+              onClick={handleCloseCarDetails}
               className="text-gray-500 hover:text-gray-700 flex-shrink-0"
             >
               Cerrar detalle
@@ -534,19 +538,19 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
               <div className="bg-gray-50 p-3 sm:p-4 rounded">
                 <h3 className="font-medium text-gray-700 mb-2">Información del Vehículo</h3>
                 <div className="space-y-1 sm:space-y-2 text-sm sm:text-base">
-                  <p className="truncate"><strong>VIM:</strong> {selectedCar.vim}</p>
-                  <p className="truncate"><strong>Placa:</strong> {selectedCar.placa || 'No registrada'}</p>
-                  <p className="truncate"><strong>Transmisión:</strong> {selectedCar.transmision}</p>
-                  <p className="truncate"><strong>Asientos/Puertas:</strong> {selectedCar.asientos} / {selectedCar.puertas}</p>
-                  <p className="truncate"><strong>SOAT:</strong> {selectedCar.soat ? 'Vigente' : 'No vigente'}</p>
-                  <p className="truncate"><strong>Mantenimientos:</strong> {selectedCar.num_mantenimientos}</p>
+                  <p className="break-words min-w-0"><strong>VIM:</strong> {selectedCar.vim}</p>
+                  <p className="break-words min-w-0"><strong>Placa:</strong> {selectedCar.placa || 'No registrada'}</p>
+                  <p className="break-words min-w-0"><strong>Transmisión:</strong> {selectedCar.transmision}</p>
+                  <p className="break-words min-w-0"><strong>Asientos/Puertas:</strong> {selectedCar.asientos} / {selectedCar.puertas}</p>
+                  <p className="break-words min-w-0"><strong>SOAT:</strong> {selectedCar.soat ? 'Vigente' : 'No vigente'}</p>
+                  <p className="break-words min-w-0"><strong>Mantenimientos:</strong> {selectedCar.num_mantenimientos}</p>
                 </div>
               </div>
               
               <div className="bg-gray-50 p-3 sm:p-4 rounded">
                 <h3 className="font-medium text-gray-700 mb-2">Ubicación</h3>
-                <p className="truncate text-sm sm:text-base">{selectedCar.direccion?.calle} {selectedCar.direccion?.num_casa && `#${selectedCar.direccion.num_casa}`}</p>
-                <p className="truncate text-sm sm:text-base">{selectedCar.direccion?.provincia?.ciudad?.nombre || 'Ciudad no especificada'}</p>
+                <p className="break-words min-w-0 text-sm sm:text-base">{selectedCar.direccion?.calle} {selectedCar.direccion?.num_casa && `#${selectedCar.direccion.num_casa}`}</p>
+                <p className="break-words min-w-0 text-sm sm:text-base">{selectedCar.direccion?.provincia?.ciudad?.nombre || 'Ciudad no especificada'}</p>
               </div>
             </div>
             
@@ -575,7 +579,7 @@ const CarDashboard = ({ hostId }: CarDashboardProps) => {
                 </div>
                 <div className="bg-purple-50 p-3 sm:p-4 rounded border border-purple-100">
                   <p className="text-xs sm:text-sm text-purple-600">Combustible</p>
-                  <p className="text-xl sm:text-2xl font-bold truncate">
+                  <p className="text-xl sm:text-2xl font-bold break-words min-w-0">
                     {selectedCar.combustiblesporCarro && selectedCar.combustiblesporCarro[0]?.combustible?.tipoDeCombustible || 'No especificado'}
                   </p>
                 </div>

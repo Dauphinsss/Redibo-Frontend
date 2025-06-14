@@ -3,12 +3,14 @@ import React, { useState } from 'react'
 import { useCardByID, useCreatePaymentOrder, useHostById, useRenter, useGarantiaByCarId } from '../hooks/useCarByID'
 import Image from 'next/image'
 import Header from '@/components/ui/Header';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import ConfirmacionReservaOpciones from '@/app/reserva/components/ConfirmacionHost';
+import NotificacionPago100 from "@/app/reserva/components/componentes_InfoAuto_Recode/notificacionSoli/notificacion-pago-100";
 
 export default function View({ id }: { id: number }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const fechaInicio = searchParams.get('fechaInicio');
   const fechaFin = searchParams.get('fechaFin');
@@ -16,9 +18,9 @@ export default function View({ id }: { id: number }) {
 
   const [mostrarModal, setMostrarModal] = useState(false);
   const [showConfirmationOptions, setShowConfirmationOptions] = useState(false);
-  const conductores = typeof window !== "undefined" 
-  ? JSON.parse(localStorage.getItem('conductores_seleccionados') || "[]")
-  : [];
+  const conductores = typeof window !== "undefined"
+    ? JSON.parse(localStorage.getItem('conductores_seleccionados') || "[]")
+    : [];
 
   const { mutate, error, data } = useCreatePaymentOrder();
   const { data: car } = useCardByID(id)
@@ -34,6 +36,7 @@ export default function View({ id }: { id: number }) {
       id_usuario_host: Number(host?.id_host ?? 0),
       id_usuario_renter: Number(renter?.id),
       monto_a_pagar: Number(precio ?? 0),
+      monto_garantia: Number(garantia.precio ?? 0),
     });
     localStorage.removeItem('conductores_seleccionados');
   };
@@ -75,7 +78,7 @@ export default function View({ id }: { id: number }) {
               <h4 className="font-semibold">Conductores seleccionados:</h4>
               {conductores.length > 0 ? (
                 <ul className="ml-4 list-disc text-sm margin-bottom-4">
-                   {conductores.sort().map((nombre: string, i: number) => <li key={i}>{nombre}</li>)}
+                  {conductores.sort().map((nombre: string, i: number) => <li key={i}>{nombre}</li>)}
                 </ul>
               ) : (
                 <p className="text-gray-500">No se seleccionaron conductores para esta reserva.</p>
@@ -93,12 +96,6 @@ export default function View({ id }: { id: number }) {
           {/* Panel derecho */}
           <section className="flex-1 w-full px-10">
             <h2 className="text-xl font-semibold mb-8">¿Cómo quieres pagar?</h2>
-
-            {/* Mock de métodos de pago */}
-            <div className="flex gap-4 mb-10">
-              <div className="flex-1 h-40 bg-gray-300 rounded" />
-              <div className="w-24 h-40 bg-gray-300 rounded" />
-            </div>
 
             {/* Garantía / Total */}
             <div className="space-y-2">
@@ -135,7 +132,7 @@ export default function View({ id }: { id: number }) {
                 id={id.toString()}
                 marca={car?.marca ?? ""}
                 modelo={car?.modelo ?? ""}
-                precio={Number(precio) || 0}
+                precio={Number(car?.precio_por_dia ?? "0")}
                 onReservarSinPagar={() => {
                   setShowConfirmationOptions(false);
                 }}
@@ -159,6 +156,18 @@ export default function View({ id }: { id: number }) {
                   </Link>
                 </div>
               </div>
+            )}
+
+            {mostrarModal && (
+              <NotificacionPago100
+                monto={precio ?? "0"}
+                onClose={() => {
+                  setMostrarModal(false);
+                  router.push('/');
+                }}
+                usuario={renter?.nombre}
+                ubicacion={car?.direccion ?? ''}
+              />
             )}
           </section>
         </div>

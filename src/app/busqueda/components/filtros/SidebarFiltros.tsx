@@ -267,9 +267,8 @@ export default function SidebarFiltros({
               {abierto.caracteristicasAdicionales && (
                 <div className="p-4 space-y-3 max-h-64 overflow-y-auto">
                   {[
-                    "Aire acondicionado", "Bluetooth", "GPS", "Portabicicletas", "Soporte para esquís",
-                    "Pantalla táctil", "Sillas para bebé", "Cámara de reversa", "Asientos de cuero",
-                    "Sistema antirrobo", "Toldo o rack de techo", "Vidrios polarizados", "Sistema de sonido"
+                    "Aire acondicionado","Asientos de cuero","Bluetooth","Cámara de reversa","GPS","Pantalla táctil","Portabicicletas",
+                    "Sillas para bebé","Sistema antirrobo","Sistema de sonido","Soporte para esquís","Toldo o rack de techo","Vidrios polarizados"
                   ].map((carac) => (
                     <label key={carac} className="flex items-center gap-3 cursor-pointer">
                       <input

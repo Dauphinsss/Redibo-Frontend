@@ -42,7 +42,7 @@ const ConfirmacionReservaOpciones: React.FC<Props> = ({
           />
           <button
             onClick={onPagarCompleto}
-            className="bg-black/50 text-white px-4 py-2 rounded"
+            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition-colors"
           >
             Pagar 100%
           </button>

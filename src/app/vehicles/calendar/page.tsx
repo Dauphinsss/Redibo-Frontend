@@ -1,12 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { API_URL } from "@/utils/bakend"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
 import Image from "next/image"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 interface VehicleResponse {
     id: number
@@ -41,18 +43,92 @@ const months = [
     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ]
 
+const weekdaysShort = ["Dom.", "Lun.", "Mar.", "Miérc.", "Juev.", "Vier.", "Sáb."]
+
+const statusConfig = {
+    disponible: { color: "bg-green-500", text: "Disponible" },
+    reservado: { color: "bg-primary", text: "Reservado" },
+    pendiente: { color: "bg-gray-500", text: "Pendiente" },
+    mantenimiento: { color: "bg-destructive", text: "Mantenimiento" }
+}
+
 export default function VehicleCalendarView() {
     const [vehicles, setVehicles] = useState<VehicleResponse[]>([])
     const [reservations, setReservations] = useState<ReservationResponse[]>([])
-    const [selectedMonth, setSelectedMonth] = useState<string>(new Date().getMonth().toString())
-    const [selectedVehicle, setSelectedVehicle] = useState<string>("all")
+    const [selectedMonth, setSelectedMonth] = useState<string>(() => {
+        if (typeof window !== 'undefined') {
+            const savedMonth = localStorage.getItem('calendarSelectedMonth')
+            return savedMonth || new Date().getMonth().toString()
+        }
+        return new Date().getMonth().toString()
+    })
+    const [selectedVehicle, setSelectedVehicle] = useState<string>(() => {
+        if (typeof window !== 'undefined') {
+            const savedVehicle = localStorage.getItem('calendarSelectedVehicle')
+            return savedVehicle || "all"
+        }
+        return "all"
+    })
+    const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
     const [calendarDays, setCalendarDays] = useState<Date[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [userId, setUserId] = useState<string | null>(null)
+    const tableContainerRef = useRef<HTMLDivElement>(null)
+    const [showScrollArrows, setShowScrollArrows] = useState({
+        left: false,
+        right: true
+    })
 
     const currentYear = new Date().getFullYear()
     const monthNumber = parseInt(selectedMonth)
+
+    const getStatusForDay = useCallback((vehicleId: number, day: Date) => {
+        const reservation = reservations.find(r => {
+            const start = new Date(r.fecha_inicio)
+            const end = new Date(r.fecha_fin)
+            start.setHours(0, 0, 0, 0)
+            end.setHours(0, 0, 0, 0)
+            return r.id_carro === vehicleId && day >= start && day <= end
+        })
+
+        if (reservation) {
+            return {
+                status: reservation.estado === "confirmada" ? "reservado" : "pendiente",
+                reservation
+            }
+        }
+
+        const vehicle = vehicles.find(v => v.id === vehicleId)
+        if (!vehicle) return { status: "disponible" }
+
+        if (vehicle.estado === "mantenimiento") return { status: "mantenimiento" }
+
+        return { status: "disponible" }
+    }, [reservations, vehicles])
+
+    const filteredVehicles = (selectedVehicle === "all" 
+        ? vehicles 
+        : vehicles.filter(v => v.id.toString() === selectedVehicle))
+    .filter(vehicle => {
+        if (selectedStatuses.length === 0) return true
+        
+        return calendarDays.some(day => {
+            const { status } = getStatusForDay(vehicle.id, day)
+            return selectedStatuses.includes(status)
+        })
+    })
+
+    useEffect(() => {
+        localStorage.setItem('calendarSelectedMonth', selectedMonth)
+        localStorage.setItem('calendarSelectedVehicle', selectedVehicle)
+    }, [selectedMonth, selectedVehicle])
+
+    useEffect(() => {
+        const daysInMonth = new Date(currentYear, monthNumber + 1, 0).getDate()
+        const days = Array.from({ length: daysInMonth }, (_, i) => new Date(currentYear, monthNumber, i + 1))
+        setCalendarDays(days)
+    }, [monthNumber, currentYear])
 
     useEffect(() => {
         const token = localStorage.getItem("auth_token")
@@ -82,16 +158,6 @@ export default function VehicleCalendarView() {
             setError("No hay sesión activa. Por favor, inicie sesión nuevamente.")
         }
     }, [])
-
-    const filteredVehicles = selectedVehicle === "all"
-        ? vehicles
-        : vehicles.filter(v => v.id.toString() === selectedVehicle)
-
-    useEffect(() => {
-        const daysInMonth = new Date(currentYear, monthNumber + 1, 0).getDate()
-        const days = Array.from({ length: daysInMonth }, (_, i) => new Date(currentYear, monthNumber, i + 1))
-        setCalendarDays(days)
-    }, [monthNumber, currentYear])
 
     useEffect(() => {
         if (!userId) return
@@ -142,37 +208,46 @@ export default function VehicleCalendarView() {
         fetchCalendarData()
     }, [userId, selectedMonth, currentYear])
 
-    const getStatusForDay = (vehicleId: number, day: Date) => {
-        const reservation = reservations.find(r => {
-            const start = new Date(r.fecha_inicio)
-            const end = new Date(r.fecha_fin)
-            start.setHours(0, 0, 0, 0)
-            end.setHours(0, 0, 0, 0)
-            return r.id_carro === vehicleId && day >= start && day <= end
-        })
-
-        if (reservation) {
-            return {
-                status: reservation.estado === "confirmada" ? "reservado" : "pendiente",
-                reservation
-            }
+    const checkScroll = useCallback(() => {
+        if (tableContainerRef.current) {
+            const { scrollLeft, scrollWidth, clientWidth } = tableContainerRef.current
+            setShowScrollArrows({
+                left: scrollLeft > 10,
+                right: scrollLeft < scrollWidth - clientWidth - 10
+            })
         }
+    }, [])
 
-        const vehicle = vehicles.find(v => v.id === vehicleId)
-        if (!vehicle) return { status: "disponible" } // Si no encontramos el vehículo, lo consideramos disponible
+    const scrollTable = useCallback((direction: 'left' | 'right') => {
+        if (tableContainerRef.current) {
+            const scrollAmount = 300
+            tableContainerRef.current.scrollBy({
+                left: direction === 'left' ? -scrollAmount : scrollAmount,
+                behavior: 'smooth'
+            })
+        }
+    }, [])
 
-        if (vehicle.estado === "mantenimiento") return { status: "mantenimiento" }
+    useEffect(() => {
+        const table = tableContainerRef.current
+        if (!table) return
 
-        // Si no hay restricciones de disponibilidad, está disponible
-        return { status: "disponible" }
-    }
+        table.addEventListener('scroll', checkScroll)
+        const resizeObserver = new ResizeObserver(checkScroll)
+        resizeObserver.observe(table)
 
-    // Configuración simplificada a solo 4 estados
-    const statusConfig = {
-        disponible: { color: "bg-green-500", text: "Disponible" },
-        reservado: { color: "bg-primary", text: "Reservado" },
-        pendiente: { color: "bg-gray-500", text: "Pendiente" },
-        mantenimiento: { color: "bg-destructive", text: "Mantenimiento" }
+        return () => {
+            table.removeEventListener('scroll', checkScroll)
+            resizeObserver.disconnect()
+        }
+    }, [checkScroll])
+
+    const handleStatusToggle = (status: string) => {
+        setSelectedStatuses(prev => 
+            prev.includes(status) 
+                ? prev.filter(s => s !== status) 
+                : [...prev, status]
+        )
     }
 
     if (isLoading) {
@@ -214,132 +289,176 @@ export default function VehicleCalendarView() {
             <h1 className="text-2xl font-bold mb-6">Calendario de Vehículos</h1>
 
             <div className="bg-white rounded-lg shadow">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div className="flex flex-col md:flex-row gap-4 mb-6">
-                        <div className="w-full md:w-1/2">
-                            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Seleccionar mes" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {months.map((month, index) => (
-                                        <SelectItem key={index} value={index.toString()}>
-                                            {month}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="w-full md:w-1/2">
-                            <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Seleccionar vehículo" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">Todos los vehículos</SelectItem>
-                                    {vehicles.map((vehicle) => (
-                                        <SelectItem key={vehicle.id} value={vehicle.id.toString()}>
-                                            {vehicle.marca} {vehicle.modelo} ({vehicle.placa})
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 border-b">
+                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                        <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                            <SelectTrigger className="w-full sm:w-[180px]">
+                                <SelectValue placeholder="Seleccionar mes" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {months.map((month, index) => (
+                                    <SelectItem key={index} value={index.toString()}>
+                                        {month}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        
+                        <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
+                            <SelectTrigger className="w-full sm:w-[200px]">
+                                <SelectValue placeholder="Seleccionar vehículo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Todos los vehículos</SelectItem>
+                                {vehicles.map((vehicle) => (
+                                    <SelectItem key={vehicle.id} value={vehicle.id.toString()}>
+                                        {vehicle.marca} {vehicle.modelo} ({vehicle.placa})
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
-                    <div className="flex flex-wrap gap-4">
+                    
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                         {Object.entries(statusConfig).map(([key, { color, text }]) => (
-                            <div key={key} className="flex items-center">
-                                <div className={`w-3 h-3 rounded-full ${color} mr-2`}></div>
-                                <span className="text-sm">{text}</span>
-                            </div>
+                            <button
+                                key={key}
+                                className={`flex items-center gap-1 px-2 py-1 rounded-md transition-colors ${selectedStatuses.includes(key) ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                                onClick={() => handleStatusToggle(key)}
+                            >
+                                <div className={`w-3 h-3 rounded-full ${color}`}></div>
+                                <span className="text-xs sm:text-sm text-gray-600">{text}</span>
+                                {selectedStatuses.includes(key) && (
+                                    <span className="text-xs text-gray-500 ml-1">✓</span>
+                                )}
+                            </button>
                         ))}
+                        {selectedStatuses.length > 0 && (
+                            <button
+                                className="text-xs text-primary hover:underline"
+                                onClick={() => setSelectedStatuses([])}
+                            >
+                                Limpiar filtros
+                            </button>
+                        )}
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="text-xs font-medium text-gray-500 bg-gray-50">
-                                <th className="sticky left-0 bg-gray-50 z-10 p-3 text-left min-w-[180px]">Vehículo</th>
-                                {calendarDays.map(day => (
-                                    <th key={day.getTime()} className="p-3 text-center min-w-[40px]">
-                                        <div className="font-semibold">{day.getDate()}</div>
-                                        <div className="text-xs">{day.toLocaleDateString("es-ES", { weekday: "short" })}</div>
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredVehicles.length > 0 ? (
-                                filteredVehicles.map(vehicle => (
-                                    <tr key={vehicle.id} className="border-t">
-                                        <td className="sticky left-0 bg-white z-10 p-3 border-r">
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex-shrink-0 w-10 h-10 rounded overflow-hidden bg-gray-100 relative">
-                                                    <Image
-                                                        src={vehicle.imagen || "/images/Auto_default.png"}
-                                                        alt={`${vehicle.marca} ${vehicle.modelo}`}
-                                                        width={40}
-                                                        height={40}
-                                                        style={{ objectFit: "cover", borderRadius: 8, display: 'block', width: '100%', height: '100%' }}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <div className="font-medium">{vehicle.marca} {vehicle.modelo}</div>
-                                                    <div className="text-xs text-gray-500">{vehicle.placa}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        {calendarDays.map(day => {
-                                            const { status, reservation } = getStatusForDay(vehicle.id, day)
-                                            const config = statusConfig[status as keyof typeof statusConfig] || { color: 'bg-gray-200', text: 'Disponible' }
-                                            
-                                            return (
-                                                <td key={day.getTime()} className="p-0 text-center border-r border-b">
-                                                    <TooltipProvider>
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <div className="h-full w-full p-2">
-                                                                    <div className={`w-full h-4 rounded-sm ${config.color}`}></div>
-                                                                </div>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <div className="p-2">
-                                                                    <p className="font-semibold">{config.text}</p>
-                                                                    {reservation && (
-                                                                        <>
-                                                                            {reservation.usuario ? (
-                                                                                <>
-                                                                                    <p className="text-sm">Cliente: {reservation.usuario.nombre}</p>
-                                                                                    <p className="text-sm">Teléfono: {reservation.usuario.telefono}</p>
-                                                                                </>
-                                                                            ) : (
-                                                                                <p className="text-sm">Información de cliente no disponible</p>
-                                                                            )}
-                                                                            <p className="text-sm">
-                                                                                {new Date(reservation.fecha_inicio).toLocaleDateString()} -{" "}
-                                                                                {new Date(reservation.fecha_fin).toLocaleDateString()}
-                                                                            </p>
-                                                                        </>
-                                                                    )}
-                                                                </div>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    </TooltipProvider>
-                                                </td>
-                                            )
-                                        })}
+                <div className="relative p-4">
+                    <div className="relative px-10">
+                        <div className={`absolute left-0 top-1/2 -translate-y-1/2 z-20 ml-1 transition-opacity duration-300 ${!showScrollArrows.left && 'opacity-0 pointer-events-none'}`}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-9 w-9 rounded-full shadow-md bg-white border border-gray-200 hover:bg-gray-50"
+                                onClick={() => scrollTable('left')}
+                            >
+                                <ChevronLeft className="h-5 w-5 text-gray-700" />
+                            </Button>
+                        </div>
+
+                        <div className={`absolute right-0 top-1/2 -translate-y-1/2 z-20 mr-1 transition-opacity duration-300 ${!showScrollArrows.right && 'opacity-0 pointer-events-none'}`}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-9 w-9 rounded-full shadow-md bg-white border border-gray-200 hover:bg-gray-50"
+                                onClick={() => scrollTable('right')}
+                            >
+                                <ChevronRight className="h-5 w-5 text-gray-700" />
+                            </Button>
+                        </div>
+
+                        <div 
+                            ref={tableContainerRef}
+                            className="overflow-x-auto pb-4 scrollbar-hide"
+                        >
+                            <table className="w-full">
+                                <thead>
+                                    <tr className="text-xs font-medium text-gray-500 bg-gray-50">
+                                        <th className="sticky left-0 bg-gray-50 z-10 p-3 text-left min-w-[180px]">Vehículo</th>
+                                        {calendarDays.map(day => (
+                                            <th key={day.getTime()} className="p-3 text-center w-[40px]">
+                                                <div className="font-semibold">{day.getDate()}</div>
+                                                <div className="text-xs">{weekdaysShort[day.getDay()]}</div>
+                                            </th>
+                                        ))}
                                     </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={calendarDays.length + 1} className="py-8 text-center text-gray-500">
-                                        No hay vehículos que coincidan con los filtros seleccionados.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                                </thead>
+                                <tbody>
+                                    {filteredVehicles.length > 0 ? (
+                                        filteredVehicles.map(vehicle => (
+                                            <tr key={vehicle.id} className="border-t">
+                                                <td className="sticky left-0 bg-white z-10 p-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="flex-shrink-0 w-10 h-10 rounded overflow-hidden bg-gray-100 relative">
+                                                            <Image
+                                                                src={vehicle.imagen || "/images/Auto_default.png"}
+                                                                alt={`${vehicle.marca} ${vehicle.modelo}`}
+                                                                width={40}
+                                                                height={40}
+                                                                style={{ objectFit: "cover", borderRadius: 8, display: 'block', width: '100%', height: '100%' }}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-medium">{vehicle.marca} {vehicle.modelo}</div>
+                                                            <div className="text-xs text-gray-500">{vehicle.placa}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                {calendarDays.map(day => {
+                                                    const { status, reservation } = getStatusForDay(vehicle.id, day)
+                                                    const config = statusConfig[status as keyof typeof statusConfig] || { color: 'bg-gray-200', text: 'Disponible' }
+                                                    const shouldHighlight = selectedStatuses.length === 0 || selectedStatuses.includes(status)
+                                                    const opacityClass = shouldHighlight ? 'opacity-100' : 'opacity-30'
+                                                    
+                                                    return (
+                                                        <td key={day.getTime()} className="p-2 text-center w-[40px]">
+                                                            <TooltipProvider>
+                                                                <Tooltip>
+                                                                    <TooltipTrigger asChild>
+                                                                        <div className="h-8 w-full flex items-center justify-center">
+                                                                            <div className={`w-full h-4 rounded ${config.color} ${opacityClass}`}></div>
+                                                                        </div>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent>
+                                                                        <div className="p-2">
+                                                                            <p className="font-semibold">{config.text}</p>
+                                                                            {reservation && (
+                                                                                <>
+                                                                                    {reservation.usuario ? (
+                                                                                        <>
+                                                                                            <p className="text-sm">Cliente: {reservation.usuario.nombre}</p>
+                                                                                            <p className="text-sm">Teléfono: {reservation.usuario.telefono}</p>
+                                                                                        </>
+                                                                                    ) : (
+                                                                                        <p className="text-sm">Información de cliente no disponible</p>
+                                                                                    )}
+                                                                                    <p className="text-sm">
+                                                                                        {new Date(reservation.fecha_inicio).toLocaleDateString()} -{" "}
+                                                                                        {new Date(reservation.fecha_fin).toLocaleDateString()}
+                                                                                    </p>
+                                                                                </>
+                                                                            )}
+                                                                        </div>
+                                                                    </TooltipContent>
+                                                                </Tooltip>
+                                                            </TooltipProvider>
+                                                        </td>
+                                                    )
+                                                })}
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={calendarDays.length + 1} className="py-8 text-center text-gray-500">
+                                                No hay vehículos que coincidan con los filtros seleccionados.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
