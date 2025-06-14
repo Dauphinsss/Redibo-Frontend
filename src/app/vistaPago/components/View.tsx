@@ -18,9 +18,9 @@ export default function View({ id }: { id: number }) {
 
   const [mostrarModal, setMostrarModal] = useState(false);
   const [showConfirmationOptions, setShowConfirmationOptions] = useState(false);
-  const conductores = typeof window !== "undefined" 
-  ? JSON.parse(localStorage.getItem('conductores_seleccionados') || "[]")
-  : [];
+  const conductores = typeof window !== "undefined"
+    ? JSON.parse(localStorage.getItem('conductores_seleccionados') || "[]")
+    : [];
 
   const { mutate, error, data } = useCreatePaymentOrder();
   const { data: car } = useCardByID(id)
@@ -78,7 +78,7 @@ export default function View({ id }: { id: number }) {
               <h4 className="font-semibold">Conductores seleccionados:</h4>
               {conductores.length > 0 ? (
                 <ul className="ml-4 list-disc text-sm margin-bottom-4">
-                   {conductores.sort().map((nombre: string, i: number) => <li key={i}>{nombre}</li>)}
+                  {conductores.sort().map((nombre: string, i: number) => <li key={i}>{nombre}</li>)}
                 </ul>
               ) : (
                 <p className="text-gray-500">No se seleccionaron conductores para esta reserva.</p>
@@ -132,7 +132,7 @@ export default function View({ id }: { id: number }) {
                 id={id.toString()}
                 marca={car?.marca ?? ""}
                 modelo={car?.modelo ?? ""}
-                precio={Number(precio) || 0}
+                precio={Number(car?.precio_por_dia ?? "0")}
                 onReservarSinPagar={() => {
                   setShowConfirmationOptions(false);
                 }}

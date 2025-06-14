@@ -6,7 +6,7 @@ import { GiGps, GiCarSeat } from "react-icons/gi";
 import "./CaracAdicionales.css";
 import { TbAirConditioning, TbCarGarage } from "react-icons/tb";
 import { MdPedalBike, MdOutlineSecurity, MdWindow } from "react-icons/md";
-import { FaSkiingNordic } from "react-icons/fa";
+import { FaSkiing } from "react-icons/fa";
 import { RiArmchairLine } from "react-icons/ri";
 import { TiCamera } from "react-icons/ti";
 import { BsFillSpeakerFill } from "react-icons/bs";
@@ -38,11 +38,11 @@ const iconosCaracteristicas: Record<string, JSX.Element> = {
   Bluetooth: <FaBluetooth />,
   GPS: <GiGps />,
   Portabicicletas: <MdPedalBike />,
-  "Soporte para esquís": <FaSkiingNordic />,
+  "Soporte para esquís": <FaSkiing />,
   "Pantalla táctil": <FaMobileScreenButton />,
-  "Sillas para bebé": <GiCarSeat />,
+  "Sillas para bebé": <RiArmchairLine />,
   "Cámara de reversa": <TiCamera />,
-  "Asientos de cuero": <RiArmchairLine />,
+  "Asientos de cuero": <GiCarSeat />,
   "Sistema antirrobo": <MdOutlineSecurity />,
   "Toldo o rack de techo": <TbCarGarage />,
   "Vidrios polarizados": <MdWindow />,

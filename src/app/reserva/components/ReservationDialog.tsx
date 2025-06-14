@@ -74,7 +74,7 @@ export default function ReservationDialog({
     carId: number,
     pickupDate: Date | undefined,
     returnDate: Date | undefined,
-    estado: string = "PENDIENTE"
+    estado: string = "EN_CURSO"
   ): Promise<boolean> => {
     if (!pickupDate || !returnDate) {
       setModalMessage("Las fechas no pueden estar vacías");
@@ -275,7 +275,7 @@ export default function ReservationDialog({
                       Number(id),
                       pickupDate,
                       returnDate,
-                      "PENDIENTE"
+                      "EN_CURSO"
                     );
                     if (success) {
                       setShowSuccessModal(true);
