@@ -6,9 +6,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const opcionesFechas = [
-  { inicio: '2025-05-19', fin: '2025-05-24', ciudad: 'Cochabamba' },
-  { inicio: '2025-05-20', fin: '2025-05-22', ciudad: 'Cochabamba' },
-  { inicio: '2025-05-24', fin: '2025-05-27', ciudad: 'Cochabamba' },
+  { inicio: '2025-06-19', fin: '2025-06-24', ciudad: 'Cochabamba' },
+  { inicio: '2025-06-20', fin: '2025-06-22', ciudad: 'Cochabamba' },
+  { inicio: '2025-06-24', fin: '2025-06-27', ciudad: 'Cochabamba' },
 ];
 
 export default function FechasAlquiler({
