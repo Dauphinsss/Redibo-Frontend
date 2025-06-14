@@ -58,7 +58,7 @@ function General_Recode({
       <div>
         <SliderRangeSimple_Recode
           min={100}
-          max={900}
+          max={15000}
           step={10}
           values={[kmMax]}
           onChange={([km]) => onKmChange([km])}
