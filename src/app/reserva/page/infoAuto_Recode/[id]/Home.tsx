@@ -20,8 +20,8 @@ import CalificaionRecode from "@/app/reserva/components/componentes_InfoAuto_Rec
 import PopUpComentarios from "@/app/reserva/components/componentes_InfoAuto_Recode/PopUp/popUpComentarios"; //@/app/busqueda/homeBuscador_Recode/components/PopUp/popUpComentarios
 import { useComentariosAuto } from "@/app/reserva/hooks/useComentario_hook_Recode";
 import VerComentario from "@/app/reserva/components/componentes_InfoAuto_Recode/verComentario/verComentarioRecode";
-import CrearComentario from "@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/Comentarios_Autos"; //@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/CrearComentario_Recode
-import CrearCalificacion from "@/app/busqueda/components/componentes_Comentarios_Calificaciones_Bughunters/CrearCalificacion";
+import CrearComentario from "@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/CrearComentario"; //@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/CrearComentario_Recode
+import CrearCalificacion from "@/app/reserva/components/componentes_Comentarios_Calificaciones_Bughunters/CrearCalificacion";
 
 interface HomeProps {
   id: string;
@@ -42,9 +42,9 @@ export default function Home({ id }: HomeProps) {
   const promedioCalificacion =
     calificaciones.length > 0
       ? (
-        calificaciones.reduce((acc, cal) => acc + cal, 0) /
-        calificaciones.length
-      ).toFixed(1)
+          calificaciones.reduce((acc, cal) => acc + cal, 0) /
+          calificaciones.length
+        ).toFixed(1)
       : "0.0";
 
   const [ordenSeleccionado] = useState("Más reciente");
@@ -152,7 +152,6 @@ export default function Home({ id }: HomeProps) {
             <DescripcionAuto descripcion={auto.descripcion} />
 
             <div className="mt-4 mb-4 flex justify-end">
-
               <PopUpComentarios
                 idCar={id}
                 nombreCompleto={auto.nombreHost}
@@ -215,11 +214,11 @@ export default function Home({ id }: HomeProps) {
               ))}
             </div>
 
-            {/* <h2 className="text-xl font-bold mb-4">Escribe tu comentario</h2>Add commentMore actions
+            <div className="mt-8">
+              {/* <h2 className="text-xl font-bold mb-4">Escribe tu comentario</h2>
               <CrearComentario
                 id_carro={Number(id)}
                 onComentarioCreado={refetchComentarios}
-              />
               /> */}
               <div className="mt-8 space-y-6">
                 <CrearComentario
@@ -231,6 +230,7 @@ export default function Home({ id }: HomeProps) {
                   onCalificacionActualizada={refetchComentarios}
                 />
               </div>
+            </div>
           </div>
 
           <div className="lg:w-1/3">
