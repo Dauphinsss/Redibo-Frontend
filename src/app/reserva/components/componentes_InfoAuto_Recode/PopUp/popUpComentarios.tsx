@@ -18,47 +18,60 @@ interface Props {
   marcaAuto: string;
   calificaciones: number[];
   numComentarios: number;
-  comentariosConCalificacion: number[];
   imagenes: { id: number; data: string }[];
   nombreUser: string;
   fotoUser: string;
 }
 
 function PopUpComentarios({
-  idCar,nombreCompleto,fotoHost,modeloAuto,calificaciones,
-  numComentarios,comentariosConCalificacion,imagenes}: Props) {
-    
+  idCar,
+  nombreCompleto,
+  fotoHost,
+  modeloAuto,
+  calificaciones,
+  numComentarios,
+  imagenes,
+}: Props) {
   const [popUpOpen, setPopUpOpen] = useState(false);
-  const ordenar = ["Mejor Calificación","Peor Calificación","Más valorado","Menos valorado","Más reciente","Más antiguo"];
+  const ordenar = [
+    "Mejor Calificación",
+    "Peor Calificación",
+    "Más valorado",
+    "Menos valorado",
+    "Más reciente",
+    "Más antiguo",
+  ];
   const [ordenSeleccionado, setOrdenSeleccionado] = useState("Más reciente");
 
-
-  
   const closePopup = () => setPopUpOpen(false);
   const openPopup = () => setPopUpOpen(true);
 
-  const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(null);
-  useEffect(() => {
-  }, [filtroCalificacion]);
+  const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(
+    null
+  );
+  useEffect(() => {}, [filtroCalificacion]);
 
-  const { 
-    comentariosFiltrados, 
-    cargando, 
-    error, 
-    formatearFecha 
-  } = useComentariosAuto(Number(idCar), filtroCalificacion, ordenSeleccionado);
+  const { comentariosFiltrados, cargando, error, formatearFecha } =
+    useComentariosAuto(Number(idCar), filtroCalificacion, ordenSeleccionado);
 
   return (
-    
     <div>
-      <button onClick={openPopup} className="bg-black text-white px-4 py-2 rounded">
+      <button
+        onClick={openPopup}
+        className="bg-black text-white px-4 py-2 rounded"
+      >
         Comentarios
       </button>
 
       {popUpOpen && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black/20 backdrop-blur-sm flex justify-center items-center z-50" onClick={closePopup} >
-          <div className="bg-white rounded-lg max-w-md w-full relative" onClick={(e) => e.stopPropagation()} >
-            
+        <div
+          className="fixed top-0 left-0 w-full h-full bg-black/20 backdrop-blur-sm flex justify-center items-center z-50"
+          onClick={closePopup}
+        >
+          <div
+            className="bg-white rounded-lg max-w-md w-full relative"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               className="absolute top-4 right-4 text-2xl text-gray-600 hover:text-black z-10"
               onClick={closePopup}
@@ -81,7 +94,11 @@ function PopUpComentarios({
               `}</style>
 
               <div className="flex items-center space-x-3 mb-4 mt-6">
-                <FotoPerfilUsrRecode imagenUrl={fotoHost} ancho={40} alto={40} />
+                <FotoPerfilUsrRecode
+                  imagenUrl={fotoHost}
+                  ancho={40}
+                  alto={40}
+                />
                 <h2 className="font-semibold text-lg">{nombreCompleto}</h2>
               </div>
 
@@ -90,52 +107,58 @@ function PopUpComentarios({
               </div>
 
               <div className="mb-4">
-                <CalificacionRecode  
+                <CalificacionRecode
                   calificaciones={calificaciones}
-                  numComentarios={numComentarios} 
-                  comentariosConCalificacion={comentariosConCalificacion}
+                  numComentarios={numComentarios}
                   onBarClick={setFiltroCalificacion}
                 />
               </div>
 
               <div className="mb-4">
-                <RecodeFilter lista={ordenar} nombre={"Ordenar por:"} onChange={(valor) => setOrdenSeleccionado(valor)}/>
+                <RecodeFilter
+                  lista={ordenar}
+                  nombre={"Ordenar por:"}
+                  onChange={(valor) => setOrdenSeleccionado(valor)}
+                />
               </div>
 
               <div className="space-y-4">
                 {cargando && <p>Cargando comentarios...</p>}
                 {error && <p>{error}</p>}
-                {!cargando && comentariosFiltrados.length === 0 && <p>No hay comentarios disponibles.</p>}
+                {!cargando && comentariosFiltrados.length === 0 && (
+                  <p>No hay comentarios disponibles.</p>
+                )}
 
                 {comentariosFiltrados
                   //.filter((comentario) => comentario.Calificacion !== null)         para filtrar comentarios sin calificacion
                   .map((comentario) => (
-                  <div key={comentario.id} className="p-2 ">
-                  <VerComentario
-                    idComentario={comentario.id}
-                    idUsuarioComentario={comentario.usuario.id}
-                    userId={comentario.usuario.id}
-                    nombreCompleto={comentario.usuario.nombre}
-                    fotoUser={
-                      "foto" in comentario.usuario
-                        ? String(comentario.usuario.foto)
-                        : ""
-                    }
-                    fechaComentario={formatearFecha(comentario.fecha_creacion)}
-                    comentario={comentario.comentario}
-                    calificacionUsr={comentario.calificacion ?? 0}
-                    cantDontlikes={comentario.dont_likes ?? 0}
-                    cantLikes={comentario.likes ?? 0}
-                    respuestas={comentario.respuestas.map((r) => ({
-                      id: r.id,
-                      comentado_en: r.comentado_en,
-                      respuesta: r.respuesta,
-                      host: r.host,
-                    }))}
-                  />
-                  </div>
-                ))}
-
+                    <div key={comentario.id} className="p-2 ">
+                      <VerComentario
+                        idComentario={comentario.id}
+                        idUsuarioComentario={comentario.usuario.id}
+                        userId={comentario.usuario.id}
+                        nombreCompleto={comentario.usuario.nombre}
+                        fotoUser={
+                          "foto" in comentario.usuario
+                            ? String(comentario.usuario.foto)
+                            : ""
+                        }
+                        fechaComentario={formatearFecha(
+                          comentario.fecha_creacion
+                        )}
+                        comentario={comentario.comentario}
+                        calificacionUsr={comentario.calificacion ?? 0}
+                        cantDontlikes={comentario.dont_likes ?? 0}
+                        cantLikes={comentario.likes ?? 0}
+                        respuestas={comentario.respuestas.map((r) => ({
+                          id: r.id,
+                          comentado_en: r.comentado_en,
+                          respuesta: r.respuesta,
+                          host: r.host,
+                        }))}
+                      />
+                    </div>
+                  ))}
               </div>
             </div>
           </div>

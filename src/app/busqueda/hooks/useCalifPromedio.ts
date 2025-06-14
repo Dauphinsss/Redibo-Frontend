@@ -1,21 +1,25 @@
 import { useState, useEffect } from "react";
-import { getCarRatingsFromAuto, getCarRatingsFromComments } from "@/app/busqueda/service/service_auto_recode";
+import { getCarRatingsFromComments } from "@/app/reserva/services/services_reserva";
 
 export function useCalificaciones(idAuto: string) {
   const [calificaciones, setCalificaciones] = useState<number[]>([]);
-  const [promedioCalificacion, setPromedioCalificacion] = useState<string>("0.0");
+  const [promedioCalificacion, setPromedioCalificacion] =
+    useState<string>("0.0");
 
   useEffect(() => {
     async function fetchCalificaciones() {
-      const ratingsAuto = await getCarRatingsFromAuto(idAuto);
       const ratingsComments = await getCarRatingsFromComments(idAuto);
-      const todasCalificaciones = [...ratingsAuto, ...ratingsComments];
 
-      setCalificaciones(todasCalificaciones);
+      setCalificaciones(ratingsComments);
 
-      if (todasCalificaciones.length > 0) {
-        const promedio = (todasCalificaciones.reduce((acc, cal) => acc + cal, 0.0) / todasCalificaciones.length).toFixed(1);
+      if (ratingsComments.length > 0) {
+        const promedio = (
+          ratingsComments.reduce((acc, cal) => acc + cal, 0.0) /
+          ratingsComments.length
+        ).toFixed(1);
         setPromedioCalificacion(promedio);
+      } else {
+        setPromedioCalificacion("0.0");
       }
     }
 

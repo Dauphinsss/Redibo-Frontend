@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   getCarById,
-  getCarRatingsFromAuto,
+  getTotalCommentsCount,
   getCarRatingsFromComments,
 } from "@/app/reserva/services/services_reserva";
 import { transformAutoDetails_Recode } from "@/app/reserva/utils/transformAutoDetails_Recode";
@@ -33,12 +33,11 @@ export default function Home({ id }: HomeProps) {
   const [loaded, setLoaded] = useState(false);
   const [calificaciones, setCalificaciones] = useState<number[]>([]);
   const [numComentarios, setNumComentarios] = useState(0);
-  const [comentariosConCalificacion, setComentariosConCalificacion] = useState<
-    number[]
-  >([]);
+
   const [filtroCalificacion, setFiltroCalificacion] = useState<number | null>(
     null
   );
+
   const promedioCalificacion =
     calificaciones.length > 0
       ? (
@@ -61,17 +60,17 @@ export default function Home({ id }: HomeProps) {
 
   useEffect(() => {
     setUserId(getUserIdFromStorage());
+
     (async () => {
       const data = await getCarById(id);
       const autoTransformado = transformAutoDetails_Recode(data);
       setAuto(autoTransformado);
-
-      const ratingsAuto = await getCarRatingsFromAuto(id);
       const ratingsComments = await getCarRatingsFromComments(id);
+      const totalComments = await getTotalCommentsCount(id);
 
-      setCalificaciones([...ratingsAuto, ...ratingsComments]);
-      setComentariosConCalificacion(ratingsComments.filter((c) => c > 0));
-      setNumComentarios(ratingsComments.filter((c) => c > 0).length);
+      setCalificaciones(ratingsComments);
+      setNumComentarios(totalComments);
+
       setLoaded(true);
     })();
   }, [id]);
@@ -160,7 +159,6 @@ export default function Home({ id }: HomeProps) {
                 marcaAuto={auto.marca}
                 calificaciones={calificaciones}
                 numComentarios={numComentarios}
-                comentariosConCalificacion={comentariosConCalificacion}
                 imagenes={auto.imagenes}
                 nombreUser=""
                 fotoUser=""
@@ -178,7 +176,6 @@ export default function Home({ id }: HomeProps) {
               <CalificaionRecode
                 calificaciones={calificaciones}
                 numComentarios={numComentarios}
-                comentariosConCalificacion={comentariosConCalificacion}
                 onBarClick={setFiltroCalificacion}
               />
             </div>
