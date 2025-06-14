@@ -1,4 +1,4 @@
-export interface CoberturaInterface {
+{/*export interface CoberturaInterface {
   id_carro: number;
   tipodaño: string;
   descripcion: string;
@@ -35,12 +35,12 @@ export interface ValidarInterface {
 }
 
 export interface SeguroRawRecode {
-  id: number;
   fechaInicio: string;
   fechaFin: string;
   enlace: string;
   id_carro: number;
   Seguro: {
+    id: number;
     empresa: string;
     nombre: string;
     tipoSeguro: string;
@@ -50,4 +50,23 @@ export interface SeguroRawRecode {
     descripcion: string | null;
     valides: string | null;
   }>;
+}*/}
+export interface SeguroBase {
+  id: number;
+  empresa: string;
+  nombre: string;
+  tipoSeguro: string;
+}
+
+export interface TipoCobertura {
+  id: number;
+  tipoda_o: string;
+  descripcion: string;
+  cantidadCobertura: string;
+}
+
+export interface SeguroEstructurado {
+  id: number;
+  Seguro: SeguroBase;
+  tiposeguro: TipoCobertura[];
 }

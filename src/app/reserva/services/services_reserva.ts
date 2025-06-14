@@ -5,8 +5,11 @@ import { transformDetailsHost_Recode } from "@/app/reserva/utils/transformDetail
 import { CondicionesUsoResponse } from "@/app/reserva/interface/CondicionesUsoVisual_interface_Recode";
 import { RawCondicionesUsoResponse } from "../interface/RawCondicionesUsoVisuali_Interface_Recode";
 import { transformCondiciones_Recode } from "@/app/reserva/utils/transformCondicionesVisuali_Recode";
-import { ValidarInterface, SeguroRawRecode } from "@/app/reserva/interface/CoberturaForm_Interface_Recode";
-import { transformSeguroTodo_Recode } from "../utils/transforSeguro_Recode";
+
+//import { ValidarInterface, SeguroRawRecode } from "@/app/reserva/interface/CoberturaForm_Interface_Recode";
+import { SeguroEstructurado } from "@/app/reserva/interface/CoberturaForm_Interface_Recode";
+
+//import { transformSeguroTodo_Recode } from "../utils/transforSeguro_Recode";
 import axios, { AxiosError } from "axios";
 import { UsuarioTransforms_Recode } from "../utils/UsuarioTransforms_Recode";
 import { UsuarioInterfazRecode } from "../interface/Ususario_Interfaz_Recode";
@@ -70,10 +73,9 @@ export async function getCondicionesUsoVisual_Recode(id_carro: number): Promise<
     }
 };
 
-export const getInsuranceByID = async (id_carro: string): Promise<ValidarInterface | null> => {
+{/*export const getInsuranceByID = async (id_carro: string): Promise<ValidarInterface | null> => {
     try {
-        const response = await apiCobertura.get<SeguroRawRecode[]>(`/insurance/${id_carro}`);
-
+        const response = await apiCobertura.get<SeguroRawRecode[]>(`/getCobertura/${id_carro}`);
         // Validar que sea array no vacío
         if (!Array.isArray(response.data) || response.data.length === 0) {
             console.warn(`No se encontró seguro para el ID ${id_carro}`);
@@ -90,7 +92,28 @@ export const getInsuranceByID = async (id_carro: string): Promise<ValidarInterfa
         console.error(`Error inesperado al obtener el auto con ID ${id_carro}:`, error);
         throw error;
     }
+};*/}
+export const getInsuranceByID = async (id_carro: string): Promise<SeguroEstructurado[] | null> => {
+    try {
+        const response = await apiCobertura.get<SeguroEstructurado[]>(`/getCobertura/${id_carro}`);
+
+        if (!Array.isArray(response.data) || response.data.length === 0) {
+            console.warn(`No se encontró seguro para el ID ${id_carro}`);
+            return null;
+        }
+
+        return response.data;
+    } catch (error: unknown) {
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+            console.warn(`Auto con ID ${id_carro} no encontrado.`);
+            return null;
+        }
+
+        console.error(`Error inesperado al obtener el seguro del auto con ID ${id_carro}:`, error);
+        throw error;
+    }
 };
+
 
 export const getUsuarioById = async (id: number): Promise<UsuarioInterfazRecode | null> => {
     try {

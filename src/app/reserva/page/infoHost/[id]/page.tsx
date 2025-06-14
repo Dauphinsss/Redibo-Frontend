@@ -28,20 +28,19 @@ export default function Page() {
 
   function formatearFecha(fechaISO: string): string {
     const fecha = new Date(fechaISO);
-    const dia = String(fecha.getDate()+1).padStart(2, "0");
+    const dia = String(fecha.getDate() + 1).padStart(2, "0");
     const mes = String(fecha.getMonth() + 1).padStart(2, "0");
     const año = fecha.getFullYear();
-  return `${dia}/${mes}/${año}`;
+    return `${dia}/${mes}/${año}`;
   }
 
-
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="sticky top-0 z-50 bg-white shadow overflow-visible">
-              <div className="border-b px-4 sm:px-6 lg:px-8 py-7">
-                <Header />
-              </div>
-            </div>
+    <div className=" max-w-6xl mx-auto">
+      <div className=" bg-white shadow ">
+        <div className="border-b px-4 sm:px-6 lg:px-8 py-7">
+          <Header />
+        </div>
+      </div>
       <div className="flex flex-col md:flex-row gap-6 items-start">
         <PerfilHost
           nombreHost={host.nombre}
@@ -77,7 +76,7 @@ export default function Page() {
         <div className="mt-10 flex flex-col md:flex-row gap-8 items-start">
           {/* Izquierda: Calificación del host */}
           <div className="w-full md:w-1/3">
-            <ContenedorCalificacionesHost id_host={id}/>
+            <ContenedorCalificacionesHost id_host={id} />
           </div>
 
           {/* Derecha: Comentarios 
