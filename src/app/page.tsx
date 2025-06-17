@@ -32,7 +32,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-
+      <br/>   
       <main className="flex-1 container mx-auto py-8 px-4 md:px-8">
         {/* Sección de Título */}
         <section className="text-center mb-12">
